@@ -1,0 +1,3 @@
+String hello = "1c"
+byte[] data = hello.getBytes();
+System.out.println(data);
