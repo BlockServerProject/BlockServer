@@ -1,0 +1,18 @@
+/* IE10 Consumer Preview */ 
+html { height: 100%;
+background-image: -ms-linear-gradient(top left, #0055FF 0%, #EF48BD 100%);
+
+/* Mozilla Firefox */ 
+background-image: -moz-linear-gradient(top left, #0055FF 0%, #EF48BD 100%);
+
+/* Opera */ 
+background-image: -o-linear-gradient(top left, #0055FF 0%, #EF48BD 100%);
+
+/* Webkit (Safari/Chrome 10) */ 
+background-image: -webkit-gradient(linear, left top, right bottom, color-stop(0, #0055FF), color-stop(1, #EF48BD));
+
+/* Webkit (Chrome 11+) */ 
+background-image: -webkit-linear-gradient(top left, #0055FF 0%, #EF48BD 100%);
+
+/* W3C Markup, IE10 Release Preview */ 
+background-image: linear-gradient(to bottom right, #0055FF 0%, #EF48BD 100%)};
