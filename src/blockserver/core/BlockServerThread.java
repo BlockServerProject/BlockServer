@@ -127,6 +127,10 @@ public class BlockServerThread extends Thread {
 			//TODO: Raknet Packet
 			logger.info("[INFO]: Packet ID_OPEN_CONNECTION_REQUEST_1 is a RakNet packet, unimplemented.");
 		}
+		else if(packetID == new Byte("7")){
+			//TODO: Raknet Packet
+			logger.info("[INFO]: Packet ID_OPEN_CONNECTION_REQUEST_2 is a RakNet packet, unimplemented.");
+		}
 		else {
 			logger.info("[ERROR]: Packet "+packetID+" is not implemented in this version.");
 			
