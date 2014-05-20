@@ -10,7 +10,6 @@ import blockserver.utils.*;
 public class OpenConnectionReply implements BasePacket {
 	protected String ip;
 	protected int port;
-	protected byte packetID;
 	protected byte[] buffer;
 	private Utils utils;
 	protected int mtuSize;
@@ -20,7 +19,6 @@ public class OpenConnectionReply implements BasePacket {
 	public OpenConnectionReply(OpenConnectionRequest packet, BlockServerThread server){
 		ip = packet.getIP();
 		port = packet.getPort();
-		packetID = new Byte("12");
 		this.server = server;
 		utils = new Utils();
 		mtu = packet.getNullLength();
