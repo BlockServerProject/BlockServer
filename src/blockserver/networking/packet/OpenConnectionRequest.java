@@ -12,7 +12,7 @@ public class OpenConnectionRequest implements BasePacket{
 	protected int nullLength;
 	protected int protocol;
 
-	public OpenConnectionsPacket(DatagramPacket packet){
+	public OpenConnectionRequest(DatagramPacket packet){
 		ip = packet.getAddress().getHostAddress();
 		port = packet.getPort();
 		buffer = packet.getData();
