@@ -12,6 +12,7 @@ public class OpenConnectionReply implements BasePacket {
 	protected int port;
 	protected byte[] buffer;
 	private Utils utils;
+        protected byte packetID;
 	protected int mtuSize;
 	
 	private BlockServerThread server;
@@ -22,12 +23,13 @@ public class OpenConnectionReply implements BasePacket {
 		this.server = server;
 		utils = new Utils();
 		mtu = packet.getNullLength();
+                packetID = new Byte("6");
 	}
 	
 	public DatagramPacket getPacket(){
 		DatagramPacket response = null;
 		buffer = new byte[28];
-		buffer[0] = new Byte("6");
+		buffer[0] = packetID;
 		
 		Long serverID = server.getServerID();
 		
