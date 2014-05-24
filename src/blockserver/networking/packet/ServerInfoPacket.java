@@ -37,7 +37,7 @@ public class ServerInfoPacket implements BasePacket {
 		byte[] magic = Utils.hexStringToByteArray("0x00ffff00fefefefefdfdfdfd12345678");
 		Short nameLength = (short) serverName.length();
 		buffer = new byte[48 + serverName.length()];
-		System.out.println("Buffer: "+buffer.length);
+		System.out.println("Buffer: "+buffer.length + nameLength);
 		buffer[0] = new Byte("28"); //Set the packet id
 		
 		Long pingID = System.currentTimeMillis() - server.getStartTime();
