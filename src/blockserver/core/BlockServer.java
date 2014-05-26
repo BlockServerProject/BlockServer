@@ -4,10 +4,11 @@ import java.io.*;
 import java.util.*;
 
 public class BlockServer {
-	private BlockServerThread server;
+	private Thread server;
 	
 	public BlockServer(int port) throws SocketException{
-		server = new BlockServerThread(port);
+		BlockServerThread bst = new BlockServerThread(port);
+		server = new Thread(bst, "BlockServer-Main");
 	}
 
 	public void start() {

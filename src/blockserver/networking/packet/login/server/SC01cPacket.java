@@ -1,24 +1,26 @@
-package blockserver.networking.packet;
+package blockserver.networking.packet.login.server;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 import blockserver.core.BlockServerThread;
+import blockserver.networking.packet.base.BasePacket;
+import blockserver.networking.packet.login.client.CS05Packet;
 import blockserver.utils.*;
 
-public class ServerInfoPacket implements BasePacket {
+public class SC01cPacket implements BasePacket {
 	protected String ip;
 	protected int port;
 	protected byte packetID;
 	protected byte[] buffer;
-	protected OpenConnectionsPacket packet;
+	protected CS05Packet packet;
 	
 	private Utils utils;
 	
 	private BlockServerThread server;
 	
-	public ServerInfoPacket(OpenConnectionsPacket packet, BlockServerThread server){
+	public SC01cPacket(CS05Packet packet, BlockServerThread server){
 		/**
 		 * This implements a ID_UNCONNECTED_PING_OPEN_CONNECTIONS (0x1C) packet
 		 * 
@@ -36,20 +38,20 @@ public class ServerInfoPacket implements BasePacket {
 		DatagramPacket response = null;
 		byte[] magic = Utils.hexStringToByteArray("0x00ffff00fefefefefdfdfdfd12345678");
 		Short nameLength = (short) serverName.length();
-		buffer = new byte[48 + serverName.length()];
-		System.out.println("Buffer: "+buffer.length + nameLength);
+		byte[] finalNameLen = ByteBuffer.allocate(nameLength.SIZE).putShort(nameLength).array();
+		buffer = new byte[46 + serverName.length() + finalNameLen.length];
+		System.out.println("Buffer: "+buffer.length);
 		buffer[0] = new Byte("28"); //Set the packet id
 		
 		Long pingID = System.currentTimeMillis() - server.getStartTime();
 		Long serverID = server.getServerID();
 		
-		byte[] finalPing = ByteBuffer.allocate(8).putLong(pingID).array();
-		byte[] finalServer = ByteBuffer.allocate(8).putLong(serverID).array();
-		byte[] finalNameLen = ByteBuffer.allocate(nameLength.SIZE).putShort(nameLength).array();
+		byte[] finalPing = Utils.hexStringToByteArray("0x00000000003c6d0d");
+		byte[] finalServer = Utils.hexStringToByteArray("0x00000000372cdc9e");
 		byte[] finalName = serverName.getBytes();
 		
 		int start = 1;
-		int index = 1;
+		int index = 0;
 		for (int i = 0; i < finalPing.length; i ++) {
 		   buffer[start + i] = finalPing[i];
 		   index++;

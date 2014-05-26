@@ -2,16 +2,20 @@ package blockserver.core;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.*;
 
-import blockserver.networking.packet.*;
+import blockserver.networking.packet.login.client.CS05Packet;
+import blockserver.networking.packet.login.client.CS01Packet;
+import blockserver.networking.packet.login.server.SC01dPacket;
+import blockserver.networking.packet.login.server.SC06Packet;
 import blockserver.utils.logging.*;
 import blockserver.utils.*;
 
-public class BlockServerThread extends Thread {
+public class BlockServerThread implements Runnable {
 	//Protected Variables
-	protected final static String VERSION = "Pre-Alpha 0.1";
+	protected final static String VERSION = "Pre-Alpha 0.0.1-DEV";
 	protected DatagramSocket socket;
 	protected final static Logger logger = Logger.getLogger(BlockServerThread.class.getName());
 	
@@ -28,7 +32,7 @@ public class BlockServerThread extends Thread {
 	public BlockServerThread(int port) throws SocketException{
 		this.port = port;
 		utils = new Utils();
-		this.serverID = generateServerID();
+		generateServerID();
 		
 		Logger rootLogger = Logger.getLogger("");
 	    Handler[] handlers = rootLogger.getHandlers();
@@ -44,11 +48,13 @@ public class BlockServerThread extends Thread {
 		
 	}
 	
-	private long generateServerID(){
-		long number;
+	public Logger getLogger(){
+		return logger;
+	}
+	
+	private void generateServerID(){
 		Random r = new Random();
-		number = (long)(r.nextDouble()*1000000);
-		return number;
+		serverID = r.nextLong();
 	}
 	
 	public long getPingID(){
@@ -63,7 +69,7 @@ public class BlockServerThread extends Thread {
 		//TODO: Make sure to disconnect all players, and save the world
 		logger.info("Stopping server...");
 		running = false;
-		logger.info("Server stopped (Was running for: "+(System.currentTimeMillis() - startTime)+" ms)");
+		logger.info("Server stopped.");
 		System.exit(0);
 	}
 	
@@ -78,6 +84,7 @@ public class BlockServerThread extends Thread {
 			logger.severe("A detailed message of the error is displayed below: ");
 			logger.severe(e.getMessage());
 			running = false;
+			System.exit(1);
 		}
 		logger.info("Done! ("+(System.currentTimeMillis() - startTime)+ " ms)");
 		while(running){
@@ -87,7 +94,6 @@ public class BlockServerThread extends Thread {
 				socket.receive(packet);
 				byte[] raw = packet.getData();
 				String decoded = new String(raw);
-				logger.info("[INFO]: Recived data: "+decoded+" First byte: "+raw[0]);
 				handlePacket(packet);
 				/*
 				String strData = "hello";
@@ -99,41 +105,58 @@ public class BlockServerThread extends Thread {
 				*/
 				
 				
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				logger.severe("Shutting down server due to error.");
+				running = false;
+				System.exit(1);
 			}
 			
 		}
 	}
 	
-	protected void handlePacket(DatagramPacket packet){
+	@SuppressWarnings("finally")
+	protected void handlePacket(DatagramPacket packet) throws UnknownHostException{
 		String ip = packet.getAddress().getHostAddress();
 		int port = packet.getPort();
 		Byte packetID = packet.getData()[0];
 		String id = packetID.toString();
 		byte[] data = packet.getData();
-		if(id.equals("1")){
-			logger.info("[INFO]: Recived ID_CONNECTED_PING_OPEN_CONNECTIONS, ID: "+packetID);
-			OpenConnectionsPacket pk = new OpenConnectionsPacket(packet);
+		CS01Packet pk = null;
+		switch(packetID){
+		case 0x01:
+			logger.fine("Recived ID_CONNECTED_PING_OPEN_CONNECTIONS, ID: "+packetID);
+			pk = new CS01Packet(packet);
+			break;
+		case 0x02:
+			logger.fine("Recived ID_UNCONNECTED_PING_OPEN_CONNECTIONS, ID: "+packetID);
+			pk = new CS01Packet(packet);
 			sendServerInfo(pk, packet);
-		}
-		else if(id.equals("2")){
-			logger.info("[INFO]: Recived ID_UNCONNECTED_PING_OPEN_CONNECTIONS, ID: "+packetID);
-			OpenConnectionsPacket pk = new OpenConnectionsPacket(packet);
-			sendServerInfo(pk, packet);
-		}
-		else if(packetID == new Byte("5")){
-			//TODO: Raknet Packet
-			logger.info("[INFO]: Packet ID_OPEN_CONNECTION_REQUEST_1 is a RakNet packet, unimplemented.");
-		}
-		else if(packetID == new Byte("7")){
-			//TODO: Raknet Packet
-			logger.info("[INFO]: Packet ID_OPEN_CONNECTION_REQUEST_2 is a RakNet packet, unimplemented.");
-		}
-		else {
-			logger.info("[ERROR]: Packet "+packetID+" is not implemented in this version.");
+			break;
+		case 0x05:
+			CS05Packet ocr = new CS05Packet(packet);
+			logger.info("Recived packet 0x05, protocol is: "+ocr.getProtocolID());
+			System.out.println(Arrays.toString(ocr.getBuffer()));
+			//TODO: Figure out the protocol number, and test it
+			SC06Packet ocp = new SC06Packet(ocr, this);
+			DatagramPacket reply = ocp.getPacket();
+			try {
+				socket.send(reply);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finally{
+				break;
+			}
+		case 0x07:
+			//TODO: Implement packet 0x07
+			logger.info("Packet 0x07 is not implemented in this version.");
+			break;
 			
+		default:
+			logger.warning("Recived packet: "+packetID+", and it is not implemented!");
 		}
 	}
 	
@@ -141,10 +164,10 @@ public class BlockServerThread extends Thread {
 		return startTime;
 	}
 	
-	private void sendServerInfo(OpenConnectionsPacket pk, DatagramPacket packet){
+	private void sendServerInfo(CS01Packet pk, DatagramPacket packet){
 		DatagramPacket response = null;
-		ServerInfoPacket infoPacket = new ServerInfoPacket(pk, this);
-		response = infoPacket.getPacket("MCCPP;Demo;TestServer");
+		SC01dPacket infoPacket = new SC01dPacket(pk, this);
+		response = infoPacket.getPacket("MCCPP;MINECON;TEST");
 		try {
 			socket.send(response);
 		} catch (IOException e) {
