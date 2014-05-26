@@ -9,7 +9,6 @@ import java.util.logging.*;
 import blockserver.networking.packet.login.client.CS05Packet;
 import blockserver.networking.packet.login.client.CS01Packet;
 import blockserver.networking.packet.login.server.SC01cPacket;
-import blockserver.networking.packet.login.server.SC01dPacket;
 import blockserver.networking.packet.login.server.SC06Packet;
 import blockserver.utils.logging.*;
 import blockserver.utils.*;
