@@ -32,7 +32,7 @@ public class SC01cPacket implements BasePacket {
 	public DatagramPacket getPacket(String serverName){
 		   DatagramPacket response = null;
 		   byte[] magic = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
-		   System.out.println(magic.length);
+		   //System.out.println(magic.length);
 		   ByteBuffer bb = ByteBuffer.allocate(35 + serverName.length());
 		   Random r = new Random();
 		   
