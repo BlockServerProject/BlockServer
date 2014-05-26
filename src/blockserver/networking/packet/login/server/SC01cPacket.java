@@ -3,90 +3,57 @@ package blockserver.networking.packet.login.server;
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Random;
 
 import blockserver.core.BlockServerThread;
 import blockserver.networking.packet.base.BasePacket;
-import blockserver.networking.packet.login.client.CS05Packet;
-import blockserver.utils.*;
+import blockserver.networking.packet.login.client.CS01Packet;
+import blockserver.utils.Utils;
 
 public class SC01cPacket implements BasePacket {
 	protected String ip;
 	protected int port;
 	protected byte packetID;
 	protected byte[] buffer;
-	protected CS05Packet packet;
+	protected CS01Packet packet;
 	
 	private Utils utils;
 	
 	private BlockServerThread server;
 	
-	public SC01cPacket(CS05Packet packet, BlockServerThread server){
-		/**
-		 * This implements a ID_UNCONNECTED_PING_OPEN_CONNECTIONS (0x1C) packet
-		 * 
-		 */
-		ip = packet.getIP();
-		port = packet.getPort();
-		packetID = new Byte("12");
-		this.packet = packet;
+	public SC01cPacket(CS01Packet opk, BlockServerThread server){
 		this.server = server;
-		utils = new Utils();
+		this.ip = opk.getIP();
+		this.port = opk.getPort();
+		this.packetID = new Byte((byte) 0x1c);
+		this.packet = opk;
 	}
 	
 	public DatagramPacket getPacket(String serverName){
-		//TODO: Work on this
-		DatagramPacket response = null;
-		byte[] magic = Utils.hexStringToByteArray("0x00ffff00fefefefefdfdfdfd12345678");
-		Short nameLength = (short) serverName.length();
-		byte[] finalNameLen = ByteBuffer.allocate(nameLength.SIZE).putShort(nameLength).array();
-		buffer = new byte[46 + serverName.length() + finalNameLen.length];
-		System.out.println("Buffer: "+buffer.length);
-		buffer[0] = new Byte("28"); //Set the packet id
-		
-		Long pingID = System.currentTimeMillis() - server.getStartTime();
-		Long serverID = server.getServerID();
-		
-		byte[] finalPing = Utils.hexStringToByteArray("0x00000000003c6d0d");
-		byte[] finalServer = Utils.hexStringToByteArray("0x00000000372cdc9e");
-		byte[] finalName = serverName.getBytes();
-		
-		int start = 1;
-		int index = 0;
-		for (int i = 0; i < finalPing.length; i ++) {
-		   buffer[start + i] = finalPing[i];
-		   index++;
-		}
-		start = index;
-		System.out.println("Starting at: "+index);
-		for (int i = 0; i < finalServer.length; i ++) {
-		   buffer[start + i] = finalServer[i];
-		   index++;
-		}
-		start = index;
-		System.out.println("Starting at: "+index);
-		for (int i = 0; i < magic.length; i ++) {
-		   buffer[start + i] = magic[i];
-		   index++;
-		}
-		start = index;
-		System.out.println("Starting at: "+index);
-		for (int i = 0; i < finalNameLen.length; i ++) {
-		   buffer[start + i] = finalNameLen[i];
-		   index++;
-		}
-		start = index;
-		System.out.println("Starting at: "+index);
-		for (int i = 0; i < finalName.length; i ++) {
-		   buffer[start + i] = finalName[i];
-		   index++;
-		}
-		
-		response = new DatagramPacket(buffer, buffer.length, packet.packet.getAddress(), port);
-		System.out.println(Arrays.toString(buffer));
-		System.out.println(buffer.length);
-		return response;
-		
-	}
+		   DatagramPacket response = null;
+		   byte[] magic = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
+		   System.out.println(magic.length);
+		   ByteBuffer bb = ByteBuffer.allocate(35 + serverName.length());
+		   Random r = new Random();
+		   
+		   long pingID = System.currentTimeMillis() - server.getStartTime();
+		   long serverID = r.nextLong();
+		   short nameData = (short) serverName.length();
+		   byte[] serverType = serverName.getBytes();
+		   bb.put(this.packetID).putLong(pingID).putLong(serverID).put(magic).putShort(nameData).put(serverType);
+		   //System.out.println(bytArrayToHex(bb.array()));
+		   
+		   response = new DatagramPacket(bb.array(), bb.capacity(), packet.packet.getAddress(), port);
+		   return response;
+		  }
+	
+	private String bytArrayToHex(byte[] a) {
+		 StringBuilder sb = new StringBuilder();
+		   for(byte b: a){
+			   sb.append(String.format("%02x", b&0xff));
+		   }
+		   return sb.toString();
+  }
 
 	@Override
 	public String getIP() {
@@ -109,3 +76,4 @@ public class SC01cPacket implements BasePacket {
 	}
 
 }
+

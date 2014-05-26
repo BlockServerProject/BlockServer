@@ -1,6 +1,7 @@
 package blockserver.networking.packet.login.client;
 
 import java.net.*;
+import java.nio.ByteBuffer;
 
 import blockserver.networking.packet.base.BasePacket;
 
@@ -14,14 +15,19 @@ public class CS01Packet implements BasePacket{
 	public String ip;
 	public int port;
 	public byte packetID;
+	public static byte[] MAGIC;
+	public long clientID;
 	public byte[] buffer;
 	public DatagramPacket packet;
 	
 	public CS01Packet(DatagramPacket packet){
+		ByteBuffer bb = ByteBuffer.wrap(packet.getData());
 		ip = packet.getAddress().getHostAddress();
 		port = packet.getPort();
 		buffer = packet.getData();
-		packetID = buffer[0];
+		packetID = bb.get();
+		clientID = bb.getLong();
+		MAGIC = bb.get(new byte[16]).array();
 		this.packet = packet;
 	}
 	

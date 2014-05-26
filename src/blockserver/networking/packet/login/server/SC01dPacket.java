@@ -25,14 +25,14 @@ public class SC01dPacket implements BasePacket {
 		this.server = server;
 		this.ip = opk.getIP();
 		this.port = opk.getPort();
-		this.packetID = new Byte((byte) 0x1c);
+		this.packetID = new Byte((byte) 0x1d);
 		this.packet = opk;
 	}
 	
 	public DatagramPacket getPacket(String serverName){
 		DatagramPacket response = null;
 		byte[] magic = Utils.hexStringToByteArray("0x00ffff00fefefefefdfdfdfd12345678");
-		ByteBuffer bb = ByteBuffer.allocate(35 + serverName.length());
+		ByteBuffer bb = ByteBuffer.allocate(46 + serverName.length());
 		Random r = new Random();
 		
 		long pingID = System.currentTimeMillis() - server.getStartTime();
@@ -40,7 +40,7 @@ public class SC01dPacket implements BasePacket {
 		short nameData = (short) serverName.length();
 		byte[] serverType = serverName.getBytes();
 		
-		bb.put(this.packetID).putLong(pingID).putLong(serverID).putShort(nameData).put(serverType);
+		bb.put(this.packetID).putLong(pingID).putLong(serverID).put(magic).putShort(nameData).put(serverType);
 		
 		response = new DatagramPacket(bb.array(), bb.capacity(), packet.packet.getAddress(), port);
 		return response;

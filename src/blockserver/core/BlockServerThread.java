@@ -8,6 +8,7 @@ import java.util.logging.*;
 
 import blockserver.networking.packet.login.client.CS05Packet;
 import blockserver.networking.packet.login.client.CS01Packet;
+import blockserver.networking.packet.login.server.SC01cPacket;
 import blockserver.networking.packet.login.server.SC01dPacket;
 import blockserver.networking.packet.login.server.SC06Packet;
 import blockserver.utils.logging.*;
@@ -128,6 +129,7 @@ public class BlockServerThread implements Runnable {
 		case 0x01:
 			logger.fine("Recived ID_CONNECTED_PING_OPEN_CONNECTIONS, ID: "+packetID);
 			pk = new CS01Packet(packet);
+			sendServerInfo(pk, packet);
 			break;
 		case 0x02:
 			logger.fine("Recived ID_UNCONNECTED_PING_OPEN_CONNECTIONS, ID: "+packetID);
@@ -166,7 +168,7 @@ public class BlockServerThread implements Runnable {
 	
 	private void sendServerInfo(CS01Packet pk, DatagramPacket packet){
 		DatagramPacket response = null;
-		SC01dPacket infoPacket = new SC01dPacket(pk, this);
+		SC01cPacket infoPacket = new SC01cPacket(pk, this);
 		response = infoPacket.getPacket("MCCPP;MINECON;TEST");
 		try {
 			socket.send(response);
@@ -174,7 +176,7 @@ public class BlockServerThread implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("[INFO]: Sent data");
+		logger.fine("Sent server info.");
 	}
 
 }

@@ -28,7 +28,7 @@ public class CS05Packet implements BasePacket{
 		buffer = ByteBuffer.wrap(packet.getData());
 		packetID = buffer.get();
 		buffer.get(magicArray);
-		mtu = (short) packet.getLength();
+		mtu = (short) ((short) packet.getLength() - 18);
 	}
 
 	public String getIP(){
