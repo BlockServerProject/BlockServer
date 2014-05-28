@@ -8,14 +8,17 @@ import java.util.logging.*;
 
 import blockserver.networking.packet.login.client.CS05Packet;
 import blockserver.networking.packet.login.client.CS01Packet;
+import blockserver.networking.packet.login.client.CS07Packet;
 import blockserver.networking.packet.login.server.SC01cPacket;
 import blockserver.networking.packet.login.server.SC06Packet;
+import blockserver.networking.packet.login.server.SC08Packet;
 import blockserver.utils.logging.*;
 import blockserver.utils.*;
 
 public class BlockServerThread implements Runnable {
 	//Protected Variables
-	protected final static String VERSION = "Pre-Alpha 0.0.1-DEV";
+	protected final static String VERSION = "v0.0.25-PreAlpha";
+	protected final static String IMPLEMENT = "MCPE v0.8.1-Alpha";
 	protected DatagramSocket socket;
 	protected final static Logger logger = Logger.getLogger(BlockServerThread.class.getName());
 	
@@ -74,12 +77,19 @@ public class BlockServerThread implements Runnable {
 	}
 	
 	public void run(){
-		logger.info("Starting BlockServer version: "+VERSION+", implementing MCPE: 0.8.1 Alpha");
+		//Display info
+		logger.info("Starting BlockServer version: "+VERSION+", implementing "+IMPLEMENT);
+		
+		//Display warning info:
+		logger.warning("THIS VERSION IS PRE-ALPHA");
+		logger.warning("That means that this server is INDEV, so some parts may");
+		logger.warning("work properly, BlockServer is not responsible for damage.");
+		logger.warning("YOU ARE RUNNING THIS AT YOUR OWN RISK...");
+		logger.warning("End WARNING info.");
 		try {
 			socket = new DatagramSocket(port);
 			startTime = System.currentTimeMillis();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			logger.severe("FAILED TO BIND TO PORT!");
 			logger.severe("A detailed message of the error is displayed below: ");
 			logger.severe(e.getMessage());
@@ -138,7 +148,6 @@ public class BlockServerThread implements Runnable {
 		case 0x05:
 			CS05Packet ocr = new CS05Packet(packet);
 			logger.info("Recived packet 0x05, protocol is: "+ocr.getProtocolID());
-			System.out.println(Arrays.toString(ocr.getBuffer()));
 			//TODO: Figure out the protocol number, and test it
 			SC06Packet ocp = new SC06Packet(ocr, this);
 			DatagramPacket reply = ocp.getPacket();
@@ -146,14 +155,28 @@ public class BlockServerThread implements Runnable {
 				socket.send(reply);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				logger.severe("FAILED TO SEND A PACKET");
+				logger.severe("A detailed message is displayed below:");
+				logger.severe(e.getMessage());
 			}
 			finally{
 				break;
 			}
 		case 0x07:
 			//TODO: Implement packet 0x07
-			logger.info("Packet 0x07 is not implemented in this version.");
+			CS07Packet pkt = new CS07Packet(packet, this);
+			logger.info("Recived packet 0x07, sending 0x08...");
+			SC08Packet pkt8 = new SC08Packet(pkt, this);
+			DatagramPacket response = pkt8.getPacket();
+			try {
+				socket.send(response);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				logger.severe("FAILED TO SEND A PACKET");
+				logger.severe("A detailed message is displayed below:");
+				logger.severe(e.getMessage());
+			}
+			
 			break;
 			
 		default:
@@ -168,7 +191,8 @@ public class BlockServerThread implements Runnable {
 	private void sendServerInfo(CS01Packet pk, DatagramPacket packet){
 		DatagramPacket response = null;
 		SC01cPacket infoPacket = new SC01cPacket(pk, this);
-		response = infoPacket.getPacket("MCCPP;MINECON;TEST");
+		//TODO: Get this from config
+		response = infoPacket.getPacket("MCCPP;MINECON;BlockServer "+VERSION+" Test");
 		try {
 			socket.send(response);
 		} catch (IOException e) {

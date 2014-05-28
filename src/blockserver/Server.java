@@ -1,5 +1,4 @@
 package blockserver;
-import java.net.InetAddress;
 import java.net.SocketException;
 
 import blockserver.core.BlockServer;

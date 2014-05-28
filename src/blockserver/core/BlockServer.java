@@ -1,7 +1,5 @@
 package blockserver.core;
 import java.net.*;
-import java.io.*;
-import java.util.*;
 
 public class BlockServer {
 	private Thread server;

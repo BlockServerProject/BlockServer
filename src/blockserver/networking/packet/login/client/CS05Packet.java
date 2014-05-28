@@ -28,6 +28,7 @@ public class CS05Packet implements BasePacket{
 		buffer = ByteBuffer.wrap(packet.getData());
 		packetID = buffer.get();
 		buffer.get(magicArray);
+		protocol = buffer.get();
 		mtu = (short) ((short) packet.getLength() - 18);
 	}
 

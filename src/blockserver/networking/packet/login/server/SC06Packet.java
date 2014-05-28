@@ -20,7 +20,7 @@ public class SC06Packet implements BasePacket {
 	
 	private Utils utils;
 	private CS05Packet packet;
-	private byte[] magic = new byte[16];
+	private byte[] magic = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
 
 	private BlockServerThread server;
 
@@ -47,7 +47,6 @@ public class SC06Packet implements BasePacket {
 		buffer.put((byte) 0x00);
 		buffer.putShort(mtu);
 		
-		System.out.println(Arrays.toString(buffer.array()));
 		InetAddress address = InetAddress.getByName(ip);
 
 		response = new DatagramPacket(buffer.array(), buffer.capacity(), address, port);
