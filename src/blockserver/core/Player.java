@@ -1,4 +1,4 @@
-package blockserver;
+package blockserver.core;
 
 public class Player{
   public String ip;
