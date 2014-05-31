@@ -80,12 +80,7 @@ public class BlockServerThread implements Runnable {
 		//Display info
 		logger.info("Starting BlockServer version: "+VERSION+", implementing "+IMPLEMENT);
 		
-		//Display warning info:
-		logger.warning("THIS VERSION IS PRE-ALPHA");
-		logger.warning("That means that this server is INDEV, so some parts may");
-		logger.warning("work properly, BlockServer is not responsible for damage.");
-		logger.warning("YOU ARE RUNNING THIS AT YOUR OWN RISK...");
-		logger.warning("End WARNING info.");
+		
 		try {
 			socket = new DatagramSocket(port);
 			startTime = System.currentTimeMillis();
@@ -179,8 +174,17 @@ public class BlockServerThread implements Runnable {
 			
 			break;
 			
+			
 		default:
-			logger.warning("Recived packet: "+packetID+", and it is not implemented!");
+			DataHandler dh = new DataHandler(packet, this);
+			if(dh.handleData()){
+				//Success
+				logger.info("Success! Data packet: "+packetID+" handled!");
+			}
+			else{
+				logger.warning("Recived packet: "+packetID+", and it is not implemented!");
+			}
+			
 		}
 	}
 	
