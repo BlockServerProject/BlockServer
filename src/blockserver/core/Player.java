@@ -12,7 +12,10 @@ public class Player{
   public float yaw;
   public float pitch;
   
-  public Player(String i, int p, int e, int c){
+  public Player(String i, int p, int e, long c){
+	  /**
+	   * Needs an IP, port, entity ID, and client ID
+	   */
     ip = i;
     port = p;
     eid = e;

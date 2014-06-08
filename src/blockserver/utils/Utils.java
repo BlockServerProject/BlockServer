@@ -2,7 +2,7 @@ package blockserver.utils;
 
 public class Utils {
 	
-	public static final String MAGIC = "0x00ffff00fefefefefdfdfdfd12345678";
+	public static final String MAGIC = "000ffff00fefefefefdfdfdfd12345678";
 	
 	public static byte[] hexStringToByteArray(String s) {
         int len = s.length();

@@ -4,14 +4,21 @@ import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class DataHandler {
+import blockserver.networking.packet.base.BaseDataPacket;
+import blockserver.networking.packet.base.BasePacket;
+import blockserver.networking.packets.data.ClientConnectPacket;
+import blockserver.networking.packets.data.CustomPacket;
+
+public class DataHandler{
 	private BlockServerThread server;
 	private DatagramPacket rawPacket;
+	private Player player;
 	
 	
-	public DataHandler(DatagramPacket packet, BlockServerThread server){
+	public DataHandler(DatagramPacket packet, BlockServerThread server, Player player){
 		this.server = server;
-		rawPacket = packet;
+		this.rawPacket = packet;
+		this.player = player;
 		
 	}
 	
@@ -38,6 +45,7 @@ public class DataHandler {
 		ByteBuffer response = ByteBuffer.allocate(7);
 		response.put((byte) 0xc0); //PID for ACK
 		response.putShort((short) 1); //One packet received
+		response.put((byte) 1); 
 		response.put((byte)0x01);
 		response.put(count);
 		
@@ -56,13 +64,23 @@ public class DataHandler {
 	public boolean handleData(){
 		byte[] data = rawPacket.getData();
 		ByteBuffer bb = ByteBuffer.wrap(data);
-		int pid = bb.get();
-		splitPacket();
+		byte pid = bb.get();
+		//splitPacket();
 		
+		BaseDataPacket packet;
+		CustomPacket customPacket = new CustomPacket(rawPacket, player, server);
 		switch(pid){
-		case 0x84:
+		case (byte) 0x84:
 			//Apears to be ReadyPacket (0x84)
 			//TODO: Working on this
+			packet = new ClientConnectPacket(customPacket, player, server);
+			ByteBuffer payload = packet.getPacketData();
+			System.out.println(Arrays.toString(payload.array()));
+			break;
+			
+		default:
+			server.getLogger().warning("Unimplemented packet recived: "+pid);
+			break;
 			
 		}
 		return true; //Placeholder
