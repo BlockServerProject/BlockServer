@@ -1,4 +1,4 @@
-package blockserver.networking.packet.login.server;
+package blockserver.networking.packets.login;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import blockserver.core.BlockServerThread;
 import blockserver.networking.packet.base.BasePacket;
-import blockserver.networking.packet.login.client.CS05Packet;
 import blockserver.utils.*;
 
 public class SC06Packet implements BasePacket {

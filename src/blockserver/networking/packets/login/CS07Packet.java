@@ -1,4 +1,4 @@
-package blockserver.networking.packet.login.client;
+package blockserver.networking.packets.login;
 
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -11,7 +11,7 @@ public class CS07Packet implements BasePacket {
 	public byte packetID;
 	
 	private BlockServerThread server;
-	private static final byte[] MAGIC = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");; 
+	private static final byte[] MAGIC = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
 	private DatagramPacket clientPacket;
 	
 	//Packet data

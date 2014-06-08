@@ -1,4 +1,4 @@
-package blockserver.networking.packet.login.server;
+package blockserver.networking.packets.login;
 
 import java.nio.ByteBuffer;
 import java.net.DatagramPacket;
@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import blockserver.core.*;
 import blockserver.utils.*;
 import blockserver.networking.packet.base.BasePacket;
-import blockserver.networking.packet.login.client.CS07Packet;
 
 public class SC08Packet implements BasePacket {
 	private BlockServerThread server;

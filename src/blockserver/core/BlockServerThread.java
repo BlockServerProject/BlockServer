@@ -2,16 +2,18 @@ package blockserver.core;
 
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.*;
 
-import blockserver.networking.packet.login.client.CS05Packet;
-import blockserver.networking.packet.login.client.CS01Packet;
-import blockserver.networking.packet.login.client.CS07Packet;
-import blockserver.networking.packet.login.server.SC01cPacket;
-import blockserver.networking.packet.login.server.SC06Packet;
-import blockserver.networking.packet.login.server.SC08Packet;
+import blockserver.networking.packets.login.CS01Packet;
+import blockserver.networking.packets.login.CS05Packet;
+import blockserver.networking.packets.login.CS07Packet;
+import blockserver.networking.packets.login.IncompatibleProtocolPacket;
+import blockserver.networking.packets.login.SC01cPacket;
+import blockserver.networking.packets.login.SC06Packet;
+import blockserver.networking.packets.login.SC08Packet;
 import blockserver.utils.logging.*;
 import blockserver.utils.*;
 
@@ -19,7 +21,9 @@ public class BlockServerThread implements Runnable {
 	//Protected Variables
 	protected final static String VERSION = "v0.0.25-PreAlpha";
 	protected final static String IMPLEMENT = "MCPE v0.8.1-Alpha";
+	protected final static int RAKNETPROTOCOL = 5;
 	protected DatagramSocket socket;
+	protected HashMap<InetAddress, Player> players;
 	protected final static Logger logger = Logger.getLogger(BlockServerThread.class.getName());
 	
 	//Private variables
@@ -35,6 +39,7 @@ public class BlockServerThread implements Runnable {
 	public BlockServerThread(int port) throws SocketException{
 		this.port = port;
 		utils = new Utils();
+		players = new HashMap<InetAddress, Player>();
 		generateServerID();
 		
 		Logger rootLogger = Logger.getLogger("");
@@ -45,9 +50,12 @@ public class BlockServerThread implements Runnable {
 		ConsoleHandler handler = new ConsoleHandler();
 		handler.setFormatter(new BlockLogger());
 		logger.addHandler(handler);
+		startTime = System.currentTimeMillis();
+		logger.info("Starting BlockServer version: "+VERSION+", implementing "+IMPLEMENT);
 		ch = new ConsoleHelper(this);
 		consoleThread = new Thread(ch, "ConsoleHelper");
 		consoleThread.start();
+		logger.info("Started console handler...");
 		
 	}
 	
@@ -78,12 +86,9 @@ public class BlockServerThread implements Runnable {
 	
 	public void run(){
 		//Display info
-		logger.info("Starting BlockServer version: "+VERSION+", implementing "+IMPLEMENT);
-		
 		
 		try {
 			socket = new DatagramSocket(port);
-			startTime = System.currentTimeMillis();
 		} catch (SocketException e) {
 			logger.severe("FAILED TO BIND TO PORT!");
 			logger.severe("A detailed message of the error is displayed below: ");
@@ -129,6 +134,9 @@ public class BlockServerThread implements Runnable {
 		String id = packetID.toString();
 		byte[] data = packet.getData();
 		CS01Packet pk = null;
+		CS07Packet pkt = null;
+		long CID = 0;
+		
 		switch(packetID){
 		case 0x01:
 			logger.fine("Recived ID_CONNECTED_PING_OPEN_CONNECTIONS, ID: "+packetID);
@@ -143,7 +151,19 @@ public class BlockServerThread implements Runnable {
 		case 0x05:
 			CS05Packet ocr = new CS05Packet(packet);
 			logger.info("Recived packet 0x05, protocol is: "+ocr.getProtocolID());
-			//TODO: Figure out the protocol number, and test it
+			if(ocr.getProtocolID() != RAKNETPROTOCOL){
+				//TODO: Send a 0x1A packet
+				IncompatibleProtocolPacket ipp = new IncompatibleProtocolPacket(ocr, RAKNETPROTOCOL, serverID);
+				try {
+					socket.send(ipp.getPacket());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					logger.severe("FAILED TO SEND A PACKET");
+					logger.severe("A detailed message is displayed below:");
+					logger.severe(e.getMessage());
+				}
+				break;
+			}
 			SC06Packet ocp = new SC06Packet(ocr, this);
 			DatagramPacket reply = ocp.getPacket();
 			try {
@@ -158,8 +178,8 @@ public class BlockServerThread implements Runnable {
 				break;
 			}
 		case 0x07:
-			//TODO: Implement packet 0x07
-			CS07Packet pkt = new CS07Packet(packet, this);
+			pkt = new CS07Packet(packet, this);
+			CID = pkt.getClientID();
 			logger.info("Recived packet 0x07, sending 0x08...");
 			SC08Packet pkt8 = new SC08Packet(pkt, this);
 			DatagramPacket response = pkt8.getPacket();
@@ -174,15 +194,27 @@ public class BlockServerThread implements Runnable {
 			
 			break;
 			
+		case (byte) 0x84:
+			//DATA 0x09
+			if(! players.containsKey(packet.getAddress())){
+				Player thePlayer = new Player(packet.getAddress().getHostAddress(), packet.getPort(), 3, CID);
+				players.put(packet.getAddress(), thePlayer);
+				logger.info("New player connected from: "+packet.getAddress().getHostAddress()+":"+packet.getPort());
+			}
 			
 		default:
-			DataHandler dh = new DataHandler(packet, this);
-			if(dh.handleData()){
-				//Success
-				logger.info("Success! Data packet: "+packetID+" handled!");
-			}
-			else{
-				logger.warning("Recived packet: "+packetID+", and it is not implemented!");
+			Player player = null;
+			
+			if(players.containsKey(packet.getAddress())){
+				player = players.get(packet.getAddress());
+				DataHandler dh = new DataHandler(packet, this, player);
+				if(dh.handleData()){
+					//Success
+					logger.info("Success! Data packet: "+packetID+" handled!");
+				}
+				else{
+					logger.warning("Recived packet: "+packetID+", and it is not implemented!");
+				}
 			}
 			
 		}

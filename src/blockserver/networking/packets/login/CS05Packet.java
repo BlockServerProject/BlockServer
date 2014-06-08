@@ -1,4 +1,4 @@
-package blockserver.networking.packet.login.client;
+package blockserver.networking.packets.login;
 
 import java.net.*;
 import java.nio.ByteBuffer;
@@ -22,12 +22,10 @@ public class CS05Packet implements BasePacket{
 		ip = packet.getAddress().getHostAddress();
 		port = packet.getPort();
 		this.packet = packet;
-		magic = Utils.MAGIC;
-		byte[] magicArray = Utils.hexStringToByteArray(magic);
 		
 		buffer = ByteBuffer.wrap(packet.getData());
 		packetID = buffer.get();
-		buffer.get(magicArray);
+		buffer.get(new byte[16]);
 		protocol = buffer.get();
 		mtu = (short) ((short) packet.getLength() - 18);
 	}

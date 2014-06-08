@@ -1,4 +1,4 @@
-package blockserver.networking.packet.login.server;
+package blockserver.networking.packets.login;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
@@ -7,7 +7,6 @@ import java.util.Random;
 
 import blockserver.core.BlockServerThread;
 import blockserver.networking.packet.base.BasePacket;
-import blockserver.networking.packet.login.client.CS01Packet;
 import blockserver.utils.Utils;
 
 public class SC01cPacket implements BasePacket {

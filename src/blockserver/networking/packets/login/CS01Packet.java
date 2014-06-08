@@ -1,4 +1,4 @@
-package blockserver.networking.packet.login.client;
+package blockserver.networking.packets.login;
 
 import java.net.*;
 import java.nio.ByteBuffer;
