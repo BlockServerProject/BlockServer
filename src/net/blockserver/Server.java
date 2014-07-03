@@ -1,4 +1,9 @@
-package blockserver;
+package net.blockserver;
+
+import net.blockserver.network.BasePacketHandler;
+import net.blockserver.network.PacketHandler081;
+import net.blockserver.utility.LoggerFormatter;
+import net.blockserver.utility.MinecraftVersion;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -9,11 +14,8 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.Handler;
 import java.util.logging.Logger;
 
-import blockserver.net.BasePacketHandler;
-import blockserver.net.v081.PacketHandler081;
-
-public class MinecraftPEServer extends Thread {
-	public Logger serverLog = Logger.getLogger(MinecraftPEServer.class.getName());
+public class Server extends Thread {
+	public Logger serverLog = Logger.getLogger(Server.class.getName());
 	public MinecraftVersion MCVERSION;
 	public boolean serverRunning;
 	public long startTime;
@@ -26,7 +28,7 @@ public class MinecraftPEServer extends Thread {
 	
 	private DatagramSocket networkSocket;
 	
-	public MinecraftPEServer(int port, MinecraftVersion version, String name, int players){
+	public Server(int port, MinecraftVersion version, String name, int players){
 		//Set up server data
 		startTime = System.currentTimeMillis();
 		serverPort = port;

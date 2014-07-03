@@ -1,4 +1,4 @@
-package blockserver;
+package net.blockserver.utility;
 
 public class Utils {
 	

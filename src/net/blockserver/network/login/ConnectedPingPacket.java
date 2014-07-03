@@ -1,25 +1,24 @@
-package blockserver.net.v081.login;
+package net.blockserver.network.login;
+
+import net.blockserver.Server;
+import net.blockserver.network.BaseLoginPacket;
+import net.blockserver.utility.Utils;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-import blockserver.MinecraftPEServer;
-import blockserver.MinecraftVersion;
-import blockserver.net.v081.BaseLoginPacket;
-import blockserver.Utils;
-
 public class ConnectedPingPacket extends BaseLoginPacket {
 	private DatagramPacket packet;
 	private ByteBuffer buffer;
-	private MinecraftPEServer server;
+	private Server server;
 	//Fields:
 	protected byte PID;
 	protected long pingID;
 	protected byte[] MAGIC;
 	
 	
-	public ConnectedPingPacket(DatagramPacket packet, MinecraftPEServer server){
+	public ConnectedPingPacket(DatagramPacket packet, Server server){
 		this.packet = packet;
 		this.server = server;
 		buffer = ByteBuffer.wrap(packet.getData());

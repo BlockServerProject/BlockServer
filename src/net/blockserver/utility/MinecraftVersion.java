@@ -1,4 +1,4 @@
-package blockserver;
+package net.blockserver.utility;
 
 public enum MinecraftVersion {
 	V081, V090;

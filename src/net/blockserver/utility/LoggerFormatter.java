@@ -1,4 +1,4 @@
-package blockserver;
+package net.blockserver.utility;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,19 +1,18 @@
-package blockserver.net.v081;
+package net.blockserver.network;
+
+import net.blockserver.Server;
+import net.blockserver.network.login.ConnectedPingPacket;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
 
-import blockserver.MinecraftPEServer;
-import blockserver.net.BasePacketHandler;
-import blockserver.net.v081.login.ConnectedPingPacket;
-
 public class PacketHandler081 extends BasePacketHandler{
 	private DatagramSocket socket;
-	private MinecraftPEServer server;
+	private Server server;
 	
-	public PacketHandler081(DatagramSocket socket, MinecraftPEServer server){
+	public PacketHandler081(DatagramSocket socket, Server server){
 		this.socket = socket;
 		this.server = server;
 	}

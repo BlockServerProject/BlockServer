@@ -1,4 +1,4 @@
-package blockserver.net.v081;
+package net.blockserver.network;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;

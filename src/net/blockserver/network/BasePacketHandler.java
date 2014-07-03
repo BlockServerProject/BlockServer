@@ -1,4 +1,4 @@
-package blockserver.net;
+package net.blockserver.network;
 
 import java.net.DatagramPacket;
 

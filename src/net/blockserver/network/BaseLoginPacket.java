@@ -1,8 +1,8 @@
-package blockserver.net.v081;
+package net.blockserver.network;
+
+import net.blockserver.utility.Utils;
 
 import java.nio.ByteBuffer;
-
-import blockserver.Utils;
 
 public abstract class BaseLoginPacket extends BasePacket {
 	
