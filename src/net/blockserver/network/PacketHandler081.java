@@ -39,12 +39,19 @@ public class PacketHandler081 extends BasePacketHandler{
 			sendResponse(rspPacket);
 			
 			
+			
+		/*
 		case 0x05:
 			//ID_OPEN_CONNECTION_REQUEST_1 (0x05)
 			//Client to Server
+			break;
 		case 0x07:
 			//ID_OPEN_CONNECTION_REQUEST_2 (0x07)
 			//Client to Server
+			break;
+		*/
+		default:
+			server.serverLog.warning("RECIVED UNSUPPORTED PACKET: "+PID);
 		}
 	}
 
