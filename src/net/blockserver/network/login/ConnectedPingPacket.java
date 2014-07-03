@@ -39,18 +39,18 @@ public class ConnectedPingPacket extends BaseLoginPacket {
 		return packet;
 	}
 	
-	public ByteBuffer getResponse(String serverName){
-		   byte[] magic = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
-		   ByteBuffer bb = ByteBuffer.allocate(35 + serverName.length());
-		   Random r = new Random();
-		   
-		   long pingID = System.currentTimeMillis() - server.startTime;
-		   long serverID = r.nextLong();
-		   short nameData = (short) serverName.length();
-		   byte[] serverType = serverName.getBytes();
-		   
-		   bb.put((byte)0x1c).putLong(pingID).putLong(serverID).put(magic).putShort(nameData).put(serverType);
-		   
-		   return bb;
-		  }
+	public ByteBuffer getResponse(){
+	   String serverName = server.getServerName();
+	   byte[] magic = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
+	   ByteBuffer bb = ByteBuffer.allocate(35 + serverName.length());
+	   
+	   long pingID = System.currentTimeMillis() - server.startTime;
+	   long serverID = server.serverID;
+	   short nameData = (short) serverName.length();
+	   byte[] serverType = serverName.getBytes();
+	   
+	   bb.put((byte)0x1c).putLong(pingID).putLong(serverID).put(magic).putShort(nameData).put(serverType);
+	   
+	   return bb;
+	}
 }

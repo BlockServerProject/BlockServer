@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 public class Server extends Thread {
 	public Logger serverLog = Logger.getLogger(Server.class.getName());
 	public MinecraftVersion MCVERSION;
+	public static String VERSION = "0.05";
 	public boolean serverRunning;
 	public long startTime;
 	public long serverID;
@@ -29,10 +30,11 @@ public class Server extends Thread {
 	private DatagramSocket networkSocket;
 	
 	public Server(int port, MinecraftVersion version, String name, int players){
+		this.setName("ServerThread");
 		//Set up server data
 		startTime = System.currentTimeMillis();
 		serverPort = port;
-		serverName = name;
+		serverName = "MCCPP;MINECON;"+name;
 		maxPlayers= players;
 		MCVERSION = version;
 		Random r = new Random();
@@ -49,9 +51,18 @@ public class Server extends Thread {
 		serverLog.addHandler(handler);
 	}
 	
+	public String getServerName(){
+		return serverName;
+	}
+	
+	public void updateMTU(int mtu){
+		this.mtu = mtu;
+	}
+	
 	public void run(){
 		try {
 			serverLog.info("Starting server on: *:"+serverPort+", implementing "+MinecraftVersion.versionToString(MCVERSION));
+			serverLog.info("This is version "+VERSION);
 			networkSocket = new DatagramSocket(serverPort);
 			serverRunning = true;
 			handlePackets();

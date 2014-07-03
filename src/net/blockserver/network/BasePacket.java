@@ -8,6 +8,6 @@ public abstract class BasePacket {
 	public abstract ByteBuffer getBuffer();
 	public abstract byte getPID();
 	public abstract DatagramPacket getPacket();
-	public abstract ByteBuffer getResponse(String serverName);
+	public abstract ByteBuffer getResponse();
 
 }

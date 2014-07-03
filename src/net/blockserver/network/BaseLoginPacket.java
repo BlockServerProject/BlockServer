@@ -10,6 +10,6 @@ public abstract class BaseLoginPacket extends BasePacket {
 		return Utils.hexStringToByteArray("0x00ffff00fefefefefdfdfdfd12345678");
 	}
 	
-	public abstract ByteBuffer getResponse(String serverName);
+	public abstract ByteBuffer getResponse();
 
 }
