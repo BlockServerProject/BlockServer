@@ -35,7 +35,7 @@ public class Scheduler extends Thread
         {
             t.setID(this.ids++);
             t.setDelay((t.getDelay() + this.currentTick));
-            this.tasks.add(t.getID(), t);
+            this.tasks.add(t);
             return  t.getID();
         }
         return -1;
@@ -43,7 +43,13 @@ public class Scheduler extends Thread
 
     public void removeTask(int id)
     {
-        this.tasks.remove(id);
+        for (int i = 0; i < this.tasks.size(); i++)
+        {
+            if(this.tasks.get(i).getID() == id)
+            {
+                this.tasks.remove(i);
+            }
+        }
     }
 
     public void removeAllTask()
@@ -51,9 +57,17 @@ public class Scheduler extends Thread
         this.tasks.clear();
     }
 
+    public void Start() throws Exception
+    {
+        if(this.isRunning)
+            throw  new Exception("There is another scheduler class running!");
+
+        this.isRunning = true;
+        this.start();
+    }
+
     public void run()
     {
-        this.isRunning = true;
         while (this.isRunning) {
             this.currentTick++;
             if (!this.tasks.isEmpty()) {
@@ -95,6 +109,16 @@ public class Scheduler extends Thread
             }
         }
 
+    }
+
+    public void Stop() throws Exception
+    {
+        if(!this.isRunning)
+            throw new Exception("This scheduler is not running!");
+
+        this.isRunning = false;
+        this.join();
+        this.tasks.clear();
     }
 }
 
