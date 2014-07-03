@@ -51,8 +51,6 @@ public class Scheduler extends Thread
         this.tasks.clear();
     }
 
-
-    //TODO: Repair the tick duplication bug
     public void run()
     {
         this.isRunning = true;
@@ -76,8 +74,9 @@ public class Scheduler extends Thread
                                 this.tasks.remove(i);
                                 continue;
                             }
+
                             t.setRepeatTimes(times);
-                            t.setDelay(t.getDelay() + this.currentTick);
+                            t.setDelay(this.currentTick + t.getDeafultDelay());
                         }
                         else
                         {
@@ -98,3 +97,5 @@ public class Scheduler extends Thread
 
     }
 }
+
+

@@ -33,9 +33,6 @@ public abstract class Task
 
     public void setDelay(int delay)
     {
-        if(this.repeat)
-            this.deafultDelay = delay;
-
         this.delay = delay;
     }
 
@@ -65,6 +62,8 @@ public abstract class Task
     {
         return this.delay;
     }
+
+    public int getDeafultDelay() { return this.deafultDelay; }
 
     public int getID()
     {

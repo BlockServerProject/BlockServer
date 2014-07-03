@@ -35,8 +35,5 @@ public class CallBackTask extends Task
     }
 
     @Override
-    public void onFinish(int ticks)
-    {
-        //Not used in callback task
-    }
+    public void onFinish(int ticks){} // Not used in Callback Task
 }
