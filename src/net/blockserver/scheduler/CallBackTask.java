@@ -22,6 +22,13 @@ public class CallBackTask extends Task
         this.callback = c.getClass().getMethod(callback, int.class);
     }
 
+    public CallBackTask(Object c, String callback, int delay, boolean repeatForever) throws NoSuchMethodException
+    {
+        super(delay, repeatForever);
+        this.clazz = c;
+        this.callback = c.getClass().getMethod(callback, int.class);
+    }
+
     @Override
     public void onRun(int ticks)
     {
