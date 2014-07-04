@@ -23,6 +23,15 @@ public abstract class Task
         this.isSetup = true;
     }
 
+    public Task(int delay, boolean repeatForever)
+    {
+        this.delay = delay;
+        this.deafultDelay = delay;
+        this.repeat = repeatForever;
+        this.repeatTimes = (repeatForever ? -1 : 0);
+        this.isSetup = true;
+    }
+
     public abstract void onRun(int ticks);
     public abstract void onFinish(int ticks);
 

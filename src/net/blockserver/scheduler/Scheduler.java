@@ -92,6 +92,10 @@ public class Scheduler extends Thread
                             t.setRepeatTimes(times);
                             t.setDelay(this.currentTick + t.getDeafultDelay());
                         }
+                        else if (times == -1) // -1 Reapeat forever
+                        {
+                            t.setDelay(this.currentTick + t.getDeafultDelay());
+                        }
                         else
                         {
                             t.onFinish(currentTick);
