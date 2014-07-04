@@ -2,7 +2,6 @@ package net.blockserver;
 
 import net.blockserver.network.BasePacketHandler;
 import net.blockserver.network.PacketHandler081;
-import net.blockserver.scheduler.Scheduler;
 import net.blockserver.utility.LoggerFormatter;
 import net.blockserver.utility.MinecraftVersion;
 
@@ -18,7 +17,6 @@ import java.util.logging.Logger;
 public class Server extends Thread {
 	public Logger serverLog = Logger.getLogger(Server.class.getName());
 	public MinecraftVersion MCVERSION;
-    public Scheduler scheduler;
 	public static String VERSION = "0.05";
 	public boolean serverRunning;
 	public long startTime;
@@ -41,7 +39,6 @@ public class Server extends Thread {
 		MCVERSION = version;
 		Random r = new Random();
 		serverID = r.nextLong();
-        scheduler = new Scheduler(20);// Minecraft Deafult Ticks Per Seconds(20)
 		
 		//Set up our logger
 		Logger rootLogger = Logger.getLogger("");
@@ -68,8 +65,6 @@ public class Server extends Thread {
 			serverLog.info("This is version "+VERSION);
 			networkSocket = new DatagramSocket(serverPort);
 			serverRunning = true;
-            scheduler.Start();
-            serverLog.info("Server Scheduler Started...");
 			handlePackets();
 		} catch (SocketException e) {
 			serverLog.severe("COULD NOT BIND TO PORT - Maybe another server is running on "+serverPort+"?");
@@ -79,10 +74,6 @@ public class Server extends Thread {
 			int time = (int) (System.currentTimeMillis() - startTime);
 			serverLog.warning("IOException at: " + time + " ms");
 		}
-        catch (Exception e)
-        {
-            serverLog.warning(e.getMessage());
-        }
 		
 	}
 	
@@ -105,11 +96,5 @@ public class Server extends Thread {
 			
 		}
 	}
-
-    public void Stop() throws Exception
-    {
-        this.serverRunning = false;
-        this.scheduler.Stop();
-    }
 
 }

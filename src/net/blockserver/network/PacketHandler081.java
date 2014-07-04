@@ -3,6 +3,8 @@ package net.blockserver.network;
 import net.blockserver.Server;
 import net.blockserver.network.login.ConnectedPingPacket;
 import net.blockserver.network.login.ConnectionRequest1Packet;
+import net.blockserver.network.login.ConnectionRequest2;
+import net.blockserver.network.login.IncompatibleProtocolPacket;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -47,19 +49,35 @@ public class PacketHandler081 extends BasePacketHandler{
 			packet = new ConnectionRequest1Packet(udpPacket, server);
 			
 			ByteBuffer response6 = packet.getResponse();
+			byte protocol = ((ConnectionRequest1Packet) packet).getProtocol();
+			if(protocol != 5){
+				//Wrong protocol
+				server.serverLog.warning("Client "+udpPacket.getAddress().getHostName()+":"+udpPacket.getPort()+" is outdated, current protocol is 5");
+				IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(udpPacket.getAddress(), udpPacket.getPort(), (byte) 5, server);
+				sendResponse(pk.getPacket());
+				
+			}
+			else{
 			
-			DatagramPacket packet06 = new DatagramPacket(response6.array(), response6.capacity(), udpPacket.getAddress(), udpPacket.getPort());
-			sendResponse(packet06);
-			
-			server.serverLog.info("Recived packet 0x05, sent 0x06");
+				DatagramPacket packet06 = new DatagramPacket(response6.array(), response6.capacity(), udpPacket.getAddress(), udpPacket.getPort());
+				sendResponse(packet06);
+				
+				server.serverLog.info("Recived packet 0x05, sent 0x06");
+			}
 			
 			break;
-		/*
+		
 		case 0x07:
 			//ID_OPEN_CONNECTION_REQUEST_2 (0x07)
 			//Client to Server
+			packet = new ConnectionRequest2(udpPacket, server);
+			
+			ByteBuffer response8 = packet.getResponse();
+			
+			DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), udpPacket.getAddress(), udpPacket.getPort());
+			sendResponse(packet08);
 			break;
-		*/
+		
 		default:
 			server.serverLog.warning("RECIVED UNSUPPORTED PACKET: "+PID);
 		}
