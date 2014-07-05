@@ -1,6 +1,7 @@
 package net.blockserver.network;
 
 import net.blockserver.Server;
+import net.blockserver.network.data.CustomPacket;
 import net.blockserver.network.login.ConnectedPingPacket;
 import net.blockserver.network.login.ConnectionRequest1Packet;
 import net.blockserver.network.login.ConnectionRequest2;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class PacketHandler081 extends BasePacketHandler{
 	private DatagramSocket socket;
@@ -27,10 +29,9 @@ public class PacketHandler081 extends BasePacketHandler{
 			server.getLogger().warning("Failed to send packet - PacketHandler");
 		}
 	}
-	
-	public void handlePacket(DatagramPacket udpPacket){
+	public void loginHandle(DatagramPacket udpPacket){
 		byte PID = udpPacket.getData()[0];
-		BasePacket packet;
+		BaseLoginPacket packet;
 		switch(PID){
 		case 0x01:
 			//ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
@@ -40,6 +41,7 @@ public class PacketHandler081 extends BasePacketHandler{
 			
 			DatagramPacket packet1c = new DatagramPacket(response.array(), response.capacity(), udpPacket.getAddress(), udpPacket.getPort());
 			sendResponse(packet1c);
+			server.getLogger().info("Sent 0x1c");
 			break;
 			
 		
@@ -62,7 +64,7 @@ public class PacketHandler081 extends BasePacketHandler{
 				DatagramPacket packet06 = new DatagramPacket(response6.array(), response6.capacity(), udpPacket.getAddress(), udpPacket.getPort());
 				sendResponse(packet06);
 
-                server.getLogger().info("Recived packet 0x05, sent 0x06");
+                //server.getLogger().info("Recived packet 0x05, sent 0x06");
 			}
 			
 			break;
@@ -77,7 +79,40 @@ public class PacketHandler081 extends BasePacketHandler{
 			DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), udpPacket.getAddress(), udpPacket.getPort());
 			sendResponse(packet08);
 			break;
+			
+		default:
+			server.getLogger().warning("Recived unsupported login packet! PID: "+PID);
+		}
+	}
+	
+	public void dataHandle(DatagramPacket udpPacket){
+		byte PID = udpPacket.getData()[0];
+		BaseDataPacket packet;
 		
+		switch(PID){
+		case (byte) 0x84:
+			packet = new CustomPacket(udpPacket, server);
+			byte[] payload = udpPacket.getData();
+			server.getLogger().info("Recived custom packet: "+Arrays.toString(payload));
+		}
+	}
+	
+	
+	public void handlePacket(DatagramPacket udpPacket){
+		byte PID = udpPacket.getData()[0];
+		BasePacket packet;
+		switch(PID){
+		case 0x01:
+		case 0x05:
+		case 0x07:
+			server.getLogger().info("Recived Login packet");
+			loginHandle(udpPacket);
+			break;
+		
+		case (byte) 0x84:
+			dataHandle(udpPacket);
+		break;
+			
 		default:
             server.getLogger().warning("RECIVED UNSUPPORTED PACKET: "+PID);
 		}
