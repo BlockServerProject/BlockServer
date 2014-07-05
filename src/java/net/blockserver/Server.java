@@ -15,7 +15,7 @@ import java.net.SocketException;
 import java.util.Random;
 
 public class Server {
-	private ServerLogger serverLog = ServerLogger.getInstance();
+	private ServerLogger serverLog = new ServerLogger();
 	private MinecraftVersion MCVERSION;
 	private Scheduler scheduler;
 	private String VERSION = "0.05";
@@ -37,6 +37,8 @@ public class Server {
     public Scheduler getScheduler() {
         return this.scheduler;
     }
+
+    public ServerLogger getLogger() { return this.serverLog; }
 
     public String getServerName() {
         return this.serverName;

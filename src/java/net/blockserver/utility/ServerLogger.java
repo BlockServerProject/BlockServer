@@ -7,29 +7,11 @@ import org.apache.logging.log4j.Level;
 public class ServerLogger
 {
     private Logger logger;
-    public static ServerLogger instance = null;
-    public final static Object lock = new Object();
-
-    public static ServerLogger getInstance()
-    {
-        if(instance == null)
-        {
-            synchronized (lock)
-            {
-                if(instance == null)
-                {
-                    instance = new ServerLogger();
-                }
-            }
-        }
-        return instance;
-    }
 
     public ServerLogger()
     {
         this.logger = LogManager.getLogger("Server");
     }
-
 
     public void log(Level lvl, String format, Object... message){
         this.logger.log(lvl, String.format(format, message));
