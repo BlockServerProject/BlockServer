@@ -5,7 +5,6 @@ import net.blockserver.network.login.ConnectedPingPacket;
 import net.blockserver.network.login.ConnectionRequest1Packet;
 import net.blockserver.network.login.ConnectionRequest2;
 import net.blockserver.network.login.IncompatibleProtocolPacket;
-import net.blockserver.utility.ServerLogger;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -25,7 +24,7 @@ public class PacketHandler081 extends BasePacketHandler{
 		try {
 			socket.send(response);
 		} catch (IOException e) {
-			ServerLogger.getInstance().warning("Failed to send packet - PacketHandler");
+			server.getLogger().warning("Failed to send packet - PacketHandler");
 		}
 	}
 	
@@ -53,7 +52,7 @@ public class PacketHandler081 extends BasePacketHandler{
 			byte protocol = ((ConnectionRequest1Packet) packet).getProtocol();
 			if(protocol != 5){
 				//Wrong protocol
-                ServerLogger.getInstance().warning("Client "+udpPacket.getAddress().getHostName()+":"+udpPacket.getPort()+" is outdated, current protocol is 5");
+                server.getLogger().warning("Client "+udpPacket.getAddress().getHostName()+":"+udpPacket.getPort()+" is outdated, current protocol is 5");
 				IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(udpPacket.getAddress(), udpPacket.getPort(), (byte) 5, server);
 				sendResponse(pk.getPacket());
 				
@@ -63,7 +62,7 @@ public class PacketHandler081 extends BasePacketHandler{
 				DatagramPacket packet06 = new DatagramPacket(response6.array(), response6.capacity(), udpPacket.getAddress(), udpPacket.getPort());
 				sendResponse(packet06);
 
-                ServerLogger.getInstance().info("Recived packet 0x05, sent 0x06");
+                server.getLogger().info("Recived packet 0x05, sent 0x06");
 			}
 			
 			break;
@@ -80,7 +79,7 @@ public class PacketHandler081 extends BasePacketHandler{
 			break;
 		
 		default:
-            ServerLogger.getInstance().warning("RECIVED UNSUPPORTED PACKET: "+PID);
+            server.getLogger().warning("RECIVED UNSUPPORTED PACKET: "+PID);
 		}
 	}
 
