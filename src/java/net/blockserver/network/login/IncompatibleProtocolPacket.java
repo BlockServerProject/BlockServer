@@ -1,14 +1,13 @@
 package net.blockserver.network.login;
 
+import net.blockserver.Server;
+import net.blockserver.network.BaseLoginPacket;
+
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 
-import net.blockserver.Server;
-import net.blockserver.network.BaseLoginPacket;
-import net.blockserver.utility.Utils;
-
-public class IncompatibleProtocolPacket{
+public class IncompatibleProtocolPacket extends BaseLoginPacket{
 	private InetAddress address;
 	private int port;
 	private byte correctProtocol;
@@ -20,13 +19,23 @@ public class IncompatibleProtocolPacket{
 		this.correctProtocol = correctProtocol;
 		this.server = server;
 	}
-	
-	public DatagramPacket getPacket(){
+
+    @Override
+    public ByteBuffer getBuffer() {
+        return null;
+    }
+
+    @Override
+    public byte getPID() {
+        return (byte) 0x1A;
+    }
+
+    public DatagramPacket getPacket(){
 		DatagramPacket response = null;
 		ByteBuffer bb = ByteBuffer.allocate(26);
 		bb.put((byte) 0x1A); //PacketID
 		bb.put(correctProtocol);
-		bb.put(Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678"));
+		bb.put(this.getMAGIC());
 		bb.putLong(server.getServerID());
 		
 		response = new DatagramPacket(bb.array(), bb.capacity(), address, port);
@@ -34,4 +43,8 @@ public class IncompatibleProtocolPacket{
 		return response;
 	}
 
+    @Override
+    public ByteBuffer getResponse() {
+        return null;
+    }
 }

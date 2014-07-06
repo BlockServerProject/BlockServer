@@ -4,8 +4,13 @@ import net.blockserver.utility.MinecraftVersion;
 
 public class BlockServer {
 	public static void main(String[] args) {
-		Server server = new Server(19132, MinecraftVersion.V081, "BlockServer - 0.05 Dev version, this is a TEST!", 5);
-		server.run();
+        try {
+            Server server = new Server("BlockServer - 0.05 Dev version, this is a TEST!", "0.0.0.0", 19132, 5, MinecraftVersion.V081);
+            server.run();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
 	}
 

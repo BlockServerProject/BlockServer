@@ -2,11 +2,9 @@ package net.blockserver.network.login;
 
 import net.blockserver.Server;
 import net.blockserver.network.BaseLoginPacket;
-import net.blockserver.utility.Utils;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
-import java.util.Random;
 
 public class ConnectedPingPacket extends BaseLoginPacket {
 	private DatagramPacket packet;
@@ -41,7 +39,7 @@ public class ConnectedPingPacket extends BaseLoginPacket {
 	
 	public ByteBuffer getResponse(){
 	   String serverName = server.getServerName();
-	   byte[] magic = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
+	   byte[] magic = this.getMAGIC();
 	   ByteBuffer bb = ByteBuffer.allocate(35 + serverName.length());
 	   
 	   long pingID = System.currentTimeMillis() - server.getStartTime();

@@ -1,44 +1,56 @@
 package net.blockserver;
 
-import net.blockserver.network.BasePacketHandler;
-import net.blockserver.network.PacketHandler081;
+import net.blockserver.network.PacketHandler;
 import net.blockserver.scheduler.Scheduler;
 import net.blockserver.utility.MinecraftVersion;
 import net.blockserver.utility.ServerLogger;
 
-import org.apache.logging.log4j.Level;
-
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.Random;
 
 public class Server {
-	private ServerLogger serverLog = new ServerLogger();
-	private MinecraftVersion MCVERSION;
-	private Scheduler scheduler;
-	private String VERSION = "0.05";
-	private boolean serverRunning;
-	private long startTime;
-	private long serverID;
-	
-	protected int serverPort;
-	protected String serverName;
-	protected int maxPlayers;
-	protected int mtu = 512;
-	
-	private DatagramSocket networkSocket;
+    private static Server instance = null;
 
-    public MinecraftVersion getMinecraftVersion() {
-        return this.MCVERSION;
+    private ServerLogger logger = new ServerLogger();
+    private Scheduler scheduler;
+    private PacketHandler packetHandler;
+
+    private MinecraftVersion MCVERSION;
+    private String VERSION = "0.05";
+    private String serverName;
+    private String serverip;
+
+    private boolean serverRunning;
+
+    private long startTime;
+    private long serverID;
+
+    private int serverPort;
+    private int maxPlayers;
+
+    private DatagramSocket networkSocket;
+
+    public synchronized Server getInstance(){
+        return instance;
     }
 
     public Scheduler getScheduler() {
         return this.scheduler;
     }
 
-    public ServerLogger getLogger() { return this.serverLog; }
+    public ServerLogger getLogger() {
+        return this.logger;
+    }
+
+    public MinecraftVersion getMinecraftVersion() {
+        return this.MCVERSION;
+    }
+
+    public String getServerIP(){
+        return this.serverip;
+    }
 
     public String getServerName() {
         return this.serverName;
@@ -52,7 +64,9 @@ public class Server {
         return this.serverPort;
     }
 
-    public int getMaxPlayers() { return this.maxPlayers; }
+    public int getMaxPlayers() {
+        return this.maxPlayers;
+    }
 
     public long getServerID() {
         return this.serverID;
@@ -66,68 +80,48 @@ public class Server {
         return this.serverRunning;
     }
 
-	public Server(int port, MinecraftVersion version, String name, int players){
+    public Server(String name, String ip, int port, int players, MinecraftVersion version) throws  Exception{
         Thread.currentThread().setName("Server");
-		this.startTime = System.currentTimeMillis();
-		this.serverPort = port;
-		this.serverName = "MCCPP;MINECON;"+name;
-		this.maxPlayers= players;
-		this.MCVERSION = version;
-		this.serverID = new Random().nextLong();
-		this.scheduler = new Scheduler();// Minecraft Deafult Ticks Per Seconds(20)
-	}
-	
-	public void updateMTU(int mtu){
-		this.mtu = mtu;
-	}
-	
-	public void run(){
-		try {
-			serverLog.log(Level.INFO, "Starting server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
-			serverLog.info("This is version "+VERSION);
-			networkSocket = new DatagramSocket(serverPort);
-			serverRunning = true;
-			scheduler.Start();
-			serverLog.info("Server Scheduler Started...");
-			handlePackets();
-		} catch (SocketException e) {
-			serverLog.fatal("COULD NOT BIND TO PORT - Maybe another server is running on "+serverPort+"?");
-			serverLog.fatal("Shutting down server due to error.");
-			System.exit(1);
-		} catch (IOException e) {
-			int time = (int) (System.currentTimeMillis() - startTime);
-			serverLog.warning("IOException at: " + time + " ms");
-		} catch (Exception e) {
-			int time = (int) (System.currentTimeMillis() - startTime);
-			serverLog.warning("Exception at: " + time + " ms");
-			serverLog.warning(e.getMessage());
-		}
-		
-	}
-	
-	private void handlePackets() throws IOException{
-		BasePacketHandler handler = null;
-		if(MCVERSION == MinecraftVersion.V081){
-			handler = new PacketHandler081(networkSocket, this);
-		}
-		else if(MCVERSION == MinecraftVersion.V090){
-			//TODO: Implement Networking for 0.9.0
-			serverLog.warning("Networing for 0.9.0 is not implemented yet!");
-			serverLog.info("Shutting down server due to Networking Not Implemented.");
-			System.exit(1);
-		}
-		while(serverRunning){
-			byte[] byteBuf = new byte[mtu];
-			DatagramPacket packet = new DatagramPacket(byteBuf, byteBuf.length);
-			networkSocket.receive(packet);
-			handler.handlePacket(packet);
-			
-		}
-	}
+        instance = this;
 
-	public void Stop() throws Exception{
-		this.serverRunning = false;
-		this.scheduler.Stop();
-	}
+        this.startTime = System.currentTimeMillis();
+        this.serverip = ip;
+        this.serverPort = port;
+        this.serverName = "MCCPP;Demo;" + name;
+        this.maxPlayers = players;
+        this.MCVERSION = version;
+        this.serverID = new Random().nextLong();
+        this.scheduler = new Scheduler();// Minecraft Deafult Ticks Per Seconds(20)
+        this.packetHandler = new PacketHandler(this);
+}
+
+    public void run() {
+        this.serverRunning = true;
+        try {
+            this.logger.info("Starting server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
+            this.logger.info("This is version " + VERSION);
+            this.scheduler.Start();
+            this.logger.info("Server Scheduler Started...");
+            this.packetHandler.Start();
+        } catch (SocketException e) {
+            this.logger.fatal("COULD NOT BIND TO PORT - Maybe another server is running on " + serverPort + "?");
+            this.logger.fatal("Shutting down server due to error.");
+            System.exit(1);
+        } catch (IOException e) {
+            int time = (int) (System.currentTimeMillis() - this.startTime);
+            this.logger.warning("IOException at: " + time + " ms");
+        } catch (Exception e) {
+            int time = (int) (System.currentTimeMillis() - this.startTime);
+            this.logger.warning("Exception at: " + time + " ms");
+            this.logger.warning(e.getMessage());
+        }
+
+    }
+
+    public void Stop() throws Exception {
+        this.serverRunning = false;
+        this.scheduler.Stop();
+        this.packetHandler.Stop();
+    }
 
 }

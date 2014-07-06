@@ -1,11 +1,10 @@
 package net.blockserver.network.data;
 
-import java.net.DatagramPacket;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-
 import net.blockserver.Server;
 import net.blockserver.network.BaseDataPacket;
+
+import java.net.DatagramPacket;
+import java.nio.ByteBuffer;
 
 public class CustomPacket extends BaseDataPacket {
 	private DatagramPacket packet;

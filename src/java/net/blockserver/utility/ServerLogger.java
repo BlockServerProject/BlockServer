@@ -1,8 +1,8 @@
 package net.blockserver.utility;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServerLogger
 {
@@ -14,31 +14,31 @@ public class ServerLogger
     }
 
     public void log(Level lvl, String format, Object... message){
-        this.logger.log(lvl, String.format(format, message));
+        this.logger.log(lvl, format, message);
     }
 
     public void trace(String format, Object... message){
-        this.logger.log(Level.TRACE, format, message);
+        this.logger.log(Level.TRACE, String.format(format, message));
     }
 
     public void fatal(String format, Object... message){
-        this.logger.log(Level.FATAL, format, message);
+        this.logger.log(Level.FATAL, String.format(format, message));
     }
 
     public void warning(String format, Object... message){
-        this.logger.log(Level.WARN, format, message);
+        this.logger.log(Level.WARN, String.format(format, message));
     }
 
     public void error(String format, Object... message){
-        this.logger.log(Level.ERROR, format, message);
+        this.logger.log(Level.ERROR, String.format(format, message));
     }
 
     public void info(String format, Object... message){
-        this.logger.log(Level.INFO, format, message);
+        this.logger.log(Level.INFO, String.format(format, message));
     }
 
     public void debug(String format, Object... message){
-        this.logger.log(Level.DEBUG, format, message);
+        this.logger.log(Level.DEBUG, String.format(format, message));
     }
 
 }

@@ -2,11 +2,15 @@ package net.blockserver.network;
 
 import net.blockserver.Server;
 
-import java.net.*;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.SocketException;
 
 public class UDPSocket
 {
-    public boolean conected;
+    public boolean connected;
 
     private String ip;
     private int port;
@@ -14,7 +18,7 @@ public class UDPSocket
     private DatagramSocket sck;
     private Server server;
 
-    public UDPSocket(Server server)
+    public UDPSocket(Server server)  throws SocketException
     {
         this.server = server;
         this.ip = "0.0.0.0";
@@ -22,7 +26,7 @@ public class UDPSocket
         this.Connect();
     }
 
-    public UDPSocket(Server server, String ip)
+    public UDPSocket(Server server, String ip)  throws SocketException
     {
         this.server = server;
         this.ip = ip;
@@ -31,7 +35,7 @@ public class UDPSocket
         this.Connect();
     }
 
-    public UDPSocket(Server server, String ip, int port)
+    public UDPSocket(Server server, String ip, int port) throws SocketException
     {
         this.server = server;
         this.ip = ip;
@@ -40,26 +44,18 @@ public class UDPSocket
         this.Connect();
     }
 
-    public synchronized void Connect()
+    public synchronized void Connect() throws SocketException
     {
-        if (!this.conected)
+        if (!this.connected)
         {
-
-            try
-            {
                 this.sck = new DatagramSocket(null);
                 this.sck.setBroadcast(true);
                 this.sck.setSendBufferSize(65535);
                 this.sck.setReceiveBufferSize(65535);
                 this.sck.bind(new InetSocketAddress(this.ip, this.port));
-                this.conected = true;
+                this.connected = true;
                 sck.setSoTimeout(0);
-            }
-            catch (SocketException e) {
-                this.conected = false;
-                this.server.getLogger().fatal(e.getMessage());
-                this.server.getLogger().fatal("", e.getStackTrace());
-            }
+
         }
         else
         {
@@ -68,59 +64,36 @@ public class UDPSocket
 
     }
 
-    public int SendTO(byte[] buffer, String ip, int port)
+    public int SendTO(byte[] buffer, String ip, int port) throws IOException
     {
-        try
-        {
-            this.sck.send(new DatagramPacket(buffer, buffer.length, new InetSocketAddress(ip, port)));
-            return buffer.length;
-        }
-        catch (Exception e)
-        {
-            this.server.getLogger().fatal(e.getMessage());
-            this.server.getLogger().fatal("", e.getStackTrace());
-        }
-        return -1;
+        this.sck.send(new DatagramPacket(buffer, buffer.length, new InetSocketAddress(ip, port)));
+        return buffer.length;
     }
 
-    public int SendTO(byte[] buffer, InetSocketAddress address)
+    public int SendTO(byte[] buffer, InetSocketAddress address) throws  IOException
     {
-        try
-        {
             this.sck.send(new DatagramPacket(buffer, buffer.length, address));
             return buffer.length;
-        }
-        catch (Exception e)
-        {
-            this.server.getLogger().fatal(e.getMessage());
-            this.server.getLogger().fatal("", e.getStackTrace());
-        }
-        return -1;
     }
 
-    public DatagramPacket Receive()
+    public int Send(DatagramPacket pck) throws  IOException
     {
-        try
-        {
-            this.sck.setSoTimeout(1000);
-            DatagramPacket pck = new DatagramPacket(new byte[65535], 65535);
-            sck.receive(pck);
-            this.sck.setSoTimeout(0);
-            return pck;
-        }
-        catch(Exception e)
-        {
-            this.server.getLogger().fatal(e.getMessage());
-            this.server.getLogger().fatal("", e.getStackTrace());
-            return null;
-        }
+        this.sck.send(pck);
+        return pck.getData().length;
+    }
+
+    public DatagramPacket Receive() throws SocketException, IOException
+    {
+        DatagramPacket pck = new DatagramPacket(new byte[1600], 1600);
+        sck.receive(pck);
+        return pck;
     }
 
     public void Close()
     {
-        if (this.conected)
+        if (this.connected)
         {
-            this.conected = false;
+            this.connected = false;
             this.sck.close();
         }
     }

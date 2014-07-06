@@ -1,6 +1,5 @@
 package net.blockserver.scheduler;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class CallBackTask extends Task

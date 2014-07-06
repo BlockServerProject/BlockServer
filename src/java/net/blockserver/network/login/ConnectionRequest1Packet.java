@@ -1,10 +1,10 @@
 package net.blockserver.network.login;
 
+import net.blockserver.Server;
+import net.blockserver.network.BaseLoginPacket;
+
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
-import net.blockserver.Server;
-import net.blockserver.utility.Utils;
-import net.blockserver.network.BaseLoginPacket;
 
 public class ConnectionRequest1Packet extends BaseLoginPacket {
 	private DatagramPacket packet;
@@ -31,7 +31,7 @@ public class ConnectionRequest1Packet extends BaseLoginPacket {
 	public ByteBuffer getResponse(){
 		ByteBuffer response = ByteBuffer.allocate(28);
 		byte packetID = (byte) 0x06;
-		byte[] magic = Utils.hexStringToByteArray("00ffff00fefefefefdfdfdfd12345678");
+		byte[] magic = this.getMAGIC();
 		long serverID = server.getServerID();
 		byte security = 0;
 		short mtu = (short) nullPayload.length;
