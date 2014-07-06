@@ -1,8 +1,8 @@
 package net.blockserver.network;
 
-public abstract class BaseDataPacket{
+public interface BaseDataPacket {
 	
-	public abstract void decode();
-	public abstract void encode();
-	
+	void encode();
+	void decode();
+
 }
