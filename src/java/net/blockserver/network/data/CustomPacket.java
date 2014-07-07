@@ -1,12 +1,11 @@
 package net.blockserver.network.data;
 
 import net.blockserver.Server;
-import net.blockserver.network.BaseDataPacket;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 
-public class CustomPacket extends BaseDataPacket {
+public class CustomPacket implements BaseDataPacket {
 	private DatagramPacket packet;
 	private Server server;
 	

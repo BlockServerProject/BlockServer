@@ -4,9 +4,9 @@ import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 
 import net.blockserver.Server;
-import net.blockserver.network.BaseDataPacket;
 
-public class ClientConnectPacket implements BaseDataPacket{
+public class
+        ClientConnectPacket implements BaseDataPacket{
 	private Server server;
 	private DatagramPacket packet;
 	private ByteBuffer buffer;

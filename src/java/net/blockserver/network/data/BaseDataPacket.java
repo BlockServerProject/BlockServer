@@ -1,4 +1,4 @@
-package net.blockserver.network;
+package net.blockserver.network.data;
 
 public interface BaseDataPacket {
 	

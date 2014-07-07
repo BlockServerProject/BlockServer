@@ -1,4 +1,6 @@
-package net.blockserver.network;
+package net.blockserver.network.login;
+
+import net.blockserver.network.BasePacket;
 
 import java.nio.ByteBuffer;
 

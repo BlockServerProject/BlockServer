@@ -2,15 +2,11 @@ package net.blockserver.network;
 
 import net.blockserver.Server;
 import net.blockserver.network.data.ClientConnectPacket;
-import net.blockserver.network.login.ConnectedPingPacket;
-import net.blockserver.network.login.ConnectionRequest1Packet;
-import net.blockserver.network.login.ConnectionRequest2;
-import net.blockserver.network.login.IncompatibleProtocolPacket;
+import net.blockserver.network.login.*;
 
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class PacketHandler extends Thread
 {

@@ -1,7 +1,6 @@
 package net.blockserver.network.login;
 
 import net.blockserver.Server;
-import net.blockserver.network.BaseLoginPacket;
 
 import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
