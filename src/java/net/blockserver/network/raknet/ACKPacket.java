@@ -11,4 +11,9 @@ public class ACKPacket extends AcknowledgePacket {
     {
         this.sequenceNumbers = numbers;
     }
+
+    public ACKPacket(byte[] buffer)
+    {
+        this.buffer = buffer;
+    }
 }
