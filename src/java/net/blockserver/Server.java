@@ -8,6 +8,8 @@ import net.blockserver.utility.ServerLogger;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class Server {
@@ -16,6 +18,8 @@ public class Server {
     private ServerLogger logger = new ServerLogger();
     private Scheduler scheduler;
     private PacketHandler packetHandler;
+
+    private Map<String, Player> players;
 
     private MinecraftVersion MCVERSION;
     private String VERSION = "0.05";
@@ -30,7 +34,7 @@ public class Server {
     private int serverPort;
     private int maxPlayers;
 
-    public synchronized Server getInstance(){
+    public static synchronized Server getInstance(){
         return instance;
     }
 
@@ -78,6 +82,16 @@ public class Server {
         return this.serverRunning;
     }
 
+    public Player getPlayer(String ip)
+    {
+        return this.players.get(ip);
+    }
+
+    public void addPlayer(Player player)
+    {
+        this.players.put(player.getIP(), player);
+    }
+
     public Server(String name, String ip, int port, int players, MinecraftVersion version) throws  Exception{
         Thread.currentThread().setName("Server");
         instance = this;
@@ -89,6 +103,9 @@ public class Server {
         this.maxPlayers = players;
         this.MCVERSION = version;
         this.serverID = new Random().nextLong();
+
+        this.players = new HashMap<>(this.maxPlayers);
+
         this.scheduler = new Scheduler();// Minecraft Deafult Ticks Per Seconds(20)
         this.packetHandler = new PacketHandler(this);
 }

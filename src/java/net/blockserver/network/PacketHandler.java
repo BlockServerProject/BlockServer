@@ -1,10 +1,8 @@
 package net.blockserver.network;
 
 import net.blockserver.Server;
-import net.blockserver.network.data.ClientConnectPacket;
-import net.blockserver.network.data.CustomPacket;
-import net.blockserver.network.data.InternalPacket;
-import net.blockserver.network.login.*;
+import net.blockserver.network.raknet.CustomPacket;
+import net.blockserver.network.raknet.*;
 
 import java.net.DatagramPacket;
 import java.net.SocketException;
@@ -53,11 +51,12 @@ public class PacketHandler extends Thread
             try {
                 DatagramPacket pck = this.socket.Receive();
                 byte pid = pck.getData()[0];
-                if( pid >= (byte)0x01 &&  pid <= (byte)0x0d) { // Raknet Login Packets Range
+                if( pid >= RaknetsID.UNCONNECTED_PING &&  pid <= RaknetsID.ADVERTISE_SYSTEM) { // raknet Login Packets Range
 
                     BaseLoginPacket packet;
                     switch(pid){
-                        case 0x01: //ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
+                        case RaknetsID.UNCONNECTED_PING: //ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
+                        case RaknetsID.UNCONNECTED_PING_OPEN_CONNECTIONS: // (0x02)
                             packet = new ConnectedPingPacket(pck, server);
                             ByteBuffer response = packet.getResponse();
 
@@ -66,15 +65,15 @@ public class PacketHandler extends Thread
                             break;
 
 
-                        case 0x05: //ID_OPEN_CONNECTION_REQUEST_1 (0x05)
+                        case RaknetsID.OPEN_CONNECTION_REQUEST_1: //ID_OPEN_CONNECTION_REQUEST_1 (0x05)
                             packet = new ConnectionRequest1Packet(pck, server);
 
                             ByteBuffer response6 = packet.getResponse();
                             byte protocol = ((ConnectionRequest1Packet) packet).getProtocol();
-                            if(protocol != 5){
+                            if(protocol != RaknetsID.STRUCTURE){
                                 //Wrong protocol
                                 server.getLogger().warning("Client "+pck.getAddress().getHostName()+":"+pck.getPort()+" is outdated, current protocol is 5");
-                                IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(pck.getAddress(), pck.getPort(), (byte) 5, server);
+                                IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(pck.getAddress(), pck.getPort(), (byte) RaknetsID.STRUCTURE, server);
                                 sendPacket(pk.getPacket());
 
                             }
@@ -85,7 +84,7 @@ public class PacketHandler extends Thread
 
                             break;
 
-                        case 0x07: //ID_OPEN_CONNECTION_REQUEST_2 (0x07)
+                        case RaknetsID.OPEN_CONNECTION_REQUEST_2: //ID_OPEN_CONNECTION_REQUEST_2 (0x07)
                             packet = new ConnectionRequest2(pck, server);
 
                             ByteBuffer response8 = packet.getResponse();
@@ -95,22 +94,28 @@ public class PacketHandler extends Thread
                             break;
 
                         default:
-                            server.getLogger().warning("Recived unsupported login packet! PID: %02X", pid);
+                            server.getLogger().warning("Recived unsupported raknet packet! PID: %02X", pid);
                     }
                 }
-                else if( pid >= (byte)0x80 &&  pid <= (byte)0x8f) // Custom Data Packet Range
+                else if( pid >= (byte)RaknetsID.DATA_PACKET_0 &&  pid <= (byte)RaknetsID.DATA_PACKET_F) // Custom Data Packet Range
                 {
                     this.server.getLogger().info("Data packet: %02X", pid);
 
                     CustomPacket packet = new CustomPacket(pck.getData());
                     packet.decode();
                 }
+                else if(pid == RaknetsID.ACK || pid == RaknetsID.NACK)
+                {
+                    if(this.server.getPlayer(pck.getAddress().toString()) != null)
+                    {
+
+                    }
+                }
                 else // Unknown Packet Received!! New Protocol Changes?
                     this.server.getLogger().warning("Received Unknown Packet: 0x%02X",  pid);
             }
             catch(Exception e) {
                 e.printStackTrace();
-                //this.server.getLogger().fatal("", e.getStackTrace());
             }
         }
     }

@@ -1,4 +1,4 @@
-package net.blockserver.network.login;
+package net.blockserver.network.raknet;
 
 import net.blockserver.Server;
 

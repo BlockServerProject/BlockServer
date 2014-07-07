@@ -1,4 +1,4 @@
-package net.blockserver.network.data;
+package net.blockserver.network.minecraft;
 
 public interface BaseDataPacket {
 	

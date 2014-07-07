@@ -1,4 +1,4 @@
-package net.blockserver.network.data;
+package net.blockserver.network.raknet;
 
 import net.blockserver.utility.Utils;
 
@@ -28,7 +28,7 @@ public class InternalPacket
             byte flag = bb.get();
             pck.reliability = (byte) (flag >> 5);
             pck.hasSplit = (flag & 0b00010000) == 16;
-            int length = (bb.getShort() >> 3);
+            int length = ((bb.getShort() + 7) >> 3); // The Length is in bits, so Bits to Bytes conversion
 
             if (pck.reliability == 2 || pck.reliability == 3 || pck.reliability == 4 || pck.reliability == 6 || pck.reliability == 7) {
                 pck.messageIndex = Utils.getLTriad(buffer, bb.position());
