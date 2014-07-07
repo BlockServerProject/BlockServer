@@ -7,6 +7,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 
 public class UDPSocket
 {
@@ -84,8 +85,10 @@ public class UDPSocket
 
     public DatagramPacket Receive() throws SocketException, IOException
     {
-        DatagramPacket pck = new DatagramPacket(new byte[1600], 1600);
+        byte[] buffer = new byte[1536];
+        DatagramPacket pck = new DatagramPacket(buffer, 1536);
         sck.receive(pck);
+        pck.setData(Arrays.copyOf(buffer, pck.getLength()));
         return pck;
     }
 

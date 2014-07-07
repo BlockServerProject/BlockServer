@@ -2,6 +2,8 @@ package net.blockserver.network;
 
 import net.blockserver.Server;
 import net.blockserver.network.data.ClientConnectPacket;
+import net.blockserver.network.data.CustomPacket;
+import net.blockserver.network.data.InternalPacket;
 import net.blockserver.network.login.*;
 
 import java.net.DatagramPacket;
@@ -37,9 +39,12 @@ public class PacketHandler extends Thread
         this.start();
     }
 
-    public void sendResponse(DatagramPacket response) throws Exception {
-        socket.Send(response);
+    public void sendPacket(byte[] buffer, String ip, int port) throws Exception {
+        this.socket.SendTO(buffer, ip, port);
+    }
 
+    public void sendPacket(DatagramPacket pck) throws Exception {
+        this.socket.Send(pck);
     }
 
     public void run() {
@@ -47,19 +52,64 @@ public class PacketHandler extends Thread
         {
             try {
                 DatagramPacket pck = this.socket.Receive();
-                if( pck.getData()[0] >= (byte)0x01 &&  pck.getData()[0] <= (byte)0x0d) { // Raknet Login Packets Range
-                    //this.server.getLogger().info("Login Packet Length %d", pck.getLength()); //DEBUG
-                    this.loginHandle(pck);
+                byte pid = pck.getData()[0];
+                if( pid >= (byte)0x01 &&  pid <= (byte)0x0d) { // Raknet Login Packets Range
+
+                    BaseLoginPacket packet;
+                    switch(pid){
+                        case 0x01: //ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
+                            packet = new ConnectedPingPacket(pck, server);
+                            ByteBuffer response = packet.getResponse();
+
+                            DatagramPacket packet1c = new DatagramPacket(response.array(), response.capacity(), pck.getAddress(), pck.getPort());
+                            sendPacket(packet1c);
+                            break;
+
+
+                        case 0x05: //ID_OPEN_CONNECTION_REQUEST_1 (0x05)
+                            packet = new ConnectionRequest1Packet(pck, server);
+
+                            ByteBuffer response6 = packet.getResponse();
+                            byte protocol = ((ConnectionRequest1Packet) packet).getProtocol();
+                            if(protocol != 5){
+                                //Wrong protocol
+                                server.getLogger().warning("Client "+pck.getAddress().getHostName()+":"+pck.getPort()+" is outdated, current protocol is 5");
+                                IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(pck.getAddress(), pck.getPort(), (byte) 5, server);
+                                sendPacket(pk.getPacket());
+
+                            }
+                            else{
+                                DatagramPacket packet06 = new DatagramPacket(response6.array(), response6.capacity(), pck.getAddress(), pck.getPort());
+                                sendPacket(packet06);
+                            }
+
+                            break;
+
+                        case 0x07: //ID_OPEN_CONNECTION_REQUEST_2 (0x07)
+                            packet = new ConnectionRequest2(pck, server);
+
+                            ByteBuffer response8 = packet.getResponse();
+
+                            DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), pck.getAddress(), pck.getPort());
+                            sendPacket(packet08);
+                            break;
+
+                        default:
+                            server.getLogger().warning("Recived unsupported login packet! PID: %02X", pid);
+                    }
                 }
-                else if( pck.getData()[0] >= (byte)0x80 &&  pck.getData()[0] <= (byte)0x8f) // Custom Data Packet Range
+                else if( pid >= (byte)0x80 &&  pid <= (byte)0x8f) // Custom Data Packet Range
                 {
-                    this.dataHandle(pck);
+                    this.server.getLogger().info("Data packet: %02X", pid);
+
+                    CustomPacket packet = new CustomPacket(pck.getData());
+                    packet.decode();
                 }
                 else // Unknown Packet Received!! New Protocol Changes?
-                    this.server.getLogger().warning("Received Unknown Packet: 0x%02X",  pck.getData()[0]);
+                    this.server.getLogger().warning("Received Unknown Packet: 0x%02X",  pid);
             }
             catch(Exception e) {
-                this.server.getLogger().fatal(e.getMessage());
+                e.printStackTrace();
                 //this.server.getLogger().fatal("", e.getStackTrace());
             }
         }
@@ -73,77 +123,4 @@ public class PacketHandler extends Thread
         this.isRunning = false;
         this.join();
     }
-
-	public void loginHandle(DatagramPacket udpPacket) throws Exception{
-		byte PID = udpPacket.getData()[0];
-		BaseLoginPacket packet;
-		switch(PID){
-		case 0x01:
-			//ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
-			//Client to Broadcast
-			packet = new ConnectedPingPacket(udpPacket, server);
-			ByteBuffer response = packet.getResponse();
-
-			DatagramPacket packet1c = new DatagramPacket(response.array(), response.capacity(), udpPacket.getAddress(), udpPacket.getPort());
-			sendResponse(packet1c);
-			break;
-
-
-		case 0x05:
-			//ID_OPEN_CONNECTION_REQUEST_1 (0x05)
-			//Client to Server
-			packet = new ConnectionRequest1Packet(udpPacket, server);
-
-			ByteBuffer response6 = packet.getResponse();
-			byte protocol = ((ConnectionRequest1Packet) packet).getProtocol();
-			if(protocol != 5){
-				//Wrong protocol
-                server.getLogger().warning("Client "+udpPacket.getAddress().getHostName()+":"+udpPacket.getPort()+" is outdated, current protocol is 5");
-				IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(udpPacket.getAddress(), udpPacket.getPort(), (byte) 5, server);
-				sendResponse(pk.getPacket());
-
-			}
-			else{
-
-				DatagramPacket packet06 = new DatagramPacket(response6.array(), response6.capacity(), udpPacket.getAddress(), udpPacket.getPort());
-				sendResponse(packet06);
-
-                //server.getLogger().info("Recived packet 0x05, sent 0x06");
-			}
-
-			break;
-
-		case 0x07:
-			//ID_OPEN_CONNECTION_REQUEST_2 (0x07)
-			//Client to Server
-			packet = new ConnectionRequest2(udpPacket, server);
-
-			ByteBuffer response8 = packet.getResponse();
-
-			DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), udpPacket.getAddress(), udpPacket.getPort());
-			sendResponse(packet08);
-			break;
-
-		default:
-			server.getLogger().warning("Recived unsupported login packet! PID: %02X", PID);
-		}
-	}
-
-	public void dataHandle(DatagramPacket udpPacket){
-		byte pid = udpPacket.getData()[0];
-
-        this.server.getLogger().info("Data packet: %02X", pid);
-
-		switch(pid){
-		case (byte) 0x84:
-			ClientConnectPacket clientPacket = new ClientConnectPacket(udpPacket, server);
-			clientPacket.decode();
-			
-			//More debug spam :D
-			server.getLogger().info("Recived a ClientConnect Packet:");
-			server.getLogger().info("ClientID: "+clientPacket.clientID);
-			server.getLogger().info("Session: "+clientPacket.session);
-			server.getLogger().info("Unknown: "+clientPacket.unknown);
-		}
-	}
 }

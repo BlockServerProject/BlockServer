@@ -30,8 +30,6 @@ public class Server {
     private int serverPort;
     private int maxPlayers;
 
-    private DatagramSocket networkSocket;
-
     public synchronized Server getInstance(){
         return instance;
     }
