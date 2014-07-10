@@ -1,5 +1,7 @@
 package net.blockserver.network.raknet;
 
+import java.nio.ByteBuffer;
+
 public class NACKPacket extends AcknowledgePacket {
     @Override
     public byte getPID() {
@@ -14,5 +16,9 @@ public class NACKPacket extends AcknowledgePacket {
     public NACKPacket(byte[] buffer)
     {
         this.buffer = buffer;
+    }
+    
+    public ByteBuffer getBuffer(){
+    	return ByteBuffer.wrap(buffer);
     }
 }

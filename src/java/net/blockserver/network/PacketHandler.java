@@ -1,17 +1,25 @@
 package net.blockserver.network;
 
 import net.blockserver.Server;
-import net.blockserver.network.raknet.CustomPacket;
+import net.blockserver.network.minecraft.ClientConnectPacket;
+import net.blockserver.network.minecraft.ServerHandshakePacket;
 import net.blockserver.network.raknet.*;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
 
 public class PacketHandler extends Thread
 {
 	private UDPSocket socket;
 	private Server server;
+	
+	private int packetsSent;
+	private int packetsRecived;
+	private int totalPackets;
 
     private boolean isRunning;
 
@@ -103,6 +111,13 @@ public class PacketHandler extends Thread
 
                     CustomPacket packet = new CustomPacket(pck.getData());
                     packet.decode();
+                    List<InternalPacket> packets = packet.packets;
+                    for(int i = 0; i < packets.size(); i++){
+	                	byte[] buffer = packets.get(i).buffer;
+	                	//this.server.getLogger().info("Data packet payload: "+Arrays.toString(buffer));
+	                	this.dhandle(packets.get(i), pck);
+                    }
+                	
                 }
                 else if(pid == RaknetsID.ACK || pid == RaknetsID.NACK)
                 {
@@ -118,6 +133,26 @@ public class PacketHandler extends Thread
                 e.printStackTrace();
             }
         }
+    }
+    
+    private void dhandle(InternalPacket packet, DatagramPacket pkt) throws IOException{
+    	this.packetsRecived++; //Recived a packet!
+    	ByteBuffer buffer = ByteBuffer.wrap(packet.buffer);
+    	byte PID = buffer.get();
+    	
+    	switch(PID){
+    	case 0x09:
+    		//TODO: Init our player, add player to list in server etc.
+    		//ClientConnect Packet
+    		ClientConnectPacket ccp = new ClientConnectPacket(packet.buffer);
+    		//Send a ServerHandshake packet
+    		ServerHandshakePacket shp = new ServerHandshakePacket(pkt.getPort(), ccp.session);
+    		shp.encode();
+			ByteBuffer shpBuffer = shp.getBuffer();
+    		DatagramPacket shpPacket = new DatagramPacket(shpBuffer.array(), shpBuffer.capacity(), pkt.getAddress(), pkt.getPort());
+			this.socket.Send(shpPacket);
+    		
+    	}
     }
 
     public void Stop() throws Exception

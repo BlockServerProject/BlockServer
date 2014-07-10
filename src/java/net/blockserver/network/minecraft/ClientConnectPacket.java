@@ -25,5 +25,9 @@ public class ClientConnectPacket implements BaseDataPacket{
     }
 	
 	public void encode() {}
+	
+	public ByteBuffer getBuffer(){
+		return buffer;
+	}
 
 }

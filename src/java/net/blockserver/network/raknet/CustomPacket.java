@@ -57,5 +57,9 @@ public class CustomPacket implements BaseDataPacket {
             this.buffer.put(pck.toBinary());
         }
     }
+	
+	public ByteBuffer getBuffer(){
+		return buffer;
+	}
 
 }

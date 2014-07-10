@@ -1,6 +1,5 @@
 package net.blockserver.network.raknet;
 
-import com.sun.deploy.util.ArrayUtil;
 import net.blockserver.network.RaknetsID;
 import net.blockserver.network.minecraft.BaseDataPacket;
 import net.blockserver.utility.Utils;

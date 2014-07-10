@@ -1,5 +1,7 @@
 package net.blockserver.network.raknet;
 
+import java.nio.ByteBuffer;
+
 import net.blockserver.network.RaknetsID;
 
 public class ACKPacket extends AcknowledgePacket {
@@ -15,5 +17,9 @@ public class ACKPacket extends AcknowledgePacket {
     public ACKPacket(byte[] buffer)
     {
         this.buffer = buffer;
+    }
+    
+    public ByteBuffer getBuffer(){
+    	return ByteBuffer.wrap(buffer);
     }
 }
