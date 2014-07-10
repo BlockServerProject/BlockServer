@@ -22,7 +22,7 @@ public class Server {
     private Map<String, Player> players;
 
     private MinecraftVersion MCVERSION;
-    private String VERSION = "0.05";
+    private String VERSION = "0.1-DEV";
     private String serverName;
     private String serverip;
 
