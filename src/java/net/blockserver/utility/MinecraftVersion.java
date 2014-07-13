@@ -1,7 +1,7 @@
 package net.blockserver.utility;
 
 public enum MinecraftVersion {
-	V081, V090;
+	V081, V090;//Is this the client version?
 	
 	public static String versionToString(MinecraftVersion version){
 		if(version == V081){
