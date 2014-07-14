@@ -1,7 +1,7 @@
 package net.blockserver.utility;
 
 public enum MinecraftVersion {
-	V081, V090;
+	V081, V090, V091;
 	
 	public static String versionToString(MinecraftVersion version){
 		if(version == V081){
@@ -12,6 +12,9 @@ public enum MinecraftVersion {
 		}
 		else{
 			return null;
+		}
+		else if(version == V091){
+			return "0.9.1";//The Bug fix update
 		}
 	}
 
