@@ -170,9 +170,12 @@ public class PacketHandler extends Thread
     		shp.encode();
 			ByteBuffer shpBuffer = shp.getBuffer();
 			InternalPacket[] handshake = InternalPacket.fromBinary(shpBuffer.array());
+			CustomPacket encodedPacket = new CustomPacket(handshake);
+			encodedPacket.encode();
+			byte[] encodedBuffer = encodedPacket.getBuffer().array();
 			
 			
-    		DatagramPacket shpPacket = new DatagramPacket(shpBuffer.array(), shpBuffer.capacity(), pkt.getAddress(), pkt.getPort());
+    		DatagramPacket shpPacket = new DatagramPacket(encodedBuffer, encodedBuffer.length, pkt.getAddress(), pkt.getPort());
 			this.socket.Send(shpPacket);
     		
     	}

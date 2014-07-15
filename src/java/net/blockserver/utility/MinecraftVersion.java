@@ -10,11 +10,11 @@ public enum MinecraftVersion {
 		else if(version == V090){
 			return "0.9.0";
 		}
+		else if(version == V091){
+			return "0.9.1";
+		}
 		else{
 			return null;
-		}
-		else if(version == V091){
-			return "0.9.1";//The Bug fix update
 		}
 	}
 

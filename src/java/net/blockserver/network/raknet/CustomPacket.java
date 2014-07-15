@@ -20,6 +20,12 @@ public class CustomPacket implements BaseDataPacket {
 	public CustomPacket(byte[] data){
 		this.buffer = ByteBuffer.wrap(data);
 	}
+	
+	public CustomPacket(InternalPacket[] packets){
+		for(int i =0; i < packets.length; i++){
+			this.packets.add(packets[i]);
+		}
+	}
 
     public CustomPacket() {
         this.PacketID = RaknetsID.DATA_PACKET_4;
