@@ -4,6 +4,7 @@ import net.blockserver.Server;
 import net.blockserver.network.minecraft.ClientConnectPacket;
 import net.blockserver.network.minecraft.ServerHandshakePacket;
 import net.blockserver.network.raknet.*;
+import net.blockserver.utility.Utils;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -47,6 +48,7 @@ public class PacketHandler extends Thread
     }
 
     public void sendPacket(byte[] buffer, String ip, int port) throws Exception {
+    	this.packetsSent++;
         this.socket.SendTO(buffer, ip, port);
     }
     
@@ -56,6 +58,7 @@ public class PacketHandler extends Thread
     }
 
     public void sendPacket(DatagramPacket pck) throws Exception {
+    	this.packetsSent++;
         this.socket.Send(pck);
     }
 
@@ -143,17 +146,19 @@ public class PacketHandler extends Thread
     
     private void dhandle(InternalPacket packet, DatagramPacket pkt) throws IOException{
     	this.packetsRecived++; //Recived a packet!
+    	this.totalPackets++;
     	ByteBuffer buffer = ByteBuffer.wrap(packet.buffer);
     	byte PID = buffer.get();
-    	ACKPacket ack = new ACKPacket(Utils.putTriad(packetsRecived));
+    	int[] packetNumber = new int[] {totalPackets};
+    	ACKPacket ack = new ACKPacket(packetNumber);
     	ack.encode();
     	byte[] ackBuffer = ack.buffer;
     	try {
-		this.sendACK(ackBuffer, pkt.getAddress(), pkt.getPort());
-	} catch (Exception e) {
-		this.server.getLogger().error("Exception while sending ACK packet:");
-		this.server.getLogger().error(e.getMessage());
-	}
+			this.sendACK(ackBuffer, pkt.getAddress(), pkt.getPort());
+		} catch (Exception e) {
+			this.server.getLogger().error("Exception while sending ACK packet:");
+			this.server.getLogger().error(e.getMessage());
+		}
     	
     	switch(PID){
     	case 0x09:
@@ -164,6 +169,9 @@ public class PacketHandler extends Thread
     		ServerHandshakePacket shp = new ServerHandshakePacket(pkt.getPort(), ccp.session);
     		shp.encode();
 			ByteBuffer shpBuffer = shp.getBuffer();
+			InternalPacket[] handshake = InternalPacket.fromBinary(shpBuffer.array());
+			
+			
     		DatagramPacket shpPacket = new DatagramPacket(shpBuffer.array(), shpBuffer.capacity(), pkt.getAddress(), pkt.getPort());
 			this.socket.Send(shpPacket);
     		
