@@ -7,6 +7,7 @@ import net.blockserver.network.raknet.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -47,6 +48,11 @@ public class PacketHandler extends Thread
 
     public void sendPacket(byte[] buffer, String ip, int port) throws Exception {
         this.socket.SendTO(buffer, ip, port);
+    }
+    
+    public void sendACK(byte[] ackBuffer, InetAddress ip, int port) throws Exception{
+    	DatagramPacket ackPacket = new DatagramPacket(ackBuffer, ackBuffer.length, ip, port);
+    	this.sendPacket(ackPacket);
     }
 
     public void sendPacket(DatagramPacket pck) throws Exception {
@@ -139,6 +145,15 @@ public class PacketHandler extends Thread
     	this.packetsRecived++; //Recived a packet!
     	ByteBuffer buffer = ByteBuffer.wrap(packet.buffer);
     	byte PID = buffer.get();
+    	ACKPacket ack = new ACKPacket(Utils.putTriad(packetsRecived));
+    	ack.encode();
+    	byte[] ackBuffer = ack.buffer;
+    	try {
+		this.sendACK(ackBuffer, pkt.getAddress(), pkt.getPort());
+	} catch (Exception e) {
+		this.server.getLogger().error("Exception while sending ACK packet:");
+		this.server.getLogger().error(e.getMessage());
+	}
     	
     	switch(PID){
     	case 0x09:
