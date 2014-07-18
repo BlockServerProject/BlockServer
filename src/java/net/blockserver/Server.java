@@ -133,6 +133,16 @@ public class Server {
 
     }
 
+    public void sendPacket(byte[] buffer, String ip, int port)
+    {
+        try {
+            this.packetHandler.sendPacket(buffer, ip, port);
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     public void Stop() throws Exception {
         this.serverRunning = false;
         this.scheduler.Stop();

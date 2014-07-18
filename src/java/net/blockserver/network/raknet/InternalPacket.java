@@ -37,6 +37,7 @@ public class InternalPacket
 
             if (pck.reliability == 1 || pck.reliability == 3 || pck.reliability == 4 || pck.reliability == 7) {
                 pck.orderIndex = Utils.getLTriad(buffer, bb.position());
+                bb.position(bb.position() + 3);
                 pck.orderChannel = bb.get();
             }
 
@@ -85,3 +86,4 @@ public class InternalPacket
         return bb.array();
     }
 }
+

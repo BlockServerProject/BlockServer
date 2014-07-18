@@ -5,6 +5,7 @@ import net.blockserver.network.minecraft.BaseDataPacket;
 import net.blockserver.utility.Utils;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,22 +20,19 @@ public class CustomPacket implements BaseDataPacket {
 
 	public CustomPacket(byte[] data){
 		this.buffer = ByteBuffer.wrap(data);
-	}
-	
-	public CustomPacket(InternalPacket[] packets){
-		for(int i =0; i < packets.length; i++){
-			this.packets.add(packets[i]);
-		}
+        this.packets = new ArrayList<>();
 	}
 
     public CustomPacket() {
         this.PacketID = RaknetsID.DATA_PACKET_4;
+        this.packets = new ArrayList<>();
     }
 
 
     public int getLength()
     {
         int length = 4; // PacketID + sequence number
+
         for (InternalPacket pck : this.packets)
         {
             length += pck.getLength();

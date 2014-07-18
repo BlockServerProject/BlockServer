@@ -3,7 +3,11 @@ package net.blockserver;
 
 import net.blockserver.math.Vector3f;
 import net.blockserver.network.RaknetsID;
-import net.blockserver.network.raknet.CustomPacket;
+import net.blockserver.network.minecraft.BaseDataPacket;
+import net.blockserver.network.minecraft.ClientConnectPacket;
+import net.blockserver.network.minecraft.PacketsID;
+import net.blockserver.network.minecraft.ServerHandshakePacket;
+import net.blockserver.network.raknet.*;
 import net.blockserver.scheduler.CallBackTask;
 
 import java.util.ArrayList;
@@ -33,9 +37,9 @@ public class Player extends Vector3f
 
     private Server server;
     private CustomPacket Queue;
-    private List<Integer> ACKQueue;
-    private List<Integer> NACKQueue;
-    private Map<Integer, CustomPacket> recoveryQueue;
+    private List<Integer> ACKQueue; // Received Packet Queue
+    private List<Integer> NACKQueue; // Not received packet queue
+    private Map<Integer, CustomPacket> recoveryQueue; // Packet sended queue to be used if not rceived
 
     public String getIP()
     {
@@ -46,7 +50,7 @@ public class Player extends Vector3f
     {
         super(0);
         this.entityID = Player.nextID++;
-        this.ip = ip;
+        this.ip = ip.replace("/", "");
         this.port = port;
         this.mtuSize = mtu;
         this.clientID = clientID;
@@ -71,39 +75,113 @@ public class Player extends Vector3f
     {
         if(this.ACKQueue.size() > 0)
         {
-            //Do Stuff
+            int[] array = new int[this.ACKQueue.size()];
+            for (int i = 0; i < this.ACKQueue.size(); i++)
+            {
+                array[i] = this.ACKQueue.get(i);
+            }
+
+            ACKPacket pck = new ACKPacket(array);
+            pck.encode();
+
+            this.server.sendPacket(pck.getBuffer().array(), this.ip, this.port);
         }
 
         if(this.NACKQueue.size() > 0)
         {
-            //Do Stuff
+            int[] array = new int[this.NACKQueue.size()];
+            for (int i = 0; i < this.NACKQueue.size(); i++)
+            {
+                array[i] = this.NACKQueue.get(i);
+            }
+
+            NACKPacket pck = new NACKPacket(array);
+            pck.encode();
+
+            this.server.sendPacket(pck.getBuffer().array(), this.ip, this.port);
         }
 
         if(this.Queue.packets.size() > 0)
         {
-            //Do Stuff
+            this.Queue.encode();
+            this.server.sendPacket(this.Queue.getBuffer().array(), this.ip, this.port);
+            this.Queue.packets.clear();
         }
     }
 
-    public void handlePacket(byte[] buffer)
+    public void addToQueue(BaseDataPacket pck)
     {
-        byte pid = buffer[0];
-        switch (pid)
+        this.server.getLogger().info("Player: %s : %d", this.ip, this.port);
+
+        InternalPacket ipck = new InternalPacket();
+        ipck.buffer = pck.getBuffer().array();
+        ipck.reliability = 2;
+        ipck.messageIndex = this.messageIndex++;
+        ipck.toBinary();
+
+        if(this.Queue.getLength() >= this.mtuSize)
         {
+            this.Queue.encode();
+            this.server.sendPacket(this.Queue.getBuffer().array(), this.ip, this.port);
+            this.Queue.packets.clear();
         }
+
+        this.Queue.packets.add(ipck);
     }
 
-    public void handleAcknowledgePackets(byte[] buffer) // Ack and Nack
+    public void handlePacket(CustomPacket pck)
     {
-        if(buffer[0] == RaknetsID.ACK)
+        if(pck.SequenceNumber - this.lastSequenceNum == 1)
         {
-            //Do Stuff
-        }
-        else if(buffer[0] == RaknetsID.NACK)
-        {
-            //Do Stuff
+            this.lastSequenceNum = this.SequenceNum;
+            this.SequenceNum = pck.SequenceNumber;
         }
         else
-            this.server.getLogger().error("Unknown Packet: %02x", buffer[0]);
+        {
+            for (int i = this.lastSequenceNum; i < pck.SequenceNumber; ++i)
+            {
+                this.NACKQueue.add(i);
+            }
+        }
+
+        this.ACKQueue.add(pck.SequenceNumber);
+
+        for (InternalPacket ipck : pck.packets)
+        {
+            switch (ipck.buffer[0])
+            {
+                case PacketsID.CLIENT_CONNECT: // 0x09. Use the constants class
+                {
+                    ClientConnectPacket ccp = new ClientConnectPacket(ipck.buffer);
+                    ccp.decode();
+                    //Send a ServerHandshake packet
+                    ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
+                    shp.encode();
+                    this.addToQueue(shp);
+                }
+                break;
+            }
+        }
+    }
+
+    public void handleAcknowledgePackets(AcknowledgePacket pck) // Ack and Nack
+    {
+        pck.decode();
+        if(pck instanceof ACKPacket) // When whe receive a ACK Packet then
+        {
+            for(int i = pck.sequenceNumbers[0]; i < pck.sequenceNumbers.length; i++)
+            {
+                this.recoveryQueue.remove(pck.sequenceNumbers[i]);
+            }
+        }
+        else if(pck instanceof NACKPacket)
+        {
+            for(int i : pck.sequenceNumbers)
+            {
+                this.server.sendPacket(this.recoveryQueue.get(i).getBuffer().array(), this.ip, this.port);
+            }
+        }
+        else
+            this.server.getLogger().error("Unknown Acknowledge Packet: %02x", pck.buffer[0]);
     }
 }

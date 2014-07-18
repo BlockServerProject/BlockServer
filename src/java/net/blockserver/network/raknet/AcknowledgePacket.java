@@ -70,9 +70,7 @@ public abstract class AcknowledgePacket implements BaseDataPacket
     public void decode()
     {
         ByteBuffer bb = ByteBuffer.wrap(buffer);
-        byte pid = bb.get();
-        if(pid != RaknetsID.ACK || pid != RaknetsID.NACK)
-            return;
+        byte pid = bb.get(); // Packet ID
 
         int count = bb.getShort();
         List<Integer> packets = new ArrayList<>();
@@ -83,7 +81,7 @@ public abstract class AcknowledgePacket implements BaseDataPacket
 
                 bb.get(tmp);
                 int start = Utils.getLTriad(tmp, 0);
-                int end = Utils.getLTriad(tmp, 4);
+                int end = Utils.getLTriad(tmp, 3);
                 if((end - start) > 4096){
                     end = start + 4096;
                 }

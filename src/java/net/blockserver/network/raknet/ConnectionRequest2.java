@@ -13,8 +13,8 @@ public class ConnectionRequest2 extends BaseLoginPacket {
 	private byte PID;
 	private byte[] MAGIC;
 	private byte[] securityCookie;
-	private short mtuSize;
-	private long clientID;
+	public short mtuSize;
+	public long clientID;
 	
 	public ConnectionRequest2(DatagramPacket packet, Server server){
 		this.server = server;
