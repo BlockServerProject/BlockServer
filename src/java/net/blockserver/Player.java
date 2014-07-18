@@ -105,14 +105,13 @@ public class Player extends Vector3f
         {
             this.Queue.encode();
             this.server.sendPacket(this.Queue.getBuffer().array(), this.ip, this.port);
+            this.recoveryQueue.put(this.Queue.SequenceNumber, this.Queue);
             this.Queue.packets.clear();
         }
     }
 
     public void addToQueue(BaseDataPacket pck)
     {
-        this.server.getLogger().info("Player: %s : %d", this.ip, this.port);
-
         InternalPacket ipck = new InternalPacket();
         ipck.buffer = pck.getBuffer().array();
         ipck.reliability = 2;
