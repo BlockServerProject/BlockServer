@@ -10,6 +10,8 @@ import net.blockserver.network.minecraft.ServerHandshakePacket;
 import net.blockserver.network.raknet.*;
 import net.blockserver.scheduler.CallBackTask;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,6 +161,12 @@ public class Player extends Vector3f
                     this.addToQueue(shp);
                 }
                 break;
+                
+                case PacketsID.PING: //PING Packet
+                	
+                
+                default:
+                	this.server.getLogger().info("Recived packet: "+ipck.buffer[0]);
             }
         }
     }
@@ -182,5 +190,13 @@ public class Player extends Vector3f
         }
         else
             this.server.getLogger().error("Unknown Acknowledge Packet: %02x", pck.buffer[0]);
+    }
+    
+    public InetAddress getAddress() throws UnknownHostException{
+    	return InetAddress.getByName(this.ip);
+    }
+    
+    public int getPort(){
+    	return this.port;
     }
 }
