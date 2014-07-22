@@ -1,44 +1,66 @@
-<!DOCTYPE html> <!--HTML 5-->
 <html>
 <head>
-	<title>BlockServer - Index page</title>
-	<link rel="stylesheet" type="text/css" href="CSS/background.css"/>
+<meta charset="utf-8">
+<title>$SITE_NAME$ - $MODULE_NAME$</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" /> 
+<script type="text/javascript">
+ var browser = navigator.userAgent;
+ var browserRegex = /(Android|BlackBerry|IEMobile|Nokia|iP(ad|hone|od)|Opera M(obi|ini))/;
+ var isMobile = false;
+ if(browser.match(browserRegex)) {
+ isMobile = true;
+ addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+ function hideURLbar(){
+ window.scrollTo(0,1);
+ }
+ }
+</script>
+<link type="text/css" rel="StyleSheet" href="/_st/my.css" />
 </head>
 
 <body>
-	<div id="page">
-		<table style="text-align: left; width: 714px; height: 134px;"
-		 border="1" cellpadding="2" cellspacing="2">
-		  <tbody>
-			<tr id="heading">
-			  <td>
-			  <h1>Navigation</h1>
-			  </td>
-			  <td>
-			  <h1>The BlockServer project</h1>
-			  </td>
-			</tr>
-			<tr>
-			  <td>
-				<a href="index.html">Index Page</a><br>
-				<a href="http://www.github.com/BlockServerProject/BlockServer">Our GitHub repo</a><br>
-				<a href="todo.html">TODO's</a><br>
-				<a href="IRC.html">IRC Channel</a>
-			  </td>
-			  <td>
-			  <p>
-				BlockServer is a Minecraft PE server written in java.
-				TODO:
-				Implement basic packets (WIP)
-				Work on world generation and saving (IMPORTANT!) (Unassigned)
-				Implement player save data (Unassigned)
-				Please note that we are looking for contributors, I can't do this alone! You can contact me at: <a href="mailto:blockserverproject@outlook.com">blockserverproject@outlook.com</a>
-			  </p>
-			  </td>
-			</tr>
-		  </tbody>
-		</table>
-	</div>
-	
+$ADMIN_BAR$
+<header>
+ <div id="header">
+ <div class="wrapper">
+ <style>
+ h1 {font-color: #424242; font-size: 92;}
+ </style>
+ <h1><b>Welcome to Block Project!</b></h1>
+ <ul>
+ <li><a href="/">Home</a></li>
+ <li><a href="/index/0-2">About Block Project</a></li>
+ <li><a href="/index/0-3">Contact Us</a></li>
+ </ul>
+ </div>
+ </div>
+</header>
+<div id="casing">
+ <div class="wrapper">
+ <?if($MODULE_ID$='forum')?><div class="forum-box"><?endif?>
+ <!-- <middle> -->
+ <div class="part-l">
+ <div id="content">
+ <!-- <body> -->$CONTENT$<!-- </body> -->
+ </div>
+ </div>
+ <div class="part-r">
+ <aside>
+ <div id="sidebar"> 
+ $GLOBAL_CLEFTER$
+ </div>
+ </aside>
+ </div> 
+ <!-- </middle> -->
+ <div class="clr"></div>
+ <?if($MODULE_ID$='forum')?></div><?endif?>
+ </div>
+</div>
+$GLOBAL_BFOOTER$
+<script type="text/javascript" src="/.s/t/1064/template.min.js"></script>
+
+<div style="display:none">
+
+</div>
 </body>
 </html>
