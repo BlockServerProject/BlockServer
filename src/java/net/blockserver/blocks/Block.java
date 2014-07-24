@@ -14,6 +14,12 @@ public class Block
         this.metadata = 0;
         this.name = "Unknown";
     }
+    
+    public Block(Blocks block){
+        this.id = block.id;
+        this.metadata = 0;
+        this.name = "Unknown";
+    }
 
     public Block(String name, int id)
     {
