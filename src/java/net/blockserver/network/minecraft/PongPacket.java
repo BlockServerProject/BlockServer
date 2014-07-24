@@ -7,12 +7,11 @@ import java.nio.ByteBuffer;
 import java.util.Random;
 
 import net.blockserver.Player;
-import net.blockserver.network.raknet.BaseLoginPacket;
 
 /**
  * Implements a 0x03 PONG Packet.
  */
-public class PongPacket extends BaseLoginPacket {
+public class PongPacket implements BaseDataPacket {
 	
 	private Player client;
 	private ByteBuffer buffer;
@@ -28,36 +27,15 @@ public class PongPacket extends BaseLoginPacket {
 		unknown = r.nextLong();
 	}
 	
-	public byte getPID(){
-		return this.PID;
-	}
-	
-	public ByteBuffer getResponse(){
-		return null;
-	}
-	
-	public DatagramPacket getPacket(){
-		DatagramPacket response = null;
+	public void encode(){
 		buffer = ByteBuffer.allocate(17);
 		
 		buffer.put(this.PID);
 		buffer.putLong(this.pingID);
 		buffer.putLong(this.unknown);
-		
-		InetAddress addr;
-		try {
-			addr = client.getAddress();
-			response = new DatagramPacket(buffer.array(), buffer.capacity());
-			response.setAddress(addr);
-			response.setPort(client.getPort());
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-		
-		return response;
-		
 	}
 	
+	public void decode(){};
 	public ByteBuffer getBuffer(){
 		return this.buffer;
 	}

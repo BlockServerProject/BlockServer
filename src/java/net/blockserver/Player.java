@@ -6,6 +6,8 @@ import net.blockserver.network.RaknetsID;
 import net.blockserver.network.minecraft.BaseDataPacket;
 import net.blockserver.network.minecraft.ClientConnectPacket;
 import net.blockserver.network.minecraft.PacketsID;
+import net.blockserver.network.minecraft.PingPacket;
+import net.blockserver.network.minecraft.PongPacket;
 import net.blockserver.network.minecraft.ServerHandshakePacket;
 import net.blockserver.network.raknet.*;
 import net.blockserver.scheduler.CallBackTask;
@@ -163,7 +165,14 @@ public class Player extends Vector3f
                 break;
                 
                 case PacketsID.PING: //PING Packet
+                	PingPacket pp = new PingPacket(ipck.buffer);
+                	pp.decode();
+                	//this.server.getLogger().info("Recived ping packet with id of: "+pp.pingID);
+                	PongPacket reply = new PongPacket(this, pp.pingID);
+                	reply.encode();
                 	
+                	this.addToQueue(reply);
+                	break;
                 
                 default:
                 	this.server.getLogger().info("Recived packet: "+ipck.buffer[0]);
