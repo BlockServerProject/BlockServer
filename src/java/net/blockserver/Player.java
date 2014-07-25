@@ -138,7 +138,6 @@ public class Player extends Vector3f
         if(pck.SequenceNumber - this.lastSequenceNum == 1)
         {
             this.lastSequenceNum = pck.SequenceNumber;
-            this.server.getLogger().info("Triggered!");
         }
         else
         {
