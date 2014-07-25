@@ -1,7 +1,7 @@
 package net.blockserver.utility;
 
 public enum MinecraftVersion {
-	V081, V090, V091, V092, V093, V094;
+	V081, V090, V091, V092, V093, V094, V095;
 
 	public static String versionToString(MinecraftVersion version){
 		if(version == V081){
@@ -21,6 +21,9 @@ public enum MinecraftVersion {
 		}
 		else if(version == V094){
 			return "0.9.4";
+		}
+		else if(version == V095){
+			return "0.9.5";
 		}
 		else{
 			return null;
