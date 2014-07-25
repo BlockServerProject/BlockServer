@@ -8,31 +8,36 @@ import java.nio.ByteBuffer;
  */
 
 public class PingPacket implements BaseDataPacket {
-	private DatagramPacket pkt;
-	
-	public byte PID;
+
+    public ByteBuffer buffer;
+	public final byte PID = PacketsID.PING;
 	public long pingID;
-	public byte unknown; //Not sure about this, length is 10 bytes, 9 bytes for PID and PingID.
-	
-	public PingPacket(DatagramPacket p){
-		this.pkt = p;
+
+	public PingPacket(byte[] b)
+    {
+        this.buffer = ByteBuffer.wrap(b);
 	}
-	
-	public PingPacket(byte[] b){
-		this.pkt = new DatagramPacket(b, b.length);
-	}
-	
+
+    public PingPacket(long pingID)
+    {
+        this.buffer = ByteBuffer.allocate(9);
+        this.pingID = pingID;
+    }
+
 	public void decode(){
-		ByteBuffer bb = ByteBuffer.wrap(pkt.getData());
-		PID = bb.get();
-		pingID = bb.getLong();
-		unknown = bb.get();
-		
+		if(this.buffer.get() != this.PID)
+            return;
+
+		pingID = this.buffer.getLong();
 	}
 	
-	public void encode(){};
+	public void encode()
+    {
+        this.buffer.put(this.PID);
+        this.buffer.putLong(this.pingID);
+    }
 	public ByteBuffer getBuffer(){
-		return ByteBuffer.wrap(pkt.getData());
+		return buffer;
 	}
 
 }

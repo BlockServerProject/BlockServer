@@ -124,6 +124,7 @@ public class Player extends Vector3f
 
         if(this.Queue.getLength() >= this.mtuSize)
         {
+            this.Queue.SequenceNumber = this.SequenceNum++;
             this.Queue.encode();
             this.server.sendPacket(this.Queue.getBuffer().array(), this.ip, this.port);
             this.Queue.packets.clear();
@@ -136,8 +137,8 @@ public class Player extends Vector3f
     {
         if(pck.SequenceNumber - this.lastSequenceNum == 1)
         {
-            this.lastSequenceNum = this.SequenceNum;
-            this.SequenceNum = pck.SequenceNumber;
+            this.lastSequenceNum = pck.SequenceNumber;
+            this.server.getLogger().info("Triggered!");
         }
         else
         {
@@ -165,17 +166,18 @@ public class Player extends Vector3f
                 break;
                 
                 case PacketsID.PING: //PING Packet
+                    //
                 	PingPacket pp = new PingPacket(ipck.buffer);
                 	pp.decode();
-                	//this.server.getLogger().info("Recived ping packet with id of: "+pp.pingID);
-                	PongPacket reply = new PongPacket(this, pp.pingID);
+
+                	PongPacket reply = new PongPacket(pp.pingID);
                 	reply.encode();
                 	
                 	this.addToQueue(reply);
                 	break;
                 
                 default:
-                	this.server.getLogger().info("Recived packet: "+ipck.buffer[0]);
+                	this.server.getLogger().info("Recived packet: %02x", ipck.buffer[0]);
             }
         }
     }
@@ -185,15 +187,17 @@ public class Player extends Vector3f
         pck.decode();
         if(pck instanceof ACKPacket) // When whe receive a ACK Packet then
         {
-            for(int i = pck.sequenceNumbers[0]; i < pck.sequenceNumbers.length; i++)
+            for(int i : pck.sequenceNumbers)
             {
-                this.recoveryQueue.remove(pck.sequenceNumbers[i]);
+                this.server.getLogger().info("ACK Packet Received Seq: %d", i);
+                this.recoveryQueue.remove(i);
             }
         }
         else if(pck instanceof NACKPacket)
         {
             for(int i : pck.sequenceNumbers)
             {
+                this.server.getLogger().info("NACK Packet Received Seq: %d", i);
                 this.server.sendPacket(this.recoveryQueue.get(i).getBuffer().array(), this.ip, this.port);
             }
         }
