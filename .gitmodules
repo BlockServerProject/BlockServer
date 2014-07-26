@@ -1,3 +1,3 @@
 [submodule "LevelDB"]
-	path = LevelDB
+	path = libs/LevelDB
 	url = git://github.com/InusualZ/LevelDB.git
