@@ -15,10 +15,10 @@ public class Block
         this.name = "Unknown";
     }
     
-    public Block(Blocks block){
-        this.id = block.id;
-        this.metadata = 0;
-        this.name = "Unknown";
+    public Block(BlockType block){
+        this.id = block.getID();
+        this.metadata = block.getMetadata();
+        this.name = block.name();
     }
 
     public Block(String name, int id)
