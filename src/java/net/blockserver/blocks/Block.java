@@ -31,7 +31,7 @@ public class Block
     public Block(String name, int id, int metadata)
     {
         this.id = id;
-        this.metadata = 0;
+        this.metadata = metadata;
         this.name = name.isEmpty() ? "Unknown" : name;
     }
 }
