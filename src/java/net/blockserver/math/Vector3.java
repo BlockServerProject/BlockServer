@@ -2,23 +2,23 @@ package net.blockserver.math;
 
 public class Vector3
 {
-    private int x, y, z;
+    private float x, y, z;
 
-    public Vector3(int v)
+    public Vector3(float v)
     {
         this.x = v;
         this.y = v;
         this.z = v;
     }
 
-    public Vector3(int x, int y)
+    public Vector3(float x, float y)
     {
         this.x = x;
         this.y = y;
         this.z = 0;
     }
 
-    public Vector3(int x, int y, int z)
+    public Vector3(float x, float y, float z)
     {
         this.x = x;
         this.y = y;
@@ -26,33 +26,33 @@ public class Vector3
     }
 
 
-    public int getX()
+    public float getX()
     {
         return this.x;
     }
 
-    public int getY()
+    public float getY()
     {
         return this.y;
     }
 
-    public  int getZ()
+    public float getZ()
     {
         return this.z;
     }
 
 
-    public void setX(int v)
+    public void setX(float v)
     {
         this.x = v;
     }
 
-    public void setY(int v)
+    public void setY(float v)
     {
         this.y = v;
     }
 
-    public void setZ(int v)
+    public void setZ(float v)
     {
         this.z = v;
     }
