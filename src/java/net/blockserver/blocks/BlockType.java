@@ -212,7 +212,7 @@ public enum BlockType {
     	for(BlockType block : BlockType.values())
     		if(block.getID() == id)
     			return block;
-    	throw new UnknownBlockException("No block found with ID" + id);
+    	throw new UnknownBlockException("No block found with ID " + id);
     }
     
     public static BlockType getByID(int id, int metadata) throws UnknownBlockException{
