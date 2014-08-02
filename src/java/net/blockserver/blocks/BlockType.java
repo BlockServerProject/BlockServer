@@ -214,5 +214,14 @@ public enum BlockType {
     			return block;
     	throw new UnknownBlockException("No block found with ID " + id);
     }
+    
+    public static BlockType getByID(int id, int metadata) throws UnknownBlockException{
+        return BlockType.getByID(id).setMetadata(metadata);
+    }
+    
+    @Override
+    public String toString(){
+        return this.id + ":" + this.metadata;
+    }
 
 }
