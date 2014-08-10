@@ -1,7 +1,7 @@
 package net.blockserver;
 
 
-import net.blockserver.math.Vector3f;
+import net.blockserver.math.Vector3;
 import net.blockserver.network.RaknetsID;
 import net.blockserver.network.minecraft.BaseDataPacket;
 import net.blockserver.network.minecraft.ClientConnectPacket;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Player extends Vector3f
+public class Player extends Vector3
 {
     public static int nextID = 1;
 
