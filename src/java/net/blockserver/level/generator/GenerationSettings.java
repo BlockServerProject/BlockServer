@@ -1,32 +1,13 @@
 package net.blockserver.level.generator;
 
-import java.util.Random;
+public interface GenerationSettings {
 
-public enum GenerationSettings{
+    public Class<?> getType();
 
-    CAVES(Boolean.class, true),
-    DECORATION(Boolean.class, true),
-    DEGREE_OF_FLAT(Integer.class, 0),
-    MINESHAFT(Boolean.class, true),
-    SEED(Long.class, 0l),
-    SIZE(Integer.class, 0),
-    VILLAGES(Boolean.class, true);
+    public Object getDefault();
 
-    private Class<?> type;
-    private Object def;
+    public Enum setValue(Object value);
 
-    private <T> GenerationSettings(Class<T> type, T def) {
-        this.type = type;
-        this.def = def;
-        if(this.name().equals("SEED"))
-            this.def = (new Random()).nextLong();
-    }
+    public Object getValue();
 
-    public Class<?> getType(){
-        return this.type;
-    }
-
-    public Object getDefault(){
-        return this.def;
-    }
 }
