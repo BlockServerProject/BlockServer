@@ -114,7 +114,6 @@ public class PacketHandler extends Thread
                 }
                 else if( pid >= RaknetsID.DATA_PACKET_0 &&  pid <= RaknetsID.DATA_PACKET_F) // Custom Data Packet Range
                 {
-                    this.server.getLogger().info("Data packet: %02X", pid);
 
                     CustomPacket packet = new CustomPacket(pck.getData());
                     packet.decode();
