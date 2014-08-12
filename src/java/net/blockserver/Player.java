@@ -110,6 +110,7 @@ public class Player extends Vector3
 
     public void addToQueue(BaseDataPacket pck)
     {
+        pck.encode();
         InternalPacket ipck = new InternalPacket();
         ipck.buffer = pck.getBuffer().array();
         ipck.reliability = 2;
@@ -153,7 +154,6 @@ public class Player extends Vector3
                     pp.decode();
 
                     PongPacket reply = new PongPacket(pp.pingID);
-                    reply.encode();
 
                     this.addToQueue(reply);
                 break;
@@ -164,7 +164,6 @@ public class Player extends Vector3
                     ccp.decode();
                     //Send a ServerHandshake packet
                     ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
-                    shp.encode();
                     this.addToQueue(shp);
                 }
                 break;
@@ -181,7 +180,31 @@ public class Player extends Vector3
                     this.server.getLogger().info("Login Packet: %d", ipck.buffer.length);
                     lp.decode();
 
-                    this.server.getLogger().info("Player Joined. Username: %s", lp.username);
+                    if(lp.protocol != PacketsID.CURRENT_PROTOCOL || lp.protocol2 != PacketsID.CURRENT_PROTOCOL)
+                    {
+                        if(lp.protocol < PacketsID.CURRENT_PROTOCOL ||lp.protocol2 < PacketsID.CURRENT_PROTOCOL)
+                        {
+                            this.addToQueue(new LoginStatusPacket(1)); // Client outdated
+                            this.Close("Wrong Protocol.");
+                        }
+
+                        if(lp.protocol > PacketsID.CURRENT_PROTOCOL ||lp.protocol2 > PacketsID.CURRENT_PROTOCOL)
+                        {
+                            this.addToQueue(new LoginStatusPacket(2)); // Server outdated
+                            this.Close("Wrong Protocol.");
+                        }
+                    }
+
+                    this.addToQueue(new LoginStatusPacket(0)); // No error with the protocol.
+
+                    if(lp.username.length() < 3 || lp.username.length() > 15)
+                    {
+                        this.Close("Username is not valid.");
+                    }
+                    this.iname = lp.username.toLowerCase();
+                    this.name = lp.username;
+
+                    this.CID = lp.clientID;
 
                     break;
                 
@@ -213,7 +236,19 @@ public class Player extends Vector3
         else
             this.server.getLogger().error("Unknown Acknowledge Packet: %02x", pck.buffer[0]);
     }
-    
+
+    public void SendMessage(String msg)
+    {
+
+    }
+
+    public void Close(String reason)
+    {
+        this.SendMessage(reason);
+        this.addToQueue(new Disconnect());
+
+    }
+
     public InetAddress getAddress() throws UnknownHostException{
     	return InetAddress.getByName(this.ip);
     }

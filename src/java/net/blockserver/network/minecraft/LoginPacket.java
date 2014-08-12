@@ -30,10 +30,10 @@ public class LoginPacket implements BaseDataPacket{
 
 
         this.username = this.getString();
-        this.protocol = this.bb.getInt();//12
-        this.protocol2 = this.bb.getInt();//16
-        this.clientID = this.bb.getInt();//20
-        this.loginData = this.getString();//22
+        this.protocol = this.bb.getInt();
+        this.protocol2 = this.bb.getInt();
+        this.clientID = this.bb.getInt();
+        this.loginData = this.getString();
     }
 
     public String getString()
