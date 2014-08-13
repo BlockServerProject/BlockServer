@@ -6,7 +6,7 @@ import net.blockserver.utility.MinecraftVersion;
 public class BlockServer {
 	public static void main(String[] args) {
         try {
-            Server server = new Server("BlockServer - A cool MCPE server written in java!", "0.0.0.0", 19132, 5, MinecraftVersion.V094);
+            Server server = new Server("BlockServer - A cool MCPE server written in java!", "0.0.0.0", 19132, 5, MinecraftVersion.V095);
             server.run();
         }catch (Exception e)
         {
