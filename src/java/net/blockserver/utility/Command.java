@@ -2,7 +2,8 @@ package net.blockserver.utility;
 
 public enum Command {
 	FREE(0),
-	STOP(1);
+	STOP(1),
+	HELP(2);
 	
 	private int id;
 	
@@ -17,6 +18,9 @@ public enum Command {
 		else if(name.equalsIgnoreCase("stop")){
 			return Command.STOP;
 		}
+		else if(name.equalsIgnoreCase("help")){
+			return Command.HELP;
+		}
 		else{
 			return null;
 		}
@@ -28,6 +32,9 @@ public enum Command {
 		}
 		else if(cmd == cmd.STOP){
 			return "stop";
+		}
+		else if(cmd == cmd.HELP){
+			return "help"
 		}
 		else{
 			return null;
