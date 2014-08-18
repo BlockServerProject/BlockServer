@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class UDPSocket
 {
-    public boolean connected;
+    public boolean connected = false;
 
     private String ip;
     private int port;
