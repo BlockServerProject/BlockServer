@@ -42,10 +42,10 @@ public class ConsoleCommandHandler extends Thread {
 					
 				}
 				else if(input.startsWith(Command.getCommandName(Command.HELP))){
-					System.out.printIn("- Showing help page 1 of 1 (/help <pageNumber>) -");
-					System.out.printIn("/free: Shows the available space of memory.");
-					System.out.printIn("/help: Shows available commands.");
-					System.out.printIn("/stop: Stops the server.");
+					System.out.println("- Showing help page 1 of 1 (/help <pageNumber>) -");
+					System.out.println("/free: Shows the available space of memory.");
+					System.out.println("/help: Shows available commands.");
+					System.out.println("/stop: Stops the server.");
 				}
 				else{
 					server.getLogger().warning("Unkown command: "+input);
