@@ -243,9 +243,15 @@ public enum Items {
     BEETROOT_SOUP(459);
     
     public int id;
+    public final static int DAMAGE_NEGLIGIBLE = 16;
+    public int damage;
 
     private Items(int id){
-    	this.id = id;
+    	this(id, DAMAGE_NEGLIGIBLE);
     }
 
+    private Items(int id, int damage){
+    	this.id = id;
+    	this.damage = damage;
+    }
 }

@@ -27,14 +27,14 @@ public enum Command {
 	}
 	
 	public static String getCommandName(Command cmd){
-		if(cmd == cmd.FREE){
+		if(cmd == FREE){
 			return "free";
 		}
-		else if(cmd == cmd.STOP){
+		else if(cmd == STOP){
 			return "stop";
 		}
-		else if(cmd == cmd.HELP){
-			return "help"
+		else if(cmd == HELP){
+			return "help";
 		}
 		else{
 			return null;
