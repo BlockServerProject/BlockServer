@@ -57,9 +57,9 @@ public class Player extends Vector3
 
         this.server = Server.getInstance();
         this.Queue = new CustomPacket();
-        this.ACKQueue = new ArrayList<>();
-        this.NACKQueue = new ArrayList<>();
-        this.recoveryQueue = new HashMap<>();
+        this.ACKQueue = new ArrayList<Integer>();
+        this.NACKQueue = new ArrayList<Integer>();
+        this.recoveryQueue = new HashMap<Integer, CustomPacket>();
 
         try {
             this.server.getScheduler().addTask(new CallBackTask(this, "Update", 10, true));

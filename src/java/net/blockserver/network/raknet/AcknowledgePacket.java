@@ -73,7 +73,7 @@ public abstract class AcknowledgePacket implements BaseDataPacket
         byte pid = bb.get(); // Packet ID
 
         int count = bb.getShort();
-        List<Integer> packets = new ArrayList<>();
+        List<Integer> packets = new ArrayList<Integer>();
         for(int i = 0; i < count && bb.position() < bb.capacity(); ++i)
         {
             byte[] tmp = new byte[6];
