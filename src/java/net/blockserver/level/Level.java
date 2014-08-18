@@ -4,6 +4,7 @@ package net.blockserver.level;
 import net.blockserver.blocks.Block;
 import net.blockserver.level.format.IChunk;
 import net.blockserver.level.format.ILevel;
+import net.blockserver.math.Vector3;
 
 public class Level implements ILevel
 {
@@ -74,4 +75,9 @@ public class Level implements ILevel
     public void setChunk(int x, int z) {
 
     }
+
+    public double getGravityAt(Vector3 coords){
+        return 9.8; // Earth gravitational constant; not sure if same for Minecraft ;)
+    }
+
 }

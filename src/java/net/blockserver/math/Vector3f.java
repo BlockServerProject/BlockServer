@@ -60,4 +60,55 @@ public class Vector3f
     {
         this.z = v;
     }
+
+    public Vector3f add(Vector3f delta)
+    {
+        return merge(this, delta);
+    }
+
+    public Vector3d add(float dx, float dy, float dz)
+    {
+        return new Vector3d(x + dx, y + dy, z + dz);
+    }
+
+    public Vector3f subtract(Vector3f delta)
+    {
+        return add(delta.multiply(-1));
+    }
+
+    public Vector3d subtract(float dx, float dy, float dz)
+    {
+        return add(-dx, -dy, -dz);
+    }
+
+    public Vector3f multiply(float k)
+    {
+        return new Vector3f(x * k, y * k, z * k);
+    }
+
+    public Vector3f divide(float k)
+    {
+        return multiply(1 / k);
+    }
+
+    public Vector3d toDouble()
+    {
+        return new Vector3d(x, y, z);
+    }
+
+    public Vector3 floor()
+    {
+        return new Vector3((int) x, (int) y, (int) z);
+    }
+
+    public static Vector3f merge(Vector3f... vectors)
+    {
+        Vector3f base = new Vector3f();
+        for(Vector3f vector: vectors)
+        {
+            base = new Vector3f(base.getX() + vector.getX(), base.getY() + vector.getY(), base.getZ() + vector.getZ());
+        }
+        return base;
+    }
+
 }

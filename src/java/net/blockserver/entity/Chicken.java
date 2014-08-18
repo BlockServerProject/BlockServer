@@ -15,4 +15,9 @@ public class Chicken extends Entity{
         return EntityType.CHICKEN;
     }
 
+    @Override
+    public int getMaxHealth(){
+        return 4;
+    }
+
 }
