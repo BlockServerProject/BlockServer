@@ -6,7 +6,6 @@ public enum Items {
     IRON_PICKAXE(257),
     IRON_AXE(258),
     FLINT_AND_STEEL(259),
-    FLINT_&_STEEL(259),
     APPLE(260),
     BOW(261),
     ARROW(262),
