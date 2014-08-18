@@ -205,7 +205,14 @@ public class Player extends Vector3
                     this.name = lp.username;
 
                     this.CID = lp.clientID;
-
+                    
+                    //Once we get World gen up, uncomment this:
+                    /*
+                    StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
+                    sgp.encode();
+                    this.addToQueue(sgp);
+                    
+					*/
                     break;
                 
                 default:
