@@ -19,7 +19,7 @@ public abstract class Moveable extends Vector3d{
         this.speed = speed;
     }
     public void onTickUpdate(){
-        
+        add(speed);
     }
     public void add(Vector3f delta){
         x += delta.getX();
