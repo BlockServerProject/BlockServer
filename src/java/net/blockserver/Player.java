@@ -1,14 +1,8 @@
 package net.blockserver;
 
 
-import net.blockserver.math.Vector3f;
-import net.blockserver.network.RaknetsID;
-import net.blockserver.network.minecraft.BaseDataPacket;
-import net.blockserver.network.minecraft.ClientConnectPacket;
-import net.blockserver.network.minecraft.PacketsID;
-import net.blockserver.network.minecraft.PingPacket;
-import net.blockserver.network.minecraft.PongPacket;
-import net.blockserver.network.minecraft.ServerHandshakePacket;
+import net.blockserver.math.Vector3;
+import net.blockserver.network.minecraft.*;
 import net.blockserver.network.raknet.*;
 import net.blockserver.scheduler.CallBackTask;
 
@@ -19,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Player extends Vector3f
+public class Player extends Vector3
 {
     public static int nextID = 1;
 
@@ -116,6 +110,7 @@ public class Player extends Vector3f
 
     public void addToQueue(BaseDataPacket pck)
     {
+        pck.encode();
         InternalPacket ipck = new InternalPacket();
         ipck.buffer = pck.getBuffer().array();
         ipck.reliability = 2;
@@ -153,30 +148,68 @@ public class Player extends Vector3f
         {
             switch (ipck.buffer[0])
             {
+                case PacketsID.PING: //PING Packet
+                    //
+                    PingPacket pp = new PingPacket(ipck.buffer);
+                    pp.decode();
+
+                    PongPacket reply = new PongPacket(pp.pingID);
+
+                    this.addToQueue(reply);
+                break;
+
                 case PacketsID.CLIENT_CONNECT: // 0x09. Use the constants class
                 {
                     ClientConnectPacket ccp = new ClientConnectPacket(ipck.buffer);
                     ccp.decode();
                     //Send a ServerHandshake packet
                     ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
-                    shp.encode();
                     this.addToQueue(shp);
                 }
                 break;
-                
-                case PacketsID.PING: //PING Packet
-                    //
-                	PingPacket pp = new PingPacket(ipck.buffer);
-                	pp.decode();
 
-                	PongPacket reply = new PongPacket(pp.pingID);
-                	reply.encode();
-                	
-                	this.addToQueue(reply);
-                	break;
+                case PacketsID.CLIENT_HANDSHAKE:
+                    ClientHandShakePacket chs = new ClientHandShakePacket(ipck.buffer);
+                    chs.decode();
+
+                    break;
+
+                case PacketsID.LOGIN:
+                    LoginPacket lp = new LoginPacket(ipck.buffer);
+
+                    this.server.getLogger().info("Login Packet: %d", ipck.buffer.length);
+                    lp.decode();
+
+                    if(lp.protocol != PacketsID.CURRENT_PROTOCOL || lp.protocol2 != PacketsID.CURRENT_PROTOCOL)
+                    {
+                        if(lp.protocol < PacketsID.CURRENT_PROTOCOL ||lp.protocol2 < PacketsID.CURRENT_PROTOCOL)
+                        {
+                            this.addToQueue(new LoginStatusPacket(1)); // Client outdated
+                            this.Close("Wrong Protocol.");
+                        }
+
+                        if(lp.protocol > PacketsID.CURRENT_PROTOCOL ||lp.protocol2 > PacketsID.CURRENT_PROTOCOL)
+                        {
+                            this.addToQueue(new LoginStatusPacket(2)); // Server outdated
+                            this.Close("Wrong Protocol.");
+                        }
+                    }
+
+                    this.addToQueue(new LoginStatusPacket(0)); // No error with the protocol.
+
+                    if(lp.username.length() < 3 || lp.username.length() > 15)
+                    {
+                        this.Close("Username is not valid.");
+                    }
+                    this.iname = lp.username.toLowerCase();
+                    this.name = lp.username;
+
+                    this.CID = lp.clientID;
+
+                    break;
                 
                 default:
-                	this.server.getLogger().info("Recived packet: %02x", ipck.buffer[0]);
+                	this.server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
             }
         }
     }
@@ -203,7 +236,19 @@ public class Player extends Vector3f
         else
             this.server.getLogger().error("Unknown Acknowledge Packet: %02x", pck.buffer[0]);
     }
-    
+
+    public void SendMessage(String msg)
+    {
+
+    }
+
+    public void Close(String reason)
+    {
+        this.SendMessage(reason);
+        this.addToQueue(new Disconnect());
+
+    }
+
     public InetAddress getAddress() throws UnknownHostException{
     	return InetAddress.getByName(this.ip);
     }

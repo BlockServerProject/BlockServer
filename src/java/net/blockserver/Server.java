@@ -14,6 +14,7 @@ import java.util.Random;
 
 public class Server {
     private static Server instance = null;
+    private ConsoleCommandHandler cmdHandler = null;
 
     private ServerLogger logger = new ServerLogger();
     private Scheduler scheduler;
@@ -108,6 +109,7 @@ public class Server {
 
         this.scheduler = new Scheduler();// Minecraft Deafult Ticks Per Seconds(20)
         this.packetHandler = new PacketHandler(this);
+        this.cmdHandler = new ConsoleCommandHandler(this);
 }
 
     public void run() {
@@ -118,6 +120,7 @@ public class Server {
             this.scheduler.Start();
             this.logger.info("Server Scheduler Started...");
             this.packetHandler.Start();
+            this.cmdHandler.Start();
         } catch (SocketException e) {
             this.logger.fatal("COULD NOT BIND TO PORT - Maybe another server is running on " + serverPort + "?");
             this.logger.fatal("Shutting down server due to error.");
@@ -147,6 +150,7 @@ public class Server {
         this.serverRunning = false;
         this.scheduler.Stop();
         this.packetHandler.Stop();
+        this.cmdHandler.Stop();
     }
 
 }

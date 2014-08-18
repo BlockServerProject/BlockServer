@@ -2,7 +2,7 @@ package net.blockserver.network.minecraft;
 
 public class PacketsID
 {
-    public static final int CURRENT_PROTOCOL = 14;
+    public static final int CURRENT_PROTOCOL = 18;
 
     public static final byte PING = (byte)0x00;
 

@@ -1,5 +1,7 @@
 package net.blockserver.utility;
 
+import java.nio.ByteBuffer;
+
 public class Utils
 {
     public static int getTriad(byte[] data, int offset)
@@ -11,6 +13,18 @@ public class Utils
                         data[offset++] << 8  |
                         data[offset]
                     )
+                );
+    }
+
+    public static int getTriad(ByteBuffer bb)
+    {
+        return (int)
+                (
+                        (
+                                bb.get() << 16 |
+                                bb.get()  << 8  |
+                                bb.get()
+                        ) & 0xff
                 );
     }
 

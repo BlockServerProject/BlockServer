@@ -1,6 +1,6 @@
 package net.blockserver.blocks;
 
-public enum BlockType {
+public enum Blocks {
 
     AIR(0),
     STONE(1),
@@ -14,18 +14,6 @@ public enum BlockType {
     WOODEN_PLANKS(5),
     SAPLING(6),
     SAPLINGS(6),
-    OAK_SAPLING(6),
-    OAK_SAPLINGS(6),
-    SPRUCE_SAPLING(6, 1),
-    SPRUCE_SAPLINGS(6, 1),
-    BIRCH_SAPLING(6, 2),
-    BIRCH_SAPLINGS(6, 2),
-    JUNGLE_SAPLING(6, 3),
-    JUNGLE_SAPLINGS(6, 3),
-    ACACIA_SAPLING(6, 4),
-    ACACIA_SAPLINGS(6, 4),
-    DARK_OAK_SAPLING(6, 5),
-    DARK_OAK_SAPLINGS(6, 5),
     BEDROCK(7),
     WATER(8),
     STILL_WATER(9),
@@ -36,9 +24,9 @@ public enum BlockType {
     GOLD_ORE(14),
     IRON_ORE(15),
     COAL_ORE(16),
-    OAK_WOOD(17),
-    OAK_TRUNK(17),
-    OAK_LOG(17),
+    WOOD(17),
+    TRUNK(17),
+    LOG(17),
     LEAVES(18),
     LEAVE(18),
     SPONGE(19),
@@ -46,41 +34,15 @@ public enum BlockType {
     LAPIS_ORE(21),
     LAPIS_BLOCK(22),
     SANDSTONE(24),
-    CHISELED_SANDSTONE(24, 1),
-    SMOOTH_SANDSTONE(24, 2),
     BED_BLOCK(26),
-    POWERED_RAIL(27),
     COBWEB(30),
     TALL_GRASS(31),
     BUSH(32),
     DEAD_BUSH(32),
-    WHITE_WOOL(35),
-    ORANGE_WOOL(35, 1),
-    MAGENTA_WOOL(35, 2),
-    LIGHT_BLUE_WOOL(35, 3),
-    YELLOW_WOOL(35, 4),
-    LIME_GREEN_WOOL(35, 5),
-    PINK_WOOL(35, 6),
-    GRAY_WOOL(35, 7),
-    LIGHT_GRAY_WOOL(35, 8),
-    CYAN_WOOL(35, 9),
-    PURPLE_WOOL(35, 10),
-    BLUE_WOOL(35, 11),
-    BROWN_WOOL(35, 12),
-    GREEN_WOOL(35, 13),
-    RED_WOOL(35, 14),
-    BLACK_WOOL(35, 15),
+    WOOL(35),
     DANDELION(37),
     ROSE(38),
     POPPY(38),
-    BLUE_ORCHID(38, 1),
-    ALLIUM(38, 2),
-    AZURE_BLUET(38, 3),
-    RED_TULIP(38, 4),
-    ORANGE_TULIP(38, 5),
-    WHITE_TULIP(38, 6),
-    PINK_TULIP(38, 7),
-    OXEYE_DAISY(38, 8),
     BROWN_MUSHROOM(39),
     RED_MUSHROOM(40),
     GOLD_BLOCK(41),
@@ -98,8 +60,6 @@ public enum BlockType {
     OBSIDIAN(49),
     TORCH(50),
     FIRE(51),
-    MONSTER_SPAWNER(52),
-    SPAWNER(52),
     WOOD_STAIRS(53),
     WOODEN_STAIRS(53),
     OAK_WOOD_STAIRS(53),
@@ -119,7 +79,6 @@ public enum BlockType {
     WOODEN_DOOR_BLOCK(64),
     WOOD_DOOR_BLOCK(64),
     LADDER(65),
-    RAIL(66),
     COBBLE_STAIRS(67),
     COBBLESTONE_STAIRS(67),
     WALL_SIGN(68),
@@ -144,22 +103,9 @@ public enum BlockType {
     LIT_PUMPKIN(91),
     JACK_O_LANTERN(91),
     CAKE_BLOCK(92),
-    INVISIBLE_BEDROCK(95),
     TRAPDOOR(96),
-    STONE_MONSTER_EGG(97),
-    COBBLESTONE_MONSTER_EGG(97, 1),
-    STONE_BRICK_MONSTER_EGG(97, 2),
-    STONE_BRICKS_MONSTER_EGG(97, 2),
-    MOSSY_STONE_BRICK_MONSTER_EGG(97, 3),
-    MOSSY_STONE_BRICKS_MONSTER_EGG(97, 3),
-    CRACKED_STONE_BRICK_MONSTER_EGG(97, 4),
-    CRACKED_STONE_BRICKS_MONSTER_EGG(97, 4),
-    CHISELED_STONE_BRICK_MONSTER_EGG(97, 5),
-    CHISELED_STONE_BRICKS_MONSTER_EGG(97, 5),
-    STONE_BRICK(98),
     STONE_BRICKS(98),
-    HUGE_BROWN_MUSHROOM(99),
-    HUGE_RED_MUSHROOM(100),
+    STONE_BRICK(98),
     IRON_BAR(101),
     IRON_BARS(101),
     GLASS_PANE(102),
@@ -167,20 +113,12 @@ public enum BlockType {
     MELON_BLOCK(103),
     PUMPKIN_STEM(104),
     MELON_STEM(105),
-    VINE(106),
-    VINES(106),
     FENCE_GATE(107),
     BRICK_STAIRS(108),
     STONE_BRICK_STAIRS(109),
-    MYCELIUM(110),
-    LILY_PAD(111),
     NETHER_BRICKS(112),
     NETHER_BRICK_BLOCK(112),
     NETHER_BRICKS_STAIRS(114),
-    END_PORTAL_FRAME(120),
-    END_STONE(121),
-    CAKE_BLOCK(126),
-    COCOA_BLOCK(127),
     SANDSTONE_STAIRS(128),
     EMERALD_ORE(129),
     EMERALD_BLOCK(133),
@@ -220,53 +158,15 @@ public enum BlockType {
     CARPET(171),
     HARDENED_CLAY(172),
     COAL_BLOCK(173),
-    PODZOL(243),
     BEETROOT_BLOCK(244),
     STONECUTTER(245),
     GLOWING_OBSIDIAN(246),
-    NETHER_REACTOR(247),
-    NETHER_REACTOR_ACTIVE(247, 1),
-    NETHER_REACTOR_USED(247, 2);
+    NETHER_REACTOR(247);
     
-    private int id;
-    private int metadata = 0;
+    public int id;
 
-    private BlockType(int id){
+    private Blocks(int id){
     	this.id = id;
-    }
-    
-    private BlockType(int id, int metadata){
-    	this.id = id;
-    	this.metadata = metadata;
-    }
-    
-    public int getID(){
-    	return this.id;
-    }
-    
-    public BlockType setMetadata(int metadata){
-    	this.metadata = metadata;
-    	return this;
-    }
-    
-    public int getMetadata(){
-    	return this.metadata;
-    }
-    
-    public static BlockType getByID(int id) throws UnknownBlockException{
-    	for(BlockType block : BlockType.values())
-    		if(block.getID() == id)
-    			return block;
-    	throw new UnknownBlockException("No block found with ID " + id);
-    }
-    
-    public static BlockType getByID(int id, int metadata) throws UnknownBlockException{
-        return BlockType.getByID(id).setMetadata(metadata);
-    }
-    
-    @Override
-    public String toString(){
-        return this.id + ":" + this.metadata;
     }
 
 }
