@@ -105,7 +105,7 @@ public class Server {
         this.MCVERSION = version;
         this.serverID = new Random().nextLong();
 
-        this.players = new HashMap<>(this.maxPlayers);
+        this.players = new HashMap<String, Player>(this.maxPlayers);
 
         this.scheduler = new Scheduler();// Minecraft Deafult Ticks Per Seconds(20)
         this.packetHandler = new PacketHandler(this);
