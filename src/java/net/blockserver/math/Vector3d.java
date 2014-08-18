@@ -2,7 +2,7 @@ package net.blockserver.math;
 
 public class Vector3d
 {
-    private double x, y, z;
+    protected double x, y, z;
 
     public Vector3d(double v)
     {
@@ -56,4 +56,5 @@ public class Vector3d
     {
         this.z = v;
     }
+
 }
