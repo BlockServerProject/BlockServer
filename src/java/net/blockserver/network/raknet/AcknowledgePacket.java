@@ -1,13 +1,12 @@
 package net.blockserver.network.raknet;
 
-import net.blockserver.network.RaknetsID;
-import net.blockserver.network.minecraft.BaseDataPacket;
-import net.blockserver.utility.Utils;
-
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import net.blockserver.network.minecraft.BaseDataPacket;
+import net.blockserver.utility.Utils;
 
 public abstract class AcknowledgePacket implements BaseDataPacket
 {
@@ -70,7 +69,7 @@ public abstract class AcknowledgePacket implements BaseDataPacket
     public void decode()
     {
         ByteBuffer bb = ByteBuffer.wrap(buffer);
-        byte pid = bb.get(); // Packet ID
+        bb.get(); // Packet ID
 
         int count = bb.getShort();
         List<Integer> packets = new ArrayList<Integer>();
