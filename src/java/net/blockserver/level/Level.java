@@ -79,6 +79,10 @@ public class Level implements ILevel
 
     }
 
+    public double getGravityAt(Vector3 coords){
+        return 9.8; // Earth gravitational constant; not sure if same for Minecraft ;)
+    }
+
 	public int getSeed() {
 		return seed;
 	}
