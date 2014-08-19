@@ -3,7 +3,7 @@ package net.blockserver.level.generator;
 import java.util.Collections;
 import java.util.Set;
 
-public abstract class Generator<T extends Enum & GenerationSettings> {
+public abstract class Generator<T extends Enum<?> & GenerationSettings> {
 
     protected Set<T> customSettings;
     protected Set<DefaultGenerationSettings> defaultGenerationSettings;

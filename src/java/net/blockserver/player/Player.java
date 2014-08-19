@@ -1,34 +1,47 @@
-package net.blockserver;
+package net.blockserver.player;
 
-
-import net.blockserver.math.Vector3;
-import net.blockserver.network.minecraft.*;
-import net.blockserver.network.raknet.*;
-import net.blockserver.scheduler.CallBackTask;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-public class Player extends Vector3
-{
-    public static int nextID = 1;
+import net.blockserver.Server;
+import net.blockserver.entity.Entity;
+import net.blockserver.entity.EntityType;
+import net.blockserver.network.minecraft.BaseDataPacket;
+import net.blockserver.network.minecraft.ClientConnectPacket;
+import net.blockserver.network.minecraft.ClientHandShakePacket;
+import net.blockserver.network.minecraft.Disconnect;
+import net.blockserver.network.minecraft.LoginPacket;
+import net.blockserver.network.minecraft.LoginStatusPacket;
+import net.blockserver.network.minecraft.MessagePacket;
+import net.blockserver.network.minecraft.PacketsID;
+import net.blockserver.network.minecraft.PingPacket;
+import net.blockserver.network.minecraft.PongPacket;
+import net.blockserver.network.minecraft.ServerHandshakePacket;
+import net.blockserver.network.raknet.ACKPacket;
+import net.blockserver.network.raknet.AcknowledgePacket;
+import net.blockserver.network.raknet.CustomPacket;
+import net.blockserver.network.raknet.InternalPacket;
+import net.blockserver.network.raknet.NACKPacket;
+import net.blockserver.scheduler.CallBackTask;
 
+public class Player extends Entity
+{
     private String name;
-    private String iname;
     private String ip;
 
-    private int entityID;
+    private int maxHealth;
 
     private int lastSequenceNum;
     private int SequenceNum;
     private int messageIndex;
 
-    private int clientID;
-    private int CID; // Client ID From MCPE Client
+    private long clientID; // Client ID From MCPE Client
 
     private int port;
     private short mtuSize; // Maximum Transport Unit Size
@@ -37,39 +50,44 @@ public class Player extends Vector3
     private CustomPacket Queue;
     private List<Integer> ACKQueue; // Received Packet Queue
     private List<Integer> NACKQueue; // Not received packet queue
-    private Map<Integer, CustomPacket> recoveryQueue; // Packet sended queue to be used if not rceived
+    private Map<Integer, CustomPacket> recoveryQueue; // Packet sent queue to be used if not received
 
     public String getIP()
     {
         return this.ip;
     }
 
-    public Player(String ip, int port, short mtu, int clientID)
+    public Player(String ip, int port, short mtu, long clientID)
     {
-        super(0);
-        this.entityID = Player.nextID++;
+        super(0, 0, 0, null);
         this.ip = ip.replace("/", "");
         this.port = port;
-        this.mtuSize = mtu;
+        mtuSize = mtu;
         this.clientID = clientID;
 
-        this.lastSequenceNum = this.SequenceNum = this.messageIndex = 0;
+        lastSequenceNum = SequenceNum = messageIndex = 0;
 
-        this.server = Server.getInstance();
-        this.Queue = new CustomPacket();
-        this.ACKQueue = new ArrayList<Integer>();
-        this.NACKQueue = new ArrayList<Integer>();
-        this.recoveryQueue = new HashMap<Integer, CustomPacket>();
+        server = Server.getInstance();
+        Queue = new CustomPacket();
+        ACKQueue = new ArrayList<Integer>();
+        NACKQueue = new ArrayList<Integer>();
+        recoveryQueue = new HashMap<Integer, CustomPacket>();
 
-        try {
-            this.server.getScheduler().addTask(new CallBackTask(this, "Update", 10, true));
-        }catch (Exception e)
+        try
+        {
+            this.server.getScheduler().addTask(new CallBackTask(this, "update", 10, true));
+        }
+        catch(Exception e)
         {
             e.printStackTrace();
         }
     }
 
-    public void Update(int ticks)
+    protected void login(){
+        server.getPlayerDatabase().load(getIName());
+    }
+
+    public void update(int ticks)
     {
         if(this.ACKQueue.size() > 0)
         {
@@ -182,16 +200,16 @@ public class Player extends Vector3
 
                     if(lp.protocol != PacketsID.CURRENT_PROTOCOL || lp.protocol2 != PacketsID.CURRENT_PROTOCOL)
                     {
-                        if(lp.protocol < PacketsID.CURRENT_PROTOCOL ||lp.protocol2 < PacketsID.CURRENT_PROTOCOL)
+                        if(lp.protocol < PacketsID.CURRENT_PROTOCOL || lp.protocol2 < PacketsID.CURRENT_PROTOCOL)
                         {
-                            this.addToQueue(new LoginStatusPacket(1)); // Client outdated
-                            this.Close("Wrong Protocol.");
+                            addToQueue(new LoginStatusPacket(1)); // Client outdated
+                            close("Wrong Protocol: Client is outdated.");
                         }
 
-                        if(lp.protocol > PacketsID.CURRENT_PROTOCOL ||lp.protocol2 > PacketsID.CURRENT_PROTOCOL)
+                        if(lp.protocol > PacketsID.CURRENT_PROTOCOL || lp.protocol2 > PacketsID.CURRENT_PROTOCOL)
                         {
-                            this.addToQueue(new LoginStatusPacket(2)); // Server outdated
-                            this.Close("Wrong Protocol.");
+                            addToQueue(new LoginStatusPacket(2)); // Server outdated
+                            close("Wrong Protocol: Server is outdated.");
                         }
                     }
 
@@ -199,12 +217,13 @@ public class Player extends Vector3
 
                     if(lp.username.length() < 3 || lp.username.length() > 15)
                     {
-                        this.Close("Username is not valid.");
+                        close("Username is not valid.");
                     }
-                    this.iname = lp.username.toLowerCase();
                     this.name = lp.username;
 
-                    this.CID = lp.clientID;
+                    login();
+
+                    // this.CID = lp.clientID; // we don't need this
                     
                     //Once we get World gen up, uncomment this:
                     /*
@@ -244,23 +263,51 @@ public class Player extends Vector3
             this.server.getLogger().error("Unknown Acknowledge Packet: %02x", pck.buffer[0]);
     }
 
-    public void SendMessage(String msg)
+    public void sendMessage(String msg)
     {
-
+        addToQueue(new MessagePacket(msg)); // be aware of the message-too-long exception
     }
 
-    public void Close(String reason)
+    public void close(String reason)
     {
-        this.SendMessage(reason);
-        this.addToQueue(new Disconnect());
+        sendMessage(reason);
+        addToQueue(new Disconnect());
 
     }
 
     public InetAddress getAddress() throws UnknownHostException{
-    	return InetAddress.getByName(this.ip);
+    	return InetAddress.getByName(ip);
     }
     
     public int getPort(){
     	return this.port;
     }
+
+    public String getIName(){
+        return name.toLowerCase(Locale.ENGLISH);
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public String getIdentifier(){ // why not just use EID?
+        return ip + Integer.toString(port);
+    }
+
+    @Override
+    public EntityType getType() {
+        return EntityType.PLAYER;
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+
+    public long getClientID() {
+        return clientID;
+    }
+
 }

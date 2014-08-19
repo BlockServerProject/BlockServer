@@ -20,7 +20,7 @@ public class LoginStatusPacket implements BaseDataPacket
     }
 
     public void decode() {
-        throw new RuntimeException("Unimplemented method.");
+        throw new UnsupportedOperationException();
     }
 
     public ByteBuffer getBuffer() {

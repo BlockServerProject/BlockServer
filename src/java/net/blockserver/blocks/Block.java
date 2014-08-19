@@ -7,7 +7,6 @@ public class Block
     private int metadata;
     private String name;
 
-
     public Block(int id)
     {
         this.id = id;
@@ -34,4 +33,17 @@ public class Block
         this.metadata = metadata;
         this.name = name.isEmpty() ? "Unknown" : name;
     }
+
+    public int getID(){
+        return id;
+    }
+
+    public int getDamage(){
+        return metadata;
+    }
+
+    public String getName(){
+        return name;
+    }
+
 }

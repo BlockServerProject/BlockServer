@@ -15,7 +15,7 @@ public class UDPSocket
 
     private String ip;
     private int port;
-    private byte[] buffer = new byte[65535];
+//    private byte[] buffer = new byte[65535]; // unused?
     private DatagramSocket sck;
     private Server server;
 
