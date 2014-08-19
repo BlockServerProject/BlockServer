@@ -9,6 +9,9 @@ import net.blockserver.math.Vector3;
 public class Level implements ILevel
 {
     private IChunk[] chunks;
+    private int seed;
+    private int gamemode;
+    private Vector3 spawnpos;
 
     public String getName() {
         return null;
@@ -80,4 +83,27 @@ public class Level implements ILevel
         return 9.8; // Earth gravitational constant; not sure if same for Minecraft ;)
     }
 
+	public int getSeed() {
+		return seed;
+	}
+
+	public void setSeed(int seed) {
+		this.seed = seed;
+	}
+
+	public int getGamemode() {
+		return gamemode;
+	}
+
+	public void setGamemode(int gamemode) {
+		this.gamemode = gamemode;
+	}
+
+	public Vector3 getSpawnpos() {
+		return spawnpos;
+	}
+
+	public void setSpawnpos(Vector3 spawnpos) {
+		this.spawnpos = spawnpos;
+	}
 }

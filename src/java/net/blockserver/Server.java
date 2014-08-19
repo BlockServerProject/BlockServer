@@ -1,5 +1,6 @@
 package net.blockserver;
 
+import net.blockserver.level.Level;
 import net.blockserver.network.PacketHandler;
 import net.blockserver.scheduler.Scheduler;
 import net.blockserver.utility.MinecraftVersion;
@@ -34,6 +35,7 @@ public class Server {
 
     private int serverPort;
     private int maxPlayers;
+    private Level defaultLevel;
 
     public static synchronized Server getInstance(){
         return instance;
@@ -105,7 +107,7 @@ public class Server {
         this.MCVERSION = version;
         this.serverID = new Random().nextLong();
 
-        this.players = new HashMap<>(this.maxPlayers);
+        this.players = new HashMap<String, Player>(this.maxPlayers);
 
         this.scheduler = new Scheduler();// Minecraft Deafult Ticks Per Seconds(20)
         this.packetHandler = new PacketHandler(this);
@@ -152,5 +154,9 @@ public class Server {
         this.packetHandler.Stop();
         this.cmdHandler.Stop();
     }
+
+	public Level getDefaultLevel() {
+		return this.defaultLevel;
+	}
 
 }
