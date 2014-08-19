@@ -6,7 +6,6 @@ public enum Items {
     IRON_PICKAXE(257),
     IRON_AXE(258),
     FLINT_AND_STEEL(259),
-    FLINT_&_STEEL(259),
     APPLE(260),
     BOW(261),
     ARROW(262),
@@ -244,9 +243,15 @@ public enum Items {
     BEETROOT_SOUP(459);
     
     public int id;
+    public final static int DAMAGE_NEGLIGIBLE = 16;
+    public int damage;
 
     private Items(int id){
-    	this.id = id;
+    	this(id, DAMAGE_NEGLIGIBLE);
     }
 
+    private Items(int id, int damage){
+    	this.id = id;
+    	this.damage = damage;
+    }
 }

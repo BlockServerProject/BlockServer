@@ -17,7 +17,7 @@ public enum DefaultGenerationSettings implements GenerationSettings{
     VILLAGES(Boolean.class, true);
 
     private Class<?> type;
-    private Object def;
+    protected Object def;
     private Object value;
 
     private <T> DefaultGenerationSettings(Class<T> type, T def) {
