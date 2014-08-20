@@ -1,9 +1,6 @@
 package net.blockserver.network.minecraft;
 
-import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
-
-import net.blockserver.Server;
 
 public class ClientConnectPacket implements BaseDataPacket{
 	private ByteBuffer buffer;

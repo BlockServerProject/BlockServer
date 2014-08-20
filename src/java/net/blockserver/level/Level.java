@@ -5,13 +5,14 @@ import net.blockserver.blocks.Block;
 import net.blockserver.level.format.IChunk;
 import net.blockserver.level.format.ILevel;
 import net.blockserver.math.Vector3;
+import net.blockserver.math.Vector3d;
 
 public class Level implements ILevel
 {
     private IChunk[] chunks;
     private int seed;
     private int gamemode;
-    private Vector3 spawnpos;
+    private Vector3d spawnpos;
 
     public String getName() {
         return null;
@@ -99,11 +100,11 @@ public class Level implements ILevel
 		this.gamemode = gamemode;
 	}
 
-	public Vector3 getSpawnpos() {
+	public Vector3d getSpawnpos() {
 		return spawnpos;
 	}
 
-	public void setSpawnpos(Vector3 spawnpos) {
+	public void setSpawnpos(Vector3d spawnpos) {
 		this.spawnpos = spawnpos;
 	}
 }
