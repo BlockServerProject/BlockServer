@@ -24,7 +24,7 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 			try {
 				String input = console.readLine();
 				sudoCommand(input.trim());
-//				if(input.startsWith(Command.getCommandName(Command.FREE))){
+//			 if(input.startsWith(Command.getCommandName(Command.FREE))){
 //					long total = Runtime.getRuntime().totalMemory() / 1000000;
 //					long free = Runtime.getRuntime().freeMemory() / 1000000;
 //					long used = total - free;
@@ -54,7 +54,9 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 			} catch (IOException e) {
 				this.server.getLogger().error("IOException in ConsoleCommand Thread:");
 				e.printStackTrace();
-			}
+			} catch (Exception e){
+                e.printStackTrace();
+            }
 		}
 	}
 	
