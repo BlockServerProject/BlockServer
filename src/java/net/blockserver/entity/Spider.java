@@ -3,9 +3,9 @@ package net.blockserver.entity;
 import net.blockserver.level.Level;
 import net.blockserver.math.Vector3d;
 
-public class Sheep extends Entity{
+public class Spider extends Entity{
 
-    public Sheep(Vector3d pos, Level level)
+    public Spider(Vector3d pos, Level level)
     {
         super(pos, level);
     }
@@ -13,12 +13,12 @@ public class Sheep extends Entity{
     @Override
     public EntityType getType()
     {
-        return EntityType.SHEEP;
+        return EntityType.SPIDER;
     }
 
     @Override
     public int getMaxHealth(){
-        return 4;
+        return 10;
     }
 
 }

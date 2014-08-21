@@ -27,9 +27,9 @@ public class StartGamePacket implements BaseDataPacket {
 		seed = level.getSeed();
 		unknown = 1;
 		gamemode = level.getGamemode();
-		spawnX = level.getSpawnpos().getX();
-		spawnY = level.getSpawnpos().getY();
-		spawnZ = level.getSpawnpos().getZ();
+		spawnX = (float) level.getSpawnpos().getX();
+		spawnY = (float) level.getSpawnpos().getY();
+		spawnZ = (float) level.getSpawnpos().getZ();
 		
 		this.buffer = ByteBuffer.allocate(29); //Not sure about this, I think its right
 		buffer.put(PID);
