@@ -1,5 +1,6 @@
 package net.blockserver.math;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class Moveable extends Vector3d{
@@ -13,10 +14,14 @@ public abstract class Moveable extends Vector3d{
     }
     protected Moveable(double x, double y, double z, Vector3f speed){
         super(x, y, z);
-        
+        initSpeedMap();
     }
     protected Moveable(double x, double y, double z){
         this(x, y, z, new Vector3f(0, 0, 0));
+        initSpeedMap();
+    }
+    protected void initSpeedMap(){
+        speed = new HashMap<String, Vector3f>(0xFF);
     }
     public void setSpeed(Vector3f speed){
         setSpeed(speed, MODIFIER_STANDARD);
