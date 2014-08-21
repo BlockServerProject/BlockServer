@@ -2,6 +2,8 @@ package net.blockserver.math;
 
 public class YPSControlledVector3d extends Vector3d {
 
+    public final static String COORDS_EX = "Cannot modify coords of YPSControlledVector3d directly; use setYaw(), setPitch() and/or setSpeed()";
+
     protected double yaw, pitch, speed;
 
     public YPSControlledVector3d(double yaw, double pitch){
@@ -16,8 +18,50 @@ public class YPSControlledVector3d extends Vector3d {
         setYawPitchOnSubject(yaw, pitch, speed, this);
     }
 
-    public void update(){ // TODO call this method from setters
+    public void recalculate(){
         setYawPitchOnSubject(yaw, pitch, speed, this);
+    }
+
+    public double getYaw(){
+        return yaw;
+    }
+
+    public double getPitch(){
+        return pitch;
+    }
+
+    public double getSpeed(){
+        return speed;
+    }
+
+    public double setYaw(double yaw){
+        this.yaw = yaw;
+        recalculate();
+    }
+
+    public double setPitch(double pitch){
+        this.pitch = pitch;
+        recalculate();
+    }
+
+    public double setSpeed(double speed){
+        this.speed = speed;
+        recalculate();
+    }
+
+    @Override
+    public void setX(double x){
+        throw new UnsupportedOperationException(COORDS_EX);
+    }
+
+    @Override
+    public void setY(double y){
+        throw new UnsupportedOperationException(COORDS_EX);
+    }
+
+    @Override
+    public void setZ(double z){
+        throw new UnsupportedOperationException(COORDS_EX);
     }
 
 }

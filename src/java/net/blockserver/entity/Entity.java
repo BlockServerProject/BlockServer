@@ -11,7 +11,6 @@ public abstract class Entity extends Moveable
     protected int eid;
     protected Level level;
     protected double health;
-    private double yaw = 0, pitch = 0, speed = 0; // TODO use the new YPSControlledVector3d class
     protected boolean hasYPSChanged = false; // YawPitchSpeed
     protected Entity(double x, double y, double z, Level level)
     {
@@ -24,6 +23,10 @@ public abstract class Entity extends Moveable
     {
         super(pos);
         this.level = level;
+    }
+
+    public Vector3d getInitialStdSpeed(){
+        return new YPSControlledVector3d(0, 0, 0);
     }
 
     public Level getLevel()
