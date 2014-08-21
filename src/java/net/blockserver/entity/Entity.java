@@ -11,6 +11,8 @@ public abstract class Entity extends Moveable
     protected int eid;
     protected Level level;
     protected double health;
+    private double yaw = 0, pitch = 0, speed = 0; // TODO use the new YPSControlledVector3d class
+    protected boolean hasYPSChanged = false; // YawPitchSpeed
     protected Entity(double x, double y, double z, Level level)
     {
         super(x, y, z);
@@ -34,7 +36,8 @@ public abstract class Entity extends Moveable
         return health;
     }
 
-    public boolean isValid(){
+    public boolean isValid()
+    {
         return level instanceof Level;
     }
 
@@ -43,11 +46,21 @@ public abstract class Entity extends Moveable
         this.health = Math.min(Math.max(0, health), getMaxHealth());
     }
 
+    public void onTickUpdate()
+    {
+        if(hasYPSChanged){
+            hasYPSChanged = false;
+            setSpeed(Vector3d.fromYawPitch(yaw, pitch, speed).toFloat());
+        }
+        super.onTickUpdate();
+    }
+
     public abstract EntityType getType();
 
     public abstract int getMaxHealth();
 
-    public static int nextID(){
+    public static int nextID()
+    {
         return nextID++;
     }
 

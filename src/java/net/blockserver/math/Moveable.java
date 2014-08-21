@@ -22,6 +22,10 @@ public abstract class Moveable extends Vector3d{
     }
     protected void initSpeedMap(){
         speed = new HashMap<String, Vector3f>(0xFF);
+        setSpeed(getInitialStdSpeed());
+    }
+    protected Vector3f getInitialStdSpeed(){
+        return new Vector3f(0, 0, 0);
     }
     public void setSpeed(Vector3f speed){
         setSpeed(speed, MODIFIER_STANDARD);
