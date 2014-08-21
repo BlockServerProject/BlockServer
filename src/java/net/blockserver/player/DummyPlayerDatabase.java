@@ -19,7 +19,7 @@ public class DummyPlayerDatabase implements PlayerDatabase{
     @Override
     public PlayerData load(String name) {
         Level level = server.getDefaultLevel();
-        return new PlayerData(level, level.getSpawnpos());
+        return new PlayerData(level, level.getSpawnpos(), name);
     }
 
     @Override

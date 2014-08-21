@@ -7,9 +7,11 @@ public class PlayerData {
 
     private Level level;
     private Vector3d coords;
-    public PlayerData(Level level, Vector3d coords) {
-        this.setLevel(level);
-        this.setCoords(coords);
+    private String caseName;
+    public PlayerData(Level level, Vector3d coords, String caseName) {
+        setLevel(level);
+        setCoords(coords);
+        setCaseName(caseName);
     }
     public Level getLevel() {
         return level;
@@ -22,6 +24,12 @@ public class PlayerData {
     }
     public void setCoords(Vector3d coords) {
         this.coords = coords;
+    }
+    public String getCaseName() {
+        return caseName;
+    }
+    public void setCaseName(String caseName) {
+        this.caseName = caseName;
     }
 
 }
