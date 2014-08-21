@@ -34,17 +34,17 @@ public class YPSControlledVector3d extends Vector3d {
         return speed;
     }
 
-    public double setYaw(double yaw){
+    public void setYaw(double yaw){
         this.yaw = yaw;
         recalculate();
     }
 
-    public double setPitch(double pitch){
+    public void setPitch(double pitch){
         this.pitch = pitch;
         recalculate();
     }
 
-    public double setSpeed(double speed){
+    public void setSpeed(double speed){
         this.speed = speed;
         recalculate();
     }

@@ -27,18 +27,36 @@ public abstract class Moveable extends Vector3d{
     protected Vector3d getInitialStdSpeed(){
         return new Vector3d(0, 0, 0);
     }
+    /**
+     * Sets the standard modifier speed's value
+     * @param speed speed of the standard modifier
+     */
     public void setSpeed(Vector3d speed){
         setSpeed(speed, MODIFIER_STANDARD);
     }
+    /**
+     * Sets the modifier speed of the specified name
+     * @param speed value to set modifier to
+     * @param name name of the modifier
+     */
     public void setSpeed(Vector3d speed, String name){
         this.speed.put(name, speed);
     }
+    /**
+     * Gets the modifier speed of the specified name
+     * @param name name of the modifier
+     * @return Vector3d the speed
+     */
     public Vector3d getSpeed(String name){
         if(speed.containsKey(name)){
             return speed.get(name);
         }
         return new Vector3d(); // return null;
     }
+    /**
+     * Gets the total, summed speed.
+     * @return Vector3d the sum of all modifier speeds.
+     */
     public Vector3d getSpeed(){
         Vector3d base = new Vector3d();
         for(Map.Entry<String, Vector3d> entry: speed.entrySet()){
@@ -46,6 +64,9 @@ public abstract class Moveable extends Vector3d{
         }
         return base;
     }
+    /**
+     * Updates the coordinates of the Moveable
+     */
     public void onTickUpdate(){
         instanceAdd(getSpeed());
     }

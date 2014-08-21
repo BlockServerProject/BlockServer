@@ -1,5 +1,7 @@
 package net.blockserver;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.HashMap;
@@ -36,9 +38,15 @@ public class Server {
 
     private int serverPort;
     private int maxPlayers;
-    private Level defaultLevel;
+
+    private Map<String, Level> levels;
+
+    private String defaultLevel;
+
+    private File serverDir;
 
     public PlayerDatabase playerDb;
+    private File worldsDir;
 
     public static synchronized Server getInstance(){
         return instance;
@@ -53,54 +61,58 @@ public class Server {
     }
 
     public MinecraftVersion getMinecraftVersion() {
-        return this.MCVERSION;
+        return MCVERSION;
     }
 
     public String getServerIP(){
-        return this.serverip;
+        return serverip;
     }
 
     public String getServerName() {
-        return this.serverName;
+        return serverName;
     }
 
     public String getVersion() {
-        return this.VERSION;
+        return VERSION;
     }
 
     public int getServerPort() {
-        return this.serverPort;
+        return serverPort;
     }
 
     public int getMaxPlayers() {
-        return this.maxPlayers;
+        return maxPlayers;
     }
 
     public long getServerID() {
-        return this.serverID;
+        return serverID;
     }
 
     public long getStartTime() {
-        return this.startTime;
+        return startTime;
     }
 
     public boolean isRunning() {
-        return this.serverRunning;
+        return serverRunning;
     }
 
     public Player getPlayer(String ip, int port)
     {
-        return this.players.get(ip + Integer.toString(port));
+        return players.get(ip + Integer.toString(port));
     }
 
     public void addPlayer(Player player)
     {
-        this.players.put(player.getIP() + Integer.toString(player.getPort()), player);
+        players.put(player.getIP() + Integer.toString(player.getPort()), player);
     }
 
-    public Server(String name, String ip, int port, int players, MinecraftVersion version, Class<? extends PlayerDatabase> dbType) throws  Exception{
+    public Server(String name, String ip, int port, int players, MinecraftVersion version, String defaultLevel, Class<? extends PlayerDatabase> dbType) throws  Exception{
         Thread.currentThread().setName("ServerThread");
         instance = this;
+
+        String path = new File(".").getCanonicalPath();
+        serverDir = new File(path);
+        serverDir.mkdirs(); // redundant line
 
         startTime = System.currentTimeMillis();
         serverip = ip;
@@ -112,10 +124,33 @@ public class Server {
 
         this.players = new HashMap<String, Player>(players);
 
+        worldsDir = new File(serverDir, "worlds/");
+        int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
+        levels = new HashMap<String, Level>(cnt);
+        boolean success = loadLevel(defaultLevel, true);
+        if(!success){
+            throw new RuntimeException("Unable to generate default level");
+        }
+
         scheduler = new Scheduler();// Minecraft default Ticks Per Seconds(20)
         packetHandler = new PacketHandler(this);
         cmdHandler = new ConsoleCommandHandler(this);
         playerDb = dbType.newInstance();
+    }
+
+    private class RootDirectoryFilter implements FilenameFilter{
+        private File dir;
+        public RootDirectoryFilter(File dir){
+            this.dir = dir;
+        }
+        @Override
+        public boolean accept(File dir, String name){
+            if(dir.equals(this.dir)){
+                File d = new File(dir, name);
+                return d.isDirectory();
+            }
+            return false;
+        }
     }
 
     public void run() {
@@ -147,25 +182,66 @@ public class Server {
     {
         try {
             this.packetHandler.sendPacket(buffer, ip, port);
-        }catch (Exception e)
+        }
+        catch (Exception e)
         {
             e.printStackTrace();
         }
     }
 
     public void stop() throws Exception {
-        this.serverRunning = false;
-        this.scheduler.Stop();
-        this.packetHandler.Stop();
-        this.cmdHandler.Stop();
+        serverRunning = false;
+        scheduler.Stop();
+        packetHandler.Stop();
+        cmdHandler.Stop();
     }
 
 	public Level getDefaultLevel() {
-		return this.defaultLevel;
+		return levels.get(defaultLevel);
+	}
+
+	public Level getLevel(String name, boolean load, boolean generate){
+	    if(levels.containsKey(name)){
+	        return levels.get(name);
+	    }
+	    if(load){
+	        boolean success = loadLevel(name, generate);
+	        if(success){
+	            return levels.get(name);
+	        }
+	    }
+	    return null;
+	}
+	
+    public boolean loadLevel(String name, boolean generate) {
+        File dir = new File(getWorldsDir(), name);
+        if(dir.isDirectory()){
+            // TODO Auto-generated method stub
+            return false;
+        }
+        else if(generate){
+            return generateLevel(name);
+        }
+        else{
+            return false;
+        }
+    }
+
+	public boolean generateLevel(String name) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    public File getWorldsDir(){
+	    return worldsDir;
 	}
 
     public PlayerDatabase getPlayerDatabase() {
         return playerDb;
+    }
+
+    public File getServerFolder(){
+        return serverDir;
     }
 
 }

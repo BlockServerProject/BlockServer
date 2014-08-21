@@ -3,6 +3,7 @@ package net.blockserver.entity;
 import net.blockserver.level.Level;
 import net.blockserver.math.Moveable;
 import net.blockserver.math.Vector3d;
+import net.blockserver.math.YPSControlledVector3d;
 
 public abstract class Entity extends Moveable
 {
@@ -51,11 +52,35 @@ public abstract class Entity extends Moveable
 
     public void onTickUpdate()
     {
-        if(hasYPSChanged){
-            hasYPSChanged = false;
-            setSpeed(Vector3d.fromYawPitch(yaw, pitch, speed).toFloat());
-        }
         super.onTickUpdate();
+    }
+
+    public void setYaw(double yaw){
+        getYPS().setYaw(yaw);
+    }
+
+    public void setPitch(double pitch){
+        getYPS().setPitch(pitch);
+    }
+
+    public void setWalkingSpeed(double speed){
+        getYPS().setSpeed(speed);
+    }
+
+    public double getYaw(){
+        return getYPS().getYaw();
+    }
+
+    public double getPitch(){
+        return getYPS().getPitch();
+    }
+
+    public double getWalkingSpeed(){
+        return getYPS().getSpeed();
+    }
+
+    public YPSControlledVector3d getYPS(){
+        return (YPSControlledVector3d) getSpeed(MODIFIER_STANDARD);
     }
 
     public abstract EntityType getType();
