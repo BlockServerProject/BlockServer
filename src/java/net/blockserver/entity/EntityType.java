@@ -18,8 +18,9 @@ public enum EntityType {
 	SLIME(37, Slime.class),
 	ENDERMAN(38, Enderman.class),
 	SILVERFISH(39, Silverfish.class),
-	PLAYER(63, Player.class), // TODO more entities
-	//FALLING_BLOCK(66, FallingBlock.class);
+	PLAYER(63, Player.class); // TODO more entities
+	/*FALLING_BLOCK(66, FallingBlock.class); I'll implement this later, due to I have to fully
+	implement first a block appearing when completely when the entity falls completely. */
 	private int id;
 	private Class<? extends Entity> c;
 	private EntityType(int id, Class<? extends Entity> c){
