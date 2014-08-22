@@ -25,8 +25,4 @@ public enum Dye {
         return Dye.values()[new Random().nextInt(Dye.values().length)];
     }
 
-    public String toHex(){
-        return Integer.toHexString(this.ordinal());
-    }
-
 }
