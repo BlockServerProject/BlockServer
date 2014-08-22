@@ -112,7 +112,6 @@ public class Server {
 
     public Server(String name, String ip, int port, int players, MinecraftVersion version, String defaultLevel, Class<? extends PlayerDatabase> dbType) throws  Exception{
         Thread.currentThread().setName("ServerThread");
-        instance = this;
 
         String path = new File(".").getCanonicalPath();
         serverDir = new File(path);
