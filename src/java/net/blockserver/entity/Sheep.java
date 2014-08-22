@@ -5,9 +5,17 @@ import net.blockserver.math.Vector3d;
 
 public class Sheep extends Entity{
 
+    private Dye dye;
+
     public Sheep(Vector3d pos, Level level)
     {
         super(pos, level);
+        this.dye = Dye.Random();
+    }
+
+    public Sheep(Vector3d pos, Level level, Dye dye){
+        super(pos, level);
+        this.dye = dye;
     }
 
     @Override
