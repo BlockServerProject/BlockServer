@@ -10,7 +10,7 @@ public class Sheep extends Entity{
     public Sheep(Vector3d pos, Level level)
     {
         super(pos, level);
-        this.dye = Dye.Random();
+        this.dye = Dye.getRandomSheepDye();
     }
 
     public Sheep(Vector3d pos, Level level, Dye dye){
