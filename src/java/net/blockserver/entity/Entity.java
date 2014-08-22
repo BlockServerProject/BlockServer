@@ -83,7 +83,9 @@ public abstract class Entity extends Moveable
         return (YPSControlledVector3d) getSpeed(MODIFIER_STANDARD);
     }
 
-    public abstract EntityType getType();
+    public EntityType getType(){
+        return EntityType.valueOf(this.getClass().getSimpleName().toUpperCase());
+    }
 
     public abstract int getMaxHealth();
 
