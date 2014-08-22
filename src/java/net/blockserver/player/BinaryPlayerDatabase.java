@@ -107,7 +107,7 @@ public class BinaryPlayerDatabase implements PlayerDatabase {
     }
 
     public File getPlayerFile(String name){
-        return new File(folder, name.toLowerCase(Locale.US));
+        return new File(folder, name.toLowerCase(Locale.US) + ".bsf"); // Block Server Format
     }
 
 }

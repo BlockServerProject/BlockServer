@@ -52,6 +52,10 @@ public class Server {
         return instance;
     }
 
+    public static void setInstance(Server i){
+        instance = i;
+    }
+
     public Scheduler getScheduler() {
         return this.scheduler;
     }
@@ -154,7 +158,7 @@ public class Server {
     }
 
     public void run() {
-        this.serverRunning = true;
+        serverRunning = true;
         try {
             logger.info("Starting server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
             logger.info("This is version " + VERSION);
