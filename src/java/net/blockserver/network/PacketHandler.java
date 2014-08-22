@@ -1,19 +1,18 @@
 package net.blockserver.network;
 
-import net.blockserver.Player;
-import net.blockserver.Server;
-import net.blockserver.network.minecraft.ClientConnectPacket;
-import net.blockserver.network.minecraft.ServerHandshakePacket;
-import net.blockserver.network.raknet.*;
-import net.blockserver.utility.Utils;
-
-import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.List;
+
+import net.blockserver.Server;
+import net.blockserver.network.raknet.ACKPacket;
+import net.blockserver.network.raknet.ConnectedPingPacket;
+import net.blockserver.network.raknet.ConnectionRequest1Packet;
+import net.blockserver.network.raknet.ConnectionRequest2;
+import net.blockserver.network.raknet.CustomPacket;
+import net.blockserver.network.raknet.IncompatibleProtocolPacket;
+import net.blockserver.network.raknet.NACKPacket;
+import net.blockserver.player.Player;
 
 public class PacketHandler extends Thread
 {
@@ -103,8 +102,8 @@ public class PacketHandler extends Thread
                             DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), pck.getAddress(), pck.getPort());
                             sendPacket(packet08);
 
-                            this.server.addPlayer(new Player(pck.getAddress().toString().replace("/", ""), pck.getPort(), packet.mtuSize, (int)packet.clientID));
-
+                            Player player = new Player(pck.getAddress().toString(), pck.getPort(), packet.mtuSize, packet.clientID);
+                            server.addPlayer(player);
                         }
                         break;
 
@@ -112,19 +111,20 @@ public class PacketHandler extends Thread
                             server.getLogger().warning("Recived unsupported raknet packet! PID: %02X", pid);
                     }
                 }
-                else if( pid >= RaknetsID.DATA_PACKET_0 &&  pid <= RaknetsID.DATA_PACKET_F) // Custom Data Packet Range
+                else if(pid >= RaknetsID.DATA_PACKET_0 &&  pid <= RaknetsID.DATA_PACKET_F) // Custom Data Packet Range
                 {
 
                     CustomPacket packet = new CustomPacket(pck.getData());
                     packet.decode();
-                    this.server.getPlayer(pck.getAddress().toString().replace("/", "")).handlePacket(packet);
+                    server.getPlayer(pck.getAddress().toString().replace("/", ""), pck.getPort()).handlePacket(packet);
                 	
                 }
                 else if(pid == RaknetsID.ACK || pid == RaknetsID.NACK)
                 {
-                    if(this.server.getPlayer(pck.getAddress().toString().replace("/", "")) != null)
+                    Player player = server.getPlayer(pck.getAddress().toString().replace("/", ""), pck.getPort());
+                    if(player != null)
                     {
-                        this.server.getPlayer(pck.getAddress().toString().replace("/", "")).handleAcknowledgePackets(pid == RaknetsID.ACK ? new ACKPacket(pck.getData()) : new NACKPacket(pck.getData()));
+                        player.handleAcknowledgePackets(pid == RaknetsID.ACK ? new ACKPacket(pck.getData()) : new NACKPacket(pck.getData()));
                     }
                 }
                 else // Unknown Packet Received!! New Protocol Changes?

@@ -3,9 +3,9 @@ package net.blockserver.entity;
 import net.blockserver.level.Level;
 import net.blockserver.math.Vector3d;
 
-public class Chicken extends Entity{
+public class Sheep extends Entity{
 
-    public Chicken(Vector3d pos, Level level)
+    public Sheep(Vector3d pos, Level level)
     {
         super(pos, level);
     }
@@ -13,7 +13,7 @@ public class Chicken extends Entity{
     @Override
     public EntityType getType()
     {
-        return EntityType.CHICKEN;
+        return EntityType.SHEEP;
     }
 
     @Override

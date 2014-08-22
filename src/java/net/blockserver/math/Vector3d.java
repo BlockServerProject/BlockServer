@@ -9,13 +9,32 @@ public class Vector3d
     }
 
     public static Vector3d fromYawPitch(double yaw, double pitch, double speed){
+        Vector3d subject = new Vector3d();
+        setYawPitchOnSubject(yaw, pitch, speed, subject);
+        return subject;
+    }
+
+    public static void setYawPitchOnSubject(double yaw, double pitch, Vector3d subject){
+        setYawPitchOnSubject(yaw, pitch, 1, subject);
+    }
+
+    public static void setYawPitchOnSubject(double yaw, double pitch, double speed, Vector3d subject){
         yaw = (yaw + 90) * Math.PI / 180;
         pitch = pitch * Math.PI / 180;
         double y = -Math.sin(pitch) * speed;
         double horizDelta = Math.abs(Math.cos(pitch));
         double x = -horizDelta * Math.sin(yaw);
         double z = horizDelta * Math.cos(yaw);
-        return new Vector3d(x, y, z);
+        subject.setX(x);
+        subject.setY(y);
+        subject.setZ(z);
+        /*
+         * ===DRAFT===
+         * y = sin(pitch)
+         * horizDelta = |cos(pitch)|
+         * x = horizDelta * (-sin(yaw))
+         * z = horizDelta * cos(yaw)
+         */
     }
 
     public Vector3d(){
@@ -43,6 +62,24 @@ public class Vector3d
         this.z = z;
     }
 
+    public YawPitchSet getYawPitch()
+    {
+        return getYawPitch(1);
+    }
+
+    public YawPitchSet getYawPitch(double speed){
+        double pitch = Math.asin(y / speed);
+        double yaw = Math.acos((z / speed) / Math.abs(Math.cos(pitch)));
+        return new YawPitchSet(yaw, pitch);
+        /*
+         * ===DRAFT===
+         * pitch = asin(y)
+         * horizDelta = |cos(pitch)|
+         * cos(yaw) = z / horizDelta
+         * yaw = acos(z / horizDelta)
+         * 
+         */
+    }
 
     public double getX()
     {
@@ -115,6 +152,17 @@ public class Vector3d
         return new Vector3((int) x, (int) y, (int) z);
     }
 
+    public Vector3d abs()
+    {
+        return new Vector3d(Math.abs(x), Math.abs(y), Math.abs(z));
+    }
+
+    public double distance(Vector3d other)
+    {
+        Vector3d delta = subtract(other).abs();
+        return Math.sqrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2) + Math.pow(delta.z, 2));
+    }
+
     public static Vector3d merge(Vector3d... vectors)
     {
         Vector3d base = new Vector3d();
@@ -123,6 +171,26 @@ public class Vector3d
             base = new Vector3d(base.getX() + vector.getX(), base.getY() + vector.getY(), base.getZ() + vector.getZ());
         }
         return base;
+    }
+
+    public static class YawPitchSet{
+        private double yaw, pitch;
+        public YawPitchSet(double yaw, double pitch){
+            this.yaw = yaw;
+            this.pitch = pitch;
+        }
+        public double getYaw() {
+            return yaw;
+        }
+        public void setYaw(double yaw) {
+            this.yaw = yaw;
+        }
+        public double getPitch() {
+            return pitch;
+        }
+        public void setPitch(double pitch) {
+            this.pitch = pitch;
+        }
     }
 
 }
