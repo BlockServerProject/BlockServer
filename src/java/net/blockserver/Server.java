@@ -52,6 +52,10 @@ public class Server {
         return instance;
     }
 
+    public static void setInstance(Server i){
+        instance = i;
+    }
+
     public Scheduler getScheduler() {
         return this.scheduler;
     }
@@ -108,7 +112,6 @@ public class Server {
 
     public Server(String name, String ip, int port, int players, MinecraftVersion version, String defaultLevel, Class<? extends PlayerDatabase> dbType) throws  Exception{
         Thread.currentThread().setName("ServerThread");
-        instance = this;
 
         String path = new File(".").getCanonicalPath();
         serverDir = new File(path);
@@ -154,7 +157,7 @@ public class Server {
     }
 
     public void run() {
-        this.serverRunning = true;
+        serverRunning = true;
         try {
             logger.info("Starting server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
             logger.info("This is version " + VERSION);
