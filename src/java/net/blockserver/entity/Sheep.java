@@ -29,4 +29,12 @@ public class Sheep extends Entity{
         return 4;
     }
 
+    public void dye(Dye dye){
+        this.dye = dye;
+    }
+
+    public Dye getDye(){
+        return this.dye;
+    }
+
 }
