@@ -1,6 +1,5 @@
 package net.blockserver.network.minecraft;
 
-import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 
 /**

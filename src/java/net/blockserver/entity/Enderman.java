@@ -3,9 +3,9 @@ package net.blockserver.entity;
 import net.blockserver.level.Level;
 import net.blockserver.math.Vector3d;
 
-public class Chicken extends Entity{
+public class Enderman extends Entity{
 
-    public Chicken(Vector3d pos, Level level)
+    public Enderman(Vector3d pos, Level level)
     {
         super(pos, level);
     }
@@ -13,12 +13,12 @@ public class Chicken extends Entity{
     @Override
     public EntityType getType()
     {
-        return EntityType.CHICKEN;
+        return EntityType.ENDERMAN;
     }
 
     @Override
     public int getMaxHealth(){
-        return 4;
+        return 20;
     }
 
 }

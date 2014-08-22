@@ -6,7 +6,7 @@ public interface GenerationSettings {
 
     public Object getDefault();
 
-    public Enum setValue(Object value);
+    public Enum<?> setValue(Object value);
 
     public Object getValue();
 

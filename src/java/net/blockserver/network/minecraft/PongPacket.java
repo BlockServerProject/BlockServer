@@ -1,12 +1,6 @@
 package net.blockserver.network.minecraft;
 
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.Random;
-
-import net.blockserver.Player;
 
 /**
  * Implements a 0x03 PONG Packet.

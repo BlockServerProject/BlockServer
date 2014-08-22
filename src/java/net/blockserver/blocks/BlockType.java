@@ -1,5 +1,8 @@
 package net.blockserver.blocks;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum BlockType {
 
     AIR(0),
@@ -226,7 +229,13 @@ public enum BlockType {
     NETHER_REACTOR(247),
     NETHER_REACTOR_ACTIVE(247, 1),
     NETHER_REACTOR_USED(247, 2);
-    
+
+    public final static Map<Integer, BlockType> converts = new HashMap<Integer, BlockType>(0xFF);
+
+    static{
+        converts.put(126, CAKE_BLOCK);
+    }
+
     private int id;
     private int metadata = 0;
 

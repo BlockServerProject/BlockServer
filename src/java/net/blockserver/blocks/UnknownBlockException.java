@@ -1,5 +1,6 @@
 package net.blockserver.blocks;
 
+@SuppressWarnings("serial")
 public class UnknownBlockException extends Exception {
 	
 	private String message = null;

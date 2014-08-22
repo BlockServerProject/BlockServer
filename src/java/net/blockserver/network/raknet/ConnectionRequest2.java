@@ -11,8 +11,8 @@ public class ConnectionRequest2 extends BaseLoginPacket {
 	
 	protected ByteBuffer buffer;
 	private byte PID;
-	private byte[] MAGIC;
-	private byte[] securityCookie;
+	@SuppressWarnings("unused")
+	private byte[] MAGIC, securityCookie;
 	public short mtuSize;
 	public long clientID;
 	
@@ -40,7 +40,7 @@ public class ConnectionRequest2 extends BaseLoginPacket {
 		response.put(packetID);
 		response.put(magic);
 		response.putLong(serverID);
-		response.putShort(mtu);
+		response.putShort(clientPort); // who did this...
 		response.putShort(mtu);
 		response.put(security);
 		

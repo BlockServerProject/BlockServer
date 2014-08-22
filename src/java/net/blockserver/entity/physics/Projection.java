@@ -18,12 +18,12 @@ public class Projection
         this.speed = speed;
         this.owner = owner;
         Vector3d delta = initialDelta = Vector3d.fromYawPitch(yaw, pitch, 1);
-        owner.setSpeed(delta.multiply(speed).toFloat(), MODIFIER_PROJECTION);
+        owner.setSpeed(delta.multiply(speed), MODIFIER_PROJECTION);
     }
     public void update(){
         ticks++;
         double gravity = owner.getLevel().getGravityAt(owner.floor());
-        owner.setSpeed(owner.getSpeed(MODIFIER_PROJECTION).subtract(0, (float) gravity, 0).toFloat(), MODIFIER_PROJECTION);
+        owner.setSpeed(owner.getSpeed(MODIFIER_PROJECTION).subtract(0, gravity, 0), MODIFIER_PROJECTION);
     }
     public void setSpeed(double speed)
     {
