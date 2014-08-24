@@ -124,6 +124,7 @@ public class Server {
 
         this.players = new HashMap<String, Player>(players);
 
+	/*
         worldsDir = new File(serverDir, "worlds/");
         int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
         levels = new HashMap<String, Level>(cnt);
@@ -131,7 +132,7 @@ public class Server {
         if(!success){
             throw new RuntimeException("Unable to generate default level");
         }
-
+	*/
         scheduler = new Scheduler();// Minecraft default Ticks Per Seconds(20)
         packetHandler = new PacketHandler(this);
         cmdHandler = new ConsoleCommandHandler(this);
