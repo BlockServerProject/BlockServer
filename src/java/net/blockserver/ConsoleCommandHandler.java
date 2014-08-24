@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import net.blockserver.utility.CommandIssuer;
+import net.blockserver.cmd.CommandIssuer;
 
 public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	private Server server;

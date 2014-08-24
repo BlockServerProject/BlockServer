@@ -52,6 +52,10 @@ public class Server {
         return instance;
     }
 
+    public static void setInstance(Server i){
+        instance = i;
+    }
+
     public Scheduler getScheduler() {
         return this.scheduler;
     }
@@ -108,7 +112,6 @@ public class Server {
 
     public Server(String name, String ip, int port, int players, MinecraftVersion version, String defaultLevel, Class<? extends PlayerDatabase> dbType) throws  Exception{
         Thread.currentThread().setName("ServerThread");
-        instance = this;
 
         String path = new File(".").getCanonicalPath();
         serverDir = new File(path);
@@ -124,15 +127,14 @@ public class Server {
 
         this.players = new HashMap<String, Player>(players);
 
-	/*
         worldsDir = new File(serverDir, "worlds/");
         int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
         levels = new HashMap<String, Level>(cnt);
         boolean success = loadLevel(defaultLevel, true);
         if(!success){
-            throw new RuntimeException("Unable to generate default level");
+//            throw new RuntimeException("Unable to generate default level");
         }
-	*/
+
         scheduler = new Scheduler();// Minecraft default Ticks Per Seconds(20)
         packetHandler = new PacketHandler(this);
         cmdHandler = new ConsoleCommandHandler(this);
@@ -155,7 +157,7 @@ public class Server {
     }
 
     public void run() {
-        this.serverRunning = true;
+        serverRunning = true;
         try {
             logger.info("Starting server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
             logger.info("This is version " + VERSION);

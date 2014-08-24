@@ -1,31 +1,69 @@
 package net.blockserver.entity;
 
+import java.util.Random;
+
 import net.blockserver.level.Level;
 import net.blockserver.math.Vector3d;
 import net.blockserver.math.YPSControlledVector3d;
 
 /**
- * Class Living extends Entity
- *
- * This abstract superclass is the implementation of AI for entities that have brains.
- *
- * Definition of "have brains":
- * * Would wander around
- * * Would look for targets
- * * Would walk towards targets
+ * <p>This abstract superclass is the implementation of AI for entities that have brains.</p>
+ * <p>Definition of "have brains":
+ * <ul>
+ * <li>Would wander around</li>
+ * <li>Would look for targets</li>
+ * <li>Would walk towards targets</li>
+ * </ul>
+ * </p>
  */
 public abstract class Living extends Entity {
 
-    public final static String MODIFIER_JUMP = "net.blockserver.entity.Living.jump",
-            MODIFIER_FALL = "net.blockserver.entity.Living.fall",
-            MODIFIER_PITCH_NEUTRALIZER = "net.blockserver.entity.Living.neutralizer.pitch",
-            MODIFIER_WATER= "net.blockserver.entity.Living.water";
+    /**
+     * The modifier that increases an entity's vertical component when it jumps.
+     */
+    public final static String MODIFIER_JUMP = "net.blockserver.entity.Living.jump";
+    /**
+     * The modifier that decreases an entity's vertical component when it falls.
+     */
+    public final static String MODIFIER_FALL = "net.blockserver.entity.Living.fall";
+    /**
+     * The modifier that affects an entity's motion when it is in contact with flowing water.
+     */
+    public final static String MODIFIER_WATER= "net.blockserver.entity.Living.water";
 
-    public final static double WANDER_PERCENTAGE = 0.03;
+    /**
+     * The percentage chance that the entity's yaw is slightly biased whilst chasing a target
+     */
+    public final static double BIAS_CHANCE = 10d;
+
+    /**
+     * The minimum number of ticks to ignore the target after yaw bias
+     */
+    public final static int MIN_BIAS_INTERVAL = 0;
+    /**
+     * The maximum number of ticks to ignore the target after yaw bias
+     */
+    public final static int MAX_BIAS_INTERVAL = 10;
+
+    /**
+     * The minimum yaw to bias
+     */
+    public final static double MIN_BIAS_YAW = 0d;
+    /**
+     * The maximum yaw to bias
+     */
+    public final static double MAX_BIAS_YAW = 10d;
+
+    public final static double WANDER_CHANCE = 1d;
 
     private Vector3d target = null;
 
     private boolean wandering;
+
+    private double currentYawMotion = 0, currentPitchMotion = 0;
+    private int yawMotionTimeout = 0, pitchMotionTimeout = 0;
+
+    private int ignoreTargetTimeout = 0;
 
     public Living(double x, double y, double z, Level level) {
         super(x, y, z, level);
@@ -44,6 +82,7 @@ public abstract class Living extends Entity {
     }
 
     public void onTickUpdate(){
+        updateYawPitch();
         tickWalk();
         if(isWandering()){
             Entity entity = pickTarget();
@@ -52,10 +91,24 @@ public abstract class Living extends Entity {
             }
         }
         if(hasTarget()){
+            if(yawMotionTimeout == 0){
+                randomBias();
+            }
             chaseTarget();
         }
         else{
             wander();
+        }
+    }
+
+    private void updateYawPitch(){
+        if(yawMotionTimeout > 0){
+            yawMotionTimeout--;
+            setYaw(getYaw() + currentYawMotion);
+        }
+        if(pitchMotionTimeout > 0){
+            pitchMotionTimeout--;
+            setPitch(getPitch() + currentPitchMotion);
         }
     }
 
@@ -64,17 +117,36 @@ public abstract class Living extends Entity {
         super.onTickUpdate();
     }
 
+    protected void randomBias(){
+        Random psuedo = new Random();
+        if(psuedo.nextDouble() * 100 < BIAS_CHANCE){
+            double yaw = MIN_BIAS_YAW;
+            double random = psuedo.nextDouble();
+            yaw += (MAX_BIAS_YAW - MIN_BIAS_YAW) * random;
+            if(psuedo.nextBoolean()){
+                yaw *= -1;
+            }
+            int ticks = MIN_BIAS_INTERVAL;
+            ticks += psuedo.nextInt(MAX_BIAS_INTERVAL - MIN_BIAS_INTERVAL);
+            setYaw(getYaw() + yaw);
+            ignoreTargetTimeout = ticks;
+        }
+    }
+
     protected void wander() {
-        if(Math.random() < WANDER_PERCENTAGE){
-            
+        Random psuedo = new Random();
+        if(psuedo.nextDouble() * 100 < WANDER_CHANCE){
+            // TODO set yaw motion
         }
     }
 
     protected void chaseTarget(){
-        YPSControlledVector3d angles = (YPSControlledVector3d) getSpeed(MODIFIER_STANDARD);
-        Vector3d.YawPitchSet set = target.subtract(this).getYawPitch(getChasingSpeed());
-        angles.setYaw(set.getYaw());
-        angles.setPitch(set.getPitch());
+        if(ignoreTargetTimeout == 0){
+            YPSControlledVector3d angles = (YPSControlledVector3d) getSpeed(MODIFIER_STANDARD);
+            Vector3d.YawPitchSet set = target.subtract(this).getYawPitch(getChasingSpeed());
+            angles.setYaw(set.getYaw());
+            angles.setPitch(set.getPitch());
+        }
     }
 
     public abstract double getChasingSpeed();
@@ -82,6 +154,8 @@ public abstract class Living extends Entity {
     public abstract double getHeight();
 
     protected abstract void broadcastMotion();
+
+    public abstract double getMaxYawWanderDelta();
 
     protected Entity pickTarget(){
         return level.getClosestEntity(this, getTargetValidater());

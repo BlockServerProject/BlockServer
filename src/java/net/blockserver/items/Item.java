@@ -1,6 +1,6 @@
 package net.blockserver.items;
 
-public enum Items {
+public enum Item {
 
     IRON_SHOVEL(256),
     IRON_PICKAXE(257),
@@ -246,11 +246,11 @@ public enum Items {
     public final static int DAMAGE_NEGLIGIBLE = 16;
     public int damage;
 
-    private Items(int id){
+    private Item(int id){
     	this(id, DAMAGE_NEGLIGIBLE);
     }
 
-    private Items(int id, int damage){
+    private Item(int id, int damage){
     	this.id = id;
     	this.damage = damage;
     }

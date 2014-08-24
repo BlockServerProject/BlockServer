@@ -7,6 +7,11 @@ import net.blockserver.math.YPSControlledVector3d;
 
 public abstract class Entity extends Moveable
 {
+    /**
+     * The modifier that neutralizes an entity's vertical component since
+     * an entity's pitch isn't in variation with its vertical speed
+     */
+    public final static String MODIFIER_PITCH_NEUTRALIZER = "net.blockserver.entity.Entity.neutralizer.pitch";
 
     private static int nextID = 0;
     protected int eid;
@@ -22,11 +27,12 @@ public abstract class Entity extends Moveable
 
     protected Entity(Vector3d pos, Level level)
     {
-        super(pos);
-        this.level = level;
+        this(pos.getX(), pos.getY(), pos.getZ(), level);
+        setSpeed(new YPSControlledVector3d(0, 0, 0), MODIFIER_PITCH_NEUTRALIZER);
     }
 
-    public Vector3d getInitialStdSpeed(){
+    public Vector3d getInitialStdSpeed()
+    {
         return new YPSControlledVector3d(0, 0, 0);
     }
 
@@ -61,10 +67,12 @@ public abstract class Entity extends Moveable
 
     public void setPitch(double pitch){
         getYPS().setPitch(pitch);
+        getPitchNeutralizer().setPitch(-pitch);
     }
 
     public void setWalkingSpeed(double speed){
         getYPS().setSpeed(speed);
+        getPitchNeutralizer().setSpeed(speed);
     }
 
     public double getYaw(){
@@ -79,11 +87,17 @@ public abstract class Entity extends Moveable
         return getYPS().getSpeed();
     }
 
-    public YPSControlledVector3d getYPS(){
+    private YPSControlledVector3d getYPS(){
         return (YPSControlledVector3d) getSpeed(MODIFIER_STANDARD);
     }
 
-    public abstract EntityType getType();
+    private YPSControlledVector3d getPitchNeutralizer(){
+        return (YPSControlledVector3d) getSpeed(MODIFIER_PITCH_NEUTRALIZER);
+    }
+
+    public EntityType getType(){
+        return EntityType.valueOf(this.getClass().getSimpleName().toUpperCase());
+    }
 
     public abstract int getMaxHealth();
 

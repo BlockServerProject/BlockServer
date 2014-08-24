@@ -1,4 +1,4 @@
-package net.blockserver.utility;
+package net.blockserver.cmd;
 
 public interface CommandIssuer {
     public void sendMessage(String msg);

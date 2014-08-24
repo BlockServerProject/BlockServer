@@ -1,5 +1,6 @@
-package net.blockserver.utility;
+package net.blockserver.cmd;
 
+import java.util.Locale;
 import java.util.Map;
 
 public class CommandManager {
@@ -29,7 +30,21 @@ public class CommandManager {
             for(int i = 1; i < args.length; i++){
                 fargs[i - 1] = args[i];
             }
-            cmds.get(args[0]).run(issuer, fargs);
+            if(args[0].equals("help")){
+                // TODO
+            }
+            else{
+                Command cmd = cmds.get(args[0]);
+                if(cmd instanceof Command){
+                    String result = cmds.get(args[0]).run(issuer, fargs);
+                    if(result instanceof String){
+                        issuer.sendMessage(result);
+                    }
+                }
+                else{
+                    issuer.sendMessage(String.format(Locale.US, "Command /%s doesn't exist!", args[0]));
+                }
+            }
         }
     }
 
