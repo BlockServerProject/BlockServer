@@ -1,7 +1,5 @@
 package net.blockserver;
 
-import java.io.File;
-
 import net.blockserver.player.BinaryPlayerDatabase;
 import net.blockserver.utility.MinecraftVersion;
 
@@ -45,7 +43,7 @@ public class BlockServer {
         try {
             Server server = new Server("BlockServer - A cool MCPE server written in java!",
                     "0.0.0.0", 19132, 5, MinecraftVersion.V095, "level",
-                    DummyPlayerDatabase.class); // TODO change the default player database
+                    BinaryPlayerDatabase.class); // TODO change the default player database
             server.run();
         }
         catch(Exception e)
