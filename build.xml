@@ -8,7 +8,7 @@
 
     <property name="main-class"  value="net.blockserver.BlockServer"/>
 
-    <property name="lib.dir"     value="libs"/>
+    <property name="lib.dir"     value="lib"/>
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
