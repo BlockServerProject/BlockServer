@@ -19,17 +19,17 @@ public class IncompatibleProtocolPacket extends BaseLoginPacket{
 		this.server = server;
 	}
 
-    @Override
-    public ByteBuffer getBuffer() {
-        return null;
-    }
+	@Override
+	public ByteBuffer getBuffer() {
+		return null;
+	}
 
-    @Override
-    public byte getPID() {
-        return (byte) 0x1A;
-    }
+	@Override
+	public byte getPID() {
+		return (byte) 0x1A;
+	}
 
-    public DatagramPacket getPacket(){
+	public DatagramPacket getPacket(){
 		DatagramPacket response = null;
 		ByteBuffer bb = ByteBuffer.allocate(26);
 		bb.put((byte) 0x1A); //PacketID
@@ -42,8 +42,8 @@ public class IncompatibleProtocolPacket extends BaseLoginPacket{
 		return response;
 	}
 
-    @Override
-    public ByteBuffer getResponse() {
-        return null;
-    }
+	@Override
+	public ByteBuffer getResponse() {
+		return null;
+	}
 }

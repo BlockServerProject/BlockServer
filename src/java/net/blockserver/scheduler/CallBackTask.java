@@ -4,42 +4,42 @@ import java.lang.reflect.Method;
 
 public class CallBackTask extends Task
 {
-    private Method callback;
-    private Object clazz;
+	private Method callback;
+	private Object clazz;
 
-    public CallBackTask(Object c, String callback, int delay) throws NoSuchMethodException
-    {
-        super(delay);
-        this.clazz = c;
-        this.callback = c.getClass().getMethod(callback, int.class);
-    }
+	public CallBackTask(Object c, String callback, int delay) throws NoSuchMethodException
+	{
+		super(delay);
+		this.clazz = c;
+		this.callback = c.getClass().getMethod(callback, int.class);
+	}
 
-    public CallBackTask(Object c, String callback, int delay, int repeatTimes) throws NoSuchMethodException
-    {
-        super(delay, repeatTimes);
-        this.clazz = c;
-        this.callback = c.getClass().getMethod(callback, int.class);
-    }
+	public CallBackTask(Object c, String callback, int delay, int repeatTimes) throws NoSuchMethodException
+	{
+		super(delay, repeatTimes);
+		this.clazz = c;
+		this.callback = c.getClass().getMethod(callback, int.class);
+	}
 
-    public CallBackTask(Object c, String callback, int delay, boolean repeatForever) throws NoSuchMethodException
-    {
-        super(delay, repeatForever);
-        this.clazz = c;
-        this.callback = c.getClass().getMethod(callback, int.class);
-    }
+	public CallBackTask(Object c, String callback, int delay, boolean repeatForever) throws NoSuchMethodException
+	{
+		super(delay, repeatForever);
+		this.clazz = c;
+		this.callback = c.getClass().getMethod(callback, int.class);
+	}
 
-    @Override
-    public void onRun(int ticks)
-    {
-        try {
-            this.callback.invoke(this.clazz, ticks);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-    }
+	@Override
+	public void onRun(int ticks)
+	{
+		try {
+			this.callback.invoke(this.clazz, ticks);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-    @Override
-    public void onFinish(int ticks){} // Not used in Callback Task
+	@Override
+	public void onFinish(int ticks){} // Not used in Callback Task
 }

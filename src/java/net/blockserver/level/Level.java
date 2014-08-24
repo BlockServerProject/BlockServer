@@ -13,83 +13,83 @@ import net.blockserver.math.Vector3d;
 
 public class Level implements ILevel
 {
-    public final static EntityValidate validateInstance = new Level.DummyValidate();
-    
-    private IChunk[] chunks;
-    private int seed;
-    private int gamemode;
-    private Vector3d spawnpos;
-    private List<Entity> entities = new ArrayList<Entity>();
+	public final static EntityValidate validateInstance = new Level.DummyValidate();
+	
+	private IChunk[] chunks;
+	private int seed;
+	private int gamemode;
+	private Vector3d spawnpos;
+	private List<Entity> entities = new ArrayList<Entity>();
 
-    public String getName() {
-        return null;
-    }
+	public String getName() {
+		return null;
+	}
 
-    public void setName() {
+	public void setName() {
 
-    }
+	}
 
-    @Override
-    public String getPath() {
-        return null;
-    }
+	@Override
+	public String getPath() {
+		return null;
+	}
 
-    @Override
-    public void setPath(String p) {
+	@Override
+	public void setPath(String p) {
 
-    }
+	}
 
-    public Block getBlock(int x, int y, int z) {
-        return null;
-    }
+	public Block getBlock(int x, int y, int z) {
+		return null;
+	}
 
-    public void setBlock(Block block) {
+	public void setBlock(Block block) {
 
-    }
+	}
 
-    public IChunk[] getAllChunks() {
-        return chunks;
-    }
+	public IChunk[] getAllChunks() {
+		return chunks;
+	}
 
-    public IChunk getChunk(int x, int z) {
-        return null;
-    }
+	public IChunk getChunk(int x, int z) {
+		return null;
+	}
 
-    public int getBlockID(int x, int y, int z) {
-        return 0;
-    }
+	public int getBlockID(int x, int y, int z) {
+		return 0;
+	}
 
-    public void setBlockID(int x, int y, int z, int blockID) {
+	public void setBlockID(int x, int y, int z, int blockID) {
 
-    }
+	}
 
-    public int getBlockMeta(int x, int y, int z) {
-        return 0;
-    }
+	public int getBlockMeta(int x, int y, int z) {
+		return 0;
+	}
 
-    public void setBlockMeta(int x, int y, int z, int meta) {
+	public void setBlockMeta(int x, int y, int z, int meta) {
 
-    }
+	}
 
-    public int getBlockColor(int x, int y, int z) {
-        return 0;
-    }
+	public int getBlockColor(int x, int y, int z) {
+		return 0;
+	}
 
-    public void setBlockColor(int x, int y, int z, int r, int g, int b) {
+	public void setBlockColor(int x, int y, int z, int r, int g, int b) {
 
-    }
+	}
 
-    public boolean isChunkLoaded(int chunkX, int chunkZ) {
-        return false;
-    }
+	public boolean isChunkLoaded(int chunkX, int chunkZ) {
+		return false;
+	}
 
-    public void setChunk(int x, int z) {
+	public void setChunk(int x, int z) {
 
-    }
+	}
 
-    public double getGravityAt(Vector3 coords){
-        return 9.8; // Earth gravitational constant; not sure if same for Minecraft ;)
-    }
+	public double getGravityAt(Vector3 coords){
+		return 9.8; // Earth gravitational constant; not sure if same for Minecraft ;)
+	}
 
 	public int getSeed() {
 		return seed;
@@ -116,52 +116,52 @@ public class Level implements ILevel
 	}
 
 	public Entity[] getEntities(){
-	    return entities.toArray(new Entity[entities.size()]);
+		return entities.toArray(new Entity[entities.size()]);
 	}
 
 	public Entity[] getEntities(Vector3d center, double radius){
-	    return getEntities(center, radius, validateInstance);
+		return getEntities(center, radius, validateInstance);
 	}
 
 	public Entity[] getEntities(Vector3d center, double radius, EntityValidate v){
-	    List<Entity> ret = new ArrayList<Entity>();
-	    for(Entity ent: entities){
-	        if(ent.distance(center) <= radius){
-	            if(v.isValid(ent)){
-	                ret.add(ent);
-	            }
-	        }
-	    }
-	    return ret.toArray(new Entity[ret.size()]);
+		List<Entity> ret = new ArrayList<Entity>();
+		for(Entity ent: entities){
+			if(ent.distance(center) <= radius){
+				if(v.isValid(ent)){
+					ret.add(ent);
+				}
+			}
+		}
+		return ret.toArray(new Entity[ret.size()]);
 	}
 
 	public Entity getClosestEntity(Vector3d center){
-	    return getClosestEntity(center, validateInstance);
+		return getClosestEntity(center, validateInstance);
 	}
 
 	public Entity getClosestEntity(Vector3d center, EntityValidate v){
-	    Entity ret = null;
-	    double currentDelta = Double.MAX_VALUE;
-	    for(Entity ent: entities){
-	        double distance = ent.distance(center);
-	        if(distance < currentDelta){
-	            if(v.isValid(ent)){
-	                currentDelta = distance;
-	                ret = ent;
-	            }
-	        }
-	    }
-	    return ret;
+		Entity ret = null;
+		double currentDelta = Double.MAX_VALUE;
+		for(Entity ent: entities){
+			double distance = ent.distance(center);
+			if(distance < currentDelta){
+				if(v.isValid(ent)){
+					currentDelta = distance;
+					ret = ent;
+				}
+			}
+		}
+		return ret;
 	}
 
 	public static interface EntityValidate{
-	    public boolean isValid(Entity ent);
+		public boolean isValid(Entity ent);
 	}
 
 	public static class DummyValidate implements EntityValidate{
-	    public boolean isValid(Entity ent){
-	        return true;
-	    }
+		public boolean isValid(Entity ent){
+			return true;
+		}
 	}
 
 }

@@ -14,10 +14,10 @@ public enum EntityType {
 	}
 
 	public int getID() {
-	    return id;
-    }
+		return id;
+	}
 
 	public Class<?> getEntityClass(){
-	    return c;
+		return c;
 	}
 }

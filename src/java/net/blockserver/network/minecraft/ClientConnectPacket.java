@@ -14,12 +14,12 @@ public class ClientConnectPacket implements BaseDataPacket{
 	}
 	
 	public void decode(){
-        if(this.buffer.get() != PacketsID.CLIENT_CONNECT) { return; }
+		if(this.buffer.get() != PacketsID.CLIENT_CONNECT) { return; }
 
-        this.clientID = this.buffer.getLong();
-        this.session = this.buffer.getLong();
-        this.unknown = this.buffer.get();
-    }
+		this.clientID = this.buffer.getLong();
+		this.session = this.buffer.getLong();
+		this.unknown = this.buffer.get();
+	}
 	
 	public void encode() {}
 	

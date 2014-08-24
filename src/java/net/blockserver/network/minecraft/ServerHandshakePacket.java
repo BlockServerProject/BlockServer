@@ -29,16 +29,16 @@ public class ServerHandshakePacket implements BaseDataPacket {
 	}
 	
 	private void putDataArray() {
-        byte[] unknown1 = new byte[] { (byte) 0xf5, (byte) 0xff, (byte) 0xff, (byte) 0xf5 };
-        byte[] unknown2 = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
+		byte[] unknown1 = new byte[] { (byte) 0xf5, (byte) 0xff, (byte) 0xff, (byte) 0xf5 };
+		byte[] unknown2 = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
 
-        buffer.put(Utils.putTriad(unknown1.length));
-        buffer.put(unknown1);
+		buffer.put(Utils.putTriad(unknown1.length));
+		buffer.put(unknown1);
 
-        for (int i = 0; i < 9; i++){
-        	buffer.put(Utils.putTriad(unknown2.length));
-        	buffer.put(unknown2);
-        }
+		for (int i = 0; i < 9; i++){
+			buffer.put(Utils.putTriad(unknown2.length));
+			buffer.put(unknown2);
+		}
 	}
 
 	public void decode(){}

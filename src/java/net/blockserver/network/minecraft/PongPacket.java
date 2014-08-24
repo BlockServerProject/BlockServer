@@ -18,10 +18,10 @@ public class PongPacket implements BaseDataPacket {
 		this.unknown = pingID + System.currentTimeMillis();
 	}
 
-    public PongPacket(byte[] buffer)
-    {
-        this.buffer = ByteBuffer.wrap(buffer);
-    }
+	public PongPacket(byte[] buffer)
+	{
+		this.buffer = ByteBuffer.wrap(buffer);
+	}
 
 	public void encode(){
 		buffer = ByteBuffer.allocate(17);
@@ -32,14 +32,14 @@ public class PongPacket implements BaseDataPacket {
 	}
 	
 	public void decode() // We can send the Ping Packet and receive a Pong Packet. To check if the player is gone or have lagg
-    {
-        if (this.buffer.get() != this.PID)
-            return;
+	{
+		if (this.buffer.get() != this.PID)
+			return;
 
-        this.pingID = this.buffer.getLong();
-        this.unknown = this.buffer.getLong();
+		this.pingID = this.buffer.getLong();
+		this.unknown = this.buffer.getLong();
 
-    }
+	}
 
 	public ByteBuffer getBuffer(){
 		return this.buffer;
