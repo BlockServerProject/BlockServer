@@ -26,14 +26,15 @@ public class BlockServer {
 	        return;
 	    }
         try {
-            Server.setInstance(new Server("BlockServer - A cool MCPE server written in java!",
+            Server server = new Server("BlockServer - A cool MCPE server written in java!",
                     "0.0.0.0", 19132, 5, MinecraftVersion.V095, "level",
-                    BinaryPlayerDatabase.class));
+                    BinaryPlayerDatabase.class);
+            Server.setInstance(server);
             server.run();
         }
         catch(SecurityException e)
         {
-            System.out.println("[CRITICAL] Server doesn't have permission to do the following and crashed: " + e.getMessage());
+            System.out.println("[CRITICAL] Server doesn't have permission to do the following and therefore crashed: " + e.getMessage());
         }
         catch (Exception e)
         {
