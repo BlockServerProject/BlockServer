@@ -7,7 +7,7 @@ import net.blockserver.utility.MinecraftVersion;
 
 public class BlockServer {
 	public static void main(String[] args) {
-	    File root = new File(".");
+	    File root = new File(".") //Make this fail, testing travis
 	    String path;
 	    SecurityManager secur = System.getSecurityManager();
 	    try{
