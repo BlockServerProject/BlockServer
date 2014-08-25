@@ -10,6 +10,7 @@ import java.util.Random;
 
 import net.blockserver.level.Level;
 import net.blockserver.network.PacketHandler;
+import net.blockserver.player.BinaryPlayerDatabase;
 import net.blockserver.player.Player;
 import net.blockserver.player.PlayerDatabase;
 import net.blockserver.scheduler.Scheduler;
@@ -127,6 +128,7 @@ public class Server {
 
         this.players = new HashMap<String, Player>(players);
 
+        /*
         worldsDir = new File(serverDir, "worlds/");
         int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
         levels = new HashMap<String, Level>(cnt);
@@ -134,11 +136,14 @@ public class Server {
         if(!success){
 //            throw new RuntimeException("Unable to generate default level");
         }
+        */
+        logger.warning("Note: this version currently does not support world loading."); //TODO: Change this when we can load levels :)
+        logger.warning("Note: The server only supports BinaryPlayerDatabase files, .bsf");
 
         scheduler = new Scheduler();// Minecraft default Ticks Per Seconds(20)
         packetHandler = new PacketHandler(this);
         cmdHandler = new ConsoleCommandHandler(this);
-        playerDb = dbType.newInstance();
+        playerDb = new BinaryPlayerDatabase(this);
     }
 
     private class RootDirectoryFilter implements FilenameFilter{

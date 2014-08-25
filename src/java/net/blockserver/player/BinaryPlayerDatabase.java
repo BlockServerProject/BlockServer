@@ -17,9 +17,14 @@ public class BinaryPlayerDatabase implements PlayerDatabase {
     private Server server;
     private File folder;
 
-    public BinaryPlayerDatabase(){
-        server = Server.getInstance();
-        folder = new File(server.getServerFolder(), "players/");
+    public BinaryPlayerDatabase(Server server){
+        this.server = server;
+        try {
+			folder = new File(server.getServerFolder().getCanonicalPath()+File.pathSeparator+"players");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     @Override

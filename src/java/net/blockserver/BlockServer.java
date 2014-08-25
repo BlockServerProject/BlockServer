@@ -40,16 +40,14 @@ public class BlockServer {
             e.printStackTrace();
         }
         */
-        try {
-            Server server = new Server("BlockServer - A cool MCPE server written in java!",
-                    "0.0.0.0", 19132, 5, MinecraftVersion.V095, "level",
-                    BinaryPlayerDatabase.class); // TODO change the default player database
-            server.run();
-        }
-        catch(Exception e)
-        {
-            System.out.println("[CRITICAL] Server error: " + e.getMessage());
-        }
+        Server server;
+		try {
+			server = new Server("BlockServer - A cool MCPE server written in java!", "0.0.0.0", 19132, 5, MinecraftVersion.V095, "level", BinaryPlayerDatabase.class);
+	        server.run();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // TODO change the default player database
 
 	}
 
