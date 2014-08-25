@@ -1,15 +1,17 @@
 package net.blockserver.io.nbt;
 
-class ByteTag extends NamedTag{
+import java.io.IOException;
+
+public class ByteTag extends NamedTag{
 	private byte b = 0;
 	public ByteTag(){}
 	public void setValue(byte b){
 		this.b = b;
 	}
-	public void write(NBTWriter writer){
+	public void write(NBTWriter writer) throws IOException{
 		writer.writeByte(b);
 	}
-	public void read(NBTReader reader){
-		writer.readByte(b);
+	public void read(NBTReader reader) throws IOException{
+		b = reader.readByte();
 	}
 }

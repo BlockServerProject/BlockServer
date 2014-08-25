@@ -29,18 +29,32 @@ public enum TagType{ // /me silently curses java.lang.*
 	public Class<? extends Tag> getC(){
 		return c;
 	}
+	public Tag newInstance(){
+		return newInstance(null);
+	}
 	public Tag newInstance(String name){
-		Tag tag = c.newInstance(); // how dare you throw an InstantiateException!
-		if(tag instanceof NamedTag){
-			tag.setName(name);
+		Tag tag = null;
+		try{
+			tag = c.newInstance();
+			if(tag instanceof NamedTag){
+				((NamedTag) tag).setName(name);
+			}
 		}
+		catch(InstantiationException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch(IllegalAccessException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} // how dare you throw an InstantiateException!
 		return tag;
 	}
 	public boolean isNamed(){
 		return true;
 	}
 	public static TagType getType(int id){
-		retuen values()[id];
+		return values()[id];
 	}
 	public static TagType getType(Tag tag){
 		for(TagType type: values()){
