@@ -5,16 +5,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import net.blockserver.cmd.CommandIssuer;
+/** The Thread that handles console commands
+ * @author jython234
+ *
+ */
 
 public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	private Server server;
 	protected boolean running;
 	
+	/** Constructor for ConsoleCommandHandler, 
+	 * requires a Server instance.
+	 * @param server - The instance of the parent Server
+	 */
 	public ConsoleCommandHandler(Server server){
 		this.server = server;
 		this.setName("ConsoleCommandHandler");
 	}
 	
+	/**
+	 * Main function of the Handler
+	 */
 	public void run(){
 		server.getLogger().info("Console Handler started.");
 		
@@ -60,21 +71,31 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 		}
 	}
 	
+	/**
+	 * Start the Thread.
+	 */
 	public void Start(){
 		this.running = true;
 		this.start();
 	}
 	
+	/**
+	 * Stop the Thread.
+	 */
 	public void Stop(){
 		this.running = false;
 	}
 
-    @Override
+    /**
+     * Sends a message to the console
+     */
     public void sendMessage(String msg) {
         server.getLogger().info(msg);
     }
 
-    @Override
+    /**
+     * WIP
+     */
     public void sudoCommand(String line) {
         // TODO Auto-generated method stub
     }

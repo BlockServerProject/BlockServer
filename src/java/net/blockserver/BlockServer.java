@@ -3,6 +3,12 @@ package net.blockserver;
 import net.blockserver.player.BinaryPlayerDatabase;
 import net.blockserver.utility.MinecraftVersion;
 
+/** The default startup program to start the server
+ * 
+ * @author BlockServerProject
+ *
+ */
+
 public class BlockServer {
 	public static void main(String[] args) {
 	    /*

@@ -3,6 +3,11 @@ package net.blockserver.blocks;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An enum containing all the Block Types.
+ * @author BlockServer Team
+ *
+ */
 public enum BlockType {
 
     AIR(0),
@@ -231,6 +236,9 @@ public enum BlockType {
     NETHER_REACTOR_ACTIVE(247, 1),
     NETHER_REACTOR_USED(247, 2);
 
+    /**
+     * A Map of converts, such as glitch block ids that will be converted.
+     */
     public final static Map<Integer, BlockType> converts = new HashMap<Integer, BlockType>(0xFF);
 
     static{
@@ -240,28 +248,55 @@ public enum BlockType {
     private int id;
     private int metadata = 0;
 
+    /**
+     * Constructor for a Block Type, requires a block id (metadata is 0).
+     * @param id The block ID.
+     */
     private BlockType(int id){
     	this.id = id;
     }
     
+    /**
+     * Constructor for a Block Type, requires a block id and metadata.
+     * @param id The block ID.
+     * @param metadata The block metadata.
+     */
     private BlockType(int id, int metadata){
     	this.id = id;
     	this.metadata = metadata;
     }
     
+    /**
+     * Get the ID of this BlockType.
+     * @return The block ID.
+     */
     public int getID(){
     	return this.id;
     }
     
+    /**
+     * Set the metadata for this BlockType.
+     * @param metadata The metadata.
+     * @return An instance of the BlockType
+     */
     public BlockType setMetadata(int metadata){
     	this.metadata = metadata;
     	return this;
     }
-    
+    /**
+     * Get this BlockType's metadata.
+     * @return The Block metadata.
+     */
     public int getMetadata(){
     	return this.metadata;
     }
     
+    /**
+     * Get a BlockType object by a Block ID.
+     * @param id The block  ID.
+     * @return An instance of BlockType.
+     * @throws UnknownBlockException If the block ID given doesn't exist.
+     */
     public static BlockType getByID(int id) throws UnknownBlockException{
     	for(BlockType block : BlockType.values())
     		if(block.getID() == id)
@@ -269,10 +304,20 @@ public enum BlockType {
     	throw new UnknownBlockException("No block found with ID " + id);
     }
     
+    /**
+     * Get a BlockType object by a Block ID, also setting it's metadata.
+     * @param id The block ID.
+     * @param metadata Metadata for the Block.
+     * @return An instance of BlockType.
+     * @throws UnknownBlockException If the block ID given doesn't exist.
+     */
     public static BlockType getByID(int id, int metadata) throws UnknownBlockException{
         return BlockType.getByID(id).setMetadata(metadata);
     }
     
+    /**
+     * Returns a string of this BlockType in this format: [blockid]:[metadata]
+     */
     @Override
     public String toString(){
         return this.id + ":" + this.metadata;
