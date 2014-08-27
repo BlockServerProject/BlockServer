@@ -4,4 +4,4 @@ BlockServer
 
 A minecraft PE server written in java.
 
-BlockServer is in collaboration with PocketBukkit, the API solution for this project. You can check them out at pocketbukkit.org.
+BlockServer is in collaboration with PocketBukkit, the API solution for this project. You can check them out at http://PocketBukkit.net
