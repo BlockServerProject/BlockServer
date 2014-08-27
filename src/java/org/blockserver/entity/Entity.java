@@ -96,7 +96,7 @@ public abstract class Entity extends Moveable
     }
 
     public EntityType getType(){
-        return EntityType.valueOf(this.getClass().getSimpleName().toUpperCase());
+        return EntityType.valueOf(null, this.getClass().getSimpleName().toUpperCase());
     }
 
     public abstract int getMaxHealth();

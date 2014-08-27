@@ -30,7 +30,7 @@ import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.network.raknet.NACKPacket;
 import org.blockserver.scheduler.CallBackTask;
 
-public class Player extends Entity
+public class Player// extends Entity
 {
     private String name;
     private String ip;
@@ -59,7 +59,7 @@ public class Player extends Entity
 
     public Player(String ip, int port, short mtu, long clientID)
     {
-        super(0, 0, 0, null);
+        //super(0, 0, 0, null);
         this.ip = ip.replace("/", "");
         this.port = port;
         mtuSize = mtu;
@@ -295,12 +295,10 @@ public class Player extends Entity
         return ip + Integer.toString(port);
     }
 
-    @Override
     public EntityType getType() {
         return EntityType.PLAYER;
     }
 
-    @Override
     public int getMaxHealth() {
         return maxHealth;
     }

@@ -8,7 +8,7 @@ public enum EntityType {
 	implement first a block appearing when completely when the entity falls completely. */
 	private int id;
 	private Class<? extends Entity> c;
-	private EntityType(int id, Class<? extends Entity> c){
+	private EntityType(int id, Class c){
 		this.id = id;
 		this.c = c;
 	}
