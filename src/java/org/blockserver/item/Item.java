@@ -15,6 +15,11 @@ public class Item{
 		this.maxCount = maxCount;
 	}
 
+	public Item(ItemType type, int count){
+		this(type.getID(), type.getDamage() == ItemType.DAMAGE_NEGLIGIBLE ? 0:type.getDamage(),
+				count, type.getName(), type.getMaxCount());
+	}
+
 	public boolean curEquals(Item other, boolean checkCount){
 		return other.getID() == id && other.getDamage() == damage && (checkCount ? other.getCount() == count:true);
 	}
@@ -27,6 +32,9 @@ public class Item{
 	}
 	public int getCount(){
 		return count;
+	}
+	public void setCount(int newCount){
+		count = newCount;
 	}
 	public String getName(){
 		return name;

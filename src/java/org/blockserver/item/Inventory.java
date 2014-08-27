@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.blockserver.entity.Entity;
+import org.blockserver.utility.ArrayIterator;
 
 public class Inventory implements Collection<Item>{
 	protected Entity owner;
@@ -15,8 +16,15 @@ public class Inventory implements Collection<Item>{
 	public Inventory(Entity owner, int capacity){
 		this.owner = owner;
 		items = new Item[capacity];
+		this.capacity = capacity;
+		clear();
 	}
 
+	/**
+	 * <b>Warning: This method modifies the count value of the passed item parameter <code>e</code>.
+	 * If the modification isn't desired, pass <code>e.clone()</code> instead.</b>
+	 * @param <code>e</code> The item to add
+	 */
 	@Override
 	public boolean add(Item e){
 		Map<Integer, Integer> slots = new HashMap<Integer, Integer>(capacity);
@@ -29,52 +37,104 @@ public class Inventory implements Collection<Item>{
 					sum += item.canContainHowManyMore();
 				}
 			}
+			else if(item.getID() == 0){
+				items[i] = new Item(e.getID(), e.getDamage(), 0, e.getName(), e.getMaxCount());
+				slots.put(i, e.getMaxCount());
+				sum += e.getMaxCount();
+			}
 			i++;
 		}
-		// TODO
-		return false;
+		if(sum == 0){
+			return false;
+		}
+		for(Map.Entry<Integer, Integer> entry: slots.entrySet()){
+			if(e.getCount() == 0){
+				break;
+			}
+			int available = entry.getValue();
+			if(e.getCount() >= available){
+				items[entry.getKey()].setCount(items[entry.getKey()].getMaxCount());
+				e.setCount(e.getCount() - available);
+			}
+			else{
+				items[entry.getKey()].setCount(e.getCount() + items[entry.getKey()].getCount());
+				e.setCount(0);
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends Item> c){
-		// TODO Auto-generated method stub
-		return false;
+		boolean ret = false;
+		for(Item i: c){
+			ret = ret || add(i);
+		}
+		return ret;
 	}
 
 	@Override
 	public void clear(){
-		// TODO Auto-generated method stub
-		
+		for(int i = 0; i < capacity; i++){
+			items[i] = new Item(0, 0, 0, "Unknown", 0);
+		}
 	}
 
 	@Override
 	public boolean contains(Object o){
-		// TODO Auto-generated method stub
-		return false;
+		if(o instanceof Item){
+			for(Item i: items){
+				if(((Item) o).curEquals(i, false)){
+					return true;
+				}
+			}
+			return false;
+		}
+		if(o instanceof ItemType){
+			for(Item i: items){
+				if(((ItemType) o).getID() == i.getID() && ((ItemType) o).getDamage() == i.getDamage()){
+					return true;
+				}
+			}
+			return false;
+		}
+		throw new IllegalArgumentException();
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c){
-		// TODO Auto-generated method stub
-		return false;
+		boolean ret = true;
+		for(Object i: c){
+			ret = ret && contains(i);
+		}
+		return ret;
 	}
 
 	@Override
 	public boolean isEmpty(){
-		// TODO Auto-generated method stub
-		return false;
+		for(Item i: items){
+			if(i.getID() != 0){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
 	public Iterator<Item> iterator(){
-		// TODO Auto-generated method stub
-		return null;
+		return new ArrayIterator<Item>(items); // not sure if we have that class in Apache libs
 	}
 
 	@Override
 	public boolean remove(Object o){
-		// TODO Auto-generated method stub
-		return false;
+		if(!(o instanceof Integer)){
+			throw new ClassCastException();
+		}
+		items[(Integer) o] = new Item(0, 0, 0, "", 0);
+		return true;
+	}
+	public boolean remove(int i){
+		return remove((Integer) i);
 	}
 
 	@Override
