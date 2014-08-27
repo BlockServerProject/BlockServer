@@ -4,11 +4,12 @@
 
     <property name="build.dir"   value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="jar.dir"     value="${build.dir}/jar"/>
+    <property name="jar.dir"     value="${build.dir}/jars"/>
 
     <property name="main-class"  value="net.blockserver.BlockServer"/>
 
     <property name="lib.dir"     value="lib"/>
+    <property name="doc.dir"     value="docs"/>
 
     <path id="classpath">
         <fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -22,7 +23,11 @@
 
     <target name="compile">
         <mkdir dir="${classes.dir}"/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath"/>
+        <javac srcdir="${src.dir}/java" destdir="${classes.dir}" classpathref="classpath"/>
+    </target>
+    
+    <target name="doc" depends="compile" description="generate documentation">
+    	<javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
     </target>
 
     <target name="jar" depends="compile">
