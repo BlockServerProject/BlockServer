@@ -1,8 +1,10 @@
 package org.blockserver.item;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.blockserver.entity.Entity;
@@ -63,7 +65,6 @@ public class Inventory implements Collection<Item>{
 		}
 		return true;
 	}
-
 	@Override
 	public boolean addAll(Collection<? extends Item> c){
 		boolean ret = false;
@@ -78,6 +79,15 @@ public class Inventory implements Collection<Item>{
 		for(int i = 0; i < capacity; i++){
 			items[i] = new Item(0, 0, 0, "Unknown", 0);
 		}
+	}
+	@Override
+	public boolean isEmpty(){
+		for(Item i: items){
+			if(i.getID() != 0){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -100,7 +110,6 @@ public class Inventory implements Collection<Item>{
 		}
 		throw new IllegalArgumentException();
 	}
-
 	@Override
 	public boolean containsAll(Collection<?> c){
 		boolean ret = true;
@@ -108,16 +117,6 @@ public class Inventory implements Collection<Item>{
 			ret = ret && contains(i);
 		}
 		return ret;
-	}
-
-	@Override
-	public boolean isEmpty(){
-		for(Item i: items){
-			if(i.getID() != 0){
-				return false;
-			}
-		}
-		return true;
 	}
 
 	@Override
@@ -130,40 +129,72 @@ public class Inventory implements Collection<Item>{
 		if(!(o instanceof Integer)){
 			throw new ClassCastException();
 		}
+		if(items[(Integer) o].getID() == 0){
+			return false;
+		}
 		items[(Integer) o] = new Item(0, 0, 0, "", 0);
 		return true;
 	}
 	public boolean remove(int i){
 		return remove((Integer) i);
 	}
-
 	@Override
 	public boolean removeAll(Collection<?> c){
-		// TODO Auto-generated method stub
-		return false;
+		Object[] removes = c.toArray();
+		if(!(removes instanceof Integer[])){
+			throw new ClassCastException();
+		}
+		boolean ret = false;
+		for(Integer i: (Integer[]) removes){
+			ret = ret || remove(i);
+		}
+		return ret;
 	}
-
 	@Override
 	public boolean retainAll(Collection<?> c){
-		// TODO Auto-generated method stub
-		return false;
+		if(!(c.toArray() instanceof Item[])){
+			throw new ClassCastException();
+		}
+		List<Integer> slots = new ArrayList<Integer>(capacity);
+		int i = 0;
+		for(Item item: items){
+			for(Item match: (Item[]) c.toArray()){
+				if(match.curEquals(item, false)){
+					slots.add(i);
+					break;
+				}
+			}
+			i++;
+		}
+		for(i = 0; i < capacity; i++){
+			if(!slots.contains(i)){
+				items[i] = new Item(0, 0, 0, "", 0);
+			}
+		}
+		return slots.size() > 0;
 	}
 
 	@Override
 	public int size(){
-		// TODO Auto-generated method stub
-		return 0;
+		return capacity;
 	}
-
 	@Override
 	public Object[] toArray(){
-		// TODO Auto-generated method stub
-		return null;
+		return items;
 	}
-
 	@Override
+	@SuppressWarnings("unchecked")
 	public <T>T[] toArray(T[] a){
-		// TODO Auto-generated method stub
-		return null;
+		if(!(a instanceof Item[])){
+			throw new ClassCastException("Argument passed must be instance of Item[]");
+		}
+		if(a.length >= capacity){
+			int i = 0;
+			for(Item item: items){
+				a[i] = (T) item;
+			}
+			return null; // according to the JavaDoc
+		}
+		return (T[]) items;
 	}
 }

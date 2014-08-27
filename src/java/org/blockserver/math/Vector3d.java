@@ -1,13 +1,11 @@
 package org.blockserver.math;
 
-public class Vector3d
-{
+public class Vector3d{
 	protected double x, y, z;
 
 	public static Vector3d fromYawPitch(double yaw, double pitch){
 		return fromYawPitch(yaw, pitch, 1);
 	}
-
 	public static Vector3d fromYawPitch(double yaw, double pitch, double speed){
 		Vector3d subject = new Vector3d();
 		setYawPitchOnSubject(yaw, pitch, speed, subject);
@@ -17,7 +15,6 @@ public class Vector3d
 	public static void setYawPitchOnSubject(double yaw, double pitch, Vector3d subject){
 		setYawPitchOnSubject(yaw, pitch, 1, subject);
 	}
-
 	public static void setYawPitchOnSubject(double yaw, double pitch, double speed, Vector3d subject){
 		yaw = (yaw + 90) * Math.PI / 180;
 		pitch = pitch * Math.PI / 180;
@@ -40,33 +37,21 @@ public class Vector3d
 	public Vector3d(){
 		this(0, 0, 0);
 	}
-
-	public Vector3d(double v)
-	{
-		this.x = v;
-		this.y = v;
-		this.z = v;
+	public Vector3d(double v){
+		this(v, v, v);
 	}
-
-	public Vector3d(double x, double y)
-	{
-		this.x = x;
-		this.y = y;
-		this.z = 0;
+	public Vector3d(double x, double y){
+		this(x, y, 0);
 	}
-
-	public Vector3d(double x, double y, double z)
-	{
+	public Vector3d(double x, double y, double z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public YawPitchSet getYawPitch()
-	{
+	public YawPitchSet getYawPitch(){
 		return getYawPitch(1);
 	}
-
 	public YawPitchSet getYawPitch(double speed){
 		double pitch = Math.asin(y / speed);
 		double yaw = Math.acos((z / speed) / Math.abs(Math.cos(pitch)));
@@ -81,93 +66,59 @@ public class Vector3d
 		 */
 	}
 
-	public double getX()
-	{
-		return this.x;
+	public double getX(){
+		return x;
+	}
+	public double getY(){
+		return y;
+	}
+	public double getZ(){
+		return z;
 	}
 
-	public double getY()
-	{
-		return this.y;
-	}
-
-	public double getZ()
-	{
-		return this.z;
-	}
-
-
-	public void setX(double v)
-	{
+	public void setX(double v){
 		this.x = v;
 	}
-
-	public void setY(double v)
-	{
+	public void setY(double v){
 		this.y = v;
 	}
-
-	public void setZ(double v)
-	{
+	public void setZ(double v){
 		this.z = v;
 	}
 
-	public Vector3d add(Vector3d delta)
-	{
+	public Vector3d add(Vector3d delta){
 		return merge(this, delta);
 	}
-
-	public Vector3d add(double dx, double dy, double dz)
-	{
+	public Vector3d add(double dx, double dy, double dz){
 		return new Vector3d(x + dx, y + dy, z + dz);
 	}
-
-	public Vector3d subtract(Vector3d delta)
-	{
+	public Vector3d subtract(Vector3d delta){
 		return add(delta.multiply(-1));
 	}
-
-	public Vector3d subtract(double dx, double dy, double dz)
-	{
+	public Vector3d subtract(double dx, double dy, double dz){
 		return add(-dx, -dy, -dz);
 	}
-
-	public Vector3d multiply(double k)
-	{
+	public Vector3d multiply(double k){
 		return new Vector3d(x * k, y * k, z * k);
 	}
-
-	public Vector3d divide(double k)
-	{
+	public Vector3d divide(double k){
 		return multiply(1 / k);
 	}
 
-	public Vector3f toFloat()
-	{
-		return new Vector3f((float) x, (float) y, (float) z);
-	}
-
-	public Vector3 floor()
-	{
+	public Vector3 floor(){
 		return new Vector3((int) x, (int) y, (int) z);
 	}
-
-	public Vector3d abs()
-	{
+	public Vector3d abs(){
 		return new Vector3d(Math.abs(x), Math.abs(y), Math.abs(z));
 	}
-
-	public double distance(Vector3d other)
-	{
+	public double distance(Vector3d other){
 		Vector3d delta = subtract(other).abs();
 		return Math.sqrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2) + Math.pow(delta.z, 2));
 	}
 
-	public static Vector3d merge(Vector3d... vectors)
-	{
+	public static Vector3d merge(Vector3d... vectors){
 		Vector3d base = new Vector3d();
-		for(Vector3d vector: vectors)
-		{
+		for(Vector3d vector: vectors){
 			base = new Vector3d(base.getX() + vector.getX(), base.getY() + vector.getY(), base.getZ() + vector.getZ());
 		}
 		return base;
@@ -179,18 +130,17 @@ public class Vector3d
 			this.yaw = yaw;
 			this.pitch = pitch;
 		}
-		public double getYaw() {
+		public double getYaw(){
 			return yaw;
 		}
-		public void setYaw(double yaw) {
+		public void setYaw(double yaw){
 			this.yaw = yaw;
 		}
-		public double getPitch() {
+		public double getPitch(){
 			return pitch;
 		}
-		public void setPitch(double pitch) {
+		public void setPitch(double pitch){
 			this.pitch = pitch;
 		}
 	}
-
 }

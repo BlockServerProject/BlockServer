@@ -9,12 +9,10 @@ public class ConnectedPingPacket extends BaseLoginPacket {
 	private DatagramPacket packet;
 	private ByteBuffer buffer;
 	private Server server;
-	//Fields:
 	protected byte PID;
 	protected long pingID;
 	protected byte[] MAGIC;
-	
-	
+
 	public ConnectedPingPacket(DatagramPacket packet, Server server){
 		this.packet = packet;
 		this.server = server;
@@ -23,19 +21,20 @@ public class ConnectedPingPacket extends BaseLoginPacket {
 		pingID = buffer.getLong();
 		MAGIC = buffer.get(new byte[16]).array();
 	}
-	
+
+	@Override
 	public ByteBuffer getBuffer(){
 		return ByteBuffer.wrap(packet.getData());
 	}
-	
+	@Override
 	public byte getPID(){
 		return PID;
 	}
-	
+	@Override
 	public DatagramPacket getPacket(){
 		return packet;
 	}
-	
+	@Override
 	public ByteBuffer getResponse(){
 	   String serverName = server.getServerName();
 	   byte[] magic = this.getMAGIC();

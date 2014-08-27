@@ -45,18 +45,15 @@ public class PacketHandler extends Thread{
 					switch(pid){
 						case RaknetsID.UNCONNECTED_PING: //ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
 						case RaknetsID.UNCONNECTED_PING_OPEN_CONNECTIONS: // (0x02)
-						{
-							ConnectedPingPacket packet = new ConnectedPingPacket(pck, server);
-							ByteBuffer response = packet.getResponse();
+							ConnectedPingPacket pingPk = new ConnectedPingPacket(pck, server);
+							ByteBuffer response = pingPk.getResponse();
 							DatagramPacket packet1c = new DatagramPacket(response.array(), response.capacity(), pck.getAddress(), pck.getPort());
 							sendPacket(packet1c);
-						}
-						break;
+							break;
 						case RaknetsID.OPEN_CONNECTION_REQUEST_1: //ID_OPEN_CONNECTION_REQUEST_1 (0x05)
-						{
-							ConnectionRequest1Packet packet = new ConnectionRequest1Packet(pck, server);
-							ByteBuffer response6 = packet.getResponse();
-							byte protocol = ((ConnectionRequest1Packet) packet).getProtocol();
+							ConnectionRequest1Packet crPk1 = new ConnectionRequest1Packet(pck, server);
+							ByteBuffer response6 = crPk1.getResponse();
+							byte protocol = ((ConnectionRequest1Packet) crPk1).getProtocol();
 							if (protocol != RaknetsID.STRUCTURE) {
 								//Wrong protocol
 								server.getLogger().warning("Client " + pck.getAddress().getHostName() + ":" + pck.getPort() + " RakNet protocol is outdated, current protocol is 5");
@@ -67,19 +64,15 @@ public class PacketHandler extends Thread{
 								DatagramPacket packet06 = new DatagramPacket(response6.array(), response6.capacity(), pck.getAddress(), pck.getPort());
 								sendPacket(packet06);
 							}
-						}
-						break;
-
+							break;
 						case RaknetsID.OPEN_CONNECTION_REQUEST_2: //ID_OPEN_CONNECTION_REQUEST_2 (0x07)
-						{
-							ConnectionRequest2 packet = new ConnectionRequest2(pck, server);
-							ByteBuffer response8 = packet.getResponse();
+							ConnectionRequest2 crPk2 = new ConnectionRequest2(pck, server);
+							ByteBuffer response8 = crPk2.getResponse();
 							DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), pck.getAddress(), pck.getPort());
 							sendPacket(packet08);
-							Player player = new Player(pck.getAddress().toString(), pck.getPort(), packet.mtuSize, packet.clientID);
+							Player player = new Player(pck.getAddress().toString(), pck.getPort(), crPk2.mtuSize, crPk2.clientID);
 							server.addPlayer(player);
-						}
-						break;
+							break;
 						default:
 							server.getLogger().warning("Recived unsupported raknet packet! PID: %02X", pid);
 					}

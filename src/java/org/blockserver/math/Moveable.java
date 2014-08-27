@@ -6,6 +6,7 @@ import java.util.Map;
 public abstract class Moveable extends Vector3d{
 	public final static String MODIFIER_STANDARD = "net.blockserver.math.Moveable.standard";
 	protected Map<String, Vector3d> speed;
+
 	protected Moveable(Vector3d vectors){
 		this(vectors.getX(), vectors.getY(), vectors.getZ());
 	}
@@ -24,6 +25,7 @@ public abstract class Moveable extends Vector3d{
 		speed = new HashMap<String, Vector3d>(0xFF);
 		setSpeed(getInitialStdSpeed());
 	}
+
 	protected Vector3d getInitialStdSpeed(){
 		return new Vector3d(0, 0, 0);
 	}
@@ -64,12 +66,14 @@ public abstract class Moveable extends Vector3d{
 		}
 		return base;
 	}
+
 	/**
 	 * Updates the coordinates of the Moveable
 	 */
 	public void onTickUpdate(){
 		instanceAdd(getSpeed());
 	}
+
 	public void instanceAdd(Vector3d delta){
 		x += delta.getX();
 		y += delta.getY();

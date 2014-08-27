@@ -16,7 +16,7 @@ public abstract class Command {
 		if(single instanceof String){
 			aliases.add(single);
 		}
-		return aliases.toArray(new String[aliases.size()]);
+		return (String[]) aliases.toArray();
 	}
 	protected String[] aliases(){
 		return new String[0];

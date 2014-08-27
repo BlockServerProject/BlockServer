@@ -4,7 +4,6 @@ import org.blockserver.Server;
 import org.blockserver.level.Level;
 
 public class DummyPlayerDatabase implements PlayerDatabase{
-
 	private Server server;
 
 	public DummyPlayerDatabase(){
@@ -17,24 +16,23 @@ public class DummyPlayerDatabase implements PlayerDatabase{
 	}
 
 	@Override
-	public PlayerData load(String name) {
+	public PlayerData load(String name){
 		Level level = server.getDefaultLevel();
-		return new PlayerData(level, level.getSpawnpos(), name);
+		return new PlayerData(level, level.getSpawnPos(), name);
 	}
 
 	@Override
-	public void save(PlayerData data) {
+	public void save(PlayerData data){
 		// nothing to do, because this is in-memory database
 	}
 
 	@Override
-	public boolean isAvailable() {
+	public boolean isAvailable(){
 		return true;
 	}
 
 	@Override
-	public void close() {
+	public void close(){
 		// release the memory :D
 	}
-
 }

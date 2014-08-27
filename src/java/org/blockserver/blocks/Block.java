@@ -1,8 +1,7 @@
 package org.blockserver.blocks;
 
 
-public class Block
-{
+public class Block{
 	private int id;
 	private int damage;
 	private String name;

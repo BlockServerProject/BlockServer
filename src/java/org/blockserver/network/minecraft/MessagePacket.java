@@ -5,8 +5,7 @@ import java.nio.charset.Charset;
 
 import org.blockserver.Server;
 
-public class MessagePacket implements BaseDataPacket {
-
+public class MessagePacket implements BaseDataPacket{
 	private ByteBuffer bb;
 	private String msg;
 	public MessagePacket(String message){
@@ -25,20 +24,21 @@ public class MessagePacket implements BaseDataPacket {
 	}
 
 	@Override
-	public void encode() {
+	public void encode(){
 		bb.put(PacketsID.MESSAGE);
-		bb.put((byte) msg.length());
+		bb.putShort((short) msg.length());
 		bb.put(msg.getBytes(Charset.forName("UTF-8")));
 	}
 
 	@Override
-	public void decode() {
-		// TODO the other side
+	public void decode(){
+		int length = bb.getShort();
+		byte[] buffer = new byte[length];
+		bb.get(buffer, 0, length);
 	}
 
 	@Override
-	public ByteBuffer getBuffer() {
+	public ByteBuffer getBuffer(){
 		return bb;
 	}
-
 }

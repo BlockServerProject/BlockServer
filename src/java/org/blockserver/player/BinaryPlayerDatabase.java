@@ -12,8 +12,7 @@ import org.blockserver.Server;
 import org.blockserver.level.Level;
 import org.blockserver.math.Vector3d;
 
-public class BinaryPlayerDatabase implements PlayerDatabase {
-
+public class BinaryPlayerDatabase implements PlayerDatabase{
 	private Server server;
 	private File folder;
 
@@ -24,10 +23,10 @@ public class BinaryPlayerDatabase implements PlayerDatabase {
 	}
 
 	@Override
-	public PlayerData load(String name) {
+	public PlayerData load(String name){
 		File file = getPlayerFile(name);
 		if(file.exists()){
-			try {
+			try{
 				FileInputStream stream = new FileInputStream(file);
 				byte[] buffer = new byte[(int) file.length()];
 				stream.read(buffer);
@@ -47,7 +46,7 @@ public class BinaryPlayerDatabase implements PlayerDatabase {
 				Level level = server.getLevel(new String(world), true, false);
 				return new PlayerData(level, coords, CaseName);
 			}
-			catch (IOException e) {
+			catch(IOException e) {
 				e.printStackTrace();
 			}
 			catch(BufferUnderflowException e){
@@ -59,11 +58,11 @@ public class BinaryPlayerDatabase implements PlayerDatabase {
 
 	private PlayerData dummy(String caseName){
 		Level level = server.getDefaultLevel();
-		return new PlayerData(level, level.getSpawnpos(), caseName);
+		return new PlayerData(level, level.getSpawnPos(), caseName);
 	}
 
 	@Override
-	public void save(PlayerData data) {
+	public void save(PlayerData data){
 		File file = getPlayerFile(data.getCaseName());
 		if(!file.isFile()){
 			try{
@@ -73,7 +72,7 @@ public class BinaryPlayerDatabase implements PlayerDatabase {
 				e.printStackTrace();
 			}
 		}
-		try {
+		try{
 			FileOutputStream out = new FileOutputStream(file);
 			ByteBuffer bb = ByteBuffer.allocate(0xFFFF);
 			bb.put((byte) data.getCaseName().length());
@@ -87,28 +86,27 @@ public class BinaryPlayerDatabase implements PlayerDatabase {
 			out.flush();
 			out.close();
 		}
-		catch (IOException e) {
+		catch(IOException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public boolean isAvailable() {
+	public boolean isAvailable(){
 		return true;
 	}
 
 	@Override
-	public void init() {
+	public void init(){
 		folder.mkdirs();
 	}
 
 	@Override
-	public void close() {
+	public void close(){
 	}
 
 	public File getPlayerFile(String name){
 		return new File(folder, name.toLowerCase(Locale.US) + ".bsf"); // Block Server Format
 	}
-
 }

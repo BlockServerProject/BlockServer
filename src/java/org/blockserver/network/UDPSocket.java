@@ -11,7 +11,6 @@ import org.blockserver.Server;
 
 public class UDPSocket{
 	public boolean connected = false;
-
 	private String ip;
 	private int port;
 //	private byte[] buffer = new byte[65535]; // unused?
@@ -77,5 +76,4 @@ public class UDPSocket{
 			sck.close();
 		}
 	}
-
 }

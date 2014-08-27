@@ -2,11 +2,8 @@ package org.blockserver.network.minecraft;
 
 import java.nio.ByteBuffer;
 
-public interface BaseDataPacket {
-	
-	void encode();
-	void decode();
-	
-	ByteBuffer getBuffer();
-
+public interface BaseDataPacket{
+	public void encode();
+	public void decode();
+	public ByteBuffer getBuffer();
 }

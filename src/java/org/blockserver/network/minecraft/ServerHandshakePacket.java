@@ -4,9 +4,8 @@ import java.nio.ByteBuffer;
 
 import org.blockserver.utility.Utils;
 
-public class ServerHandshakePacket implements BaseDataPacket {
+public class ServerHandshakePacket implements BaseDataPacket{
 	private ByteBuffer buffer;
-	
 	public static byte PID = PacketsID.SERVER_HANDSHAKE;
 	public int port;
 	public long sessionID;
@@ -14,21 +13,22 @@ public class ServerHandshakePacket implements BaseDataPacket {
 	public ServerHandshakePacket(int port, long session){
 		this.port = port;
 		this.sessionID = session;
-	}
-	
-	public void encode(){
 		buffer = ByteBuffer.allocate(96);
+	}
+
+	@Override
+	public void encode(){
 		buffer.put(PID);
 		buffer.put(new byte[] { 0x04, 0x3f, 0x57, (byte) 0xfe }); //Cookie
 		buffer.put((byte) 0xcd); //Security flags
-		buffer.putShort((short) this.port);
-		this.putDataArray();
-		buffer.put(new byte[] { 0x00, 0x00 });
+		buffer.putShort((short) port);
+		putDataArray();
+		buffer.put(new byte[]{0x00, 0x00});
 		buffer.putLong(sessionID);
-		buffer.put(new byte[] { 0x00, 0x00, 0x00, 0x00, 0x04, 0x44, 0x0b, (byte) 0xa9 });
+		buffer.put(new byte[]{0x00, 0x00, 0x00, 0x00, 0x04, 0x44, 0x0b, (byte) 0xa9});
 	}
-	
-	private void putDataArray() {
+
+	private void putDataArray(){
 		byte[] unknown1 = new byte[] { (byte) 0xf5, (byte) 0xff, (byte) 0xff, (byte) 0xf5 };
 		byte[] unknown2 = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
 
@@ -41,10 +41,11 @@ public class ServerHandshakePacket implements BaseDataPacket {
 		}
 	}
 
+	@Override
 	public void decode(){}
-	
+
+	@Override
 	public ByteBuffer getBuffer(){
 		return this.buffer;
 	}
-
 }

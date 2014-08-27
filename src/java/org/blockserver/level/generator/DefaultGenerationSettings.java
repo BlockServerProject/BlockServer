@@ -3,13 +3,12 @@ package org.blockserver.level.generator;
 import java.util.Random;
 
 public enum DefaultGenerationSettings implements GenerationSettings{
-
 	CAVES(Boolean.class, true),
 	DECORATION(Boolean.class, true),
 	MINESHAFT(Boolean.class, true),
 	SEED(Long.class, 0l){
 		@Override
-		void construct(){
+		protected void construct(){
 			this.def = (new Random()).nextLong();
 		}
 	},
@@ -23,9 +22,7 @@ public enum DefaultGenerationSettings implements GenerationSettings{
 	private <T> DefaultGenerationSettings(Class<T> type, T def) {
 		this.type = type;
 		this.def = def;
-
 		construct();
-
 		this.value = def;
 	}
 
@@ -43,10 +40,9 @@ public enum DefaultGenerationSettings implements GenerationSettings{
 		this.value = value;
 		return this;
 	}
-
 	public Object getValue(){
 		return this.value;
 	}
 
-	void construct(){}
+	protected void construct(){}
 }

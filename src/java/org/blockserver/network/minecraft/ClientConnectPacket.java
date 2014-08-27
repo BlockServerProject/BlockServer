@@ -4,25 +4,28 @@ import java.nio.ByteBuffer;
 
 public class ClientConnectPacket implements BaseDataPacket{
 	private ByteBuffer buffer;
-
 	public long clientID;
 	public long session;
 	public byte unknown;
 	
 	public ClientConnectPacket(byte[] data){
-		this.buffer = ByteBuffer.wrap(data);
+		buffer = ByteBuffer.wrap(data);
 	}
-	
-	public void decode(){
-		if(this.buffer.get() != PacketsID.CLIENT_CONNECT) { return; }
 
-		this.clientID = this.buffer.getLong();
-		this.session = this.buffer.getLong();
-		this.unknown = this.buffer.get();
+	@Override
+	public void decode(){
+		if(buffer.get() != PacketsID.CLIENT_CONNECT){
+			return;
+		}
+		clientID = buffer.getLong();
+		session = buffer.getLong();
+		unknown = buffer.get();
 	}
-	
-	public void encode() {}
-	
+
+	@Override
+	public void encode(){}
+
+	@Override
 	public ByteBuffer getBuffer(){
 		return buffer;
 	}
