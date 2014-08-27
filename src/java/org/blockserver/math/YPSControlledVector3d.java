@@ -5,6 +5,7 @@ public class YPSControlledVector3d extends Vector3d {
 	public final static String COORDS_EX = "Cannot modify coords of YPSControlledVector3d directly; use setYaw(), setPitch() and/or setSpeed()";
 
 	protected double yaw, pitch, speed;
+	private boolean canXYZChange = false;
 
 	public YPSControlledVector3d(double yaw, double pitch){
 		this(yaw, pitch, 1);
@@ -15,11 +16,13 @@ public class YPSControlledVector3d extends Vector3d {
 		this.yaw = yaw;
 		this.pitch = pitch;
 		this.speed = speed;
-		setYawPitchOnSubject(yaw, pitch, speed, this);
+		recalculate();
 	}
 
 	public void recalculate(){
+		canXYZChange = true;
 		setYawPitchOnSubject(yaw, pitch, speed, this);
+		canXYZChange = false;
 	}
 
 	public double getYaw(){
@@ -51,17 +54,23 @@ public class YPSControlledVector3d extends Vector3d {
 
 	@Override
 	public void setX(double x){
-		throw new UnsupportedOperationException(COORDS_EX);
+		if(!canXYZChange){
+			throw new UnsupportedOperationException(COORDS_EX);
+		}
 	}
 
 	@Override
 	public void setY(double y){
-		throw new UnsupportedOperationException(COORDS_EX);
+		if(!canXYZChange){
+			throw new UnsupportedOperationException(COORDS_EX);
+		}
 	}
 
 	@Override
 	public void setZ(double z){
-		throw new UnsupportedOperationException(COORDS_EX);
+		if(!canXYZChange){
+			throw new UnsupportedOperationException(COORDS_EX);
+		}
 	}
 
 }
