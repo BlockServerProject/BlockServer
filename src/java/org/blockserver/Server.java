@@ -217,8 +217,9 @@ public class Server {
 //            throw new RuntimeException("Unable to generate default level");
         }
         */
-        logger.warning("Note: this version currently does not support world loading."); //TODO: Change this when we can load levels :)
+        logger.warning("Note: This version currently does not support world loading."); //TODO: Change this when we can load levels :)
         logger.warning("Note: The server only supports BinaryPlayerDatabase files, .bsf");
+        logger.warning("Note: Currently, the console commands are not being handled.");
 
         scheduler = new Scheduler();// Minecraft default Ticks Per Seconds(20)
         packetHandler = new PacketHandler(this);
