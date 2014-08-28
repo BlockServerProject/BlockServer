@@ -36,3 +36,5 @@ local.properties
 # Eclipse
 .classpath
 .project
+
+diff.txt

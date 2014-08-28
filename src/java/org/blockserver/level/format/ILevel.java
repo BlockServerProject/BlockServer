@@ -1,19 +1,15 @@
 package org.blockserver.level.format;
 
 import org.blockserver.blocks.Block;
+import org.blockserver.math.Vector3;
 
-public interface ILevel extends IChunkManager
-{
-    String getName();
-    void setName();
+public interface ILevel extends IChunkManager{
+	public String getName();
+	public String getPath();
 
-    String getPath();
-    void setPath(String p);
+	public IChunk getChunk(int x, int z);
+	public void setChunk(int x, int z, IChunk chunk);
 
-    IChunk getChunk(int x, int z);
-    void setChunk(int x, int z);
-
-    Block getBlock(int x, int y, int z);
-    void setBlock(Block block);
-
+	public Block getBlock(int x, int y, int z);
+	public void setBlock(Vector3 coords, Block block);
 }

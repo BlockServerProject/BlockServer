@@ -3,125 +3,102 @@ package org.blockserver.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Scheduler extends Thread
-{
-    public final int DEFAULT_TICKS = 20; // default ticks per seconds 20, like minecraft
+public class Scheduler extends Thread{
+	public final static int DEFAULT_TICKS = 20; // default ticks per seconds 20, like minecraft
 
-    private int ids, sleepIntervals, currentTick;
-    private boolean isRunning;
-    private List<Task> tasks;
+	private int ids, sleepIntervals, currentTick;
+	private boolean isRunning;
+	private List<Task> tasks;
 
-    public Scheduler()
-    {
-        this.ids = 0;
-        this.sleepIntervals = (1000 / DEFAULT_TICKS);
-        this.currentTick = 0;
-        this.isRunning = false;
-        this.tasks = new ArrayList<Task>();
-    }
+	public Scheduler(){
+		this(1000 / DEFAULT_TICKS);
+	}
+	public Scheduler(int tickPerSeconds){
+		ids = 0;
+		sleepIntervals = (1000 / tickPerSeconds);
+		currentTick = 0;
+		isRunning = false;
+		tasks = new ArrayList<Task>();
+	}
 
-    public Scheduler(int tickPerSeconds)
-    {
-        this.ids = 0;
-        this.sleepIntervals = (1000 / tickPerSeconds);
-        this.currentTick = 0;
-        this.isRunning = false;
-        this.tasks = new ArrayList<Task>();
-    }
+	public int addTask(Task t){
+		if(t.isSetup()){
+			t.setID(ids++);
+			t.setDelay((t.getDelay() + currentTick));
+			tasks.add(t);
+			return t.getID();
+		}
+		return -1;
+	}
 
-    public int addTask(Task t)
-    {
-        if(t.isSetup())
-        {
-            t.setID(this.ids++);
-            t.setDelay((t.getDelay() + this.currentTick));
-            this.tasks.add(t);
-            return  t.getID();
-        }
-        return -1;
-    }
+	public void removeTasks(int id){
+		int i = 0;
+		for(Task t: tasks){
+			if(t.getID() == id){
+				tasks.remove(i);
+			}
+			i++;
+		}
+	}
+	public void removeAllTasks(){
+		tasks.clear();
+	}
 
-    public void removeTask(int id)
-    {
-        for (int i = 0; i < this.tasks.size(); i++)
-        {
-            if(this.tasks.get(i).getID() == id)
-            {
-                this.tasks.remove(i);
-            }
-        }
-    }
+	public void Start() throws Exception{
+		if(isRunning){
+			throw new RuntimeException("Scheduler is already running");
+		}
+		isRunning = true;
+		start();
+	}
 
-    public void removeAllTask()
-    {
-        this.tasks.clear();
-    }
+	public void run(){
+		while(isRunning) {
+			currentTick++;
+			if(!tasks.isEmpty()) {
+				for(int i = 0; i < tasks.size(); i++){
+					Task t = tasks.get(i);
+					if(t == null){
+						continue;
+					}
+					if(t.getDelay() == currentTick){
+						t.onRun(currentTick);
+						int times = t.getRepeatTimes();
+						if(times > 0){
+							if(--times == 0){
+								t.onFinish(currentTick);
+								tasks.remove(i);
+								continue;
+							}
+							t.setRepeatTimes(times);
+							t.setDelay(currentTick + t.getDefaultDelay());
+						}
+						else if(times == -1){ // -1 Repeat forever
+							t.setDelay(currentTick + t.getDefaultDelay());
+						}
+						else{
+							t.onFinish(currentTick);
+							tasks.remove(i);
+						}
+					}
+				}
+			}
 
-    public void Start() throws Exception
-    {
-        if(this.isRunning)
-            throw  new Exception("There is another scheduler class running!");
+			try {
+				Thread.sleep(sleepIntervals);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+	}
 
-        this.isRunning = true;
-        this.start();
-    }
-
-    public void run()
-    {
-        while (this.isRunning) {
-            this.currentTick++;
-            if (!this.tasks.isEmpty()) {
-                for (int i = 0; i < this.tasks.size(); i++)
-                {
-                    Task t = this.tasks.get(i);
-                    if(t == null) continue;
-
-                    if (t.getDelay() == this.currentTick)
-                    {
-                        t.onRun(this.currentTick);
-                        int times = t.getRepeatTimes();
-                        if (times > 0)
-                        {
-                            if (--times == 0)
-                            {
-                                t.onFinish(currentTick);
-                                this.tasks.remove(i);
-                                continue;
-                            }
-
-                            t.setRepeatTimes(times);
-                            t.setDelay(this.currentTick + t.getDeafultDelay());
-                        }
-                        else if (times == -1) // -1 Reapeat forever
-                        {
-                            t.setDelay(this.currentTick + t.getDeafultDelay());
-                        }
-                        else
-                        {
-                            t.onFinish(currentTick);
-                            this.tasks.remove(i);
-                        }
-                    }
-                }
-            }
-
-            try {
-                Thread.sleep(this.sleepIntervals);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-
-    }
-
-    public void Stop() throws Exception
-    {
-        if(!this.isRunning)
-            throw new Exception("This scheduler is not running!");
-
-        this.isRunning = false;
-        this.join();
-        this.tasks.clear();
-    }
+	public void Stop() throws Exception{
+		if(!isRunning){
+			throw new RuntimeException("Cannot stop non-running scheduler!");
+		}
+		isRunning = false;
+		join();
+		tasks.clear();
+	}
 }
