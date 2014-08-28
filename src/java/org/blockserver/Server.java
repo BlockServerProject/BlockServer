@@ -130,12 +130,13 @@ public class Server implements Context{
 		this.maxPlayers = maxPlayers;
 		MCVERSION = version;
 		serverID = new Random().nextLong();
-		players = new HashMap<String, Player>(players);
+		players = new HashMap<String, Player>(maxPlayers);
 		this.playersDir = playersDir;
 		worldsDir.mkdirs();
 		this.worldsDir = worldsDir;
 		int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
 		levels = new HashMap<String, Level>(cnt);
+		this.defaultLevel = defaultLevel;
 		boolean success = loadLevel(defaultLevel, true);
 		if(!success){
 //			throw new RuntimeException("Unable to generate default level");

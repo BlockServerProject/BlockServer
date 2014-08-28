@@ -43,8 +43,9 @@ public class InternalPacket{
 			bb.get(pck.buffer);
 			list.add(pck);
 		}
-
-		return (InternalPacket[]) list.toArray();
+		InternalPacket[] result = new InternalPacket[list.size()];
+		list.toArray(result);
+		return result;
 	}
 
 	public int getLength(){
