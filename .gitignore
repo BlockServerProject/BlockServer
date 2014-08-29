@@ -37,4 +37,9 @@ local.properties
 .classpath
 .project
 
+# PEMapModder's stuff
 diff.txt
+
+# Generated files
+players/
+worlds/
