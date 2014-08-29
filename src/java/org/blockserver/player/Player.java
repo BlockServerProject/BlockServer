@@ -11,6 +11,7 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.entity.Entity;
 import org.blockserver.entity.EntityType;
+import org.blockserver.math.Vector3;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
@@ -22,6 +23,7 @@ import org.blockserver.network.minecraft.PacketsID;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
 import org.blockserver.network.minecraft.ServerHandshakePacket;
+import org.blockserver.network.minecraft.StartGamePacket;
 import org.blockserver.network.raknet.ACKPacket;
 import org.blockserver.network.raknet.AcknowledgePacket;
 import org.blockserver.network.raknet.CustomPacket;
@@ -186,6 +188,13 @@ public class Player extends Entity{
 					this.addToQueue(sgp);
 					
 					*/
+					
+					//START Fake StartGamePacket
+					StartGamePacket sgp = new StartGamePacket(new Vector3(100, 2, 100), 1, 100, 1);
+					sgp.encode();
+					addToQueue(sgp);
+					//END Fake StartGamePacket
+					
 					break;
 				
 				default:
