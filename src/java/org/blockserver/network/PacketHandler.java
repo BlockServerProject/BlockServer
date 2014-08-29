@@ -93,7 +93,7 @@ public class PacketHandler extends Thread{
 				}
 			}
 			catch(Exception e){
-				e.printStackTrace();
+				server.getLogger().warning(e.getMessage());
 			}
 		}
 	}
