@@ -11,6 +11,7 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.entity.Entity;
 import org.blockserver.entity.EntityType;
+import org.blockserver.math.Vector3;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
@@ -22,6 +23,7 @@ import org.blockserver.network.minecraft.PacketsID;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
 import org.blockserver.network.minecraft.ServerHandshakePacket;
+import org.blockserver.network.minecraft.StartGamePacket;
 import org.blockserver.network.raknet.ACKPacket;
 import org.blockserver.network.raknet.AcknowledgePacket;
 import org.blockserver.network.raknet.CustomPacket;
@@ -175,21 +177,36 @@ public class Player extends Entity{
 					if(lp.username.length() < 3 || lp.username.length() > 15){
 						close("Username is not valid.");
 					}
-					name = lp.username;
-
-					login();
-
-					//Once we get World gen up, uncomment this:
-					/*
-					StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
-					sgp.encode();
-					this.addToQueue(sgp);
+					else{
+						name = lp.username;
+						server.getLogger().info(name+"("+ip+":"+port+") logged in with a fake entity ID.");
+	
+						//login();
+	
+						//Once we get World gen up, uncomment this:
+						/*
+						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
+						sgp.encode();
+						this.addToQueue(sgp);
+						
+						*/
+						
+						//START Fake StartGamePacket
+						StartGamePacket sgp = new StartGamePacket(new Vector3(100, 2, 100), 1, 100, 1);
+						sgp.encode();
+						addToQueue(sgp);
+						//END Fake StartGamePacket
+						
+						MessagePacket mp = new MessagePacket("Harro! This is blockserver!");
+						mp.encode();
+						addToQueue(mp);
+					}
 					
-					*/
 					break;
 				
 				default:
-					server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
+					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
+					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
 			}
 		}
 	}
@@ -198,7 +215,7 @@ public class Player extends Entity{
 		pck.decode();
 		if(pck instanceof ACKPacket){ // When we receive a ACK Packet then
 			for(int i: pck.sequenceNumbers){
-				server.getLogger().info("ACK Packet Received Seq: %d", i);
+				//server.getLogger().info("ACK Packet Received Seq: %d", i);
 				recoveryQueue.remove(i);
 			}
 		}

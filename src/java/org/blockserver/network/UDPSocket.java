@@ -1,6 +1,7 @@
 package org.blockserver.network;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -39,9 +40,14 @@ public class UDPSocket{
 			sck.setBroadcast(true);
 			sck.setSendBufferSize(65535);
 			sck.setReceiveBufferSize(65535);
-			sck.bind(new InetSocketAddress(ip, port));
-			connected = true;
-			sck.setSoTimeout(0);
+			try{
+				sck.bind(new InetSocketAddress(ip, port));
+				connected = true;
+				sck.setSoTimeout(0);
+			} catch(BindException e){
+				server.getLogger().fatal("COULD NOT BIND TO PORT! - Perhaps something is running on: "+port+"?");
+				System.exit(1);
+			}
 
 		}
 		else{

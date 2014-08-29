@@ -19,12 +19,12 @@ public class MessagePacket implements BaseDataPacket{
 					message, 0xFF, message.length() - 0xFF);
 			message = message.substring(0, 0xFF);
 		}
-		bb = ByteBuffer.allocate(2 + message.length());
 		msg = message;
 	}
 
 	@Override
 	public void encode(){
+		bb = ByteBuffer.allocate(3 + msg.getBytes(Charset.forName("UTF-8")).length);
 		bb.put(PacketsID.MESSAGE);
 		bb.putShort((short) msg.length());
 		bb.put(msg.getBytes(Charset.forName("UTF-8")));
