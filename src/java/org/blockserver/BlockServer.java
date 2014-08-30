@@ -5,6 +5,11 @@ import java.io.File;
 import org.blockserver.player.BinaryPlayerDatabase;
 import org.blockserver.utility.MinecraftVersion;
 
+/**
+ * <p>The default startup program to start the server.</p>
+ * 
+ * @author BlockServerProject
+ */
 public class BlockServer {
 	public static void main(String[] args) {
 		try{

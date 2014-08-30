@@ -70,7 +70,7 @@ public class PacketHandler extends Thread{
 							ByteBuffer response8 = crPk2.getResponse();
 							DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), pck.getAddress(), pck.getPort());
 							sendPacket(packet08);
-							Player player = new Player(pck.getAddress().toString(), pck.getPort(), crPk2.mtuSize, crPk2.clientID);
+							Player player = new Player(server, pck.getAddress().toString(), pck.getPort(), crPk2.mtuSize, crPk2.clientID);
 							server.addPlayer(player);
 							break;
 						default:

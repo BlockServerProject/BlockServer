@@ -58,4 +58,8 @@ public class StartGamePacket implements BaseDataPacket{
 	public ByteBuffer getBuffer(){
 		return buffer;
 	}
+
+	public Level getLevel(){
+		return level;
+	}
 }
