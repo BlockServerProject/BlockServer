@@ -42,25 +42,59 @@ public class Server implements Context{
 	private long startTime;
 	private long serverID;
 
+	/**
+	 * <p>Get an instance of the currently running server, (Broken).</p>
+	 * 
+	 * @return an instance of Server
+	 */
 	public static synchronized Server getInstance(){
 		return instance;
 	}
+	/**
+	 * <p>Set the static instance of the currently running server, (Broken).<br>
+	 * 
+	 * Do <b>not</b> call this method externally.</p>
+	 * @param i the server object to set
+	 */
 	public static void setInstance(Server i){
 		instance = i;
 	}
 
+	/**
+	 * <p>Get the server scheduler instance.</p>
+	 * 
+	 * @return the server scheduler
+	 */
 	public Scheduler getScheduler(){
 		return scheduler;
 	}
+	/**
+	 * <p>Get the server logger instance.</p>
+	 * 
+	 * @return the server logger
+	 */
 	public ServerLogger getLogger(){
 		return logger;
 	}
+	/**
+	 * <p>Get the server's Minecraft version.</p>
+	 * @return an instance of <code>MinecraftVeresion</code> that describes 
+	 *   the server's compatible minecraft version.
+	 */
 	public MinecraftVersion getMinecraftVersion(){
 		return MCVERSION;
 	}
+	/**
+	 * <p>Get the server's IP listening to, most often <code>0.0.0.0</code>.</p>
+	 * @return the server's listening IP as string.
+	 */
 	public String getServerIP(){
 		return serverip;
 	}
+	/**
+	 * <p>Get the server's name visible to clients.</p>
+	 * @return the server's name visible to clients.
+	 */
 	public String getServerName(){
 		return serverName;
 	}
@@ -170,7 +204,7 @@ public class Server implements Context{
 			logger.info("This is version " + VERSION);
 			scheduler.Start();
 			logger.info("Server Scheduler Started...");
-			playerDb.init();
+			playerDb.init(this);
 			packetHandler.start();
 			cmdHandler.start();
 		}

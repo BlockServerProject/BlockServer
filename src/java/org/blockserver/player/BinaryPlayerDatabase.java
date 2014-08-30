@@ -8,22 +8,14 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.Locale;
 
-import org.blockserver.Server;
 import org.blockserver.level.Level;
 import org.blockserver.math.Vector3d;
 
-public class BinaryPlayerDatabase implements PlayerDatabase{
-	private Server server;
+public class BinaryPlayerDatabase extends PlayerDatabase{
 	private File folder;
 
-	public BinaryPlayerDatabase(){
-		server = Server.getInstance();
-		folder = server.getPlayersDir();
-		folder.mkdirs();
-	}
-
 	@Override
-	public PlayerData load(String name){
+	protected PlayerData loadPlayer(String name){
 		File file = getPlayerFile(name);
 		if(file.exists()){
 			try{
@@ -43,7 +35,7 @@ public class BinaryPlayerDatabase implements PlayerDatabase{
 				length = bb.get();
 				byte[] world = new byte[length];
 				bb.get(world, 0, length);
-				Level level = server.getLevel(new String(world), true, false);
+				Level level = getServer().getLevel(new String(world), true, false);
 				return new PlayerData(level, coords, CaseName);
 			}
 			catch(IOException e) {
@@ -57,12 +49,12 @@ public class BinaryPlayerDatabase implements PlayerDatabase{
 	}
 
 	private PlayerData dummy(String caseName){
-		Level level = server.getDefaultLevel();
+		Level level = getServer().getDefaultLevel();
 		return new PlayerData(level, level.getSpawnPos(), caseName);
 	}
 
 	@Override
-	public void save(PlayerData data){
+	protected void savePlayer(PlayerData data){
 		File file = getPlayerFile(data.getCaseName());
 		if(!file.isFile()){
 			try{
@@ -93,17 +85,9 @@ public class BinaryPlayerDatabase implements PlayerDatabase{
 	}
 
 	@Override
-	public boolean isAvailable(){
-		return true;
-	}
-
-	@Override
-	public void init(){
+	public void initialize(){
+		folder = getServer().getPlayersDir();
 		folder.mkdirs();
-	}
-
-	@Override
-	public void close(){
 	}
 
 	public File getPlayerFile(String name){

@@ -53,7 +53,7 @@ public class Player extends Entity{
 		return ip;
 	}
 
-	public Player(String ip, int port, short mtu, long clientID){
+	public Player(Server server, String ip, int port, short mtu, long clientID){
 		super(0, 0, 0, null);
 		this.ip = ip.replace("/", "");
 		this.port = port;
@@ -62,7 +62,7 @@ public class Player extends Entity{
 
 		lastSequenceNum = sequenceNum = messageIndex = 0;
 
-		server = Server.getInstance();
+		this.server = server;
 		queue = new CustomPacket();
 		ACKQueue = new ArrayList<Integer>();
 		NACKQueue = new ArrayList<Integer>();

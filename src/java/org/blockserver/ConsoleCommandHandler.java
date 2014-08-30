@@ -6,10 +6,17 @@ import java.io.InputStreamReader;
 
 import org.blockserver.cmd.CommandIssuer;
 
+/**
+ * <p>The thread to watch and issue console commands.</p>
+ */
 public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	private Server server;
 	protected boolean running;
 
+	/**
+	 * <p>Constructs a new <code>ConsoleCommandHandler</code> instance.</p>
+	 * @param server
+	 */
 	public ConsoleCommandHandler(Server server){
 		this.server = server;
 		setName("ConsoleCommandHandler");
@@ -35,6 +42,9 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 		}
 	}
 
+	/**
+	 * Stop listening for new commands.
+	 */
 	public void end(){
 		running = false;
 	}
