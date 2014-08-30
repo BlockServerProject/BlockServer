@@ -15,6 +15,7 @@ public abstract class Entity extends Moveable{
 	public final static String MODIFIER_PITCH_NEUTRALIZER = "net.blockserver.entity.Entity.neutralizer.pitch";
 
 	private static int nextID = 0;
+	protected Throwable trace;
 	protected int eid;
 	protected Level level;
 	protected double health;
@@ -22,10 +23,10 @@ public abstract class Entity extends Moveable{
 	protected Entity(double x, double y, double z, Level level){
 		super(x, y, z);
 		this.level = level;
+		trace = new Throwable("Debug stack trace");
 		eid = nextID();
 		setSpeed(new YPSControlledVector3d(0, 0, 0), MODIFIER_PITCH_NEUTRALIZER);
 	}
-
 	protected Entity(Vector3d pos, Level level){
 		this(pos.getX(), pos.getY(), pos.getZ(), level);
 	}
@@ -47,6 +48,11 @@ public abstract class Entity extends Moveable{
 	}
 	public boolean isValid(){
 		return level instanceof Level;
+	}
+	public void validate(){
+		if(!isValid()){
+			throw new IllegalStateException("Level field of Entity not initialized", trace);
+		}
 	}
 
 	public void setYaw(double yaw){
@@ -83,6 +89,18 @@ public abstract class Entity extends Moveable{
 		return (YPSControlledVector3d) getSpeed(MODIFIER_PITCH_NEUTRALIZER);
 	}
 
+	@Override
+	public void onTickUpdate(){
+		validate();
+		super.onTickUpdate();
+	}
+
+	@Override
+	public void start(){
+		validate();
+		super.start();
+	}
+
 	public abstract int getMaxHealth();
 	public void setMaxHealth(int health){
 		throw new UnsupportedOperationException(String.format(Locale.US, "Entity %s does not support modification of maximum health", getClass().getSimpleName()));
@@ -91,5 +109,4 @@ public abstract class Entity extends Moveable{
 	public static int nextID(){
 		return nextID++;
 	}
-
 }
