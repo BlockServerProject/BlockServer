@@ -35,7 +35,12 @@ public abstract class Moveable extends Vector3d{
 	}
 
 	public void start(){
-		Server.getInstance().getScheduler().addTask(new CallBackTask(this, "onTickUpdate", 0, 1));
+		try{
+			Server.getInstance().getScheduler().addTask(new CallBackTask(this, "onTickUpdate", 0, 1));
+		}
+		catch(NoSuchMethodException e){
+			e.printStackTrace();
+		}
 	}
 
 	/**
