@@ -3,6 +3,9 @@ package org.blockserver.math;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.blockserver.Server;
+import org.blockserver.scheduler.CallBackTask;
+
 public abstract class Moveable extends Vector3d{
 	public final static String MODIFIER_STANDARD = "net.blockserver.math.Moveable.standard";
 	protected Map<String, Vector3d> speed;
@@ -21,6 +24,7 @@ public abstract class Moveable extends Vector3d{
 		this(x, y, z, new Vector3d(0, 0, 0));
 		initSpeedMap();
 	}
+
 	protected void initSpeedMap(){
 		speed = new HashMap<String, Vector3d>(0xFF);
 		setSpeed(getInitialStdSpeed());
@@ -29,6 +33,11 @@ public abstract class Moveable extends Vector3d{
 	protected Vector3d getInitialStdSpeed(){
 		return new Vector3d(0, 0, 0);
 	}
+
+	public void start(){
+		Server.getInstance().getScheduler().addTask(new CallBackTask(this, "onTickUpdate", 0, 1);
+	}
+
 	/**
 	 * Sets the standard modifier speed's value
 	 * @param speed speed of the standard modifier
