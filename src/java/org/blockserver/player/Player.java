@@ -196,6 +196,10 @@ public class Player extends Entity{
 						sgp.encode();
 						addToQueue(sgp);
 						//END Fake StartGamePacket
+						
+						MessagePacket mp = new MessagePacket("Harro! This is blockserver!");
+						mp.encode();
+						addToQueue(mp);
 					}
 					
 					break;
@@ -211,7 +215,7 @@ public class Player extends Entity{
 		pck.decode();
 		if(pck instanceof ACKPacket){ // When we receive a ACK Packet then
 			for(int i: pck.sequenceNumbers){
-				server.getLogger().info("ACK Packet Received Seq: %d", i);
+				//server.getLogger().info("ACK Packet Received Seq: %d", i);
 				recoveryQueue.remove(i);
 			}
 		}
