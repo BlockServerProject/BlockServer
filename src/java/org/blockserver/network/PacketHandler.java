@@ -102,7 +102,7 @@ public class PacketHandler extends Thread{
 		return isRunning;
 	}
 
-	public void Stop() throws Exception{
+	public void end() throws Exception{
 		if(!isRunning){
 			throw new RuntimeException("Tried to stop non-running packet handler");
 		}

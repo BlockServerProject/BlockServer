@@ -93,7 +93,7 @@ public class Scheduler extends Thread{
 		}
 	}
 
-	public void Stop() throws Exception{
+	public void end() throws Exception{
 		if(!isRunning){
 			throw new RuntimeException("Cannot stop non-running scheduler!");
 		}

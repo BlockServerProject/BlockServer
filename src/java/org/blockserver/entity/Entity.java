@@ -2,6 +2,7 @@ package org.blockserver.entity;
 
 import java.util.Locale;
 
+import org.blockserver.Server;
 import org.blockserver.level.Level;
 import org.blockserver.math.Moveable;
 import org.blockserver.math.Vector3d;
@@ -96,9 +97,9 @@ public abstract class Entity extends Moveable{
 	}
 
 	@Override
-	public void start(){
+	public void start(Server server){
 		validate();
-		super.start();
+		super.start(server);
 	}
 
 	public abstract int getMaxHealth();

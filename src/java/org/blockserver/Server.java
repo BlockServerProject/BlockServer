@@ -10,6 +10,7 @@ import java.util.Random;
 
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.Level;
+import org.blockserver.level.generator.GenerationSettings;
 import org.blockserver.network.PacketHandler;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
@@ -31,16 +32,17 @@ public class Server implements Context{
 	private String VERSION = "0.1 - DEV";
 	private String serverName;
 	private String serverip;
-	private int serverPort;
+	private short serverPort;
 	private int maxPlayers;
 	public PlayerDatabase playerDb;
 	private File worldsDir;
 	private File playersDir;
 	private String defaultLevel;
 
-	private boolean serverRunning;
+	private boolean serverRunning = false;
 	private long startTime;
 	private long serverID;
+	private GenerationSettings defaultLevelGenSet;
 
 	/**
 	 * <p>Get an instance of the currently running server, (Broken).</p>
@@ -78,14 +80,16 @@ public class Server implements Context{
 	}
 	/**
 	 * <p>Get the server's Minecraft version.</p>
+	 * 
 	 * @return an instance of <code>MinecraftVeresion</code> that describes 
-	 *   the server's compatible minecraft version.
+	 *   the server's compatible Minecraft version.
 	 */
 	public MinecraftVersion getMinecraftVersion(){
 		return MCVERSION;
 	}
 	/**
 	 * <p>Get the server's IP listening to, most often <code>0.0.0.0</code>.</p>
+	 * 
 	 * @return the server's listening IP as string.
 	 */
 	public String getServerIP(){
@@ -93,44 +97,112 @@ public class Server implements Context{
 	}
 	/**
 	 * <p>Get the server's name visible to clients.</p>
+	 * 
 	 * @return the server's name visible to clients.
 	 */
 	public String getServerName(){
 		return serverName;
 	}
+	/**
+	 * <p>Get the current BlockServer version.</p>
+	 * 
+	 * @return the current BlockServer version.
+	 */
 	public String getVersion(){
 		return VERSION;
 	}
-	public int getServerPort(){
+	/**
+	 * <p>Get the port the server is running on.</p>
+	 * 
+	 * @return the port the server is running on.
+	 */
+	public short getServerPort(){
 		return serverPort;
 	}
+	/**
+	 * <p>Get the maximum player limit.</p>
+	 * 
+	 * @return the maximum player limit.
+	 */
 	public int getMaxPlayers(){
 		return maxPlayers;
 	}
+	/**
+	 * <p>Get the server ID visible to clients.</p>
+	 * 
+	 * @return the server ID visible to clients.
+	 */
 	public long getServerID(){
 		return serverID;
 	}
+	/**
+	 * <p>Get the server's start time timestamp in milliseconds.</p>
+	 * 
+	 * @return the server's start time timestamp in milliseconds.
+	 */
 	public long getStartTime(){
 		return startTime;
 	}
+	/**
+	 * <p>Check if the server is still running.</p>
+	 * 
+	 * @return <code>true</code> if <code>run()</code> has been called and
+	 *   <code>stop()</code> has not been called.
+	 */
 	public boolean isRunning(){
 		return serverRunning;
 	}
+	/**
+	 * <p>Get a Player object by the player address.</p<
+	 * 
+	 * @param ip - the IP the player connects with
+	 * @param port - the port the player connects with
+	 * @return the Player object that connects with this address, or <code>null</code> if not found.
+	 */
 	public Player getPlayer(String ip, int port){
 		return players.get(ip + Integer.toString(port));
 	}
+	/**
+	 * <p>Get the folder where worlds are saved in.</p>
+	 * 
+	 * @return the folder where worlds are saved in.
+	 */
 	public File getWorldsDir(){
 		return worldsDir;
 	}
+	/**
+	 * <p>Get the folder where data of players are saved in.</p>
+	 * 
+	 * @return the folder where data of players are saved in.
+	 */
 	public File getPlayersDir(){
 		return playersDir;
 	}
+	/**
+	 * <p>Get the <code>PlayerDatabase</code> instance that the server is using to save player data.</p>
+	 * 
+	 * @return the <code>PlayerDatabase</code> instance that the server
+	 *   is using to save player data.
+	 */
 	public PlayerDatabase getPlayerDatabase(){
 		return playerDb;
 	}
+	/**
+	 * <p>Get the default level of the server.</p>
+	 * 
+	 * @return the default level of the server.
+	 */
 	public Level getDefaultLevel() {
 		return levels.get(defaultLevel);
 	}
+	/**
+	 * <p>Get a level by its name, and load and/or generate it if necessary and required.</p>
+	 * 
+	 * @param name - the name of the level to get
+	 * @param load - whether to load the level if it hasn't been loaded
+	 * @param generate - whether to generate the level if it hasn't been generated
+	 * @return the <code>Level</code> object or <code>null</code> if not possible.
+	 */
 	public Level getLevel(String name, boolean load, boolean generate){
 		if(levels.containsKey(name)){
 			return levels.get(name);
@@ -143,17 +215,47 @@ public class Server implements Context{
 		}
 		return null;
 	}
-
+	/**
+	 * <p>Get the server command manager.</p>
+	 * 
+	 * @return the <code>CommandManager</code> instance that manages server commands.
+	 */
 	public CommandManager getCmdManager(){
 		return cmdMgr;
 	}
+	public GenerationSettings getDefaultLevelGenerationSettings(){
+		return defaultLevelGenSet;
+	}
 
+	/**
+	 * <p>Add a player to the list of online players.</p>
+	 * 
+	 * @param player the <code>Player</code> object to add
+	 */
 	public void addPlayer(Player player){
 		players.put(player.getIP() + Integer.toString(player.getPort()), player);
 	}
 
-	public Server(String name, String ip, int port, int maxPlayers, MinecraftVersion version,
-			String defaultLevel, Class<? extends PlayerDatabase> dbType,
+	/**
+	 * <p>Construct a new instance of the server.
+	 *   <code>Server.setInstance()</code> is called in this constructor,
+	 *   so using this constructor automatically changes the static instance
+	 *   <code>Server.instance</code> to this new instance.
+	 * 
+	 * @param name - name of the server visible to clients
+	 * @param ip - IP to run the server on, most often equal to "0.0.0.0"
+	 * @param port - port to run the server on
+	 * @param maxPlayers - the maximum number of players to allow connected
+	 * @param version - the Minecraft version the server is compatible with
+	 * @param defaultLevel - the default level name
+	 * @param defaultLevelGenSet - the default level generation settings
+	 * @param dbType - the player database class to use as player database
+	 * @param worldsDir - the <code>File</code> directory to save worlds in
+	 * @param playersDir - the <code>File</code> directory to save player data in, if used by <code>dbType</code>
+	 * @throws Exception
+	 */
+	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
+			String defaultLevel, GenerationSettings defaultLevelGenSet, Class<? extends PlayerDatabase> dbType,
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
@@ -170,6 +272,7 @@ public class Server implements Context{
 		this.worldsDir = worldsDir;
 		int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
 		levels = new HashMap<String, Level>(cnt);
+		this.defaultLevelGenSet = defaultLevelGenSet;
 		this.defaultLevel = defaultLevel;
 		boolean success = loadLevel(defaultLevel, true);
 		if(!success){
@@ -182,6 +285,9 @@ public class Server implements Context{
 		playerDb = dbType.newInstance();
 	}
 
+	/**
+	 * A file filter that filters out any non-directories and non-root directories
+	 */
 	private class RootDirectoryFilter implements FilenameFilter{
 		private File dir;
 		public RootDirectoryFilter(File dir){
@@ -197,6 +303,9 @@ public class Server implements Context{
 		}
 	}
 
+	/**
+	 * <p>Actually start the server and other threads.</p>
+	 */
 	public void run(){
 		serverRunning = true;
 		try{
@@ -223,10 +332,15 @@ public class Server implements Context{
 			logger.warning(e.getMessage());
 		}
 	}
+	/**
+	 * <p>Stop the server, actually making the current tick the last tick of the server.</p>
+	 * 
+	 * @throws Exception
+	 */
 	public void stop() throws Exception{
 		serverRunning = false;
-		scheduler.Stop();
-		packetHandler.Stop();
+		scheduler.end();
+		packetHandler.end();
 		cmdHandler.end();
 	}
 
@@ -244,7 +358,14 @@ public class Server implements Context{
 		}
 	}
 
-	public boolean loadLevel(String name, boolean generate) {
+	/**
+	 * <p>Load a level.</p>
+	 * 
+	 * @param name - the name of the level to load
+	 * @param generate - whether to try to generate the level if it doesn't exist
+	 * @return whether the level is now loaded.
+	 */
+	public boolean loadLevel(String name, boolean generate){
 		File dir = new File(getWorldsDir(), name);
 		if(dir.isDirectory()){
 			// TODO Auto-generated method stub
@@ -255,7 +376,17 @@ public class Server implements Context{
 		}
 		return false;
 	}
-	public boolean generateLevel(String name) {
+	/**
+	 * <p>Generate a level.</p>
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public boolean generateLevel(String name){
+		generateLevel(name, getDefaultLevelGenerationSettings());
+		return false;
+	}
+	public boolean generateLevel(String name, GenerationSettings settings){
 		// TODO Auto-generated method stub
 		return false;
 	}
