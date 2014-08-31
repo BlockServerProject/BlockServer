@@ -173,6 +173,21 @@ public class Player extends Entity{
 						}
 					}
 					addToQueue(new LoginStatusPacket(0)); // No error with the protocol.
+					
+					/*
+					ArrayList<Player> players = server.getConnectedPlayers();
+					server.getLogger().info("Size is "+players.size());
+					for(int i = 0; i <= players.size(); i++){
+						Player p = players.get(i);
+						if(p.getName().equalsIgnoreCase(lp.username)){
+							//Name conflict, disconnect the original player
+							server.getLogger().info(p.getName()+"("+p.getIP()+":"+p.getPort()+") disconnected: Name Conflict.");
+							server.removePlayer(p);
+							server.getLogger().info(server.getPlayersConnected()+" players are connected.");
+							p.close("Another user logged in with your name.");
+						}
+					}
+					*/
 
 					if(lp.username.length() < 3 || lp.username.length() > 15){
 						close("Username is not valid.");
@@ -200,9 +215,16 @@ public class Player extends Entity{
 						MessagePacket mp = new MessagePacket("Harro! This is blockserver!");
 						mp.encode();
 						addToQueue(mp);
+						
+						server.getLogger().info(server.getPlayersConnected() + " players are connected.");
 					}
 					
 					break;
+					
+				case PacketsID.DISCONNECT:
+					server.getLogger().info("%s (%s:%d) disconnected: Disconnect by user.", name, ip, port);
+					server.removePlayer(this);
+					server.getLogger().info(server.getPlayersConnected()+" players are connected.");
 				
 				default:
 					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
@@ -211,7 +233,7 @@ public class Player extends Entity{
 		}
 	}
 
-	public void handleAcknowledgePackets(AcknowledgePacket pck){ // Ack and Nack
+	public void handleAcknowledgePackets(AcknowledgePacket pck){ // ACK and NACK
 		pck.decode();
 		if(pck instanceof ACKPacket){ // When we receive a ACK Packet then
 			for(int i: pck.sequenceNumbers){
