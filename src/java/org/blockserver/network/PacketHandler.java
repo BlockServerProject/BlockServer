@@ -71,7 +71,17 @@ public class PacketHandler extends Thread{
 							DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), pck.getAddress(), pck.getPort());
 							sendPacket(packet08);
 							Player player = new Player(server, pck.getAddress().toString(), pck.getPort(), crPk2.mtuSize, crPk2.clientID);
-							server.addPlayer(player);
+							
+							if(server.isPlayerConnected(player)){
+								//Kick them
+								server.getLogger().info("Unknown Player "+"("+player.getIP()+":"+player.getPort()+") disconnected: Another user is logged in with the same address as you.");
+								server.getLogger().info(server.getPlayersConnected()+" players are connected.");
+								player.close("Another is logged in with the same address as you.");
+							}
+							else{
+								server.addPlayer(player);
+							}
+							
 							break;
 						default:
 							server.getLogger().warning("Recived unsupported raknet packet! PID: %02X", pid);

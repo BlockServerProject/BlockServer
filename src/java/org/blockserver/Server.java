@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -25,6 +26,7 @@ public class Server implements Context{
 	private Scheduler scheduler;
 	private PacketHandler packetHandler;
 	private Map<String, Player> players;
+	private ArrayList<Player> playersConnected;
 	private Map<String, Level> levels;
 
 	private final MinecraftVersion MCVERSION;
@@ -150,6 +152,31 @@ public class Server implements Context{
 
 	public void addPlayer(Player player){
 		players.put(player.getIP() + Integer.toString(player.getPort()), player);
+		playersConnected.add(player);
+	}
+	
+	public void removePlayer(Player player){
+		String addr = player.getIP() + Integer.toString(player.getPort());
+		players.remove(addr);
+		playersConnected.remove(player);
+	}
+	
+	public boolean isPlayerConnected(Player player){
+		String addr = player.getIP() + Integer.toString(player.getPort());
+		if(players.containsKey(addr)){
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+	
+	public int getPlayersConnected(){
+		return playersConnected.size();
+	}
+	
+	public ArrayList<Player> getConnectedPlayers() {
+		return playersConnected;
 	}
 
 	public Server(String name, String ip, int port, int maxPlayers, MinecraftVersion version,
@@ -165,6 +192,7 @@ public class Server implements Context{
 		MCVERSION = version;
 		serverID = new Random().nextLong();
 		players = new HashMap<String, Player>(maxPlayers);
+		playersConnected = new ArrayList<Player>();
 		this.playersDir = playersDir;
 		worldsDir.mkdirs();
 		this.worldsDir = worldsDir;
