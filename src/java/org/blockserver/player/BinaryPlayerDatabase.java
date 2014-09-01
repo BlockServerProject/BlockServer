@@ -45,6 +45,9 @@ public class BinaryPlayerDatabase extends PlayerDatabase{
 				return dummy(name);
 			}
 		}
+		else{
+			throw new RuntimeException("Tried to load a player file that doesn't exist.");
+		}
 		return dummy(name);
 	}
 
