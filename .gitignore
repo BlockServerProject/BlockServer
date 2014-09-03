@@ -36,3 +36,10 @@ local.properties
 # Eclipse
 .classpath
 .project
+
+# PEMapModder's stuff
+diff.txt
+
+# Generated files
+players/
+worlds/

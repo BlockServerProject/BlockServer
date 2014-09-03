@@ -1,60 +1,65 @@
 package org.blockserver;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
+
 import org.blockserver.player.BinaryPlayerDatabase;
 import org.blockserver.utility.MinecraftVersion;
 
-/** The default startup program to start the server
+/**
+ * <p>The default startup program to start the server.</p>
  * 
  * @author BlockServerProject
- *
  */
-
 public class BlockServer {
-	public static void main(String[] args) {
-	    /*
-	    File root = new File(".");
-	    String path;
-	    SecurityManager secur = System.getSecurityManager();
-	    try{
-	        path = root.getAbsolutePath();
-	        secur.checkRead(path);
-	        try{
-	            secur.checkWrite(path);
-	        }
-	        catch(SecurityException e){
-	            System.out.println("[CRITICAL] Server doesn't have permission to edit the server folder!");
-	            return;
-	        }
-	    }
-	    catch(SecurityException e){
-	        System.out.println("[CRITICAL] Server doesn't have permission to read the server folder!");
-	        return;
-	    }
-        try {
-            Server server = new Server("BlockServer - A cool MCPE server written in java!",
-                    "0.0.0.0", 19132, 5, MinecraftVersion.V095, "level",
-                    BinaryPlayerDatabase.class);
-            Server.setInstance(server);
-            server.run();
-        }
-        catch(SecurityException e)
-        {
-            System.out.println("[CRITICAL] Server doesn't have permission to do the following and therefore crashed: " + e.getMessage());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        */
-        Server server;
-		try {
-			server = new Server("BlockServer - A cool MCPE server written in java!", "0.0.0.0", 19132, 5, MinecraftVersion.V095, "level", BinaryPlayerDatabase.class);
-	        server.run();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
+	public static void main(String[] args){
+		String ip = "0.0.0.0";
+		short port = 19132;
+//		if(!securityCheck(ip, port)){
+//			return;
+//		}
+		try{
+			File here = new File(".");
+			Server server = new Server("BlockServer - A cool MCPE server written in java!",
+					ip, port, 5, MinecraftVersion.V095,
+					"level", null, BinaryPlayerDatabase.class, // TODO GenerationSettings
+					new File(here, "worlds"), new File(here, "players"));
+			server.run();
+		}
+		catch(SecurityException e){
+			System.out.println("[CRITICAL] Server doesn't have permission to do the following and therefore crashed: " + e.getMessage());
+		}
+		catch(Exception e){
 			e.printStackTrace();
-		} // TODO change the default player database
-
+		}
 	}
-
+	public static boolean securityCheck(String ip, int port){
+		String current = "do unknown operation";
+		try{
+			File file = new File(".");
+			current = "get the server folder's canonical path";
+			String path = null;
+			try{
+				path = file.getCanonicalPath();
+				current = "read data from the server folder";
+				SecurityManager mgr = System.getSecurityManager();
+				mgr.checkRead(path);
+				current = "edit the server folder";
+				mgr.checkWrite(file.getName());
+				current = "connet to the server socket";
+				mgr.checkConnect(ip, port);
+				return true;
+			}
+			catch(IOException e){
+				e.printStackTrace();
+				return false;
+			}
+		}
+		catch(SecurityException e){
+			System.out.println(String.format(Locale.US, "[EMERGENCY] Server doesn't have permission to %s. Stopping server.", current));
+			System.exit(1);
+			return false;
+		}
+	}
 }

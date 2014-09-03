@@ -1,4 +1,4 @@
 /**
- * Block related classes, and enums, and of course Exceptions.
+ * Block related classes, enums, interfaces and exceptions.
  */
 package org.blockserver.blocks;
