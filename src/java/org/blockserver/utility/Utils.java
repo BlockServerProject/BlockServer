@@ -1,6 +1,7 @@
 package org.blockserver.utility;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 public class Utils{
 	public static int getTriad(byte[] data, int offset){
@@ -27,5 +28,12 @@ public class Utils{
 			shift -= 8;
 		}
 		return buffer;
+	}
+	public static <T> T[] arrayShift(T[] t, T[] emptyBuffer){
+		System.arraycopy(t, 1, emptyBuffer, 0, t.length - 1);
+		return emptyBuffer;
+	}
+	public static <T> T arrayShift(List<T> t){
+		return t.remove(0);
 	}
 }

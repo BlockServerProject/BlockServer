@@ -11,6 +11,7 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.entity.Entity;
 import org.blockserver.entity.EntityType;
+import org.blockserver.item.Inventory;
 import org.blockserver.math.Vector3;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
@@ -48,6 +49,7 @@ public class Player extends Entity{
 	private long clientID; // Client ID From MCPE Client
 	private int maxHealth;
 	private Server server;
+	protected Inventory inventory;
 
 	public String getIP(){
 		return ip;
@@ -59,15 +61,12 @@ public class Player extends Entity{
 		this.port = port;
 		mtuSize = mtu;
 		this.clientID = clientID;
-
 		lastSequenceNum = sequenceNum = messageIndex = 0;
-
 		this.server = server;
 		queue = new CustomPacket();
 		ACKQueue = new ArrayList<Integer>();
 		NACKQueue = new ArrayList<Integer>();
 		recoveryQueue = new HashMap<Integer, CustomPacket>();
-
 		try{
 			server.getScheduler().addTask(new CallBackTask(this, "update", 10, true)); // do this with the entity context?
 		}
@@ -77,7 +76,10 @@ public class Player extends Entity{
 	}
 
 	protected void login(){
-		server.getPlayerDatabase().load(getIName());
+		PlayerData data = server.getPlayerDatabase().load(this);
+		setCoords(data.getCoords());
+		this.level = data.getLevel(); // validated!
+//		start(server);
 	}
 
 	public void update(int ticks){
@@ -232,7 +234,6 @@ public class Player extends Entity{
 			}
 		}
 	}
-
 	public void handleAcknowledgePackets(AcknowledgePacket pck){ // ACK and NACK
 		pck.decode();
 		if(pck instanceof ACKPacket){ // When we receive a ACK Packet then
@@ -252,45 +253,45 @@ public class Player extends Entity{
 		}
 	}
 
+	// methods that send packets to players without passing packet parameters
 	public void sendMessage(String msg){
 		addToQueue(new MessagePacket(msg)); // be aware of the message-too-long exception
 	}
-
 	public void close(String reason){
-		sendMessage(reason);
+		if(reason != null){
+			sendMessage(reason);
+		}
 		addToQueue(new Disconnect());
+		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
 	}
 
 	public InetAddress getAddress() throws UnknownHostException{
 		return InetAddress.getByName(ip);
 	}
-
 	public int getPort(){
 		return port;
 	}
-
 	public String getIName(){
 		return name.toLowerCase(Locale.US);
 	}
-
 	public String getName(){
 		return name;
 	}
-
 	public String getIdentifier(){ // why not just use EID?
 		return ip + Integer.toString(port);
 	}
-
 	@Override
 	public EntityType getType() {
 		return EntityType.PLAYER;
 	}
-
 	@Override
 	public int getMaxHealth(){
 		return maxHealth;
 	}
-
+//	@Override
+	public Inventory getInventory(){
+		return inventory;
+	}
 	public long getClientID() {
 		return clientID;
 	}

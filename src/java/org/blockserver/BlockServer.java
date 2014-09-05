@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-import org.blockserver.player.BinaryPlayerDatabase;
+import org.blockserver.player.BSFPlayerDatabase;
 import org.blockserver.utility.MinecraftVersion;
 
 /**
@@ -23,7 +23,7 @@ public class BlockServer {
 			File here = new File(".");
 			Server server = new Server("BlockServer - A cool MCPE server written in java!",
 					ip, port, 5, MinecraftVersion.V095,
-					"level", null, BinaryPlayerDatabase.class, // TODO GenerationSettings
+					"level", null, BSFPlayerDatabase.class, // TODO GenerationSettings
 					new File(here, "worlds"), new File(here, "players"));
 			server.run();
 		}

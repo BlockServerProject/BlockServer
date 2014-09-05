@@ -376,6 +376,10 @@ public class Server implements Context{
 	public boolean isEnabled(){
 		return true;
 	}
+	@Override
+	public String getIdentifier(){
+		return "org.blockserver";
+	}
 
 	public void sendPacket(byte[] buffer, String ip, int port){
 		try{

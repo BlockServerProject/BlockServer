@@ -85,6 +85,11 @@ public class Vector3d{
 	public void setZ(double v){
 		this.z = v;
 	}
+	public void setCoords(Vector3d v){
+		setX(v.getX());
+		setY(v.getY());
+		setZ(v.getZ());
+	}
 
 	public Vector3d add(Vector3d delta){
 		return merge(this, delta);
