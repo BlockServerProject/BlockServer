@@ -11,6 +11,7 @@ public abstract class Task{
 		this.repeat = false;
 		this.isSetup = true;
 	}
+	
 	public Task(int delay, int repeatTimes){
 		this.delay = delay;
 		this.defaultDelay = delay;
@@ -18,6 +19,7 @@ public abstract class Task{
 		this.repeatTimes = repeatTimes;
 		this.isSetup = true;
 	}
+	
 	public Task(int delay, boolean repeatForever){
 		this.delay = delay;
 		this.defaultDelay = delay;
@@ -32,6 +34,7 @@ public abstract class Task{
 	public int getID(){
 		return id;
 	}
+	
 	public void setID(int id){
 		this.id = id;
 	}
@@ -39,18 +42,15 @@ public abstract class Task{
 	public int getDelay(){
 		return delay;
 	}
+	
 	public void setDelay(int delay){
 		this.delay = delay;
 	}
 
 	public int getRepeatTimes(){
-		if(repeat){
-			return repeatTimes;
-		}
-		else{
-			return -1;
-		}
+		return (repeat) ? repeatTimes : -1;
 	}
+	
 	public void setRepeatTimes(int times){
 		if(times == 0 && repeat){
 			repeat = false;
