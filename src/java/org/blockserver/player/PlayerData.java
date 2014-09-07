@@ -1,5 +1,6 @@
 package org.blockserver.player;
 
+import org.blockserver.item.Inventory;
 import org.blockserver.level.Level;
 import org.blockserver.math.Vector3d;
 
@@ -7,11 +8,13 @@ public class PlayerData {
 	private Level level;
 	private Vector3d coords;
 	private String caseName;
+	private Inventory inventory;
 
-	public PlayerData(Level level, Vector3d coords, String caseName){
+	public PlayerData(Level level, Vector3d coords, String caseName, Inventory inv){
 		setLevel(level);
 		setCoords(coords);
 		setCaseName(caseName);
+		setInventory(inv);
 	}
 
 	public Level getLevel() {
@@ -33,5 +36,13 @@ public class PlayerData {
 	}
 	public void setCaseName(String caseName) {
 		this.caseName = caseName;
+	}
+
+	public Inventory getInventory(){
+		return inventory;
+	}
+
+	public void setInventory(Inventory inventory){
+		this.inventory = inventory;
 	}
 }

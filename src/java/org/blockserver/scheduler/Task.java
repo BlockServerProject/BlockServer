@@ -1,7 +1,8 @@
 package org.blockserver.scheduler;
 
 public abstract class Task{
-	private int id, delay, defaultDelay, repeatTimes;
+	private int id, defaultDelay, repeatTimes;
+	private long delay;
 	private boolean repeat, isSetup = false;
 
 	public Task(int delay){
@@ -26,8 +27,8 @@ public abstract class Task{
 		this.isSetup = true;
 	}
 
-	public abstract void onRun(int ticks);
-	public abstract void onFinish(int ticks);
+	public abstract void onRun(long currentTick);
+	public abstract void onFinish(long currentTick);
 
 	public int getID(){
 		return id;
@@ -36,20 +37,15 @@ public abstract class Task{
 		this.id = id;
 	}
 
-	public int getDelay(){
+	public long getDelay(){
 		return delay;
 	}
-	public void setDelay(int delay){
+	public void setDelay(long delay){
 		this.delay = delay;
 	}
 
 	public int getRepeatTimes(){
-		if(repeat){
-			return repeatTimes;
-		}
-		else{
-			return -1;
-		}
+		return repeat ? repeatTimes : -1;
 	}
 	public void setRepeatTimes(int times){
 		if(times == 0 && repeat){

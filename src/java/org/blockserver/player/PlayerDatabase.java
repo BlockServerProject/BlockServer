@@ -1,8 +1,9 @@
 package org.blockserver.player;
 
-import java.util.Locale;
-
+import org.blockserver.Context;
 import org.blockserver.Server;
+import org.blockserver.item.Inventory;
+import org.blockserver.level.Level;
 
 /**
  * <p>The parent class for databases containing player data.<br>
@@ -49,14 +50,15 @@ public abstract class PlayerDatabase{
 	 * This method returns the default data for a new player if the player is
 	 *   not in the database.</p>
 	 * 
-	 * @param name the name of the player (will be converted to lower case) to load
+	 * @param player the player object (will be converted to lower case) to load
 	 * @return a <code>PlayerData</code> instance containing information of the player
 	 */
-	public final PlayerData load(String name){
+	public final PlayerData load(Player player){
 		validate();
-		return loadPlayer(name.toLowerCase(Locale.US));
+		
+		return loadPlayer(player, player.getIName());
 	}
-	protected abstract PlayerData loadPlayer(String name);
+	protected abstract PlayerData loadPlayer(Player player, String name);
 
 	/**
 	 * Save a player's data into the database.
@@ -121,5 +123,10 @@ public abstract class PlayerDatabase{
 	}
 	public Server getServer(){
 		return server;
+	}
+
+	protected PlayerData dummy(Player player, String caseName){
+		Level level = getServer().getDefaultLevel();
+		return new PlayerData(level, level.getSpawnPos(), caseName, new Inventory(player, Context.DEFAULT_PLAYER_INVENTORY_SIZE, getServer()));
 	}
 }

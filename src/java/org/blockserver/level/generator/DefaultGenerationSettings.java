@@ -19,7 +19,7 @@ public enum DefaultGenerationSettings implements GenerationSettings{
 	protected Object def;
 	private Object value;
 
-	private <T> DefaultGenerationSettings(Class<T> type, T def) {
+	private <T> DefaultGenerationSettings(Class<T> type, T def){
 		this.type = type;
 		this.def = def;
 		construct();

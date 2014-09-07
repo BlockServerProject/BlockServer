@@ -8,14 +8,18 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.Locale;
 
+import org.blockserver.Context;
+import org.blockserver.io.bsf.BSFType;
+import org.blockserver.io.bsf.BSFWriter;
+import org.blockserver.item.Inventory;
 import org.blockserver.level.Level;
 import org.blockserver.math.Vector3d;
 
-public class BinaryPlayerDatabase extends PlayerDatabase{
+public class BSFPlayerDatabase extends PlayerDatabase{
 	private File folder;
 
 	@Override
-	protected PlayerData loadPlayer(String name){
+	protected PlayerData loadPlayer(Player player, String name){
 		File file = getPlayerFile(name);
 		if(file.exists()){
 			try{
@@ -36,24 +40,19 @@ public class BinaryPlayerDatabase extends PlayerDatabase{
 				byte[] world = new byte[length];
 				bb.get(world, 0, length);
 				Level level = getServer().getLevel(new String(world), true, false);
-				return new PlayerData(level, coords, CaseName);
+				return new PlayerData(level, coords, CaseName, new Inventory(player, Context.DEFAULT_PLAYER_INVENTORY_SIZE, getServer()));
 			}
 			catch(IOException e) {
 				e.printStackTrace();
 			}
 			catch(BufferUnderflowException e){
-				return dummy(name);
+				return dummy(player, name);
 			}
 		}
 		else{
 			throw new RuntimeException("Tried to load a player file that doesn't exist.");
 		}
-		return dummy(name);
-	}
-
-	private PlayerData dummy(String caseName){
-		Level level = getServer().getDefaultLevel();
-		return new PlayerData(level, level.getSpawnPos(), caseName);
+		return dummy(player, name);
 	}
 
 	@Override
@@ -69,20 +68,19 @@ public class BinaryPlayerDatabase extends PlayerDatabase{
 		}
 		try{
 			FileOutputStream out = new FileOutputStream(file);
-			ByteBuffer bb = ByteBuffer.allocate(0xFFFF);
-			bb.put((byte) data.getCaseName().length());
-			bb.put(data.getCaseName().getBytes());
-			bb.putDouble(data.getCoords().getX());
-			bb.putDouble(data.getCoords().getY());
-			bb.putDouble(data.getCoords().getZ());
-			bb.put((byte) data.getLevel().getName().length());
-			bb.put(data.getLevel().getName().getBytes());
-			out.write(bb.array());
-			out.flush();
-			out.close();
+			BSFWriter writer = new BSFWriter(out, BSFType.PLAYER);
+			// login info
+			writer.writeString(data.getCaseName(), 1);
+			// coords
+			writer.writeDouble(data.getCoords().getX());
+			writer.writeDouble(data.getCoords().getY());
+			writer.writeDouble(data.getCoords().getZ());
+			writer.writeString(data.getLevel().getName(), 1);
+			// inventory
+			writer.writeInventory(data.getInventory());
+			writer.close();
 		}
 		catch(IOException e){
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
