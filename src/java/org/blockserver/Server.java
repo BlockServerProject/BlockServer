@@ -39,6 +39,7 @@ public class Server implements Context{
 	public PlayerDatabase playerDb;
 	private File worldsDir;
 	private File playersDir;
+	private File pluginsDir;
 	private String defaultLevel;
 
 	private boolean serverRunning = false;
@@ -277,8 +278,9 @@ public class Server implements Context{
 	 * @param defaultLevel - the default level name
 	 * @param defaultLevelGenSet - the default level generation settings
 	 * @param dbType - the player database class to use as player database
-	 * @param worldsDir - the <code>File</code> directory to save worlds in
-	 * @param playersDir - the <code>File</code> directory to save player data in, if used by <code>dbType</code>
+	 * @param worldsDir - the {@link File} directory to save worlds in
+	 * @param playersDir - the {@link File} directory to save player data in, if used by <code>dbType</code>
+	 * @param pluginsDir - the {@link File} directory to save plugins data in and load from
 	 * @throws Exception
 	 */
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
@@ -428,6 +430,9 @@ public class Server implements Context{
 	public boolean generateLevel(String name, GenerationSettings settings){
 		// TODO Auto-generated method stub
 		return false;
+	}
+	public File getPluginsDir(){
+		return pluginsDir;
 	}
 
 }

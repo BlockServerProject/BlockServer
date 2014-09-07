@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.blockserver.Server;
-import org.blockserver.scheduler.CallBackTask;
+import org.blockserver.scheduler.CallbackTask;
 
 public abstract class Moveable extends Vector3d{
 	public final static String MODIFIER_STANDARD = "net.blockserver.math.Moveable.standard";
@@ -36,8 +36,8 @@ public abstract class Moveable extends Vector3d{
 
 	public void start(Server server){
 		try{
-			server.getScheduler().addTask(new CallBackTask(this, "onTickUpdate", 0, 1));
-			server.getScheduler().addTask(new CallBackTask(this, "onTickUpdate", 0, true));
+			server.getScheduler().addTask(new CallbackTask(this, "onTickUpdate", 0, 1));
+			server.getScheduler().addTask(new CallbackTask(this, "onTickUpdate", 0, true));
 		}
 		catch(NoSuchMethodException e){
 			e.printStackTrace();

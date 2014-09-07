@@ -6,7 +6,8 @@ import java.util.List;
 public class Scheduler extends Thread{
 	public final static int DEFAULT_TICKS = 20; // default ticks per seconds 20, like minecraft
 
-	private int ids, sleepIntervals, currentTick;
+	private int ids, sleepIntervals;
+	private long currentTick;
 	private boolean isRunning;
 	private List<Task> tasks;
 
@@ -100,5 +101,9 @@ public class Scheduler extends Thread{
 		isRunning = false;
 		join();
 		tasks.clear();
+	}
+
+	public long getCurrentTick(){
+		return currentTick;
 	}
 }

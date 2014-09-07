@@ -30,7 +30,7 @@ import org.blockserver.network.raknet.AcknowledgePacket;
 import org.blockserver.network.raknet.CustomPacket;
 import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.network.raknet.NACKPacket;
-import org.blockserver.scheduler.CallBackTask;
+import org.blockserver.scheduler.CallbackTask;
 
 public class Player extends Entity{
 	private String name;
@@ -68,7 +68,7 @@ public class Player extends Entity{
 		NACKQueue = new ArrayList<Integer>();
 		recoveryQueue = new HashMap<Integer, CustomPacket>();
 		try{
-			server.getScheduler().addTask(new CallBackTask(this, "update", 10, true)); // do this with the entity context?
+			server.getScheduler().addTask(new CallbackTask(this, "update", 10, true)); // do this with the entity context?
 		}
 		catch(Exception e){
 			e.printStackTrace();
