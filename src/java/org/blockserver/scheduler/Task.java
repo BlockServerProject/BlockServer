@@ -45,12 +45,7 @@ public abstract class Task{
 	}
 
 	public int getRepeatTimes(){
-		if(repeat){
-			return repeatTimes;
-		}
-		else{
-			return -1;
-		}
+		return repeat ? repeatTimes : -1;
 	}
 	public void setRepeatTimes(int times){
 		if(times == 0 && repeat){
