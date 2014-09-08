@@ -10,21 +10,10 @@
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
 
-	<target name="main" depends="clean,run"/>
-	<target name="clean-build" depends="clean,jar"/>
-	<target name="clean">
-		<delete dir="${build.dir}"/>
-	</target>
-	<target name="run" depends="jar">
-		<java fork="true" classname="${main-class}">
-			<classpath>
-				<path refid="classpath"/>
-				<path location="${jar.dir}/${ant.project.name}.jar"/>
-			</classpath>
-		</java>
-	</target>
 	<target name="compile">
 		<mkdir dir="${classes.dir}"/>
+		<delete file="${lib.dir}/IO-Lib.jar"/>
+		<copy file="../IO-Lib.jar" tofile="${lib.dir}/IO-Lib.jar"/>
 		<javac srcdir="${src.dir}/java" destdir="${classes.dir}" classpathref="classpath"/>
 	</target>
 	<target name="jar" depends="compile">
@@ -36,8 +25,21 @@
 			<zipfileset dir="resources" includes="." prefix="resources"/>
 			<fileset dir="." includes="resources/**" />
 		</jar>
+	</target>
+	<target name="run" depends="jar">
+		<java fork="true" classname="${main-class}">
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${jar.dir}/${ant.project.name}.jar"/>
+			</classpath>
+		</java>
+	</target>
 	<target name="doc" depends="compile" description="generate documentation">
 		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
 	</target>
+	<target name="clean">
+		<delete dir="${build.dir}"/>
 	</target>
+	<target name="clean-build" depends="clean,jar"/>
+	<target name="main" depends="clean,run"/>
 </project>
