@@ -5,5 +5,5 @@ before_script:
   - dir
   - cd IO-Lib
   - dir
-  - ant compile
+  - ant expjarparent
   - cd ..

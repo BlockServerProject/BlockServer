@@ -33,8 +33,8 @@
 			<manifest>
 				<attribute name="Main-Class" value="${main-class}"/>
 			</manifest>
-		<zipfileset dir="resources" includes="." prefix="resources"/>
-		<fileset dir="." includes="resources/**" />
+			<zipfileset dir="resources" includes="." prefix="resources"/>
+			<fileset dir="." includes="resources/**" />
 		</jar>
 	<target name="doc" depends="compile" description="generate documentation">
 		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
