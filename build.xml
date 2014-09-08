@@ -6,6 +6,8 @@
 	<property name="main-class"  value="org.blockserver.Test"/>
 	<property name="lib.dir"	 value="lib"/>
 	<property name="doc.dir"	 value="docs"/>
+	<property name="extjar.dir" value=".."/>
+
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
@@ -26,8 +28,17 @@
 			<fileset dir="." includes="resources/**" />-->
 		</jar>
 	</target>
+	<target name="extjar" depends="compile">
+		<jar destfile="${extjar.dir}/BlockServer.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}"/>
+			</manifest>
+<!--			<zipfileset dir="resources" includes="." prefix="resources"/>
+			<fileset dir="." includes="resources/**" />-->
+		</jar>
+	</target>
 	<target name="run" depends="jar">
-		<java fork="true" classname="${main-class}" timeout="10000">
+		<java fork="true" classname="${main-class}" timeout="30000">
 			<classpath>
 				<path refid="classpath"/>
 				<path location="${jar.dir}/${ant.project.name}.jar"/>
