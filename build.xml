@@ -3,7 +3,7 @@
 	<property name="build.dir"   value="build"/>
 	<property name="classes.dir" value="${build.dir}/classes"/>
 	<property name="jar.dir"	 value="${build.dir}/jars"/>
-	<property name="main-class"  value="org.blockserver.BlockServer"/>
+	<property name="main-class"  value="org.blockserver.Test"/>
 	<property name="lib.dir"	 value="lib"/>
 	<property name="doc.dir"	 value="docs"/>
 	<path id="classpath">
@@ -27,7 +27,7 @@
 		</jar>
 	</target>
 	<target name="run" depends="jar">
-		<java fork="true" classname="${main-class}">
+		<java fork="true" classname="${main-class}" timeout="10000">
 			<classpath>
 				<path refid="classpath"/>
 				<path location="${jar.dir}/${ant.project.name}.jar"/>

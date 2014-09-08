@@ -3,6 +3,8 @@ package org.blockserver.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.blockserver.Test;
+
 public class Scheduler extends Thread{
 	public final static int DEFAULT_TICKS = 20; // default ticks per seconds 20, like minecraft
 
@@ -87,6 +89,12 @@ public class Scheduler extends Thread{
 
 			try {
 				Thread.sleep(sleepIntervals);
+				if(Test.isTest() && currentTick > 10){
+					try{
+						end();
+					}
+					catch(RuntimeException e){}
+				}
 			}
 			catch(Exception e){
 				e.printStackTrace();
