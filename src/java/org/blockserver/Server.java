@@ -385,6 +385,8 @@ public class Server implements Context{
 		packetHandler.end();
 		cmdHandler.end();
 		stopped = true;
+		getLogger().info("Server stopped");
+		System.exit(0);
 	}
 
 	@Override
