@@ -23,7 +23,7 @@ public class Server implements Context{
 	private static Server instance = null;
 	private ConsoleCommandHandler cmdHandler = null;
 	private CommandManager cmdMgr;
-	private ServerLogger logger = new ServerLogger();
+	private ServerLogger logger;
 	private Scheduler scheduler;
 	private PacketHandler packetHandler;
 	private Map<String, Player> players;
@@ -182,6 +182,13 @@ public class Server implements Context{
 		return playersDir;
 	}
 	/**
+	 * <p>Get the folder where plugins are loaded from and whose data are saved in.</p>
+	 * @return the folder where plugins are loaded from and whose data are saved in.
+	 */
+	public File getPluginsDir(){
+		return pluginsDir;
+	}
+	/**
 	 * <p>Get the <code>PlayerDatabase</code> instance that the server is using to save player data.</p>
 	 * 
 	 * @return the <code>PlayerDatabase</code> instance that the server
@@ -288,6 +295,7 @@ public class Server implements Context{
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
+		logger = new ServerLogger();
 		startTime = System.currentTimeMillis();
 		serverip = ip;
 		serverPort = port;
@@ -431,8 +439,4 @@ public class Server implements Context{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	public File getPluginsDir(){
-		return pluginsDir;
-	}
-
 }

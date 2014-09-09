@@ -2,6 +2,7 @@
 	<property name="src.dir"	 value="src"/>
 	<property name="build.dir"   value="build"/>
 	<property name="classes.dir" value="${build.dir}/classes"/>
+	<property name="res.dir"     value="${src.dir}/resources"/>
 	<property name="jar.dir"	 value="${build.dir}/jars"/>
 	<property name="main-class"  value="org.blockserver.Test"/>
 	<property name="lib.dir"	 value="lib"/>
@@ -14,6 +15,7 @@
 
 	<target name="compile">
 		<mkdir dir="${classes.dir}"/>
+		<copy file="${res.dir}/log4j2.xml" tofile="${classes.dir}/log4j2.xml"/>
 		<delete file="${lib.dir}/IO-Lib.jar"/>
 		<copy file="../IO-Lib.jar" tofile="${lib.dir}/IO-Lib.jar"/>
 		<javac srcdir="${src.dir}/java" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
