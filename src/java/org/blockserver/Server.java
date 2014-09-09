@@ -30,6 +30,7 @@ public class Server implements Context{
 	private ArrayList<Player> playersConnected;
 	private Map<String, Level> levels;
 
+	private boolean stopped= false;
 	private final MinecraftVersion MCVERSION;
 	private String VERSION = "0.1 - DEV";
 	private String serverName;
@@ -154,6 +155,9 @@ public class Server implements Context{
 	 */
 	public boolean isRunning(){
 		return serverRunning;
+	}
+	public boolean isStopped(){
+		return stopped;
 	}
 	/**
 	 * <p>Get a Player object by the player address.</p<
@@ -316,10 +320,10 @@ public class Server implements Context{
 		if(!success){
 //			throw new RuntimeException("Unable to generate default level");
 		}
-		scheduler = new Scheduler();// Minecraft default Ticks Per Seconds(20)
+		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
 		packetHandler = new PacketHandler(this);
 		cmdHandler = new ConsoleCommandHandler(this);
-		cmdMgr = new CommandManager();
+		cmdMgr = new CommandManager(this);
 		playerDb = dbType.newInstance();
 	}
 
@@ -380,6 +384,7 @@ public class Server implements Context{
 		scheduler.end();
 		packetHandler.end();
 		cmdHandler.end();
+		stopped = true;
 	}
 
 	@Override

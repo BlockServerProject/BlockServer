@@ -4,9 +4,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import org.blockserver.Server;
+
 public class CommandManager{
+	private Server server;
 	private Map<String, Command> cmds;
-	public CommandManager(){
+
+	public CommandManager(Server server){
+		this.server = server;
 		registerDefaults();
 	}
 
@@ -59,5 +64,8 @@ public class CommandManager{
 				}
 			}
 		}
+	}
+	public Server getServer(){
+		return server;
 	}
 }

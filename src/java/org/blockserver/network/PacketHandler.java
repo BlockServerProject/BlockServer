@@ -81,7 +81,6 @@ public class PacketHandler extends Thread{
 							else{
 								server.addPlayer(player);
 							}
-							
 							break;
 						default:
 							server.getLogger().warning("Recived unsupported raknet packet! PID: %02X", pid);
