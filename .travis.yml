@@ -1,6 +1,7 @@
 language: java
 script: ant run
 before_script:
+  - ant -version
   - cd ..
   - git clone https://github.com/BlockServerProject/BSF-Lib.git IO-Lib
   - dir
