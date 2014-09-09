@@ -16,7 +16,7 @@
 		<mkdir dir="${classes.dir}"/>
 		<delete file="${lib.dir}/IO-Lib.jar"/>
 		<copy file="../IO-Lib.jar" tofile="${lib.dir}/IO-Lib.jar"/>
-		<javac srcdir="${src.dir}/java" destdir="${classes.dir}" classpathref="classpath"/>
+		<javac srcdir="${src.dir}/java" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
 	</target>
 	<target name="jar" depends="compile">
 		<mkdir dir="${jar.dir}"/>
