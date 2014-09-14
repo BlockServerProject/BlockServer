@@ -79,6 +79,7 @@ public class UDPSocket{
 	public void close(){
 		if(connected){
 			connected = false;
+			sck.disconnect();
 			sck.close();
 		}
 	}

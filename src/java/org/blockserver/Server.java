@@ -23,13 +23,14 @@ public class Server implements Context{
 	private static Server instance = null;
 	private ConsoleCommandHandler cmdHandler = null;
 	private CommandManager cmdMgr;
-	private ServerLogger logger = new ServerLogger();
+	private ServerLogger logger;
 	private Scheduler scheduler;
 	private PacketHandler packetHandler;
 	private Map<String, Player> players;
 	private ArrayList<Player> playersConnected;
 	private Map<String, Level> levels;
 
+	private boolean stopped= false;
 	private final MinecraftVersion MCVERSION;
 	private String VERSION = "0.1 - DEV";
 	private String serverName;
@@ -155,6 +156,9 @@ public class Server implements Context{
 	public boolean isRunning(){
 		return serverRunning;
 	}
+	public boolean isStopped(){
+		return stopped;
+	}
 	/**
 	 * <p>Get a Player object by the player address.</p<
 	 * 
@@ -180,6 +184,13 @@ public class Server implements Context{
 	 */
 	public File getPlayersDir(){
 		return playersDir;
+	}
+	/**
+	 * <p>Get the folder where plugins are loaded from and whose data are saved in.</p>
+	 * @return the folder where plugins are loaded from and whose data are saved in.
+	 */
+	public File getPluginsDir(){
+		return pluginsDir;
 	}
 	/**
 	 * <p>Get the <code>PlayerDatabase</code> instance that the server is using to save player data.</p>
@@ -288,6 +299,7 @@ public class Server implements Context{
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
+		logger = new ServerLogger();
 		startTime = System.currentTimeMillis();
 		serverip = ip;
 		serverPort = port;
@@ -308,10 +320,10 @@ public class Server implements Context{
 		if(!success){
 //			throw new RuntimeException("Unable to generate default level");
 		}
-		scheduler = new Scheduler();// Minecraft default Ticks Per Seconds(20)
+		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
 		packetHandler = new PacketHandler(this);
 		cmdHandler = new ConsoleCommandHandler(this);
-		cmdMgr = new CommandManager();
+		cmdMgr = new CommandManager(this);
 		playerDb = dbType.newInstance();
 	}
 
@@ -372,6 +384,7 @@ public class Server implements Context{
 		scheduler.end();
 		packetHandler.end();
 		cmdHandler.end();
+		stopped = true;
 	}
 
 	@Override
@@ -431,8 +444,4 @@ public class Server implements Context{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	public File getPluginsDir(){
-		return pluginsDir;
-	}
-
 }

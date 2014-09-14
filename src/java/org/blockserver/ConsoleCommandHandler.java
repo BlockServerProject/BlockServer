@@ -30,7 +30,10 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 		while(running){
 			try{
 				String input = console.readLine();
-				sudoCommand(input.trim());
+				if(input != null){
+					server.getLogger().debug("Dispatching command: %s", input);
+					sudoCommand(input.trim());
+				}
 			}
 			catch(IOException e){
 				server.getLogger().error("IOException in ConsoleCommand Thread:");
@@ -44,9 +47,11 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 
 	/**
 	 * Stop listening for new commands.
+	 * @throws Exception 
 	 */
-	public void end(){
+	public void end() throws Exception{
 		running = false;
+		join();
 	}
 
 	@Override
@@ -60,5 +65,9 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	@Override
 	public int getHelpLines(){
 		return Integer.MAX_VALUE;
+	}
+	@Override
+	public Server getServer(){
+		return server;
 	}
 }
