@@ -295,4 +295,9 @@ public class Player extends Entity{
 	public long getClientID() {
 		return clientID;
 	}
+
+	@Override
+	protected void broadcastMotion(){
+		// TODO Auto-generated method stub
+	}
 }
