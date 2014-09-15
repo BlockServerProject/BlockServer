@@ -1,10 +1,7 @@
 package org.blockserver.entity;
 
-import java.util.Random;
-
 import org.blockserver.level.Level;
 import org.blockserver.math.Vector3d;
-import org.blockserver.math.YPSControlledVector3d;
 
 /**
  * <p>This abstract superclass is the implementation of AI for entities that have brains.</p>
@@ -15,6 +12,8 @@ import org.blockserver.math.YPSControlledVector3d;
  * <li>Would walk towards targets</li>
  * </ul>
  * </p>
+ * <p>Note that according to the requirements above, since players are controlled
+ * by clients, the Player class should not extend this class.
  */
 public abstract class Living extends Entity{
 	/**
@@ -29,45 +28,13 @@ public abstract class Living extends Entity{
 	 * The modifier that affects an entity's motion when it is in contact with flowing water.
 	 */
 	public final static String MODIFIER_WATER= "net.blockserver.entity.Living.water";
-
-	/**
-	 * The percentage chance that the entity's yaw is slightly biased whilst chasing a target
-	 */
-	public final static double BIAS_CHANCE = 10d;
-
-	/**
-	 * The minimum number of ticks to ignore the target after yaw bias
-	 */
-	public final static int MIN_BIAS_INTERVAL = 0;
-	/**
-	 * The maximum number of ticks to ignore the target after yaw bias
-	 */
-	public final static int MAX_BIAS_INTERVAL = 10;
-	/**
-	 * The minimum yaw to bias
-	 */
-	public final static double MIN_BIAS_YAW = 0d;
-	/**
-	 * The maximum yaw to bias
-	 */
-	public final static double MAX_BIAS_YAW = 10d;
-
-	public final static double WANDER_CHANCE = 1d;
-
 	private Vector3d target = null;
-
 	private boolean wandering;
-
-	private double currentYawMotion = 0, currentPitchMotion = 0;
-	private int yawMotionTimeout = 0, pitchMotionTimeout = 0;
-
-	private int ignoreTargetTimeout = 0;
 
 	public Living(double x, double y, double z, Level level) {
 		super(x, y, z, level);
 		initEntity();
 	}
-
 	public Living(Vector3d pos, Level level) {
 		super(pos, level);
 		initEntity();
@@ -80,95 +47,35 @@ public abstract class Living extends Entity{
 	}
 
 	public void onTickUpdate(){
-		updateYawPitch();
-		tickWalk();
 		if(isWandering()){
 			Entity entity = pickTarget();
-			if(entity instanceof Entity){
-				setTarget(entity);
+			if(entity != null){
+				target = entity;
+				setWalkingSpeed(getChasingSpeed());
 			}
 		}
-		if(hasTarget()){
-			if(yawMotionTimeout == 0){
-				randomBias();
-			}
-			chaseTarget();
-		}
-		else{
+		if(isWandering()){
 			wander();
 		}
-	}
-
-	private void updateYawPitch(){
-		if(yawMotionTimeout > 0){
-			yawMotionTimeout--;
-			setYaw(getYaw() + currentYawMotion);
+		else{
+			chaseTarget();
 		}
-		if(pitchMotionTimeout > 0){
-			pitchMotionTimeout--;
-			setPitch(getPitch() + currentPitchMotion);
-		}
+		walk();
+		onPostTickWalk();
 	}
-
-	protected void tickWalk(){
-		// TODO check modifiers
-		super.onTickUpdate();
-	}
-
-	protected void randomBias(){
-		Random psuedo = new Random();
-		if(psuedo.nextDouble() * 100 < BIAS_CHANCE){
-			double yaw = MIN_BIAS_YAW;
-			double random = psuedo.nextDouble();
-			yaw += (MAX_BIAS_YAW - MIN_BIAS_YAW) * random;
-			if(psuedo.nextBoolean()){
-				yaw *= -1;
-			}
-			int ticks = MIN_BIAS_INTERVAL;
-			ticks += psuedo.nextInt(MAX_BIAS_INTERVAL - MIN_BIAS_INTERVAL);
-			setYaw(getYaw() + yaw);
-			ignoreTargetTimeout = ticks;
-		}
-	}
-
-	protected void wander(){
-		Random psuedo = new Random();
-		if(psuedo.nextDouble() * 100 < WANDER_CHANCE){
-			// TODO set yaw motion
-		}
-	}
-
-	protected void chaseTarget(){
-		if(ignoreTargetTimeout == 0){
-			YPSControlledVector3d angles = (YPSControlledVector3d) getSpeed(MODIFIER_STANDARD);
-			Vector3d.YawPitchSet set = target.subtract(this).getYawPitch(getChasingSpeed());
-			angles.setYaw(set.getYaw());
-			angles.setPitch(set.getPitch());
-		}
-	}
-
-	public abstract double getChasingSpeed();
-	public abstract double getHeight();
-	public abstract double getMaxYawWanderDelta();
-	protected abstract void broadcastMotion(); // TODO call this method
 
 	protected Entity pickTarget(){
 		return level.getClosestEntity(this, getTargetValidater());
 	}
-
 	protected Level.EntityValidate getTargetValidater(){
 		return Level.validateInstance;
 	}
-
-	protected abstract double getScanTargetRadius();
-
 	public boolean isWandering(){
 		return wandering;
 	}
 	public void setWandering(boolean wandering){
 		this.wandering = wandering;
 	}
-
 	public boolean hasTarget(){
 		return target instanceof Entity;
 	}
@@ -177,5 +84,53 @@ public abstract class Living extends Entity{
 	}
 	public void setTarget(Vector3d target){
 		this.target = target;
+	}
+
+	protected void wander(){
+		// TODO
+	}
+	protected void chaseTarget(){
+		updateYawPitchForTarget();
+	}
+	private void updateYawPitchForTarget(){
+		YawPitchSet set = Vector3d.getRelativeYawPitch(this, target);
+		setYaw(set.getYaw());
+		setPitch(set.getPitch());
+		broadcastMotion();
+	}
+	protected void walk(){
+		// TODO physics
+		// remember: the moving is done at Moveable.java, not here!
+	}
+	protected void onPostTickWalk(){
+		if(getTargetCollisionDistance() <= target.distance(this)){
+			onCollisionWithTarget();
+		}
+	}
+
+	protected abstract void onCollisionWithTarget();
+	/**
+	 * <p>Get the entity's walking speed when it is wandering.</p>
+	 * @return the entity's wandering speed.
+	 */
+	public abstract double getWanderingSpeed();
+	/**
+	 * <p>Get the entity's walking speed when it is chasing a target.</p>
+	 * @return the entity's chasing speed.
+	 */
+	public abstract double getChasingSpeed();
+	/**
+	 * <p>Get the height of the entity.</p>
+	 * @return the height of the entity.
+	 */
+	public abstract double getHeight();
+	/**
+	 * <p>Get the radius (in blocks) to scan for targets.<br>
+	 * This distance is calculated in 3-D, not 2-D.</p>
+	 * @return the absolute distance that a target must be to get chased.
+	 */
+	protected abstract double getScanTargetRadius();
+	public double getTargetCollisionDistance(){
+		return 0.5d;
 	}
 }
