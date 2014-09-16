@@ -2,6 +2,8 @@ BlockServer
 ===========
 [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=master)](https://travis-ci.org/BlockServerProject/BlockServer)
 
+[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject,#beaconpe,#pocketbukkit.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=beaconpe|?#blockserverproject,#beaconpe,#pocketbukkit)
+
 A minecraft PE server written in java.
 
 TODO:
