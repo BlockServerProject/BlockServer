@@ -2,6 +2,7 @@ package org.blockserver.utility;
 
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Random;
 
 public class Utils{
 	public static int getTriad(byte[] data, int offset){
@@ -35,5 +36,11 @@ public class Utils{
 	}
 	public static <T> T arrayShift(List<T> t){
 		return t.remove(0);
+	}
+	public static <T> T arrayRandom(T[] array){
+		return arrayRandom(array, new Random());
+	}
+	public static <T> T arrayRandom(T[] array, Random random){
+		return array[random.nextInt(array.length)];
 	}
 }
