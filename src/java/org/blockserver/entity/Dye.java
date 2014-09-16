@@ -22,7 +22,7 @@ public enum Dye{
 	BONE_MEAL;
 
 	public static Dye getRandomSheepDye(){
-		return Dye.values()[new Random().nextInt(Dye.length)];
+		return Dye.values()[new Random().nextInt(Dye.values().length)];
 	}
 
 }
