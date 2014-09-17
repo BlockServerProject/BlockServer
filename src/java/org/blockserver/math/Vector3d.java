@@ -19,7 +19,7 @@ public class Vector3d{
 		yaw = (yaw + 90) * Math.PI / 180;
 		pitch = pitch * Math.PI / 180;
 		double y = -Math.sin(pitch) * speed;
-		double horizDelta = Math.abs(Math.cos(pitch));
+		double horizDelta = Math.abs(Math.cos(pitch)) * speed;
 		double x = -horizDelta * Math.sin(yaw);
 		double z = horizDelta * Math.cos(yaw);
 		subject.setX(x);
@@ -32,6 +32,10 @@ public class Vector3d{
 		 * x = horizDelta * (-sin(yaw))
 		 * z = horizDelta * cos(yaw)
 		 */
+	}
+	public static YawPitchSet getRelativeYawPitch(Vector3d from, Vector3d to){
+		YawPitchSet set = to.subtract(from).getYawPitch(from.distance(to));
+		return set;
 	}
 
 	public Vector3d(){

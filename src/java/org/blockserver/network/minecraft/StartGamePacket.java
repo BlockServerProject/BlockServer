@@ -3,11 +3,10 @@ package org.blockserver.network.minecraft;
 import java.nio.ByteBuffer;
 
 import org.blockserver.level.Level;
-import org.blockserver.math.Vector3;
+import org.blockserver.math.Vector3d;
 
 public class StartGamePacket implements BaseDataPacket{
 	protected ByteBuffer buffer;
-	private Level level;
 	public byte PID = PacketsID.START_GAME;
 	public int seed;
 	public int unknown;
@@ -18,21 +17,12 @@ public class StartGamePacket implements BaseDataPacket{
 	public float spawnZ;
 
 	public StartGamePacket(Level level, int eid){
-		this.level = level;
-		this.eid = eid;
-		seed = level.getSeed();
-		unknown = 1;
-		gamemode = level.getDefaultGamemode();
-		spawnX = (float) level.getSpawnPos().getX();
-		spawnY = (float) level.getSpawnPos().getY();
-		spawnZ = (float) level.getSpawnPos().getZ();
+		this(level.getSpawnPos(), level.getDefaultGamemode(), level.getSeed(), eid);
 	}
-	
-	public StartGamePacket(Vector3 spawnpos, int gamemode, int seed, int eid){
-		this.spawnX = spawnpos.getX();
-		this.spawnY = spawnpos.getY();
-		this.spawnZ = spawnpos.getZ();
-		
+	public StartGamePacket(Vector3d spawnpos, int gamemode, int seed, int eid){
+		this.spawnX = (float) spawnpos.getX();
+		this.spawnY = (float) spawnpos.getY();
+		this.spawnZ = (float) spawnpos.getZ();
 		this.gamemode = gamemode;
 		this.seed = seed;
 		this.eid = eid;
@@ -57,9 +47,5 @@ public class StartGamePacket implements BaseDataPacket{
 	@Override
 	public ByteBuffer getBuffer(){
 		return buffer;
-	}
-
-	public Level getLevel(){
-		return level;
 	}
 }

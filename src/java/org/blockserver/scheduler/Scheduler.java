@@ -3,20 +3,25 @@ package org.blockserver.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.blockserver.Server;
+import org.blockserver.Test;
+
 public class Scheduler extends Thread{
 	public final static int DEFAULT_TICKS = 20; // default ticks per seconds 20, like minecraft
 
+	private Server server;
 	private int ids, sleepIntervals;
 	private long currentTick;
 	private boolean isRunning;
 	private List<Task> tasks;
 
-	public Scheduler(){
-		this(1000 / DEFAULT_TICKS);
+	public Scheduler(Server server){
+		this(server, DEFAULT_TICKS); // who divided it twice?
 	}
-	public Scheduler(int tickPerSeconds){
+	public Scheduler(Server server, int ticksPerSecond){
+		this.server = server;
 		ids = 0;
-		sleepIntervals = (1000 / tickPerSeconds);
+		sleepIntervals = (1000 / ticksPerSecond);
 		currentTick = 0;
 		isRunning = false;
 		tasks = new ArrayList<Task>();
@@ -54,6 +59,7 @@ public class Scheduler extends Thread{
 	}
 
 	public void run(){
+		setName("ServerSchedulerThread");
 		while(isRunning) {
 			currentTick++;
 			if(!tasks.isEmpty()) {
@@ -63,7 +69,7 @@ public class Scheduler extends Thread{
 						continue;
 					}
 					if(t.getDelay() == currentTick){
-						t.onRun(currentTick);
+						t.onRun(server, currentTick);
 						int times = t.getRepeatTimes();
 						if(times > 0){
 							if(--times == 0){
@@ -87,13 +93,21 @@ public class Scheduler extends Thread{
 
 			try {
 				Thread.sleep(sleepIntervals);
+				if(Test.isTest() && currentTick > 200){
+					try{
+						server.getLogger().info("Stopping test on the 200th tick...");
+						server.stop();
+					}
+					catch(RuntimeException e){
+						e.printStackTrace();
+					}
+				}
 			}
 			catch(Exception e){
 				e.printStackTrace();
 			}
 		}
 	}
-
 	public void end() throws Exception{
 		if(!isRunning){
 			throw new RuntimeException("Cannot stop non-running scheduler!");

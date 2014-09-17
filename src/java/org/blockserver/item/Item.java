@@ -3,7 +3,9 @@ package org.blockserver.item;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Item{
+import org.blockserver.objects.IItem;
+
+public class Item implements IItem{
 	private short id;
 	private byte damage;
 	private byte count;

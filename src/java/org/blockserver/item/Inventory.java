@@ -9,9 +9,10 @@ import java.util.Map;
 
 import org.blockserver.Server;
 import org.blockserver.entity.Entity;
+import org.blockserver.objects.IInventory;
 import org.blockserver.utility.ArrayIterator;
 
-public class Inventory implements Collection<Item>{
+public class Inventory implements Collection<Item>, IInventory<Item>{
 	protected Entity owner;
 	protected int capacity;
 	protected Item[] items;
@@ -127,6 +128,10 @@ public class Inventory implements Collection<Item>{
 		return new ArrayIterator<Item>(items); // not sure if we have that class in Apache libs
 	}
 
+	public Item[] getItems(){
+		return items;
+	}
+
 	public boolean clearSlot(int i){
 		if(items[(Integer) i].getID() == 0){
 			return false;
@@ -233,7 +238,6 @@ public class Inventory implements Collection<Item>{
 		}
 		return (T[]) items;
 	}
-
 
 	@Override
 	public boolean remove(Object o){

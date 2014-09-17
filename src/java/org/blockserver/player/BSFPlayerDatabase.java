@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.Locale;
 
 import org.blockserver.Context;
-import org.blockserver.io.bsf.BSFType;
+import org.blockserver.io.bsf.BSF;
 import org.blockserver.io.bsf.BSFWriter;
 import org.blockserver.item.Inventory;
 import org.blockserver.level.Level;
@@ -58,17 +58,9 @@ public class BSFPlayerDatabase extends PlayerDatabase{
 	@Override
 	protected void savePlayer(PlayerData data){
 		File file = getPlayerFile(data.getCaseName());
-		if(!file.isFile()){
-			try{
-				file.createNewFile();
-			}
-			catch(IOException e){
-				e.printStackTrace();
-			}
-		}
 		try{
 			FileOutputStream out = new FileOutputStream(file);
-			BSFWriter writer = new BSFWriter(out, BSFType.PLAYER);
+			BSFWriter writer = new BSFWriter(out, BSF.Type.PLAYER);
 			// login info
 			writer.writeString(data.getCaseName(), 1);
 			// coords

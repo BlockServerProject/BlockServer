@@ -12,7 +12,7 @@ import org.blockserver.utility.MinecraftVersion;
  * 
  * @author BlockServerProject
  */
-public class BlockServer {
+public class BlockServer{
 	public static void main(String[] args){
 		String ip = "0.0.0.0";
 		short port = 19132;

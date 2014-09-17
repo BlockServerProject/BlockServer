@@ -1,5 +1,7 @@
 package org.blockserver.scheduler;
 
+import org.blockserver.Server;
+
 public abstract class Task{
 	private int id, defaultDelay, repeatTimes;
 	private long delay;
@@ -27,7 +29,7 @@ public abstract class Task{
 		this.isSetup = true;
 	}
 
-	public abstract void onRun(long currentTick);
+	public abstract void onRun(Server server, long currentTick);
 	public abstract void onFinish(long currentTick);
 
 	public int getID(){

@@ -81,7 +81,6 @@ public class PacketHandler extends Thread{
 							else{
 								server.addPlayer(player);
 							}
-							
 							break;
 						default:
 							server.getLogger().warning("Recived unsupported raknet packet! PID: %02X", pid);
@@ -90,7 +89,17 @@ public class PacketHandler extends Thread{
 				else if(pid >= RaknetsID.DATA_PACKET_0 &&  pid <= RaknetsID.DATA_PACKET_F){ // Custom Data Packet Range
 					CustomPacket packet = new CustomPacket(pck.getData());
 					packet.decode();
-					server.getPlayer(pck.getAddress().toString().replace("/", ""), pck.getPort()).handlePacket(packet);
+					Player player = server.getPlayer(pck.getAddress().toString().replace("/",  ""), pck.getPort());
+					if(player instanceof Player){
+						player.handlePacket(packet);
+					}
+					else{
+						server.getLogger().warning("Cannot find player at %s:%d, data packet with pid %d (%s) sent",
+								pck.getAddress().toString().replace("/", ""),
+								pck.getPort(),
+								packet.getBuffer().get(0), // does not shift the ByteBuffer
+								packet.getClass().getSimpleName());
+					}
 				}
 				else if(pid == RaknetsID.ACK || pid == RaknetsID.NACK){
 					Player player = server.getPlayer(pck.getAddress().toString().replace("/", ""), pck.getPort());

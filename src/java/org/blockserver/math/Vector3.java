@@ -1,37 +1,37 @@
 package org.blockserver.math;
 
 public class Vector3{
-	private float x, y, z;
+	private int x, y, z;
 
-	public Vector3(float v){
+	public Vector3(int v){
 		this(v, v, v);
 	}
-	public Vector3(float x, float y){
+	public Vector3(int x, int y){
 		this(x, y, 0);
 	}
-	public Vector3(float x, float y, float z){
+	public Vector3(int x, int y, int z){
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public float getX(){
+	public int getX(){
 		return x;
 	}
-	public float getY(){
+	public int getY(){
 		return y;
 	}
-	public float getZ(){
+	public int getZ(){
 		return z;
 	}
 
-	public void setX(float v){
+	public void setX(int v){
 		this.x = v;
 	}
-	public void setY(float v){
+	public void setY(int v){
 		this.y = v;
 	}
-	public void setZ(float v){
+	public void setZ(int v){
 		this.z = v;
 	}
 }

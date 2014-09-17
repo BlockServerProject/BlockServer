@@ -2,32 +2,31 @@ package org.blockserver.entity;
 
 import java.util.Random;
 
+import org.blockserver.utility.Utils;
+
 public enum Dye{
-	INK_SAC(0),
-	ROSE_RED(1),
-	CACTUS_GREEN(2),
-	COCOA_BEANS(3),
-	LAPIS_LAZULI(4),
-	PURPLE_DYE(5),
-	CYAN_DYE(6),
-	LIGHT_GRAY_DYE(7),
-	GRAY_DYE(8),
-	PINK_DYE(9),
-	LIME_DYE(10),
-	DANDELION_YELLOW(11),
-	LIGHT_BLUE_DYE(12),
-	MAGENTA_DYE(13),
-	ORANGE_DYE(14),
-	BONE_MEAL(15);
+	INK_SAC,
+	ROSE_RED,
+	CACTUS_GREEN,
+	COCOA_BEANS,
+	LAPIS_LAZULI,
+	PURPLE_DYE,
+	CYAN_DYE,
+	LIGHT_GRAY_DYE,
+	GRAY_DYE,
+	PINK_DYE,
+	LIME_DYE,
+	DANDELION_YELLOW,
+	LIGHT_BLUE_DYE,
+	MAGENTA_DYE,
+	ORANGE_DYE,
+	BONE_MEAL;
 
-	private int id;
-
-	private Dye(int id){
-		this.id = id;
+	public static Dye getRandomDye(){
+		return Utils.arrayRandom(values());
 	}
-
-	public int getID(){
-		return id;
+	public static Dye getRandomDye(Random random){
+		return Utils.arrayRandom(values(), random);
 	}
 
 	public static Dye getRandomSheepDye(){
@@ -53,5 +52,4 @@ public enum Dye{
 		}
 		return PINK_DYE;
 	}
-
 }

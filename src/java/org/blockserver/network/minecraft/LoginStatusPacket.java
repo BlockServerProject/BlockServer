@@ -14,7 +14,7 @@ public class LoginStatusPacket implements BaseDataPacket{
 	@Override
 	public void encode(){
 		bb.put(PacketsID.LOGIN_STATUS);
-		bb.putInt(this.status);
+		bb.putInt(status);
 	}
 
 	@Override

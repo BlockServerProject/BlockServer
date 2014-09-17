@@ -107,6 +107,13 @@ public abstract class Entity extends Moveable{
 		throw new UnsupportedOperationException(String.format(Locale.US, "Entity %s does not support modification of maximum health", getClass().getSimpleName()));
 	}
 
+	/**
+	 * Send MCPE protocol data packets to broadcast changes in the entity's motion
+	 * Note that the parameters of this method may need changes to meet the MCPE protocol.
+	 * If so, just change it :)
+	 */
+	protected abstract void broadcastMotion();
+
 	public static int nextID(){
 		return nextID++;
 	}
