@@ -78,7 +78,7 @@ public class Player extends Entity{
 //		start(server);
 	}
 
-	public void update(int ticks){
+	public void update(long ticks){
 		if(this.ACKQueue.size() > 0){
 			int[] array = new int[this.ACKQueue.size()];
 			int offset = 0;
@@ -203,9 +203,7 @@ public class Player extends Entity{
 						addToQueue(sgp);
 						//END Fake StartGamePacket
 
-						MessagePacket mp = new MessagePacket(String.format("Harro! Welcome to %s!", server.getServerName()));
-						mp.encode();
-						addToQueue(mp);
+						sendMessage("Harro! Welcome to %s!", server.getServerName());
 					}
 					break;
 				case PacketsID.DISCONNECT:
@@ -238,8 +236,8 @@ public class Player extends Entity{
 	}
 
 	// methods that send packets to players without passing packet parameters
-	public void sendMessage(String msg){
-		addToQueue(new MessagePacket(msg)); // be aware of the message-too-long exception
+	public void sendMessage(String msg, Object... args){
+		addToQueue(new MessagePacket(String.format(msg, args))); // be aware of the message-too-long exception
 	}
 	public void close(String reason){
 		if(reason != null){

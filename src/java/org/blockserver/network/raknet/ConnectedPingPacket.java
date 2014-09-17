@@ -36,7 +36,7 @@ public class ConnectedPingPacket extends BaseLoginPacket {
 	}
 	@Override
 	public ByteBuffer getResponse(){
-	   String serverName = server.getServerName();
+	   String serverName = "MCCPP;Demo;".concat(server.getServerName());
 	   byte[] magic = this.getMAGIC();
 	   ByteBuffer bb = ByteBuffer.allocate(35 + serverName.length());
 	   

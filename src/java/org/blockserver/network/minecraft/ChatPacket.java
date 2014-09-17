@@ -54,7 +54,7 @@ public class ChatPacket implements BaseDataPacket {
 			throw new UnsupportedOperationException("This object is to be parsed, not encoded.");
 		}
 	}
-	
+
 	public void decode(){
 		if(isFromClient == true){
 			if(buffer.get() != PacketsID.CHAT){

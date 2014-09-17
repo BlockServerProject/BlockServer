@@ -69,7 +69,7 @@ public class Scheduler extends Thread{
 						continue;
 					}
 					if(t.getDelay() == currentTick){
-						t.onRun(currentTick);
+						t.onRun(server, currentTick);
 						int times = t.getRepeatTimes();
 						if(times > 0){
 							if(--times == 0){
@@ -108,7 +108,6 @@ public class Scheduler extends Thread{
 			}
 		}
 	}
-
 	public void end() throws Exception{
 		if(!isRunning){
 			throw new RuntimeException("Cannot stop non-running scheduler!");

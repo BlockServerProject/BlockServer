@@ -303,7 +303,7 @@ public class Server implements Context{
 		startTime = System.currentTimeMillis();
 		serverip = ip;
 		serverPort = port;
-		serverName = "MCCPP;Demo;" + name;
+		serverName = name;
 		this.maxPlayers = maxPlayers;
 		MCVERSION = version;
 		serverID = new Random().nextLong();
