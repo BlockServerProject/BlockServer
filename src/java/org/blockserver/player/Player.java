@@ -12,7 +12,7 @@ import org.blockserver.Server;
 import org.blockserver.entity.Entity;
 import org.blockserver.entity.EntityType;
 import org.blockserver.item.Inventory;
-import org.blockserver.math.Vector3;
+import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
@@ -45,15 +45,11 @@ public class Player extends Entity{
 	private List<Integer> ACKQueue; // Received Packet Queue
 	private List<Integer> NACKQueue; // Not received packet queue
 	private Map<Integer, CustomPacket> recoveryQueue; // Packet sent queue to be used if not received
-
 	private long clientID; // Client ID From MCPE Client
+
 	private int maxHealth;
 	private Server server;
 	protected Inventory inventory;
-
-	public String getIP(){
-		return ip;
-	}
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
 		super(0, 0, 0, null);
@@ -126,7 +122,6 @@ public class Player extends Entity{
 		}
 		queue.packets.add(ipck);
 	}
-
 	public void handlePacket(CustomPacket pck){
 		if(pck.sequenceNumber - this.lastSequenceNum == 1){
 			lastSequenceNum = pck.sequenceNumber;
@@ -145,7 +140,6 @@ public class Player extends Entity{
 					PongPacket reply = new PongPacket(pp.pingID);
 					addToQueue(reply);
 					break;
-
 				case PacketsID.CLIENT_CONNECT: // 0x09. Use the constants class
 					ClientConnectPacket ccp = new ClientConnectPacket(ipck.buffer);
 					ccp.decode();
@@ -153,12 +147,10 @@ public class Player extends Entity{
 					ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
 					addToQueue(shp);
 					break;
-
 				case PacketsID.CLIENT_HANDSHAKE:
 					ClientHandShakePacket chs = new ClientHandShakePacket(ipck.buffer);
 					chs.decode();
 					break;
-
 				case PacketsID.LOGIN:
 					LoginPacket lp = new LoginPacket(ipck.buffer);
 					server.getLogger().info("Login Packet: %d", ipck.buffer.length);
@@ -175,7 +167,6 @@ public class Player extends Entity{
 						}
 					}
 					addToQueue(new LoginStatusPacket(0)); // No error with the protocol.
-					
 					/*
 					ArrayList<Player> players = server.getConnectedPlayers();
 					server.getLogger().info("Size is "+players.size());
@@ -190,46 +181,37 @@ public class Player extends Entity{
 						}
 					}
 					*/
-
 					if(lp.username.length() < 3 || lp.username.length() > 15){
 						close("Username is not valid.");
 					}
 					else{
 						name = lp.username;
 						server.getLogger().info(name+"("+ip+":"+port+") logged in with a fake entity ID.");
-	
-						//login();
-	
+
+//						login();
+
 						//Once we get World gen up, uncomment this:
 						/*
 						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
 						sgp.encode();
 						this.addToQueue(sgp);
-						
 						*/
-						
+
 						//START Fake StartGamePacket
-						StartGamePacket sgp = new StartGamePacket(new Vector3(100, 2, 100), 1, 100, 1);
+						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
 						sgp.encode();
 						addToQueue(sgp);
 						//END Fake StartGamePacket
-						
-						MessagePacket mp = new MessagePacket("Harro! This is blockserver!");
+
+						MessagePacket mp = new MessagePacket(String.format("Harro! Welcome to %s!", server.getServerName()));
 						mp.encode();
 						addToQueue(mp);
-						
-						server.getLogger().info(server.getPlayersConnected() + " players are connected.");
 					}
-					
 					break;
-					
 				case PacketsID.DISCONNECT:
 					server.getLogger().info("%s (%s:%d) disconnected: Disconnect by user.", name, ip, port);
 					server.removePlayer(this);
-					server.getLogger().info(server.getPlayersConnected()+" players are connected.");
-				
-					
-					
+					break;
 				default:
 					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
@@ -267,8 +249,17 @@ public class Player extends Entity{
 		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
 	}
 
-	public InetAddress getAddress() throws UnknownHostException{
-		return InetAddress.getByName(ip);
+	public InetAddress getAddress(){
+		try{
+			return InetAddress.getByName(ip);
+		}
+		catch(UnknownHostException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public String getIP(){
+		return ip;
 	}
 	public int getPort(){
 		return port;

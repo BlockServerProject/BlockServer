@@ -1,4 +1,4 @@
-package org.blockserver.network;
+package org.blockserver;
 
 public class ChatHandler {
 	
