@@ -186,22 +186,18 @@ public class Player extends Entity{
 					}
 					else{
 						name = lp.username;
-						server.getLogger().info(name+"("+ip+":"+port+") logged in with a fake entity ID.");
+						server.getLogger().info("%s (%s:%d) logged in with a fake entity ID.", name, ip, port);
 
 //						login();
-
 						//Once we get World gen up, uncomment this:
 						/*
 						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
 						sgp.encode();
 						this.addToQueue(sgp);
 						*/
-
-						//START Fake StartGamePacket
 						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
 						sgp.encode();
 						addToQueue(sgp);
-						//END Fake StartGamePacket
 
 						sendMessage("Harro! Welcome to %s!", server.getServerName());
 					}

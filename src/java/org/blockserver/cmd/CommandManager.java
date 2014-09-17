@@ -49,7 +49,10 @@ public class CommandManager{
 		catch(IndexOutOfBoundsException e){
 			return;
 		}
-		Command cmd = cmds.getOrDefault(cmdStr.toLowerCase(Locale.US), cmds.get("help"));
+		Command cmd = cmds.get(cmdStr.toLowerCase(Locale.US));
+		if(cmd == null){
+			cmd = cmds.get("help");
+		}
 		CharSequence cs = cmd.run(issuer, args);
 		if(cs != null){
 			String msg = cs.toString();

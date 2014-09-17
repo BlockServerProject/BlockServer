@@ -1,10 +1,9 @@
 package org.blockserver.network.minecraft;
 
-public class PacketsID{
+public interface PacketsID{
 	public static final int CURRENT_PROTOCOL = 18;
 
 	public static final byte PING = (byte)0x00;
-
 	public static final byte PONG = (byte)0x03;
 
 	public static final byte CLIENT_CONNECT = (byte)0x09;
