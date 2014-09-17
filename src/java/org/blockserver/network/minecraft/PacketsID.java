@@ -56,7 +56,7 @@ public interface PacketsID{
 	public static final byte SET_ENTITY_MOTION = (byte)0xa8;
 	public static final byte SET_ENTITY_LINK = (byte)0xa9;
 	public static final byte SET_HEALTH = (byte)0xaa;
-	public static final byte SET_SPAWN_PODSITION = (byte)0xab;
+	public static final byte SET_SPAWN_POSITION = (byte)0xab;
 	public static final byte ANIMATE = (byte)0xac;
 	public static final byte RESPAWN = (byte)0xad;
 	public static final byte SEND_INVENTORY = (byte)0xae;
