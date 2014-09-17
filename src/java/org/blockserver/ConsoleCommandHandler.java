@@ -31,8 +31,11 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 			try{
 				String input = console.readLine();
 				if(input != null){
-					server.getLogger().debug("Dispatching command: %s", input);
-					sudoCommand(input.trim());
+					input = input.trim();
+					if(!input.isEmpty()){
+						server.getLogger().info("Dispatching command: %s", input);
+						sudoCommand(input.trim());
+					}
 				}
 			}
 			catch(IOException e){
@@ -69,5 +72,9 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	@Override
 	public Server getServer(){
 		return server;
+	}
+	@Override
+	public String getEOL(){
+		return System.getProperty("line.separator", "\n");
 	}
 }

@@ -7,4 +7,5 @@ public interface CommandIssuer {
 	public void sudoCommand(String line);
 	public int getHelpLines();
 	public Server getServer();
+	public String getEOL();
 }

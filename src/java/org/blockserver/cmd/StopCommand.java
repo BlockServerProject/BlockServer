@@ -1,5 +1,7 @@
 package org.blockserver.cmd;
 
+import java.util.List;
+
 public class StopCommand extends Command{
 	@Override
 	public String getName(){
@@ -7,7 +9,7 @@ public class StopCommand extends Command{
 	}
 
 	@Override
-	public String run(CommandIssuer issuer, String[] args){
+	public String run(CommandIssuer issuer, List<String> args){
 		try{
 			issuer.getServer().stop();
 			return "Stopping server...";

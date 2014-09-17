@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Command {
-	public String[] getAliases(){
+	public final String[] getAliases(){
 		String[] array = aliases();
 		String single = alias();
 		List<String> aliases = new ArrayList<String>();
@@ -26,5 +26,8 @@ public abstract class Command {
 	}
 
 	public abstract String getName();
-	public abstract String run(CommandIssuer issuer, String[] args);
+	public String getDescription(){
+		return "";
+	}
+	public abstract CharSequence run(CommandIssuer issuer, List<String> args);
 }
