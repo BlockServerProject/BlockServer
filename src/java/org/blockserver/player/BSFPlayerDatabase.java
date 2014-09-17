@@ -58,14 +58,6 @@ public class BSFPlayerDatabase extends PlayerDatabase{
 	@Override
 	protected void savePlayer(PlayerData data){
 		File file = getPlayerFile(data.getCaseName());
-		if(!file.isFile()){
-			try{
-				file.createNewFile();
-			}
-			catch(IOException e){
-				e.printStackTrace();
-			}
-		}
 		try{
 			FileOutputStream out = new FileOutputStream(file);
 			BSFWriter writer = new BSFWriter(out, BSF.Type.PLAYER);

@@ -203,8 +203,7 @@ public class Player extends Entity{
 					}
 					break;
 				case PacketsID.DISCONNECT:
-					server.getLogger().info("%s (%s:%d) disconnected: Disconnect by user.", name, ip, port);
-					server.removePlayer(this);
+					disconnect("disconnected by client");
 					break;
 				default:
 					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
@@ -240,6 +239,11 @@ public class Player extends Entity{
 			sendMessage(reason);
 		}
 		addToQueue(new Disconnect());
+		disconnect(String.format("kicked (%s)", reason));
+	}
+	protected void disconnect(String reason){
+		server.getLogger().info("%s (%s:%d) disconnected: %s.", name, ip, port, reason);
+		server.removePlayer(this);
 		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
 	}
 

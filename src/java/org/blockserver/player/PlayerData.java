@@ -11,6 +11,11 @@ public class PlayerData {
 	private Inventory inventory;
 
 	public PlayerData(Level level, Vector3d coords, String caseName, Inventory inv){
+		if(level == null){
+			NullPointerException e = new NullPointerException("Level is null");
+			e.printStackTrace();
+			throw e;
+		}
 		setLevel(level);
 		setCoords(coords);
 		setCaseName(caseName);

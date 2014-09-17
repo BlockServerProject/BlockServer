@@ -20,6 +20,7 @@ public class CommandManager{
 	private void registerDefaults(){
 		cmds = new HashMap<String, Command>(0);
 		registerCommand(new HelpCommand());
+		registerCommand(new StopCommand());
 	}
 	public boolean registerAll(Command[] cmds){
 		boolean ret = true;

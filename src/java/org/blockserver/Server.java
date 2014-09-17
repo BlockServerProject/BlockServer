@@ -380,6 +380,9 @@ public class Server implements Context{
 	 * @throws Exception
 	 */
 	public void stop() throws Exception{
+		for(Player player: players.values()){
+			player.close("server is stopping");
+		}
 		serverRunning = false;
 		scheduler.end();
 		packetHandler.end();
