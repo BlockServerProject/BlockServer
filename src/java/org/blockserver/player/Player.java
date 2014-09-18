@@ -71,13 +71,6 @@ public class Player extends Entity{
 		}
 	}
 
-	protected void login(){
-		PlayerData data = server.getPlayerDatabase().load(this);
-		setCoords(data.getCoords());
-		this.level = data.getLevel(); // validated!
-//		start(server);
-	}
-
 	public void update(long ticks){
 		if(this.ACKQueue.size() > 0){
 			int[] array = new int[this.ACKQueue.size()];
@@ -240,9 +233,14 @@ public class Player extends Entity{
 	public void sendMessage(String msg, Object... args){
 		addToQueue(new MessagePacket(String.format(msg, args))); // be aware of the message-too-long exception
 	}
-	
 	public void handleChat(byte[] packetBuffer){
 		server.getLogger().info("Chat Received.");
+	}
+	protected void login(){
+		PlayerData data = server.getPlayerDatabase().load(this);
+		setCoords(data.getCoords());
+		this.level = data.getLevel(); // validated!
+//		start(server);
 	}
 	public void close(String reason){
 		if(reason != null){

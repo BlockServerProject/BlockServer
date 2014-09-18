@@ -152,4 +152,8 @@ public class Vector3d{
 			this.pitch = pitch;
 		}
 	}
+
+	public double[] toArray(){
+		return new double[]{x, y, z};
+	}
 }

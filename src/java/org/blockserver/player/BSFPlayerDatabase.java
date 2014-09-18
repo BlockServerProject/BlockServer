@@ -6,7 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.blockserver.Context;
 import org.blockserver.io.bsf.BSF;
@@ -61,15 +63,12 @@ public class BSFPlayerDatabase extends PlayerDatabase{
 		try{
 			FileOutputStream out = new FileOutputStream(file);
 			BSFWriter writer = new BSFWriter(out, BSF.Type.PLAYER);
-			// login info
-			writer.writeString(data.getCaseName(), 1);
-			// coords
-			writer.writeDouble(data.getCoords().getX());
-			writer.writeDouble(data.getCoords().getY());
-			writer.writeDouble(data.getCoords().getZ());
-			writer.writeString(data.getLevel().getName(), 1);
-			// inventory
-			writer.writeInventory(data.getInventory());
+			Map<String, Object> args = new HashMap<String, Object>(4);
+			args.put(BSF.P_CASE_NAME, data.getCaseName());
+			args.put(BSF.P_VECTORS, data.getCoords().toArray());
+			args.put(BSF.P_WORLD_NAME, data.getLevel().getName());
+			args.put(BSF.P_I_INVENTORY, data.getInventory());
+			writer.writeAll(args);
 			writer.close();
 		}
 		catch(IOException e){
