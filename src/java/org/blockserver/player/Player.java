@@ -228,6 +228,8 @@ public class Player extends Entity{
 					server.removePlayer(this);
 					server.getLogger().info(server.getPlayersConnected()+" players are connected.");
 				
+					
+					
 				default:
 					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
