@@ -205,6 +205,12 @@ public class Player extends Entity{
 				case PacketsID.DISCONNECT:
 					disconnect("disconnected by client");
 					break;
+					
+				case PacketsID.CHAT:
+					handleChat(ipck.buffer);
+					break;
+				case PacketsID.MESSAGE:
+					handleChat(ipck.buffer);
 				default:
 					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
@@ -233,6 +239,10 @@ public class Player extends Entity{
 	// methods that send packets to players without passing packet parameters
 	public void sendMessage(String msg, Object... args){
 		addToQueue(new MessagePacket(String.format(msg, args))); // be aware of the message-too-long exception
+	}
+	
+	public void handleChat(byte[] packetBuffer){
+		server.getLogger().info("Chat Received.");
 	}
 	public void close(String reason){
 		if(reason != null){
