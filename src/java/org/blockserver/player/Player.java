@@ -9,11 +9,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.blockserver.Server;
+import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
 import org.blockserver.entity.EntityType;
 import org.blockserver.item.Inventory;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.BaseDataPacket;
+import org.blockserver.network.minecraft.ChatPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
 import org.blockserver.network.minecraft.Disconnect;
@@ -32,7 +34,7 @@ import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.network.raknet.NACKPacket;
 import org.blockserver.scheduler.CallbackTask;
 
-public class Player extends Entity{
+public class Player extends Entity implements CommandIssuer{
 	private String name;
 	private String ip;
 	private int port;
@@ -200,16 +202,24 @@ public class Player extends Entity{
 					break;
 					
 				case PacketsID.CHAT:
-					handleChat(ipck.buffer);
+					server.getLogger().info("ChatPacket used for chat");
+					ChatPacket cpk = new ChatPacket(ipck.buffer);
+					cpk.decode();
+					server.getChatMgr().handleChat(this, cpk.message);
 					break;
 				case PacketsID.MESSAGE:
-					handleChat(ipck.buffer);
+					server.getLogger().info("MessagePacket used for chat");
+					MessagePacket mpk = new MessagePacket(ipck.buffer);
+					mpk.decode();
+					server.getChatMgr().handleChat(this, mpk.msg);
+					break;
 				default:
 					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
 			}
 		}
 	}
+
 	public void handleAcknowledgePackets(AcknowledgePacket pck){ // ACK and NACK
 		pck.decode();
 		if(pck instanceof ACKPacket){ // When we receive a ACK Packet then
@@ -229,12 +239,9 @@ public class Player extends Entity{
 		}
 	}
 
-	// methods that send packets to players without passing packet parameters
+	// API methods outside networking
 	public void sendMessage(String msg, Object... args){
 		addToQueue(new MessagePacket(String.format(msg, args))); // be aware of the message-too-long exception
-	}
-	public void handleChat(byte[] packetBuffer){
-		server.getLogger().info("Chat Received.");
 	}
 	protected void login(){
 		PlayerData data = server.getPlayerDatabase().load(this);
@@ -298,5 +305,28 @@ public class Player extends Entity{
 	@Override
 	protected void broadcastMotion(){
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void sendMessage(String msg){
+		
+	}
+
+	@Override
+	public void sudoCommand(String line){
+		server.getCmdManager().runCommand(this, line.substring(1));
+	}
+
+	@Override
+	public int getHelpLines(){
+		return 5; // TODO customization should be permitted
+	}
+	@Override
+	public Server getServer(){
+		return server;
+	}
+	@Override
+	public String getEOL(){
+		return "\n";
 	}
 }

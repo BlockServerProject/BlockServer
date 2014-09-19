@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.blockserver.chat.ChatManager;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.Level;
 import org.blockserver.level.generator.GenerationSettings;
@@ -24,6 +25,7 @@ public class Server implements Context{
 
 	private ConsoleCommandHandler cmdHandler = null;
 	private CommandManager cmdMgr;
+	private ChatManager chatMgr;
 	private ServerLogger logger;
 	private Scheduler scheduler;
 	private PacketHandler packetHandler;
@@ -242,7 +244,16 @@ public class Server implements Context{
 	public GenerationSettings getDefaultLevelGenerationSettings(){
 		return defaultLevelGenSet;
 	}
-
+	public ChatManager getChatMgr(){
+		return chatMgr;
+	}
+	public void setChatMgr(Class<? extends ChatManager> type) throws ReflectiveOperationException{
+		setChatMgr(type.newInstance());
+	}
+	public void setChatMgr(ChatManager chatMgr){
+		this.chatMgr = chatMgr;
+		logger.warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
+	}
 	/**
 	 * <p>Add a player to the list of online players.</p>
 	 * 
@@ -251,12 +262,10 @@ public class Server implements Context{
 	public void addPlayer(Player player){
 		players.put(player.getIP() + Integer.toString(player.getPort()), player);
 	}
-	
 	public void removePlayer(Player player){
 		String addr = player.getIP() + Integer.toString(player.getPort());
 		players.remove(addr);
 	}
-	
 	public boolean isPlayerConnected(Player player){
 		String addr = player.getIP() + Integer.toString(player.getPort());
 		if(players.containsKey(addr)){
@@ -266,11 +275,9 @@ public class Server implements Context{
 			return false;
 		}
 	}
-
 	public int getPlayersConnected(){
 		return players.size();
 	}
-
 	public Collection<Player> getConnectedPlayers() {
 		return players.values();
 	}
@@ -294,8 +301,9 @@ public class Server implements Context{
 	 * @param pluginsDir - the {@link File} directory to save plugins data in and load from
 	 * @throws Exception
 	 */
-	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
-			String defaultLevel, GenerationSettings defaultLevelGenSet, Class<? extends PlayerDatabase> dbType,
+	public Server(String name, String ip, short port, int maxPlayers,
+			MinecraftVersion version, String defaultLevel, GenerationSettings defaultLevelGenSet,
+			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
@@ -323,6 +331,7 @@ public class Server implements Context{
 		packetHandler = new PacketHandler(this);
 		cmdHandler = new ConsoleCommandHandler(this);
 		cmdMgr = new CommandManager(this);
+		chatMgr = chatMgrType.newInstance(); // gracefully throw out the exception to the one who asked for it :P
 		playerDb = dbType.newInstance();
 	}
 

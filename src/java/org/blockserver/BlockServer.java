@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.blockserver.chat.SimpleChatManager;
 import org.blockserver.player.BSFPlayerDatabase;
 import org.blockserver.utility.MinecraftVersion;
 
@@ -14,17 +15,22 @@ import org.blockserver.utility.MinecraftVersion;
  */
 public class BlockServer{
 	public static void main(String[] args){
+		String serverName = "BlockServer - A cool MCPE server written in java!";
 		String ip = "0.0.0.0";
 		short port = 19132;
-//		if(!securityCheck(ip, port)){
-//			return;
-//		}
+		int maxPlayers = 5;
+		String defaultLevelName = "level";
+		Class<? extends SimpleChatManager> chatMgrType = SimpleChatManager.class;
+		Class<? extends BSFPlayerDatabase> playerDbType = BSFPlayerDatabase.class;
+		File here = new File(".");
+		File worldsDir = new File(here, "worlds");
+		File playerDir = new File(here, "players");
+		// TODO customization
 		try{
-			File here = new File(".");
-			Server server = new Server("BlockServer - A cool MCPE server written in java!",
-					ip, port, 5, MinecraftVersion.V095,
-					"level", null, BSFPlayerDatabase.class, // TODO GenerationSettings
-					new File(here, "worlds"), new File(here, "players"));
+			Server server = new Server(serverName, ip, port, maxPlayers,
+					MinecraftVersion.V095, defaultLevelName, null, // TODO GenerationSettings
+					chatMgrType, playerDbType,
+					worldsDir, playerDir);
 			server.run();
 		}
 		catch(SecurityException e){

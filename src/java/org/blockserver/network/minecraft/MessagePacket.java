@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 public class MessagePacket implements BaseDataPacket{
 	private ByteBuffer bb;
 	private String src;
-	private String msg;
+	public String msg;
 	public MessagePacket(String msg){
 		this("", msg);
 	}
@@ -20,6 +20,9 @@ public class MessagePacket implements BaseDataPacket{
 //			message = message.substring(0, 0xFFFF);
 		}
 		this.msg = msg;
+	}
+	public MessagePacket(byte[] buffer){
+		bb = ByteBuffer.wrap(buffer);
 	}
 
 	@Override
@@ -44,6 +47,7 @@ public class MessagePacket implements BaseDataPacket{
 		int length = bb.getShort();
 		byte[] buffer = new byte[length];
 		bb.get(buffer, 0, length);
+		this.msg = new String(buffer);
 	}
 
 	@Override

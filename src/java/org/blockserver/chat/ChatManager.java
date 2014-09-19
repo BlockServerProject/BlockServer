@@ -6,7 +6,11 @@ import org.blockserver.player.Player;
 
 public abstract class ChatManager implements GeneralConstants{
 	public abstract Server getServer();
-	public abstract void handleChat(Player player, String msg);
+	public void handleChat(Player player, String msg){
+		validate();
+		handlePlayerChat(player, msg);
+	}
+	protected abstract void handlePlayerChat(Player player, String msg);
 	public final void broadcast(String string){
 		validate();
 		broadcastMsg(string);
@@ -29,4 +33,5 @@ public abstract class ChatManager implements GeneralConstants{
 			throw new IllegalStateException("The ChatManager has not been initialized.");
 		}
 	}
+	public abstract void initialize(Server server);
 }
