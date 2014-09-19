@@ -5,46 +5,41 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.blockserver.Context;
+import org.blockserver.GeneralConstants;
 import org.blockserver.io.bsf.BSF;
+import org.blockserver.io.bsf.BSFReader;
 import org.blockserver.io.bsf.BSFWriter;
 import org.blockserver.item.Inventory;
 import org.blockserver.level.Level;
 import org.blockserver.math.Vector3d;
+import org.blockserver.objects.IInventory;
+import org.blockserver.objects.IItem;
 
-public class BSFPlayerDatabase extends PlayerDatabase{
+public class BSFPlayerDatabase extends PlayerDatabase implements GeneralConstants{
 	private File folder;
 
 	@Override
+	@SuppressWarnings("unchecked")
 	protected PlayerData loadPlayer(Player player, String name){
 		File file = getPlayerFile(name);
 		if(file.exists()){
 			try{
 				FileInputStream stream = new FileInputStream(file);
-				byte[] buffer = new byte[(int) file.length()];
-				stream.read(buffer);
-				stream.close();
-				ByteBuffer bb = ByteBuffer.wrap(buffer);
-				byte length = bb.get();
-				byte[] caseName = new byte[length];
-				bb.get(caseName, 0, length);
-				String CaseName= new String(caseName);
-				double x = bb.getDouble();
-				double y = bb.getDouble();
-				double z = bb.getDouble();
-				Vector3d coords = new Vector3d(x, y, z);
-				length = bb.get();
-				byte[] world = new byte[length];
-				bb.get(world, 0, length);
-				Level level = getServer().getLevel(new String(world), true, false);
-				return new PlayerData(level, coords, CaseName, new Inventory(player, Context.DEFAULT_PLAYER_INVENTORY_SIZE, getServer()));
+				BSFReader reader = new BSFReader(stream);
+				Map<String, Object> data = reader.readAll();
+				reader.close();
+				String caseName = (String) data.get(BSF.P_CASE_NAME);
+				double[] v = (double[]) data.get(BSF.P_VECTORS);
+				Vector3d coords = new Vector3d(v[0], v[1], v[2]);
+				Level level = getServer().getLevel((String) data.get(BSF.P_WORLD_NAME), true, false);
+				Inventory inv = new Inventory((IInventory<? extends IItem>) data.get(BSF.P_I_INVENTORY), player, getServer());
+				return new PlayerData(level, coords, caseName, inv);
 			}
-			catch(IOException e) {
+			catch(IOException e){
 				e.printStackTrace();
 			}
 			catch(BufferUnderflowException e){

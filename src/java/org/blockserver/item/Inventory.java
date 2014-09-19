@@ -10,6 +10,7 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.entity.Entity;
 import org.blockserver.objects.IInventory;
+import org.blockserver.objects.IItem;
 import org.blockserver.utility.ArrayIterator;
 
 public class Inventory implements Collection<Item>, IInventory<Item>{
@@ -24,6 +25,14 @@ public class Inventory implements Collection<Item>, IInventory<Item>{
 		items = new Item[capacity];
 		this.capacity = capacity;
 		clear();
+	}
+
+	public Inventory(IInventory<? extends IItem> inv, Entity owner, Server server){
+		this(owner, inv.getSize(), server);
+		int i = 0;
+		for(IItem item: inv.getItems()){
+			items[i++] = new Item(item);
+		}
 	}
 
 	/**

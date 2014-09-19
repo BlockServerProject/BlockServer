@@ -31,6 +31,9 @@ public class Item implements IItem{
 		this(type.getID(), type.getDamage() == ItemType.DAMAGE_NEGLIGIBLE ? 0:type.getDamage(),
 				count, type.getName(), type.getMaxCount(), metadata);
 	}
+	public Item(IItem item){
+		this(ItemType.getItemType(item.getID(), item.getDamage()), item.getCount(), item.getMetadata());
+	}
 
 	public boolean curEquals(Item other, boolean checkCount){
 		return other.getID() == id && other.getDamage() == damage && (checkCount ? other.getCount() == count:true);
