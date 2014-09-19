@@ -21,11 +21,14 @@ import org.blockserver.utility.ServerLogger;
 
 public class Server implements Context{
 	private static Server instance = null;
+
 	private ConsoleCommandHandler cmdHandler = null;
 	private CommandManager cmdMgr;
 	private ServerLogger logger;
 	private Scheduler scheduler;
 	private PacketHandler packetHandler;
+	public PlayerDatabase playerDb;
+
 	private Map<String, Player> players;
 	private Map<String, Level> levels;
 
@@ -36,7 +39,7 @@ public class Server implements Context{
 	private String serverip;
 	private short serverPort;
 	private int maxPlayers;
-	public PlayerDatabase playerDb;
+
 	private File worldsDir;
 	private File playersDir;
 	private File pluginsDir;

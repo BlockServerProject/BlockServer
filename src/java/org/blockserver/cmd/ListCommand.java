@@ -1,27 +1,30 @@
 package org.blockserver.cmd;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.blockserver.Server;
 import org.blockserver.player.Player;
 
 public class ListCommand extends Command {
-	
 	public String getName() {
 		return "list";
 	}
 
 	@Override
 	public String run(CommandIssuer issuer, List<String> args) {
-		String returnString = "There are ";
 		Server server = issuer.getServer();
-		ArrayList<Player> players = server.getConnectedPlayers();
-		returnString = returnString + "["+players.size()+"/"+server.getMaxPlayers()+"] players online: ";
-		for(int i = 0; i < players.size(); i++){
-			returnString = returnString + players.get(i).getName()+" ";
+		Collection<Player> players = server.getConnectedPlayers();
+		StringBuilder builder = new StringBuilder();
+		builder.append(players.size());
+		builder.append('/');
+		builder.append(server.getMaxPlayers());
+		builder.append(" players online:");
+		builder.append(issuer.getEOL());
+		for(Player p: server.getConnectedPlayers()){
+			builder.append(p.getName());
+			builder.append(", ");
 		}
-		return returnString;
+		return builder.toString().substring(0, builder.length() - 2);
 	}
-
 }
