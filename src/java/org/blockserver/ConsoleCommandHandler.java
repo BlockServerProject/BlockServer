@@ -19,7 +19,7 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	 */
 	public ConsoleCommandHandler(Server server){
 		this.server = server;
-		setName("ConsoleCommandHandler");
+		setName("ConsoleHandler");
 	}
 
 	@Override

@@ -21,6 +21,7 @@ public class CommandManager{
 		cmds = new HashMap<String, Command>(0);
 		registerCommand(new HelpCommand());
 		registerCommand(new StopCommand());
+		registerCommand(new ListCommand());
 	}
 	public boolean registerAll(Command[] cmds){
 		boolean ret = true;
