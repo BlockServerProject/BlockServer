@@ -2,6 +2,10 @@ package org.blockserver.network.minecraft;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.util.Arrays;
+
+import org.blockserver.Server;
 
 public class MessagePacket implements BaseDataPacket{
 	private ByteBuffer bb;
@@ -30,7 +34,7 @@ public class MessagePacket implements BaseDataPacket{
 		try{
 			byte[] message = msg.getBytes("UTF-8");
 			byte[] source = src.getBytes("UTF-8");
-			bb = ByteBuffer.allocate(5 + message.length + source.length);
+			bb = ByteBuffer.allocate(6 + message.length + source.length);
 			bb.put(PacketsID.MESSAGE);
 			bb.putShort((short) source.length);
 			bb.put(source);
@@ -44,10 +48,16 @@ public class MessagePacket implements BaseDataPacket{
 
 	@Override
 	public void decode(){
-		int length = bb.getShort();
-		byte[] buffer = new byte[length];
-		bb.get(buffer, 0, length);
-		this.msg = new String(buffer);
+		bb.get();
+		short senderLength = bb.getShort();
+		byte[] senderBytes = new byte[senderLength];
+		bb.get(senderBytes);
+		short messageLength = bb.getShort();
+		byte[] messageBytes = new byte[messageLength];
+		bb.get(messageBytes);
+		msg = new String(messageBytes, Charset.forName("UTF-8"));
+		src = new String(senderBytes, Charset.forName("UTF-8"));
+
 	}
 
 	@Override

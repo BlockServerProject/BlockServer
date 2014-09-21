@@ -9,7 +9,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.swing.text.html.HTMLDocument.Iterator;
+
 import org.blockserver.chat.ChatManager;
+import org.blockserver.chat.SimpleChatManager;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.Level;
 import org.blockserver.level.generator.GenerationSettings;
@@ -281,6 +284,16 @@ public class Server implements Context{
 	public Collection<Player> getConnectedPlayers() {
 		return players.values();
 	}
+	
+	public void handleChat(Player player, String message){
+		logger.info("<"+player.getName()+"> "+message);
+		java.util.Iterator<Player> it = players.values().iterator();
+		for(int i=0; i < players.values().size(); i++){
+			Player player2 = it.next();
+			player2.sendMessage("<"+player.getName()+"> "+message);
+		}
+	}
+	
 
 	/**
 	 * <p>Construct a new instance of the server.
@@ -331,7 +344,7 @@ public class Server implements Context{
 		packetHandler = new PacketHandler(this);
 		cmdHandler = new ConsoleCommandHandler(this);
 		cmdMgr = new CommandManager(this);
-		chatMgr = chatMgrType.newInstance(); // gracefully throw out the exception to the one who asked for it :P
+		chatMgr = new SimpleChatManager(); // gracefully throw out the exception to the one who asked for it :P
 		playerDb = dbType.newInstance();
 	}
 

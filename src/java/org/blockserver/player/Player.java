@@ -202,16 +202,18 @@ public class Player extends Entity implements CommandIssuer{
 					break;
 					
 				case PacketsID.CHAT:
-					server.getLogger().info("ChatPacket used for chat");
+					server.getLogger().info("ChatPacket used for chat (Unusual).");
 					ChatPacket cpk = new ChatPacket(ipck.buffer);
 					cpk.decode();
-					server.getChatMgr().handleChat(this, cpk.message);
+					//server.getChatMgr().handleChat(this, cpk.message);
+					server.handleChat(this, cpk.message);
 					break;
 				case PacketsID.MESSAGE:
-					server.getLogger().info("MessagePacket used for chat");
+					//server.getLogger().info("MessagePacket used for chat"); //Normal
 					MessagePacket mpk = new MessagePacket(ipck.buffer);
 					mpk.decode();
-					server.getChatMgr().handleChat(this, mpk.msg);
+					//server.getChatMgr().handleChat(this, mpk.msg);
+					server.handleChat(this, mpk.msg);
 					break;
 				default:
 					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
@@ -241,8 +243,11 @@ public class Player extends Entity implements CommandIssuer{
 
 	// API methods outside networking
 	public void sendMessage(String msg, Object... args){
-		addToQueue(new MessagePacket(String.format(msg, args))); // be aware of the message-too-long exception
+		MessagePacket mpkt = new MessagePacket(String.format(msg, args));
+		mpkt.encode();
+		addToQueue(mpkt); // be aware of the message-too-long exception
 	}
+	
 	protected void login(){
 		PlayerData data = server.getPlayerDatabase().load(this);
 		setCoords(data.getCoords());
