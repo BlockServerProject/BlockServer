@@ -19,12 +19,15 @@ public class SimpleChatManager extends ChatManager{
 		if(msg.charAt(0) == '/'){
 			player.sudoCommand(msg); // Note: commands are sent raw with a leading slash
 		}
-		broadcastMsg(String.format("<%s> %s", player.getName(), msg));
+		else{
+			broadcastMsg(String.format("<%s> %s", player.getName(), msg));
+		}
 	}
 	@Override
-	protected void broadcastMsg(String string){
+	protected void broadcastMsg(String msg){
+		server.getLogger().info(msg);
 		for(Player p: server.getConnectedPlayers()){
-			p.sendMessage(string);
+			p.sendChat(msg);
 		}
 	}
 }

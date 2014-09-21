@@ -187,36 +187,28 @@ public class Player extends Entity implements CommandIssuer{
 						//Once we get World gen up, uncomment this:
 						/*
 						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
-						sgp.encode();
-						this.addToQueue(sgp);
+						addToQueue(sgp);
 						*/
 						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
-						sgp.encode();
 						addToQueue(sgp);
-
-						sendMessage("Harro! Welcome to %s!", server.getServerName());
+						sendChatArgs("Harro! Welcome to %s!", server.getServerName());
 					}
 					break;
 				case PacketsID.DISCONNECT:
 					disconnect("disconnected by client");
 					break;
-					
 				case PacketsID.CHAT:
 					server.getLogger().info("ChatPacket used for chat (Unusual).");
 					ChatPacket cpk = new ChatPacket(ipck.buffer);
 					cpk.decode();
-					//server.getChatMgr().handleChat(this, cpk.message);
-					server.handleChat(this, cpk.message);
+					server.getChatMgr().handleChat(this, cpk.message);
 					break;
 				case PacketsID.MESSAGE:
-					//server.getLogger().info("MessagePacket used for chat"); //Normal
 					MessagePacket mpk = new MessagePacket(ipck.buffer);
 					mpk.decode();
-					//server.getChatMgr().handleChat(this, mpk.msg);
-					server.handleChat(this, mpk.msg);
+					server.getChatMgr().handleChat(this, mpk.msg);
 					break;
 				default:
-					//server.getLogger().info("Internal Packet Received packet: %02x", ipck.buffer[0]);
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
 			}
 		}
@@ -242,12 +234,18 @@ public class Player extends Entity implements CommandIssuer{
 	}
 
 	// API methods outside networking
-	public void sendMessage(String msg, Object... args){
-		MessagePacket mpkt = new MessagePacket(String.format(msg, args));
-		mpkt.encode();
+	public void sendChat(String msg, String src){
+		MessagePacket mpkt = new MessagePacket(msg);
 		addToQueue(mpkt); // be aware of the message-too-long exception
 	}
-	
+	public void sendChatArgs(String msg, Object... args){
+		sendChat(String.format(msg, args));
+	}
+	@Override
+	public void sendChat(String msg){
+		sendChat(msg, "");
+	}
+
 	protected void login(){
 		PlayerData data = server.getPlayerDatabase().load(this);
 		setCoords(data.getCoords());
@@ -256,7 +254,7 @@ public class Player extends Entity implements CommandIssuer{
 	}
 	public void close(String reason){
 		if(reason != null){
-			sendMessage(reason);
+			sendChat(reason);
 		}
 		addToQueue(new Disconnect());
 		disconnect(String.format("kicked (%s)", reason));
@@ -313,15 +311,9 @@ public class Player extends Entity implements CommandIssuer{
 	}
 
 	@Override
-	public void sendMessage(String msg){
-		
-	}
-
-	@Override
 	public void sudoCommand(String line){
 		server.getCmdManager().runCommand(this, line.substring(1));
 	}
-
 	@Override
 	public int getHelpLines(){
 		return 5; // TODO customization should be permitted

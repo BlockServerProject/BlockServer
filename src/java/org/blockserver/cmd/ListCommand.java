@@ -19,7 +19,7 @@ public class ListCommand extends Command {
 		builder.append(players.size());
 		builder.append('/');
 		builder.append(server.getMaxPlayers());
-		builder.append(" players online:");
+		builder.append(String.format(" %s online:", players.size() >= 2 ? "players":"player"));
 		builder.append(issuer.getEOL());
 		for(Player p: server.getConnectedPlayers()){
 			builder.append(p.getName());

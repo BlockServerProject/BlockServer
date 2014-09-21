@@ -59,7 +59,7 @@ public class CommandManager{
 		if(cs != null){
 			String msg = cs.toString();
 			if(msg.trim().length() > 0){
-				issuer.sendMessage(msg);
+				issuer.sendChat(msg);
 			}
 		}
 	}

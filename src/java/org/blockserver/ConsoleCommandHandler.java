@@ -58,7 +58,7 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	}
 
 	@Override
-	public void sendMessage(String msg){
+	public void sendChat(String msg){
 		server.getLogger().info("[CMD] %s", msg);
 	}
 	@Override

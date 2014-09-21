@@ -38,6 +38,7 @@ public class BlockServer{
 		}
 		catch(Exception e){
 			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	public static boolean securityCheck(String ip, int port){

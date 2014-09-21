@@ -25,7 +25,8 @@ public abstract class ChatManager implements GeneralConstants{
 	 * @throws UnsupportedOperationException if the subclass doesn't support this method
 	 * @throws IllegalArgumentException if the arguments are invalid
 	 */
-	protected void broadcastMsgWithArgs(Object[] args) throws UnsupportedOperationException, IllegalArgumentException{
+	protected void broadcastMsgWithArgs(Object[] args)
+			throws UnsupportedOperationException, IllegalArgumentException{
 		throw new UnsupportedOperationException("Method not supported by " + getClass().getSimpleName());
 	}
 	public void validate(){

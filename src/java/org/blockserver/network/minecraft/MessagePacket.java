@@ -3,9 +3,6 @@ package org.blockserver.network.minecraft;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.Arrays;
-
-import org.blockserver.Server;
 
 public class MessagePacket implements BaseDataPacket{
 	private ByteBuffer bb;
