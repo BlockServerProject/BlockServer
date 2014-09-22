@@ -184,7 +184,7 @@ public class Player extends Entity implements CommandIssuer{
 						server.getLogger().info("%s (%s:%d) logged in with a fake entity ID.", name, ip, port);
 
 //						login();
-						//Once we get World gen up, uncomment this:
+						//Once we get World generation up, uncomment this:
 						/*
 						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
 						addToQueue(sgp);
@@ -192,7 +192,7 @@ public class Player extends Entity implements CommandIssuer{
 						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
 						addToQueue(sgp);
 						sendChatArgs(server.getMOTD());
-						server.getChatMgr().broadcast(name+" joined the game.");
+						server.getChatMgr().broadcast(name + " joined the game.");
 					}
 					break;
 				case PacketsID.DISCONNECT:

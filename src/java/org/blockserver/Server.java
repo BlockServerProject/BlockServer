@@ -7,7 +7,6 @@ import java.net.SocketException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 
 import org.blockserver.chat.ChatManager;
@@ -18,7 +17,6 @@ import org.blockserver.network.PacketHandler;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
 import org.blockserver.scheduler.Scheduler;
-import org.blockserver.utility.ConfigAgent;
 import org.blockserver.utility.MinecraftVersion;
 import org.blockserver.utility.ServerLogger;
 
@@ -53,8 +51,7 @@ public class Server implements Context{
 	private long startTime;
 	private long serverID;
 	private GenerationSettings defaultLevelGenSet;
-	private Properties serverConf;
-	private String MOTD;
+	private String motd;
 
 	/**
 	 * <p>Get an instance of the currently running server, (Broken).</p>
@@ -288,7 +285,7 @@ public class Server implements Context{
 	}
 	
 	public String getMOTD(){
-		return MOTD;
+		return motd;
 	}
 
 	/**
@@ -302,6 +299,7 @@ public class Server implements Context{
 	 * @param port - port to run the server on
 	 * @param maxPlayers - the maximum number of players to allow connected
 	 * @param version - the Minecraft version the server is compatible with
+	 * @param motd - the message to send to the player when he logins
 	 * @param defaultLevel - the default level name
 	 * @param defaultLevelGenSet - the default level generation settings
 	 * @param dbType - the player database class to use as player database
@@ -310,8 +308,8 @@ public class Server implements Context{
 	 * @param pluginsDir - the {@link File} directory to save plugins data in and load from
 	 * @throws Exception
 	 */
-	public Server(String name, String ip, short port, int maxPlayers,
-			MinecraftVersion version, String defaultLevel, GenerationSettings defaultLevelGenSet,
+	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
+			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
 			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
@@ -323,6 +321,7 @@ public class Server implements Context{
 		serverName = name;
 		this.maxPlayers = maxPlayers;
 		MCVERSION = version;
+		this.motd = motd;
 		serverID = new Random().nextLong();
 		players = new HashMap<String, Player>(maxPlayers);
 		this.playersDir = playersDir;
@@ -342,11 +341,7 @@ public class Server implements Context{
 		cmdMgr = new CommandManager(this);
 		setChatMgr(chatMgrType.newInstance()); // gracefully throw out the exception to the one who asked for it :P
 		playerDb = dbType.newInstance();
-		
-		this.serverConf = new Properties();
-		
 	}
-
 	/**
 	 * A file filter that filters out any non-directories and non-root directories
 	 */
@@ -375,7 +370,6 @@ public class Server implements Context{
 			scheduler.Start();
 			logger.info("Server Scheduler Started...");
 			playerDb.init(this);
-			loadConfig();
 			packetHandler.start();
 			cmdHandler.start();
 			logger.info("Started server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
@@ -409,33 +403,6 @@ public class Server implements Context{
 		packetHandler.end();
 		cmdHandler.end();
 		stopped = true;
-	}
-	
-	private void loadConfig(){
-		File config = new File("server.conf");
-		if(! config.exists()){
-			logger.warning("Could not find server.conf, generating new config.");
-			this.serverConf = ConfigAgent.generateConfig();
-			ConfigAgent.saveConfig(this.serverConf, config);
-		}
-		else{
-			try{
-				this.serverConf = ConfigAgent.loadConfig(config);
-				this.serverPort = Short.parseShort(serverConf.getProperty("Port"));
-				this.maxPlayers = Integer.parseInt(serverConf.getProperty("MaxPlayers"));
-				this.serverName = serverConf.getProperty("Name");
-				this.MOTD = serverConf.getProperty("MOTD");
-				
-			} catch(Exception e){
-				e.printStackTrace();
-				logger.fatal("Could not load properties file, exiting...");
-				try {
-					this.stop();
-				} catch (Exception e1) {
-					System.exit(1);
-				}
-			}
-		}
 	}
 
 	@Override
