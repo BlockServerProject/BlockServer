@@ -191,7 +191,8 @@ public class Player extends Entity implements CommandIssuer{
 						*/
 						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
 						addToQueue(sgp);
-						sendChatArgs("Harro! Welcome to %s!", server.getServerName());
+						sendChatArgs(server.getMOTD());
+						server.getChatMgr().broadcast(name+" joined the game.");
 					}
 					break;
 				case PacketsID.DISCONNECT:
@@ -261,6 +262,7 @@ public class Player extends Entity implements CommandIssuer{
 	}
 	protected void disconnect(String reason){
 		server.getLogger().info("%s (%s:%d) disconnected: %s.", name, ip, port, reason);
+		server.getChatMgr().broadcast(name+" left the game.");
 		server.removePlayer(this);
 		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
 	}

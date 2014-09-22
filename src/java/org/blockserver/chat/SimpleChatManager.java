@@ -23,6 +23,7 @@ public class SimpleChatManager extends ChatManager{
 			broadcastMsg(String.format("<%s> %s", player.getName(), msg));
 		}
 	}
+	
 	@Override
 	protected void broadcastMsg(String msg){
 		server.getLogger().info(msg);

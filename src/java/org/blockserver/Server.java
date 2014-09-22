@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 
 import org.blockserver.chat.ChatManager;
@@ -17,6 +18,7 @@ import org.blockserver.network.PacketHandler;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
 import org.blockserver.scheduler.Scheduler;
+import org.blockserver.utility.ConfigAgent;
 import org.blockserver.utility.MinecraftVersion;
 import org.blockserver.utility.ServerLogger;
 
@@ -51,6 +53,8 @@ public class Server implements Context{
 	private long startTime;
 	private long serverID;
 	private GenerationSettings defaultLevelGenSet;
+	private Properties serverConf;
+	private String MOTD;
 
 	/**
 	 * <p>Get an instance of the currently running server, (Broken).</p>
@@ -282,6 +286,10 @@ public class Server implements Context{
 	public Collection<Player> getConnectedPlayers() {
 		return players.values();
 	}
+	
+	public String getMOTD(){
+		return MOTD;
+	}
 
 	/**
 	 * <p>Construct a new instance of the server.
@@ -334,6 +342,9 @@ public class Server implements Context{
 		cmdMgr = new CommandManager(this);
 		setChatMgr(chatMgrType.newInstance()); // gracefully throw out the exception to the one who asked for it :P
 		playerDb = dbType.newInstance();
+		
+		this.serverConf = new Properties();
+		
 	}
 
 	/**
@@ -360,13 +371,14 @@ public class Server implements Context{
 	public void run(){
 		serverRunning = true;
 		try{
-			logger.info("Starting server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
 			logger.info("This is version " + VERSION);
 			scheduler.Start();
 			logger.info("Server Scheduler Started...");
 			playerDb.init(this);
+			loadConfig();
 			packetHandler.start();
 			cmdHandler.start();
+			logger.info("Started server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
 		}
 		catch(SocketException e){
 			logger.fatal("COULD NOT BIND TO PORT - Maybe another server is running on %d?", serverPort);
@@ -397,6 +409,33 @@ public class Server implements Context{
 		packetHandler.end();
 		cmdHandler.end();
 		stopped = true;
+	}
+	
+	private void loadConfig(){
+		File config = new File("server.conf");
+		if(! config.exists()){
+			logger.warning("Could not find server.conf, generating new config.");
+			this.serverConf = ConfigAgent.generateConfig();
+			ConfigAgent.saveConfig(this.serverConf, config);
+		}
+		else{
+			try{
+				this.serverConf = ConfigAgent.loadConfig(config);
+				this.serverPort = Short.parseShort(serverConf.getProperty("Port"));
+				this.maxPlayers = Integer.parseInt(serverConf.getProperty("MaxPlayers"));
+				this.serverName = serverConf.getProperty("Name");
+				this.MOTD = serverConf.getProperty("MOTD");
+				
+			} catch(Exception e){
+				e.printStackTrace();
+				logger.fatal("Could not load properties file, exiting...");
+				try {
+					this.stop();
+				} catch (Exception e1) {
+					System.exit(1);
+				}
+			}
+		}
 	}
 
 	@Override
