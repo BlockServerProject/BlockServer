@@ -25,55 +25,62 @@ public class BlockServer{
 		if(!CONFIG_FILE.isFile()){
 			generateConfig();
 		}
-		Properties config = ConfigAgent.loadConfig(CONFIG_FILE);
-		Properties advancedConfig = ConfigAgent.loadConfig(ADVANCED_CONFIG_FILE);
-		String serverName = config.getProperty("name");
-		String ip = advancedConfig.getProperty("ip");
-		short port = ConfigAgent.readShort(config, "port");
-		int maxPlayers = ConfigAgent.readInt(config, "max-players");
-		String motd = config.getProperty("motd");
-		String defaultLevelName = config.getProperty("default-level");
-		Class<? extends ChatManager> chatMgrType = null;
-		Class<? extends PlayerDatabase> playerDbType = null;
 		try{
-			Class<?> chatMgr = ConfigAgent.readClass(advancedConfig, "chat manager class name");
-			chatMgrType = chatMgr.asSubclass(ChatManager.class);
+			Properties config = ConfigAgent.loadConfig(CONFIG_FILE);
+			Properties advancedConfig = ConfigAgent.loadConfig(ADVANCED_CONFIG_FILE);
+			String serverName = config.getProperty("name");
+			String ip = advancedConfig.getProperty("ip");
+			short port = ConfigAgent.readShort(config, "port");
+			int maxPlayers = ConfigAgent.readInt(config, "max-players");
+			String motd = config.getProperty("motd");
+			String defaultLevelName = config.getProperty("default-level");
+			Class<? extends ChatManager> chatMgrType = null;
+			Class<? extends PlayerDatabase> playerDbType = null;
+			try{
+				Class<?> chatMgr = ConfigAgent.readClass(advancedConfig, "chat-manager-class-name");
+				chatMgrType = chatMgr.asSubclass(ChatManager.class);
+			}
+			catch(ClassNotFoundException e){
+				System.out.println("Chat manager type in advanced config is not found. Default (SimpleChatManager) will be used.");
+				chatMgrType = SimpleChatManager.class;
+			}
+			catch(ClassCastException e){
+				System.out.println("Chat manager type in advanced config must be subclass of ChatManager. Default (SimpleChatManager) will be used.");
+				chatMgrType = SimpleChatManager.class;
+			}
+			try{
+				Class<?> playerDb = ConfigAgent.readClass(advancedConfig, "player-database-class-name");
+				playerDbType = playerDb.asSubclass(PlayerDatabase.class);
+			}
+			catch(ClassNotFoundException e){
+				System.out.println("Player database type in advanced config is not found. Default (BSFPlayerDatabase) will be used.");
+				playerDbType = BSFPlayerDatabase.class;
+			}
+			catch(ClassCastException e){
+				System.out.println("Player database type in advanced config must be subclass of PlayerDatabase. Default (BSFPlayerDatabase) will be used.");
+				playerDbType = BSFPlayerDatabase.class;
+			}
+			File worldsDir = ConfigAgent.readFile(here, advancedConfig, "levels-include-path");
+			File playersDir = ConfigAgent.readFile(here, advancedConfig, "players-include-path");
+			try{
+				Server server = new Server(serverName, ip, port, maxPlayers,
+						MinecraftVersion.V095, motd, defaultLevelName, null, // TODO GenerationSettings
+						chatMgrType, playerDbType,
+						worldsDir, playersDir);
+				server.run();
+			}
+			catch(SecurityException e){
+				System.out.println("[CRITICAL] Server doesn't have permission to do the following and therefore crashed: " + e.getMessage());
+			}
+			catch(Exception e){
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
-		catch(ClassNotFoundException e){
-			System.out.println("Chat manager type in advanced config is not found. Default (SimpleChatManager) will be used.");
-			chatMgrType = SimpleChatManager.class;
-		}
-		catch(ClassCastException e){
-			System.out.println("Chat manager type in advanced config must be subclass of ChatManager. Default (SimpleChatManager) will be used.");
-			chatMgrType = SimpleChatManager.class;
-		}
-		try{
-			Class<?> playerDb = ConfigAgent.readClass(advancedConfig, "player database class name");
-			playerDbType = playerDb.asSubclass(PlayerDatabase.class);
-		}
-		catch(ClassNotFoundException e){
-			System.out.println("Player database type in advanced config is not found. Default (BSFPlayerDatabase) will be used.");
-			playerDbType = BSFPlayerDatabase.class;
-		}
-		catch(ClassCastException e){
-			System.out.println("Player database type in advanced config must be subclass of PlayerDatabase. Default (BSFPlayerDatabase) will be used.");
-			playerDbType = BSFPlayerDatabase.class;
-		}
-		File worldsDir = new File(here, "levels include path");
-		File playersDir = new File(here, "players include path");
-		try{
-			Server server = new Server(serverName, ip, port, maxPlayers,
-					MinecraftVersion.V095, motd, defaultLevelName, null, // TODO GenerationSettings
-					chatMgrType, playerDbType,
-					worldsDir, playersDir);
-			server.run();
-		}
-		catch(SecurityException e){
-			System.out.println("[CRITICAL] Server doesn't have permission to do the following and therefore crashed: " + e.getMessage());
-		}
-		catch(Exception e){
+		catch(NullPointerException e){
+			System.out.println("A necessary property is missing in config.txt or advanced-config.properties! Stack trace:");
 			e.printStackTrace();
-			System.exit(1);
+			System.exit(2);
 		}
 	}
 	private static void generateConfig(){

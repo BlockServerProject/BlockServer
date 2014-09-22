@@ -39,3 +39,5 @@ diff.txt
 players/
 worlds/
 logs/
+/advanced-config.properties
+/config.txt

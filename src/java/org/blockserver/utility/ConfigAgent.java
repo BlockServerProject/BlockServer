@@ -29,10 +29,10 @@ public class ConfigAgent{
 		String levelsDir = "levels";
 		String playerDir = "players";
 		prop.setProperty("ip", ip);
-		prop.setProperty("chat manager class name", chatMgrType);
-		prop.setProperty("player database class name", playerDbType);
-		prop.setProperty("levels include path", levelsDir);
-		prop.setProperty("players include path", playerDir);
+		prop.setProperty("chat-manager-class-name", chatMgrType);
+		prop.setProperty("player-database-class-name", playerDbType);
+		prop.setProperty("levels-include-path", levelsDir);
+		prop.setProperty("players-include-path", playerDir);
 		return prop;
 	}
 	public static void saveConfig(Properties prop, File file, String comments){
