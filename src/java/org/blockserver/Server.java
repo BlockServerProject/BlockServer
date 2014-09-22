@@ -26,6 +26,7 @@ public class Server implements Context{
 	private ConsoleCommandHandler cmdHandler = null;
 	private CommandManager cmdMgr;
 	private ChatManager chatMgr;
+	private boolean isNextChatMgrFirst = true;
 	private ServerLogger logger;
 	private Scheduler scheduler;
 	private PacketHandler packetHandler;
@@ -254,7 +255,10 @@ public class Server implements Context{
 	public void setChatMgr(ChatManager chatMgr){
 		this.chatMgr = chatMgr;
 		chatMgr.initialize(this);
-		logger.warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
+		if(!isNextChatMgrFirst){
+			logger.warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
+		}
+		isNextChatMgrFirst = false;
 	}
 	/**
 	 * <p>Add a player to the list of online players.</p>
