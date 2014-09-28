@@ -3,6 +3,7 @@ package org.blockserver.player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -14,6 +15,7 @@ import org.blockserver.entity.Entity;
 import org.blockserver.entity.EntityType;
 import org.blockserver.item.Inventory;
 import org.blockserver.math.Vector3d;
+import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ChatPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
@@ -193,6 +195,33 @@ public class Player extends Entity implements CommandIssuer{
 						addToQueue(sgp);
 						sendChatArgs(server.getMOTD());
 						server.getChatMgr().broadcast(name+" joined the game.");
+						
+						Player dummy = new Player(server, "localhost", 29305, (short) 4096, (long) 1904);
+						AddPlayerPacket app = new AddPlayerPacket(dummy);
+						app.clientID = 1804;
+						app.username = "Shoghicp"; //Hee hee
+						app.EID = 6940;
+						app.x = 95;
+						app.y = 2;
+						app.z = 95;
+						app.yaw = 10;
+						app.pitch = 10;
+						
+						app.encode();
+						
+						this.addToQueue(app);
+						
+						
+						
+						/*
+						Collection<Player> players = server.getConnectedPlayers();
+						
+						for(int i=0; i < players.size(); i++){
+							Player p = players.iterator().next();
+							
+						}
+						*/
+						
 					}
 					break;
 				case PacketsID.DISCONNECT:
