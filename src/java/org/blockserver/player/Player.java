@@ -196,36 +196,10 @@ public class Player extends Entity implements CommandIssuer{
 						sendChatArgs(server.getMOTD());
 
 						server.getChatMgr().broadcast(name+" joined the game.");
-						
-						Player dummy = new Player(server, "localhost", 29305, (short) 4096, (long) 1904);
-						AddPlayerPacket app = new AddPlayerPacket(dummy);
-						app.clientID = 1804;
-						app.username = "Shoghicp"; //Hee hee
-						app.EID = 6940;
-						app.x = 95;
-						app.y = 2;
-						app.z = 95;
-						app.yaw = 10;
-						app.pitch = 10;
-						
-						app.encode();
-						
-						this.addToQueue(app);
-						
-						
-						
-						/*
-						Collection<Player> players = server.getConnectedPlayers();
-						
-						for(int i=0; i < players.size(); i++){
-							Player p = players.iterator().next();
-							
+
+						for(Player other: server.getConnectedPlayers()){
+							spawnPlayer(other);
 						}
-						*/
-						
-
-						server.getChatMgr().broadcast(name + " joined the game.");
-
 					}
 					break;
 				case PacketsID.DISCONNECT:
@@ -278,6 +252,9 @@ public class Player extends Entity implements CommandIssuer{
 	@Override
 	public void sendChat(String msg){
 		sendChat(msg, "");
+	}
+	public void spawnPlayer(Player other){
+		addToQueue(new AddPlayerPacket(other));
 	}
 
 	protected void login(){
