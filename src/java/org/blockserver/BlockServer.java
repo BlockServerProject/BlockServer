@@ -3,9 +3,13 @@ package org.blockserver;
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Properties;
 
+import org.blockserver.chat.ChatManager;
 import org.blockserver.chat.SimpleChatManager;
 import org.blockserver.player.BSFPlayerDatabase;
+import org.blockserver.player.PlayerDatabase;
+import org.blockserver.utility.ConfigAgent;
 import org.blockserver.utility.MinecraftVersion;
 
 /**
@@ -14,32 +18,74 @@ import org.blockserver.utility.MinecraftVersion;
  * @author BlockServerProject
  */
 public class BlockServer{
+	public static final File CONFIG_FILE = new File(".", "config.txt"); // txt is easier for users to edit
+	public static final File ADVANCED_CONFIG_FILE = new File(".", "advanced-config.properties"); // less likely to have users carelessly editing this
 	public static void main(String[] args){
-		String serverName = "BlockServer - A cool MCPE server written in java!";
-		String ip = "0.0.0.0";
-		short port = 19132;
-		int maxPlayers = 5;
-		String defaultLevelName = "level";
-		Class<? extends SimpleChatManager> chatMgrType = SimpleChatManager.class;
-		Class<? extends BSFPlayerDatabase> playerDbType = BSFPlayerDatabase.class;
 		File here = new File(".");
-		File worldsDir = new File(here, "worlds");
-		File playerDir = new File(here, "players");
-		// TODO customization
+		if(!CONFIG_FILE.isFile()){
+			generateConfig();
+		}
 		try{
-			Server server = new Server(serverName, ip, port, maxPlayers,
-					MinecraftVersion.V095, defaultLevelName, null, // TODO GenerationSettings
-					chatMgrType, playerDbType,
-					worldsDir, playerDir);
-			server.run();
+			Properties config = ConfigAgent.loadConfig(CONFIG_FILE);
+			Properties advancedConfig = ConfigAgent.loadConfig(ADVANCED_CONFIG_FILE);
+			String serverName = config.getProperty("name");
+			String ip = advancedConfig.getProperty("ip");
+			short port = ConfigAgent.readShort(config, "port");
+			int maxPlayers = ConfigAgent.readInt(config, "max-players");
+			String motd = config.getProperty("motd");
+			String defaultLevelName = config.getProperty("default-level");
+			Class<? extends ChatManager> chatMgrType = null;
+			Class<? extends PlayerDatabase> playerDbType = null;
+			try{
+				Class<?> chatMgr = ConfigAgent.readClass(advancedConfig, "chat-manager-class-name");
+				chatMgrType = chatMgr.asSubclass(ChatManager.class);
+			}
+			catch(ClassNotFoundException e){
+				System.out.println("Chat manager type in advanced config is not found. Default (SimpleChatManager) will be used.");
+				chatMgrType = SimpleChatManager.class;
+			}
+			catch(ClassCastException e){
+				System.out.println("Chat manager type in advanced config must be subclass of ChatManager. Default (SimpleChatManager) will be used.");
+				chatMgrType = SimpleChatManager.class;
+			}
+			try{
+				Class<?> playerDb = ConfigAgent.readClass(advancedConfig, "player-database-class-name");
+				playerDbType = playerDb.asSubclass(PlayerDatabase.class);
+			}
+			catch(ClassNotFoundException e){
+				System.out.println("Player database type in advanced config is not found. Default (BSFPlayerDatabase) will be used.");
+				playerDbType = BSFPlayerDatabase.class;
+			}
+			catch(ClassCastException e){
+				System.out.println("Player database type in advanced config must be subclass of PlayerDatabase. Default (BSFPlayerDatabase) will be used.");
+				playerDbType = BSFPlayerDatabase.class;
+			}
+			File worldsDir = ConfigAgent.readFile(here, advancedConfig, "levels-include-path");
+			File playersDir = ConfigAgent.readFile(here, advancedConfig, "players-include-path");
+			try{
+				Server server = new Server(serverName, ip, port, maxPlayers,
+						MinecraftVersion.V095, motd, defaultLevelName, null, // TODO GenerationSettings
+						chatMgrType, playerDbType,
+						worldsDir, playersDir);
+				server.run();
+			}
+			catch(SecurityException e){
+				System.out.println("[CRITICAL] Server doesn't have permission to do the following and therefore crashed: " + e.getMessage());
+			}
+			catch(Exception e){
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
-		catch(SecurityException e){
-			System.out.println("[CRITICAL] Server doesn't have permission to do the following and therefore crashed: " + e.getMessage());
-		}
-		catch(Exception e){
+		catch(NullPointerException e){
+			System.out.println("A necessary property is missing in config.txt or advanced-config.properties! Stack trace:");
 			e.printStackTrace();
-			System.exit(1);
+			System.exit(2);
 		}
+	}
+	private static void generateConfig(){
+		ConfigAgent.saveConfig(ConfigAgent.generateConfig(), CONFIG_FILE, "BlockServer config file for normal settings");
+		ConfigAgent.saveConfig(ConfigAgent.getAdvancedConfig(), ADVANCED_CONFIG_FILE, "BlockServer config file for advanced settings: only edit these if you know what you are doing!");
 	}
 	public static boolean securityCheck(String ip, int port){
 		String current = "do unknown operation";

@@ -11,8 +11,9 @@ public class StopCommand extends Command{
 	@Override
 	public String run(CommandIssuer issuer, List<String> args){
 		try{
+			issuer.getServer().getLogger().info("Stopping server...");
 			issuer.getServer().stop();
-			return "Stopping server...";
+			return null;
 		}
 		catch(Exception e){
 			e.printStackTrace();
