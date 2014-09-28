@@ -106,6 +106,9 @@ public abstract class Entity extends Moveable{
 	public void setMaxHealth(int health){
 		throw new UnsupportedOperationException(String.format(Locale.US, "Entity %s does not support modification of maximum health", getClass().getSimpleName()));
 	}
+	public int getEID(){
+		return eid;
+	}
 
 	/**
 	 * Send MCPE protocol data packets to broadcast changes in the entity's motion
