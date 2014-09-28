@@ -22,13 +22,19 @@ public abstract class Entity extends Moveable{
 	protected double health;
 	protected boolean hasYPSChanged = false; // YawPitchSpeed
 	protected Entity(double x, double y, double z, Level level){
+		this(x, y, z, level, nextID());
+	}
+	protected Entity(double x, double y, double z, Level level, int eid){
 		super(x, y, z);
 		this.level = level;
 		trace = new Throwable("Debug stack trace");
-		eid = nextID();
+		this.eid = eid;
 		setSpeed(new YPSControlledVector3d(0, 0, 0), MODIFIER_PITCH_NEUTRALIZER);
 	}
 	protected Entity(Vector3d pos, Level level){
+		this(pos, level, nextID());
+	}
+	protected Entity(Vector3d pos, Level level, int eid){
 		this(pos.getX(), pos.getY(), pos.getZ(), level);
 	}
 
