@@ -1,6 +1,8 @@
 package org.blockserver.utility;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -42,5 +44,14 @@ public class Utils{
 	}
 	public static <T> T arrayRandom(T[] array, Random random){
 		return array[random.nextInt(array.length)];
+	}
+	public static <T> T[] toArray(Collection<T> coll, Class<T> clazz){
+		@SuppressWarnings("unchecked")
+		T[] arr = (T[]) Array.newInstance(clazz, coll.size());
+		int i = 0;
+		for(T item: coll){
+			arr[i++] = item;
+		}
+		return arr;
 	}
 }

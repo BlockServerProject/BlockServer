@@ -8,7 +8,7 @@ import org.blockserver.math.Vector3d;
 public class StartGamePacket implements BaseDataPacket{
 	protected ByteBuffer buffer;
 	public byte PID = PacketsID.START_GAME;
-	public int seed;
+	public long seed;
 	public int unknown;
 	public int gamemode;
 	public int eid;
@@ -19,7 +19,7 @@ public class StartGamePacket implements BaseDataPacket{
 	public StartGamePacket(Level level, int eid){
 		this(level.getSpawnPos(), level.getDefaultGamemode(), level.getSeed(), eid);
 	}
-	public StartGamePacket(Vector3d spawnpos, int gamemode, int seed, int eid){
+	public StartGamePacket(Vector3d spawnpos, int gamemode, long seed, int eid){
 		this.spawnX = (float) spawnpos.getX();
 		this.spawnY = (float) spawnpos.getY();
 		this.spawnZ = (float) spawnpos.getZ();
@@ -32,7 +32,7 @@ public class StartGamePacket implements BaseDataPacket{
 	public void encode(){
 		buffer = ByteBuffer.allocate(29); //Not sure about this, I think its right
 		buffer.put(PID);
-		buffer.putInt(seed);
+		buffer.putInt((int) seed);
 		buffer.putInt(unknown);
 		buffer.putInt(gamemode);
 		buffer.putInt(eid);

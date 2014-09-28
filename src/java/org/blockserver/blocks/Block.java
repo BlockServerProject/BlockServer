@@ -1,6 +1,5 @@
 package org.blockserver.blocks;
 
-
 public class Block{
 	private int id;
 	private int damage;
