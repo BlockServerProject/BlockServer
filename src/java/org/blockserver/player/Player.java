@@ -162,20 +162,6 @@ public class Player extends Entity implements CommandIssuer{
 						}
 					}
 					addToQueue(new LoginStatusPacket(0)); // No error with the protocol.
-					/*
-					ArrayList<Player> players = server.getConnectedPlayers();
-					server.getLogger().info("Size is "+players.size());
-					for(int i = 0; i <= players.size(); i++){
-						Player p = players.get(i);
-						if(p.getName().equalsIgnoreCase(lp.username)){
-							//Name conflict, disconnect the original player
-							server.getLogger().info(p.getName()+"("+p.getIP()+":"+p.getPort()+") disconnected: Name Conflict.");
-							server.removePlayer(p);
-							server.getLogger().info(server.getPlayersConnected()+" players are connected.");
-							p.close("Another user logged in with your name.");
-						}
-					}
-					*/
 					if(lp.username.length() < 3 || lp.username.length() > 15){
 						close("Username is not valid.");
 					}
@@ -183,7 +169,7 @@ public class Player extends Entity implements CommandIssuer{
 						name = lp.username;
 						server.getLogger().info("%s (%s:%d) logged in with a fake entity ID.", name, ip, port);
 
-//						login();
+						login();
 						//Once we get World generation up, uncomment this:
 						/*
 						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
@@ -192,9 +178,7 @@ public class Player extends Entity implements CommandIssuer{
 						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
 						addToQueue(sgp);
 						sendChatArgs(server.getMOTD());
-
-						server.getChatMgr().broadcast(name+" joined the game.");
-
+						server.getChatMgr().broadcast(name + " joined the game.");
 						for(Player other: server.getConnectedPlayers()){
 							spawnPlayer(other);
 						}
@@ -256,9 +240,16 @@ public class Player extends Entity implements CommandIssuer{
 	}
 
 	protected void login(){
-		PlayerData data = server.getPlayerDatabase().load(this);
-		setCoords(data.getCoords());
-		this.level = data.getLevel(); // validated!
+		for(Player player: server.getConnectedPlayers()){
+			if(player != null && player != this){
+				if(player.getName().equalsIgnoreCase(name)){
+					player.close("logging in from another location.");
+				}
+			}
+		}
+//		PlayerData data = server.getPlayerDatabase().load(this);
+//		setCoords(data.getCoords());
+//		this.level = data.getLevel(); // validated!
 //		start(server);
 	}
 	public void close(String reason){

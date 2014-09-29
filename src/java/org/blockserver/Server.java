@@ -7,6 +7,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -25,6 +26,7 @@ import org.blockserver.player.PlayerDatabase;
 import org.blockserver.scheduler.Scheduler;
 import org.blockserver.utility.MinecraftVersion;
 import org.blockserver.utility.ServerLogger;
+import org.blockserver.utility.Utils;
 
 public class Server implements Context{
 	private static Server instance = null;
@@ -183,6 +185,15 @@ public class Server implements Context{
 	 */
 	public Player getPlayer(String ip, int port){
 		return players.get(ip + Integer.toString(port));
+	}
+	public Player[] getPlayers(String regex){
+		List<Player> ps = new ArrayList<Player>(1);
+		for(Player player: players.values()){
+			if(player.getName().matches(regex)){
+				ps.add(player);
+			}
+		}
+		return Utils.toArray(ps, Player.class);
 	}
 	/**
 	 * <p>Get the folder where worlds are saved in.</p>
