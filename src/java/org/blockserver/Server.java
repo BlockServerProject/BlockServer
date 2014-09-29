@@ -11,6 +11,7 @@ import java.util.Random;
 
 import org.blockserver.chat.ChatManager;
 import org.blockserver.cmd.CommandManager;
+import org.blockserver.entity.EntityTypeManager;
 import org.blockserver.level.Level;
 import org.blockserver.level.generator.GenerationSettings;
 import org.blockserver.network.PacketHandler;
@@ -26,6 +27,7 @@ public class Server implements Context{
 	private ConsoleCommandHandler cmdHandler = null;
 	private CommandManager cmdMgr;
 	private ChatManager chatMgr;
+	private EntityTypeManager entityTypeMgr;
 	private boolean isNextChatMgrFirst = true;
 	private ServerLogger logger;
 	private Scheduler scheduler;
@@ -260,6 +262,12 @@ public class Server implements Context{
 		}
 		isNextChatMgrFirst = false;
 	}
+	public EntityTypeManager getEntityTypeMgr(){
+		return entityTypeMgr;
+	}
+	public void setEntityTypeMgr(EntityTypeManager entityTypeMgr){
+		this.entityTypeMgr = entityTypeMgr;
+	}
 	/**
 	 * <p>Add a player to the list of online players.</p>
 	 * 
@@ -315,6 +323,7 @@ public class Server implements Context{
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
 			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
 			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
+			Class<? extends EntityTypeManager> entityTypeMgrType,
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
@@ -344,6 +353,7 @@ public class Server implements Context{
 		cmdHandler = new ConsoleCommandHandler(this);
 		cmdMgr = new CommandManager(this);
 		setChatMgr(chatMgrType.newInstance()); // gracefully throw out the exception to the one who asked for it :P
+		setEntityTypeMgr(entityTypeMgrType.newInstance());
 		playerDb = dbType.newInstance();
 	}
 	/**

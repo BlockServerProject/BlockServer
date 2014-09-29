@@ -2,11 +2,13 @@ package org.blockserver.level.format;
 
 import java.io.File;
 
+import org.blockserver.Server;
+
 public abstract class LevelProviderType<T extends LevelProvider>{
 	public abstract Class<T> getProviderClass();
 	public String getName(){
 		return getProviderClass().getCanonicalName();
 	}
 	public abstract boolean isValid(File worldDir);
-	public abstract T instantiate(File worldDir);
+	public abstract T instantiate(Server server, File worldDir);
 }

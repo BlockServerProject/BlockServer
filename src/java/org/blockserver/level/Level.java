@@ -23,6 +23,7 @@ public class Level{
 	private Vector3d spawnPos;
 	private List<Entity> loadedEntities = new ArrayList<Entity>(0);
 	private LevelProvider provider;
+	private Server server;
 
 	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProviderType<?> providerType, Server server){
 		this(name, seed, defaultGamemode, spawnPos, providerType, server, server.getWorldsDir());
@@ -34,7 +35,8 @@ public class Level{
 		this.seed = seed;
 		this.defaultGamemode = defaultGamemode;
 		this.spawnPos = spawnPos;
-		provider = providerType.instantiate(worldDir);
+		provider = providerType.instantiate(server, worldDir);
+		this.server = server;
 		initialize();
 	}
 	public Level(LevelProvider provider){
@@ -96,6 +98,9 @@ public class Level{
 
 	public LevelProvider getLevelProvider(){
 		return provider;
+	}
+	public Server getServer(){
+		return server;
 	}
 
 	public Entity[] getEntities(){

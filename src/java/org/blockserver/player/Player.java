@@ -11,7 +11,6 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
-import org.blockserver.entity.EntityType;
 import org.blockserver.item.Inventory;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
@@ -301,8 +300,8 @@ public class Player extends Entity implements CommandIssuer{
 		return ip + Integer.toString(port);
 	}
 	@Override
-	public EntityType getType() {
-		return EntityType.PLAYER;
+	public byte getTypeID(){
+		return 63;
 	}
 	@Override
 	public int getMaxHealth(){

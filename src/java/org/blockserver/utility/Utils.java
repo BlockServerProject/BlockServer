@@ -32,6 +32,7 @@ public class Utils{
 		}
 		return buffer;
 	}
+
 	public static <T> T[] arrayShift(T[] t, T[] emptyBuffer){
 		System.arraycopy(t, 1, emptyBuffer, 0, t.length - 1);
 		return emptyBuffer;
@@ -53,5 +54,22 @@ public class Utils{
 			arr[i++] = item;
 		}
 		return arr;
+	}
+
+	public static void setNibble(byte x, byte y, byte z, byte nibble, byte[] buffer){
+		int offset = (y << 7) + (z << 3) + (x >> 1);
+		byte b = buffer[offset];
+		if((x & 1) == 0){
+			b &= 0xF0;
+			b |= (nibble & 0x0F);
+		}
+		else{
+			b &= 0x0F;
+			b |= ((nibble << 4) & 0xF0);
+		}
+		buffer[offset] = b;
+	}
+	public static byte getNibble(byte x, byte y, byte z, byte[] buffer){
+		return (byte) (0x0F & (buffer[(y << 7) + (z << 3) + (x >> 1)] >> ((x & 1) == 0 ? 0:4)));
 	}
 }
