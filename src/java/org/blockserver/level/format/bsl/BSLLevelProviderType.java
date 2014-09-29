@@ -11,7 +11,7 @@ public class BSLLevelProviderType extends LevelProviderType<BSLLevelProvider>{
 		return BSLLevelProvider.class;
 	}
 	@Override
-	public boolean isValid(File worldDir){
+	public boolean supports(File worldDir){
 		// TODO Auto-generated method stub
 		return false;
 	}

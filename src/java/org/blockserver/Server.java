@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +14,11 @@ import org.blockserver.chat.ChatManager;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.entity.EntityTypeManager;
 import org.blockserver.level.Level;
+import org.blockserver.level.format.LevelProviderManager;
+import org.blockserver.level.format.LevelProviderType;
+import org.blockserver.level.format.bsl.BSLLevelProviderType;
 import org.blockserver.level.generator.GenerationSettings;
+import org.blockserver.level.generator.GeneratorManager;
 import org.blockserver.network.PacketHandler;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
@@ -28,6 +33,8 @@ public class Server implements Context{
 	private CommandManager cmdMgr;
 	private ChatManager chatMgr;
 	private EntityTypeManager entityTypeMgr;
+	private LevelProviderManager levelProviderMgr;
+	private GeneratorManager generatorMgr;
 	private boolean isNextChatMgrFirst = true;
 	private ServerLogger logger;
 	private Scheduler scheduler;
@@ -268,6 +275,12 @@ public class Server implements Context{
 	public void setEntityTypeMgr(EntityTypeManager entityTypeMgr){
 		this.entityTypeMgr = entityTypeMgr;
 	}
+	public LevelProviderManager getLevelProviderMgr(){
+		return levelProviderMgr;
+	}
+	public GeneratorManager getGeneratorMgr(){
+		return generatorMgr;
+	}
 	/**
 	 * <p>Add a player to the list of online players.</p>
 	 * 
@@ -354,6 +367,10 @@ public class Server implements Context{
 		cmdMgr = new CommandManager(this);
 		setChatMgr(chatMgrType.newInstance()); // gracefully throw out the exception to the one who asked for it :P
 		setEntityTypeMgr(entityTypeMgrType.newInstance());
+		Collection<LevelProviderType<?>> coll = new ArrayList<LevelProviderType<?>>(1);
+		coll.add(new BSLLevelProviderType());
+		levelProviderMgr = new LevelProviderManager(coll, this);
+		generatorMgr = new GeneratorManager();
 		playerDb = dbType.newInstance();
 	}
 	/**
