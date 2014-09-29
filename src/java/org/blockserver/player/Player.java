@@ -236,7 +236,9 @@ public class Player extends Entity implements CommandIssuer{
 		sendChat(msg, "");
 	}
 	public void spawnPlayer(Player other){
-		addToQueue(new AddPlayerPacket(other));
+		if(other != this){
+			addToQueue(new AddPlayerPacket(other));
+		}
 	}
 
 	protected void login(){
