@@ -240,12 +240,16 @@ public class Player extends Entity implements CommandIssuer{
 	}
 
 	protected void login(){
+		List<Player> toKick = new ArrayList<Player>();
 		for(Player player: server.getConnectedPlayers()){
 			if(player != null && player != this){
 				if(player.getName().equalsIgnoreCase(name)){
-					player.close("logging in from another location.");
+					toKick.add(player);
 				}
 			}
+		}
+		for(Player player: toKick){
+			player.close("logging in from another location.");
 		}
 //		PlayerData data = server.getPlayerDatabase().load(this);
 //		setCoords(data.getCoords());
