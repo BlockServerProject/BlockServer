@@ -316,7 +316,7 @@ public class Server implements Context{
 	public int getPlayersConnected(){
 		return players.size();
 	}
-	public Collection<Player> getConnectedPlayers() {
+	public Collection<Player> getConnectedPlayers(){
 		return players.values();
 	}
 	

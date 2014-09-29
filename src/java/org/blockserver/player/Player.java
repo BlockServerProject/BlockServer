@@ -263,7 +263,7 @@ public class Player extends Entity implements CommandIssuer{
 		server.getLogger().info("%s (%s:%d) disconnected: %s.", name, ip, port, reason);
 		server.getChatMgr().broadcast(name+" left the game.");
 		server.removePlayer(this);
-		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
+//		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
 	}
 
 	public InetAddress getAddress(){
