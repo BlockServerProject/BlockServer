@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.blockserver.Server;
+import org.blockserver.level.format.ChunkPosition;
 import org.blockserver.level.format.LevelProvider;
 import org.blockserver.math.Vector3d;
 
@@ -42,7 +43,7 @@ public class BSLLevelProvider implements LevelProvider{
 			return false;
 		}
 		try{
-			cachedChunks.put(pos, new BSLChunk(server, toFile(pos)));
+			cachedChunks.put(pos, new BSLChunk(server, toFile(pos), pos));
 			return true;
 		}
 		catch(IOException e){

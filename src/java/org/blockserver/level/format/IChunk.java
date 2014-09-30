@@ -3,10 +3,17 @@ package org.blockserver.level.format;
 import java.util.Collection;
 import java.util.Map;
 
+import org.blockserver.GeneralConstants;
 import org.blockserver.entity.SavedEntity;
 
-public interface IChunk{
+public interface IChunk extends GeneralConstants{
 	public Map<Integer, SavedEntity> getMappedEntities();
 	public Collection<SavedEntity> getEntities();
-	public IMiniChunk[] getMiniChunks();
+	public byte[] getBlocks();
+	public byte[] getDamages();
+	public byte[] getSkyLights();
+	public byte[] getBlockLights();
+	public int getX();
+	public int getZ();
+	public byte[] getTiles();
 }

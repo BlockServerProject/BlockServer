@@ -4,10 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.blockserver.player.Player;
 
-public class AddPlayerPacket implements BaseDataPacket {
-	private ByteBuffer buffer;
-	
-	public final static byte PID = PacketsID.ADD_PLAYER;
+public class AddPlayerPacket extends BaseDataPacket{
 	public long clientID;
 	public String username;
 	public int EID;
@@ -32,28 +29,23 @@ public class AddPlayerPacket implements BaseDataPacket {
 	}
 	
 	public void encode(){
-		buffer = ByteBuffer.allocate(31 + username.length() + metadata.length);
-		buffer.put(PID);
-		buffer.putLong(clientID);
-		buffer.putShort((short) username.length());
-		buffer.put(username.getBytes());
-		buffer.putInt(EID);
-		buffer.putFloat(x);
-		buffer.putFloat(y);
-		buffer.putFloat(z);
-		buffer.put(yaw);
-		buffer.put(pitch);
-		buffer.putShort(unknown1);
-		buffer.putShort(unknown2);
-		//buffer.put(metadata);
+		bb = ByteBuffer.allocate(31 + username.length() + metadata.length);
+		bb.put(ADD_PLAYER);
+		bb.putLong(clientID);
+		bb.putShort((short) username.length());
+		bb.put(username.getBytes());
+		bb.putInt(EID);
+		bb.putFloat(x);
+		bb.putFloat(y);
+		bb.putFloat(z);
+		bb.put(yaw);
+		bb.put(pitch);
+		bb.putShort(unknown1);
+		bb.putShort(unknown2);
+		// bb.put(metadata);
 	}
 	
 	public void decode(){
 		throw new UnsupportedOperationException("This packet is Server to Client side only and cannot be decoded.");
 	}
-	
-	public ByteBuffer getBuffer(){
-		return buffer;
-	}
-
 }

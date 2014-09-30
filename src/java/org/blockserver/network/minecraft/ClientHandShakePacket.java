@@ -4,14 +4,13 @@ import java.nio.ByteBuffer;
 
 import org.blockserver.utility.Utils;
 
-public class ClientHandShakePacket implements BaseDataPacket{
+public class ClientHandShakePacket extends BaseDataPacket{
 	public int cookie;
 	public byte security;
 	public short port;
 	public short timestamp;
 	public long session;
 	public long session2;
-	private ByteBuffer bb;
 
 	public ClientHandShakePacket(byte[] buffer){
 		bb = ByteBuffer.wrap(buffer);
@@ -23,7 +22,7 @@ public class ClientHandShakePacket implements BaseDataPacket{
 	@Override
 	public void decode(){
 		bb.position(0);
-		if(bb.get() != PacketsID.CLIENT_HANDSHAKE){
+		if(bb.get() != CLIENT_HANDSHAKE){
 			throw new RuntimeException(String.format("Trying to decode packet ClientHandShake and received %02X.", bb.array()[0]));
 		}
 		cookie = bb.getInt();
@@ -42,11 +41,6 @@ public class ClientHandShakePacket implements BaseDataPacket{
 			bb.get(new byte[l]);
 		}
 		return new byte[0];
-	}
-
-	@Override
-	public ByteBuffer getBuffer(){
-		return bb;
 	}
 }
 

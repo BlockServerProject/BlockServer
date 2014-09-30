@@ -7,10 +7,12 @@ import java.lang.reflect.Modifier;
 
 import org.blockserver.Server;
 import org.blockserver.io.bsf.BSFReader;
+import org.blockserver.io.bsf.BSFWriter;
 import org.blockserver.level.Level;
 
 public interface EntityType<E extends SavedEntity>{
 	public E read(BSFReader reader, Server server) throws IOException;
+	public void write(BSFWriter writer, SavedEntity entity);
 
 	public static class StandardSavedEntityType<T extends SavedEntity> implements EntityType<T>{
 		protected Class<T> clazz;
@@ -32,7 +34,7 @@ public interface EntityType<E extends SavedEntity>{
 			Level level = server.getLevel(reader.readString(1), true, false);
 			return instantiate(v[0], v[1], v[2], level, reader, server);
 		}
-		private T instantiate(double x, double y, double z, Level level, BSFReader reader, Server server){
+		protected T instantiate(double x, double y, double z, Level level, BSFReader reader, Server server){
 			try{
 				return constructor.newInstance(x, y, z, level);
 			}
@@ -58,5 +60,10 @@ public interface EntityType<E extends SavedEntity>{
 				return null;
 			}
 		}
+
+		public void write(BSFWriter writer, SavedEntity entity){
+			// TODO
+		}
 	}
+
 }

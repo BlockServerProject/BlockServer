@@ -15,14 +15,13 @@ import org.blockserver.item.Inventory;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
-import org.blockserver.network.minecraft.ChatPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
-import org.blockserver.network.minecraft.Disconnect;
+import org.blockserver.network.minecraft.DisconnectPacket;
 import org.blockserver.network.minecraft.LoginPacket;
 import org.blockserver.network.minecraft.LoginStatusPacket;
 import org.blockserver.network.minecraft.MessagePacket;
-import org.blockserver.network.minecraft.PacketsID;
+import org.blockserver.network.minecraft.PacketIDs;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
 import org.blockserver.network.minecraft.ServerHandshakePacket;
@@ -34,7 +33,7 @@ import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.network.raknet.NACKPacket;
 import org.blockserver.scheduler.CallbackTask;
 
-public class Player extends Entity implements CommandIssuer{
+public class Player extends Entity implements CommandIssuer, PacketIDs{
 	private String name;
 	private String ip;
 	private int port;
@@ -82,7 +81,7 @@ public class Player extends Entity implements CommandIssuer{
 			}
 			ACKPacket pck = new ACKPacket(array);
 			pck.encode();
-			server.sendPacket(pck.getBuffer().array(), ip, port);
+			server.sendPacket(pck.getBuffer(), ip, port);
 		}
 		if(NACKQueue.size() > 0){
 			int[] array = new int[NACKQueue.size()];
@@ -92,11 +91,11 @@ public class Player extends Entity implements CommandIssuer{
 			}
 			NACKPacket pck = new NACKPacket(array);
 			pck.encode();
-			server.sendPacket(pck.getBuffer().array(), ip, port);
+			server.sendPacket(pck.getBuffer(), ip, port);
 		}
 		if(queue.packets.size() > 0){
 			queue.encode();
-			server.sendPacket(queue.getBuffer().array(), ip, port);
+			server.sendPacket(queue.getBuffer(), ip, port);
 			recoveryQueue.put(queue.sequenceNumber, queue);
 			queue.packets.clear();
 		}
@@ -105,14 +104,14 @@ public class Player extends Entity implements CommandIssuer{
 	public void addToQueue(BaseDataPacket pck){
 		pck.encode();
 		InternalPacket ipck = new InternalPacket();
-		ipck.buffer = pck.getBuffer().array();
+		ipck.buffer = pck.getBuffer();
 		ipck.reliability = 2;
 		ipck.messageIndex = messageIndex++;
 		ipck.toBinary();
 		if(queue.getLength() >= mtuSize){
 			queue.sequenceNumber = sequenceNum++;
 			queue.encode();
-			server.sendPacket(queue.getBuffer().array(), ip, port);
+			server.sendPacket(queue.getBuffer(), ip, port);
 			queue.packets.clear();
 		}
 		queue.packets.add(ipck);
@@ -129,34 +128,34 @@ public class Player extends Entity implements CommandIssuer{
 		ACKQueue.add(pck.sequenceNumber);
 		for(InternalPacket ipck : pck.packets){
 			switch (ipck.buffer[0]){
-				case PacketsID.PING: //PING Packet
+				case PING: //PING Packet
 					PingPacket pp = new PingPacket(ipck.buffer);
 					pp.decode();
 					PongPacket reply = new PongPacket(pp.pingID);
 					addToQueue(reply);
 					break;
-				case PacketsID.CLIENT_CONNECT: // 0x09. Use the constants class
+				case CLIENT_CONNECT: // 0x09. Use the constants class
 					ClientConnectPacket ccp = new ClientConnectPacket(ipck.buffer);
 					ccp.decode();
 					//Send a ServerHandshake packet
 					ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
 					addToQueue(shp);
 					break;
-				case PacketsID.CLIENT_HANDSHAKE:
+				case CLIENT_HANDSHAKE:
 					ClientHandShakePacket chs = new ClientHandShakePacket(ipck.buffer);
 					chs.decode();
 					break;
-				case PacketsID.LOGIN:
+				case LOGIN:
 					LoginPacket lp = new LoginPacket(ipck.buffer);
 					server.getLogger().info("Login Packet: %d", ipck.buffer.length);
 					lp.decode();
-					if(lp.protocol != PacketsID.CURRENT_PROTOCOL || lp.protocol2 != PacketsID.CURRENT_PROTOCOL){
-						if(lp.protocol < PacketsID.CURRENT_PROTOCOL || lp.protocol2 < PacketsID.CURRENT_PROTOCOL){
+					if(lp.protocol != CURRENT_PROTOCOL || lp.protocol2 != CURRENT_PROTOCOL){
+						if(lp.protocol < CURRENT_PROTOCOL || lp.protocol2 < CURRENT_PROTOCOL){
 							addToQueue(new LoginStatusPacket(1)); // Client outdated
 							close("Wrong Protocol: Client is outdated.");
 						}
 
-						if(lp.protocol > PacketsID.CURRENT_PROTOCOL || lp.protocol2 > PacketsID.CURRENT_PROTOCOL){
+						if(lp.protocol > CURRENT_PROTOCOL || lp.protocol2 > CURRENT_PROTOCOL){
 							addToQueue(new LoginStatusPacket(2)); // Server outdated
 							close("Wrong Protocol: Server is outdated.");
 						}
@@ -172,7 +171,7 @@ public class Player extends Entity implements CommandIssuer{
 						login();
 						//Once we get World generation up, uncomment this:
 						/*
-						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
+						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), entityID);
 						addToQueue(sgp);
 						*/
 						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
@@ -184,19 +183,13 @@ public class Player extends Entity implements CommandIssuer{
 						}
 					}
 					break;
-				case PacketsID.DISCONNECT:
+				case DISCONNECT:
 					disconnect("disconnected by client");
 					break;
-				case PacketsID.CHAT:
-					server.getLogger().info("ChatPacket used for chat (Unusual).");
-					ChatPacket cpk = new ChatPacket(ipck.buffer);
-					cpk.decode();
-					server.getChatMgr().handleChat(this, cpk.message);
-					break;
-				case PacketsID.MESSAGE:
+				case MESSAGE:
 					MessagePacket mpk = new MessagePacket(ipck.buffer);
 					mpk.decode();
-					server.getChatMgr().handleChat(this, mpk.msg);
+					server.getChatMgr().handleChat(this, mpk.getMessage());
 					break;
 				default:
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
@@ -215,7 +208,7 @@ public class Player extends Entity implements CommandIssuer{
 		else if(pck instanceof NACKPacket){
 			for(int i: pck.sequenceNumbers){
 				server.getLogger().info("NACK Packet Received Seq: %d", i);
-				server.sendPacket(this.recoveryQueue.get(i).getBuffer().array(), this.ip, this.port);
+				server.sendPacket(recoveryQueue.get(i).getBuffer(), ip, port);
 			}
 		}
 		else{
@@ -262,7 +255,7 @@ public class Player extends Entity implements CommandIssuer{
 		if(reason != null){
 			sendChat(reason);
 		}
-		addToQueue(new Disconnect());
+		addToQueue(new DisconnectPacket());
 		disconnect(String.format("kicked (%s)", reason));
 	}
 	protected void disconnect(String reason){

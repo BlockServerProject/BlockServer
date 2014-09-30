@@ -5,35 +5,25 @@ import java.nio.ByteBuffer;
 /**
  * Represents a 0x00 PING Packet.
  */
-public class PingPacket implements BaseDataPacket {
-	public ByteBuffer buffer;
-	public final byte PID = PacketsID.PING;
+public class PingPacket extends BaseDataPacket {
 	public long pingID;
 
 	public PingPacket(byte[] b){
-		buffer = ByteBuffer.wrap(b);
+		bb = ByteBuffer.wrap(b);
 	}
 	public PingPacket(long pingID){
-		buffer = ByteBuffer.allocate(9);
 		this.pingID = pingID;
+		bb = ByteBuffer.allocate(9);
 	}
 
 	@Override
 	public void decode(){
-		if(buffer.get() != PID)
-			return;
-
-		pingID = buffer.getLong();
+		pingID = bb.getLong();
 	}
 
 	@Override
 	public void encode(){
-		buffer.put(PID);
-		buffer.putLong(pingID);
-	}
-
-	@Override
-	public ByteBuffer getBuffer(){
-		return buffer;
+		bb.put(PING);
+		bb.putLong(pingID);
 	}
 }
