@@ -42,3 +42,4 @@ logs/
 levels/
 /advanced-config.properties
 /config.txt
+/build
