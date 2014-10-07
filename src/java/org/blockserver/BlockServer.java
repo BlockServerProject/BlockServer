@@ -1,7 +1,9 @@
 package org.blockserver;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Locale;
 import java.util.Properties;
 
@@ -9,7 +11,10 @@ import org.blockserver.chat.ChatManager;
 import org.blockserver.chat.SimpleChatManager;
 import org.blockserver.entity.EntityTypeManager;
 import org.blockserver.entity.SimpleEntityTypeManager;
+import org.blockserver.network.minecraft.BaseDataPacket;
+import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.player.BSFPlayerDatabase;
+import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
 import org.blockserver.utility.ConfigAgent;
 import org.blockserver.utility.MinecraftVersion;
@@ -20,6 +25,7 @@ import org.blockserver.utility.MinecraftVersion;
  * @author BlockServerProject
  */
 public class BlockServer{
+	public final static boolean IS_DEBUG = true; // remember to remove this on production
 	public static final File CONFIG_FILE = new File(".", "config.txt"); // txt is easier for users to edit
 	public static final File ADVANCED_CONFIG_FILE = new File(".", "advanced-config.properties"); // less likely to have users carelessly editing this
 	public static void main(String[] args){
@@ -128,6 +134,66 @@ public class BlockServer{
 			System.out.println(String.format(Locale.US, "[EMERGENCY] Server doesn't have permission to %s. Stopping server.", current));
 			System.exit(1);
 			return false;
+		}
+	}
+	public static class Debugging{
+		private final static Debugging instance;
+		static{
+			if(IS_DEBUG){
+				instance = new Debugging();
+			}
+			else{
+				instance = null;
+			}
+		}
+		private File debugFile = new File("logs", "debug-data.log");
+		private OutputStreamWriter os;
+		private Debugging(){
+			try{
+				os = new OutputStreamWriter(new FileOutputStream(debugFile, true));
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+		public static void logReceivedInternalPacket(InternalPacket pk, Player from){
+			try{
+				instance.os.append(String.format(
+						"[PACKET IN] Received packet from %s of pid %d" + System.getProperty("line.separator"),
+						from.getName(), pk.buffer[0]));
+				instance.os.append("[PACKET IN BUFFER] Buffer: 0x");
+				for(byte b: pk.buffer){
+					instance.os.append(Integer.toHexString(b));
+				}
+				instance.os.append(System.getProperty("line.separator"));
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+		public static void logSentDataPacket(BaseDataPacket pk, Player to){
+			try{
+				instance.os.append(String.format(
+						"[PACKET OUT] Sent packet to %s of pid %d" + System.getProperty("line.separator"),
+						to.getName(), pk.getBuffer()[0]));
+				instance.os.append("[PACKET OUT BUFFER] Buffer: 0x");
+				for(byte b: pk.getBuffer()){
+					instance.os.append(Integer.toHexString(b));
+				}
+				instance.os.append(System.getProperty("line.separator"));
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
+		}
+		@Override
+		protected void finalize(){
+			try{
+				os.close();
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 		}
 	}
 }

@@ -24,7 +24,12 @@ public class HelpCommand extends Command{
 		}
 		int page = 1;
 		if(args.size() >= 1){
-			page = Integer.parseInt(args.remove(0));
+			try{
+				page = Integer.parseInt(args.remove(0));
+			}
+			catch(NumberFormatException e){
+				page = 1;
+			}
 		}
 		LineWrapResult result = wrapLines(list, issuer.getHelpLines(), page, issuer.getEOL());
 		return String.format("Showing help page %d of %d:%s%s", page, result.getMax(), issuer.getEOL(), result.getResult().toString());
