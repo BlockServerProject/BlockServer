@@ -40,7 +40,6 @@ public class CustomPacket extends BaseDataPacket{
 		byte[] data = new byte[bb.capacity() - 4];
 		bb.get(data);
 		packets = Arrays.asList(InternalPacket.fromBinary(data));
-
 	}
 	@Override
 	public void encode(){

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.blockserver.BlockServer;
 import org.blockserver.Server;
 import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
@@ -103,6 +104,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 
 	public void addToQueue(BaseDataPacket pck){
 		pck.encode();
+		BlockServer.Debugging.logSentDataPacket(pck, this);
 		InternalPacket ipck = new InternalPacket();
 		ipck.buffer = pck.getBuffer();
 		ipck.reliability = 2;
@@ -127,6 +129,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		}
 		ACKQueue.add(pck.sequenceNumber);
 		for(InternalPacket ipck : pck.packets){
+			BlockServer.Debugging.logReceivedInternalPacket(ipck, this);
 			switch (ipck.buffer[0]){
 				case PING: //PING Packet
 					PingPacket pp = new PingPacket(ipck.buffer);
@@ -179,7 +182,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						sendChatArgs(server.getMOTD());
 						server.getChatMgr().broadcast(name + " joined the game.");
 						for(Player other: server.getConnectedPlayers()){
-							spawnPlayer(other);
+							if(!(other.clientID == this.clientID)){
+								spawnPlayer(other);
+							}
 						}
 					}
 					break;
