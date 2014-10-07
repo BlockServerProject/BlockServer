@@ -197,7 +197,9 @@ public class Player extends Entity implements CommandIssuer{
 						server.getChatMgr().broadcast(name+" joined the game.");
 
 						for(Player other: server.getConnectedPlayers()){
-							spawnPlayer(other);
+							if(!(other.clientID == this.clientID)){
+								spawnPlayer(other);
+							}
 						}
 					}
 					break;
