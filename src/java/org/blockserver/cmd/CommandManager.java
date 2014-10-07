@@ -54,6 +54,7 @@ public class CommandManager{
 		Command cmd = cmds.get(cmdStr.toLowerCase(Locale.US));
 		if(cmd == null){
 			cmd = cmds.get("help");
+			args.clear();
 		}
 		CharSequence cs = cmd.run(issuer, args);
 		if(cs != null){

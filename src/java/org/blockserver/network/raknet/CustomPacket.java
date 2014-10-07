@@ -41,7 +41,6 @@ public class CustomPacket implements BaseDataPacket {
 		byte[] data = new byte[buffer.capacity() - 4];
 		buffer.get(data);
 		packets = Arrays.asList(InternalPacket.fromBinary(data));
-
 	}
 	@Override
 	public void encode(){

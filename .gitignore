@@ -41,3 +41,5 @@ worlds/
 logs/
 /advanced-config.properties
 /config.txt
+/build
+/levels
