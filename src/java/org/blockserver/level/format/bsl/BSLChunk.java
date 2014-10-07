@@ -63,12 +63,12 @@ public class BSLChunk implements IChunk{
 	public void save() throws IOException{
 		BSFWriter writer = new BSFWriter(new FileOutputStream(file), null); // passing null won't trigger NullPointerException unless I call writeAll().
 		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
-			writer.writeBytes(minichunks[Y].getBlocks());
-			writer.writeBytes(minichunks[Y].getDamages());
-			writer.writeBytes(minichunks[Y].getSkyLights());
-			writer.writeBytes(minichunks[Y].getBlockLights());
-			writer.writeBytes(minichunks[Y].getBiomes());
-			writer.writeBytes(minichunks[Y].getBiomeColors());
+			writer.write(minichunks[Y].getBlocks());
+			writer.write(minichunks[Y].getDamages());
+			writer.write(minichunks[Y].getSkyLights());
+			writer.write(minichunks[Y].getBlockLights());
+			writer.write(minichunks[Y].getBiomes());
+			writer.write(minichunks[Y].getBiomeColors());
 		}
 		// TODO write tiles
 		for(SavedEntity entity: entities.values()){
