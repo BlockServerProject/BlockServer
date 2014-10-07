@@ -41,9 +41,6 @@ public abstract class Entity extends Moveable{
 	public Vector3d getInitialStdSpeed(){
 		return new YPSControlledVector3d(0, 0, 0);
 	}
-	public EntityType getType(){
-		return EntityType.valueOf(this.getClass().getSimpleName().toUpperCase());
-	}
 	public Level getLevel(){
 		return level;
 	}
@@ -108,6 +105,7 @@ public abstract class Entity extends Moveable{
 		super.start(server);
 	}
 
+	public abstract byte getTypeID();
 	public abstract int getMaxHealth();
 	public void setMaxHealth(int health){
 		throw new UnsupportedOperationException(String.format(Locale.US, "Entity %s does not support modification of maximum health", getClass().getSimpleName()));

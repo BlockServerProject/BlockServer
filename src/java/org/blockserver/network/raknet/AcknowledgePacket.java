@@ -8,7 +8,7 @@ import java.util.List;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.utility.Utils;
 
-public abstract class AcknowledgePacket implements BaseDataPacket{
+public abstract class AcknowledgePacket extends BaseDataPacket{
 	public byte[] buffer;
 	public int[] sequenceNumbers;
 	public abstract byte getPID(); // Packet ID

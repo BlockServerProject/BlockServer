@@ -1,8 +1,8 @@
 *.pydevproject
 .metadata
 .gradle
-bin/
-tmp/
+bin
+tmp
 *.tmp
 *.bak
 *.swp
@@ -11,7 +11,7 @@ local.properties
 .loadpath
 
 # External tool builders
-.externalToolBuilders/
+.externalToolBuilders
 
 # Locally stored "Eclipse launch configurations"
 *.launch
@@ -29,17 +29,17 @@ local.properties
 .texlipse
 
 #Intellij
-.idea/
+.idea
 *.impl
 
 # PEMapModder's stuffs
 diff.txt
 
 # Generated files
-players/
-worlds/
-logs/
-/advanced-config.properties
-/config.txt
-/build
-/levels
+players
+worlds
+logs
+levels
+advanced-config.properties
+config.txt
+build

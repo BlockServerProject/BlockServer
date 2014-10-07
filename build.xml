@@ -5,22 +5,28 @@
 	<property name="res.dir"     value="${src.dir}/resources"/>
 	<property name="jar.dir"	 value="${build.dir}/jars"/>
 	<property name="main-class"  value="org.blockserver.Test"/>
+	<property name="run-class"   value="org.blockserver.BlockServer"/>
 	<property name="lib.dir"	 value="lib"/>
 	<property name="doc.dir"	 value="docs"/>
-	<property name="extjar.dir" value=".."/>
+	<property name="runtime.dir" value="runtime"/>
+	<property name="extjar.dir"  value=".."/>
+	<property name="current-version" value="0.1_DEV"/>
+	<property name="runtime-jar" value="${runtime.dir}/BlockServer_${current-version}.jar"/>
 
 	<path id="classpath">
 		<fileset dir="${lib.dir}" includes="**/*.jar"/>
 	</path>
 
+	<target name="makeiolib">
+		<delete file="${lib.dir}/IO-Lib.jar"/>
+		<copy file="../IO-Lib.jar" tofile="${lib.dir}/IO-Lib.jar"/>
+	</target>
 	<target name="compile">
 		<mkdir dir="${classes.dir}"/>
 		<copy file="${res.dir}/log4j2.xml" tofile="${classes.dir}/log4j2.xml"/>
-		<delete file="${lib.dir}/IO-Lib.jar"/>
-		<copy file="../IO-Lib.jar" tofile="${lib.dir}/IO-Lib.jar"/>
 		<javac srcdir="${src.dir}/java" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
 	</target>
-	<target name="jar" depends="compile">
+	<target name="jar" depends="makeiolib,compile">
 		<mkdir dir="${jar.dir}"/>
 		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
 			<manifest>
@@ -30,7 +36,7 @@
 			<fileset dir="." includes="resources/**" />-->
 		</jar>
 	</target>
-	<target name="extjar" depends="compile">
+	<target name="extjar" depends="makeiolib,compile">
 		<jar destfile="${extjar.dir}/BlockServer.jar" basedir="${classes.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="${main-class}"/>
@@ -47,7 +53,7 @@
 			</classpath>
 		</java>
 	</target>
-	<target name="doc" depends="compile" description="generate documentation">
+	<target name="doc" depends="makeiolib,compile" description="generate documentation">
 		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
 	</target>
 	<target name="clean">
@@ -55,4 +61,23 @@
 	</target>
 	<target name="clean-build" depends="clean,jar"/>
 	<target name="main" depends="clean,run"/>
+	<target name="publish" depends="compile">
+		<mkdir dir="${runtime.dir}"/>
+		<jar destfile="${runtime-jar}" basedir="${classes.dir}">
+			<restrict>
+				<name name="**/*.class"/>
+				<archives>
+					<zips>
+						<fileset dir="${lib.dir}" includes="**/*.jar"/>
+					</zips>
+				</archives>
+			</restrict>
+			<manifest>
+				<attribute name="Main-Class" value="${run-class}"/>
+			</manifest>
+		</jar>
+	</target>
+	<target name="publishrun" depends="publish">
+		<java jar="${runtime-jar}"/>
+	</target>
 </project>

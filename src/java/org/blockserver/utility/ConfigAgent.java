@@ -26,11 +26,13 @@ public class ConfigAgent{
 		String ip = "0.0.0.0";
 		String chatMgrType = "org.blockserver.chat.SimpleChatManager";
 		String playerDbType = "org.blockserver.player.BSFPlayerDatabase";
+		String entityTypeMgrType = "org.blockserver.entity.SimpleEntityTypeManager";
 		String levelsDir = "levels";
 		String playerDir = "players";
 		prop.setProperty("ip", ip);
 		prop.setProperty("chat-manager-class-name", chatMgrType);
 		prop.setProperty("player-database-class-name", playerDbType);
+		prop.setProperty("entity-type-manager-class-name", entityTypeMgrType);
 		prop.setProperty("levels-include-path", levelsDir);
 		prop.setProperty("players-include-path", playerDir);
 		return prop;

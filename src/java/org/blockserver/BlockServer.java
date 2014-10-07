@@ -9,8 +9,13 @@ import java.util.Properties;
 
 import org.blockserver.chat.ChatManager;
 import org.blockserver.chat.SimpleChatManager;
+<<<<<<< HEAD
+import org.blockserver.entity.EntityTypeManager;
+import org.blockserver.entity.SimpleEntityTypeManager;
+=======
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.raknet.InternalPacket;
+>>>>>>> master
 import org.blockserver.player.BSFPlayerDatabase;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
@@ -42,6 +47,7 @@ public class BlockServer{
 			String defaultLevelName = config.getProperty("default-level");
 			Class<? extends ChatManager> chatMgrType = null;
 			Class<? extends PlayerDatabase> playerDbType = null;
+			Class<? extends EntityTypeManager> entityTypeMgrType = null;
 			try{
 				Class<?> chatMgr = ConfigAgent.readClass(advancedConfig, "chat-manager-class-name");
 				chatMgrType = chatMgr.asSubclass(ChatManager.class);
@@ -66,12 +72,24 @@ public class BlockServer{
 				System.out.println("Player database type in advanced config must be subclass of PlayerDatabase. Default (BSFPlayerDatabase) will be used.");
 				playerDbType = BSFPlayerDatabase.class;
 			}
+			try{
+				Class<?> entityTypeMgr = ConfigAgent.readClass(advancedConfig, "entity-type-manager-class-name");
+				entityTypeMgrType = entityTypeMgr.asSubclass(EntityTypeManager.class);
+			}
+			catch(ClassNotFoundException e){
+				System.out.println("Entity type manager type in advanced config is not found. Default (SimpleEntityTypeManager) will be used.");
+				entityTypeMgrType = SimpleEntityTypeManager.class;
+			}
+			catch(ClassCastException e){
+				System.out.println("Entity type manager type in advanced config must be subclass of EntityTypeManager. Default (SimpleEntityTypeManager) will be used.");
+				entityTypeMgrType = SimpleEntityTypeManager.class;
+			}
 			File worldsDir = ConfigAgent.readFile(here, advancedConfig, "levels-include-path");
 			File playersDir = ConfigAgent.readFile(here, advancedConfig, "players-include-path");
 			try{
 				Server server = new Server(serverName, ip, port, maxPlayers,
 						MinecraftVersion.V095, motd, defaultLevelName, null, // TODO GenerationSettings
-						chatMgrType, playerDbType,
+						chatMgrType, playerDbType, entityTypeMgrType,
 						worldsDir, playersDir);
 				server.run();
 			}

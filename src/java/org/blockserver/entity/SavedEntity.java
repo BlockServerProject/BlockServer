@@ -16,4 +16,6 @@ public abstract class SavedEntity extends Entity{
 	public SavedEntity(Vector3d pos, Level level, int eid){
 		super(pos, level, eid);
 	}
+
+	public abstract EntityType<?> getType();
 }

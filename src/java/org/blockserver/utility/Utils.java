@@ -1,6 +1,8 @@
 package org.blockserver.utility;
 
+import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -30,6 +32,7 @@ public class Utils{
 		}
 		return buffer;
 	}
+
 	public static <T> T[] arrayShift(T[] t, T[] emptyBuffer){
 		System.arraycopy(t, 1, emptyBuffer, 0, t.length - 1);
 		return emptyBuffer;
@@ -42,5 +45,31 @@ public class Utils{
 	}
 	public static <T> T arrayRandom(T[] array, Random random){
 		return array[random.nextInt(array.length)];
+	}
+	public static <T> T[] toArray(Collection<T> coll, Class<T> clazz){
+		@SuppressWarnings("unchecked")
+		T[] arr = (T[]) Array.newInstance(clazz, coll.size());
+		int i = 0;
+		for(T item: coll){
+			arr[i++] = item;
+		}
+		return arr;
+	}
+
+	public static void setNibble(byte x, byte y, byte z, byte nibble, byte[] buffer){
+		int offset = (x << 7) + (z << 3) + (y >> 1);
+		byte b = buffer[offset];
+		if((y & 1) == 0){
+			b &= 0xF0;
+			b |= (nibble & 0x0F);
+		}
+		else{
+			b &= 0x0F;
+			b |= ((nibble << 4) & 0xF0);
+		}
+		buffer[offset] = b;
+	}
+	public static byte getNibble(byte x, byte y, byte z, byte[] buffer){
+		return (byte) (0x0F & (buffer[(x << 7) + (z << 3) + (y >> 1)] >> ((y & 1) == 0 ? 0:4)));
 	}
 }

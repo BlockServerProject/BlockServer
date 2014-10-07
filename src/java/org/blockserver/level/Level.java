@@ -1,48 +1,67 @@
 package org.blockserver.level;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.blockserver.Server;
 import org.blockserver.blocks.Block;
 import org.blockserver.entity.Entity;
-import org.blockserver.level.format.IChunk;
-import org.blockserver.level.format.ILevel;
+import org.blockserver.level.format.ChunkPosition;
+import org.blockserver.level.format.LevelProvider;
+import org.blockserver.level.format.LevelProviderType;
 import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 
-public class Level implements ILevel{
+public class Level{
 	public final static EntityValidate validateInstance = new Level.DummyValidate();
 
-	private String name, path;
-	private IChunk[] chunks;
-	private int seed;
+	private String name;
+	private File worldDir;
+	private long seed;
 	private int defaultGamemode;
 	private Vector3d spawnPos;
-	private List<Entity> entities = new ArrayList<Entity>();
+	private List<Entity> loadedEntities = new ArrayList<Entity>(0);
+	private LevelProvider provider;
+	private Server server;
 
-	public Level(String name, String path, int seed, int defaultGamemode, Vector3d spawnPos){
+	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProviderType<?> providerType, Server server){
+		this(name, seed, defaultGamemode, spawnPos, providerType, server, server.getWorldsDir());
+	}
+	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProviderType<?> providerType, Server server, File worldsDir){
 		this.name = name;
-		this.path = path;
+		worldDir = new File(worldsDir, name);
+		worldDir.mkdirs();
 		this.seed = seed;
 		this.defaultGamemode = defaultGamemode;
 		this.spawnPos = spawnPos;
+		provider = providerType.instantiate(server, worldDir);
+		this.server = server;
+		initialize();
+	}
+	public Level(LevelProvider provider){
+		this.provider = provider;
+		initialize();
+	}
+	private void initialize(){
+		provider.init();
+		new Thread(new Runnable(){
+			@Override
+			public void run(){
+				Vector3d spawn = provider.getSpawn();
+				ChunkPosition chunk = ChunkPosition.fromCoords(spawn.getX(), spawn.getZ());
+				load(chunk);
+			}
+			private void load(ChunkPosition chunk){
+				if(!provider.isChunkLoaded(chunk)){
+					provider.loadChunk(chunk);
+				}
+			}
+		}).start();
 	}
 
-	@Override
 	public String getName(){
 		return name;
-	}
-	@Override
-	public String getPath(){
-		return path;
-	}
-
-	@Override
-	public boolean equals(Object other){
-		if(other instanceof Level){
-			return ((Level) other).getPath().equalsIgnoreCase(getPath());
-		}
-		return false;
 	}
 
 	public Block getBlock(int x, int y, int z){
@@ -52,50 +71,14 @@ public class Level implements ILevel{
 
 	}
 
-	public IChunk[] getAllChunks(){
-		return chunks;
-	}
-	public IChunk getChunk(int x, int z){
-		return null;
-	}
-	public boolean isChunkLoaded(int chunkX, int chunkZ){
-		return false;
-	}
-	public void setChunk(int x, int z, IChunk chunk){
-
-	}
-
-	public int getBlockID(int x, int y, int z){
-		return 0;
-	}
-	public void setBlockID(int x, int y, int z, int blockID){
-
-	}
-	public int getBlockMeta(int x, int y, int z){
-		return 0;
-	}
-	public void setBlockMeta(int x, int y, int z, int meta){
-
-	}
-
-	/**
-	 * @return A 3-byte triad/int of format 0x{RR}{GG}{BB}
-	 */
-	public int getBlockColor(int x, int y, int z){
-		return 0;
-	}
-	public void setBlockColor(int x, int y, int z, int r, int g, int b){
-
-	}
-
 	public double getGravityAt(Vector3 coords){
 		return 9.8; // Earth gravitational constant; not sure if same for Minecraft ;)
 	}
 
-	public int getSeed() {
+	public long getSeed() {
 		return seed;
 	}
-	public void setSeed(int seed) {
+	public void setSeed(long seed) {
 		this.seed = seed;
 	}
 
@@ -109,19 +92,26 @@ public class Level implements ILevel{
 	public Vector3d getSpawnPos() {
 		return spawnPos;
 	}
-	public void setSpawnpos(Vector3d spawnpos) {
-		this.spawnPos = spawnpos;
+	public void setSpawnPos(Vector3d spawnPos) {
+		this.spawnPos = spawnPos;
+	}
+
+	public LevelProvider getLevelProvider(){
+		return provider;
+	}
+	public Server getServer(){
+		return server;
 	}
 
 	public Entity[] getEntities(){
-		return (Entity[]) entities.toArray();
+		return (Entity[]) loadedEntities.toArray();
 	}
 	public Entity[] getEntities(Vector3d center, double radius){
 		return getEntities(center, radius, validateInstance);
 	}
 	public Entity[] getEntities(Vector3d center, double radius, EntityValidate v){
 		List<Entity> ret = new ArrayList<Entity>();
-		for(Entity ent: entities){
+		for(Entity ent: loadedEntities){
 			if(ent.distance(center) <= radius){
 				if(v.isValid(ent)){
 					ret.add(ent);
@@ -136,7 +126,7 @@ public class Level implements ILevel{
 	public Entity getClosestEntity(Vector3d center, EntityValidate v){
 		Entity ret = null;
 		double currentDelta = Double.MAX_VALUE;
-		for(Entity ent: entities){
+		for(Entity ent: loadedEntities){
 			double distance = ent.distance(center);
 			if(distance < currentDelta){
 				if(v.isValid(ent)){

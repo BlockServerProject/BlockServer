@@ -33,7 +33,6 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 				if(input != null){
 					input = input.trim();
 					if(!input.isEmpty()){
-						server.getLogger().info("Dispatching command: %s", input);
 						sudoCommand(input.trim());
 					}
 				}
