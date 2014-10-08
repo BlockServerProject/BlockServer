@@ -13,16 +13,19 @@ import org.blockserver.io.nbt.IntTag;
 import org.blockserver.io.nbt.LongTag;
 import org.blockserver.io.nbt.NBTReader;
 import org.blockserver.io.nbt.StringTag;
+import org.blockserver.level.Level;
 import org.blockserver.level.format.ChunkPosition;
 import org.blockserver.level.format.LevelProvider;
 import org.blockserver.math.Vector3d;
 
 @SuppressWarnings("unused")
-public class AnvilLevelProvider implements LevelProvider{
+public class AnvilLevelProvider extends LevelProvider{
 	private Server server;
 	private File dir;
+
 	private int version;
 	private boolean initialized;
+	@Deprecated
 	private String levelName;
 	private String generator;
 	private int generatorVersion;
@@ -53,7 +56,8 @@ public class AnvilLevelProvider implements LevelProvider{
 	private int clearWeatherTime;
 	private CompoundTag gameRules;
 
-	public AnvilLevelProvider(Server server, File dir){
+	public AnvilLevelProvider(Server server, File dir, String name){
+		super(name);
 		this.server = server;
 		this.dir = dir;
 	}
@@ -71,6 +75,7 @@ public class AnvilLevelProvider implements LevelProvider{
 				version = ((IntTag) data.get("version")).getValue();
 				initialized = ((ByteTag) data.get("initialized")).getValue() > 0;
 				levelName = ((StringTag) data.get("LevelName")).getValue();
+				String dirName = dir.getName().replace("\\", "").replace("/", "");
 				generator = ((StringTag) data.get("generatorName")).getValue();
 				generatorVersion = ((IntTag) data.get("generatorVersion")).getValue();
 				generatorOptions = ((StringTag) data.get("generatorOptions")).getValue();
@@ -148,10 +153,21 @@ public class AnvilLevelProvider implements LevelProvider{
 		return null;
 	}
 
-	private File getChunkRegionFile(int X, int Z){
+	public String getFileLevelName(){
+		return dir.getName().replace("/", "").replace("\\", "");
+	}
+	@Deprecated
+	public String getNBTLevelName(){
+		return levelName;
+	}
+	public File getChunkRegionFile(int X, int Z){
 		return new File(new File(dir, "region"), String.format("r.%d.%d.mca", X >> 5, Z >> 5));
 	}
-	private File getRegionFile(int X, int Z){
+	public File getRegionFile(int X, int Z){
 		return new File(new File(dir, "region"), String.format("r.%d.%d.mca", X, Z));
+	}
+	@Override
+	public Server getServer(){
+		return server;
 	}
 }

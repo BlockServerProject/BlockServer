@@ -18,7 +18,7 @@ public class AnvilLevelProviderType extends LevelProviderType<AnvilLevelProvider
 	}
 
 	@Override
-	public AnvilLevelProvider instantiate(Server server, File worldDir){
-		return new AnvilLevelProvider(server, worldDir);
+	public AnvilLevelProvider instantiate(Server server, File worldDir, String internalName){
+		return new AnvilLevelProvider(server, worldDir, internalName);
 	}
 }

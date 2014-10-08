@@ -9,7 +9,6 @@ import org.blockserver.blocks.Block;
 import org.blockserver.entity.Entity;
 import org.blockserver.level.format.ChunkPosition;
 import org.blockserver.level.format.LevelProvider;
-import org.blockserver.level.format.LevelProviderType;
 import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 
@@ -25,17 +24,17 @@ public class Level{
 	private LevelProvider provider;
 	private Server server;
 
-	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProviderType<?> providerType, Server server){
-		this(name, seed, defaultGamemode, spawnPos, providerType, server, server.getWorldsDir());
+	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProvider provider, Server server){
+		this(name, seed, defaultGamemode, spawnPos, provider, server, server.getWorldsDir());
 	}
-	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProviderType<?> providerType, Server server, File worldsDir){
+	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProvider provider, Server server, File worldsDir){
 		this.name = name;
 		worldDir = new File(worldsDir, name);
 		worldDir.mkdirs();
 		this.seed = seed;
 		this.defaultGamemode = defaultGamemode;
 		this.spawnPos = spawnPos;
-		provider = providerType.instantiate(server, worldDir);
+		this.provider = provider;
 		this.server = server;
 		initialize();
 	}

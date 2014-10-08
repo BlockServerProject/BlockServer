@@ -16,7 +16,7 @@ public class BSLLevelProviderType extends LevelProviderType<BSLLevelProvider>{
 		return false;
 	}
 	@Override
-	public BSLLevelProvider instantiate(Server server, File worldDir){
-		return new BSLLevelProvider(server, worldDir);
+	public BSLLevelProvider instantiate(Server server, File worldDir, String name){
+		return new BSLLevelProvider(server, worldDir, name);
 	}
 }

@@ -10,5 +10,5 @@ public abstract class LevelProviderType<T extends LevelProvider>{
 		return getProviderClass().getCanonicalName();
 	}
 	public abstract boolean supports(File worldDir);
-	public abstract T instantiate(Server server, File worldDir);
+	public abstract T instantiate(Server server, File worldDir, String name);
 }

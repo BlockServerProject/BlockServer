@@ -9,12 +9,13 @@ import org.blockserver.level.format.ChunkPosition;
 import org.blockserver.level.format.LevelProvider;
 import org.blockserver.math.Vector3d;
 
-public class BSLLevelProvider implements LevelProvider{
+public class BSLLevelProvider extends LevelProvider{
 	private Server server;
 	private File dir, chunksDir;
 	private Map<ChunkPosition, BSLChunk> cachedChunks;
 
-	public BSLLevelProvider(Server server, File file){
+	public BSLLevelProvider(Server server, File file, String name){
+		super(name);
 		this.server = server;
 		dir = file;
 		chunksDir = new File(file, "chunks");
@@ -76,6 +77,11 @@ public class BSLLevelProvider implements LevelProvider{
 	public Vector3d getSpawn(){
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public Server getServer(){
+		return server;
 	}
 
 	public File toFile(ChunkPosition pos){
