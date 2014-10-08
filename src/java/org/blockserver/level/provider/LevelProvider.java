@@ -1,4 +1,4 @@
-package org.blockserver.level.format;
+package org.blockserver.level.provider;
 
 import org.blockserver.Server;
 import org.blockserver.level.Level;

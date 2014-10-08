@@ -1,12 +1,12 @@
-package org.blockserver.level.format.bsl;
+package org.blockserver.level.provider.bsl;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
 import org.blockserver.Server;
-import org.blockserver.level.format.ChunkPosition;
-import org.blockserver.level.format.LevelProvider;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3d;
 
 public class BSLLevelProvider extends LevelProvider{

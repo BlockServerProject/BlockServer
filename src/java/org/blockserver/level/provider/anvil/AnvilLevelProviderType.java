@@ -1,9 +1,9 @@
-package org.blockserver.level.format.anvil;
+package org.blockserver.level.provider.anvil;
 
 import java.io.File;
 
 import org.blockserver.Server;
-import org.blockserver.level.format.LevelProviderType;
+import org.blockserver.level.provider.LevelProviderType;
 
 public class AnvilLevelProviderType extends LevelProviderType<AnvilLevelProvider>{
 	@Override

@@ -1,4 +1,4 @@
-package org.blockserver.level.format;
+package org.blockserver.level.provider;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package org.blockserver.level.format.anvil;
+package org.blockserver.level.provider.anvil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,8 +14,8 @@ import org.blockserver.io.nbt.LongTag;
 import org.blockserver.io.nbt.NBTReader;
 import org.blockserver.io.nbt.StringTag;
 import org.blockserver.level.Level;
-import org.blockserver.level.format.ChunkPosition;
-import org.blockserver.level.format.LevelProvider;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3d;
 
 @SuppressWarnings("unused")

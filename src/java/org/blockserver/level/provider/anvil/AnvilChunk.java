@@ -1,4 +1,4 @@
-package org.blockserver.level.format.anvil;
+package org.blockserver.level.provider.anvil;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import org.blockserver.io.nbt.IntTag;
 import org.blockserver.io.nbt.LongTag;
 import org.blockserver.io.nbt.NBTReader;
 import org.blockserver.level.Level;
-import org.blockserver.level.format.IChunk;
+import org.blockserver.level.provider.IChunk;
 
 public class AnvilChunk implements IChunk{
 	private CompoundTag nbt;

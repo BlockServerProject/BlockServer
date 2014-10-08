@@ -1,4 +1,4 @@
-package org.blockserver.level.format.bsl;
+package org.blockserver.level.provider.bsl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,8 +14,8 @@ import org.blockserver.entity.EntityType;
 import org.blockserver.entity.SavedEntity;
 import org.blockserver.io.bsf.BSFReader;
 import org.blockserver.io.bsf.BSFWriter;
-import org.blockserver.level.format.ChunkPosition;
-import org.blockserver.level.format.IChunk;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.IChunk;
 
 public class BSLChunk implements IChunk{
 	private Server server;

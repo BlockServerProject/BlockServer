@@ -1,8 +1,8 @@
-package org.blockserver.level.format.bsl;
+package org.blockserver.level.provider.bsl;
 
 import java.nio.ByteBuffer;
 
-import org.blockserver.level.format.ChunkPosition.MiniChunkPosition;
+import org.blockserver.level.provider.ChunkPosition.MiniChunkPosition;
 import org.blockserver.utility.Utils;
 
 public class BSLMiniChunk{

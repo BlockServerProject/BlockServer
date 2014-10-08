@@ -3,7 +3,7 @@ package org.blockserver.network.minecraft;
 import java.nio.ByteBuffer;
 import java.util.zip.Deflater;
 
-import org.blockserver.level.format.IChunk;
+import org.blockserver.level.provider.IChunk;
 import org.blockserver.utility.Utils;
 
 public class FullChunkDataPacket extends BaseDataPacket{

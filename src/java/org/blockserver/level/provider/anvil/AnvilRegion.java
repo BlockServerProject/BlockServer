@@ -1,4 +1,4 @@
-package org.blockserver.level.format.anvil;
+package org.blockserver.level.provider.anvil;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

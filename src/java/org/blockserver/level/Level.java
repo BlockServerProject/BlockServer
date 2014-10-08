@@ -7,8 +7,8 @@ import java.util.List;
 import org.blockserver.Server;
 import org.blockserver.blocks.Block;
 import org.blockserver.entity.Entity;
-import org.blockserver.level.format.ChunkPosition;
-import org.blockserver.level.format.LevelProvider;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 

@@ -1,9 +1,9 @@
-package org.blockserver.level.format.bsl;
+package org.blockserver.level.provider.bsl;
 
 import java.io.File;
 
 import org.blockserver.Server;
-import org.blockserver.level.format.LevelProviderType;
+import org.blockserver.level.provider.LevelProviderType;
 
 public class BSLLevelProviderType extends LevelProviderType<BSLLevelProvider>{
 	@Override

@@ -1,4 +1,4 @@
-package org.blockserver.level.format;
+package org.blockserver.level.provider;
 
 public class ChunkPosition{
 	private int x, z;
