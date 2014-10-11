@@ -86,7 +86,7 @@ public class BlockServer{
 			try{
 				Server server = new Server(serverName, ip, port, maxPlayers,
 						MinecraftVersion.V095, motd, defaultLevelName, null, // TODO GenerationSettings
-						chatMgrType, playerDbType, entityTypeMgrType,
+						chatMgrType, playerDbType, entityTypeMgrType, new org.blockserver.api.SoleEventListener.DummySoleEventListener(), // TODO config-controlled
 						worldsDir, playersDir);
 				server.run();
 			}
