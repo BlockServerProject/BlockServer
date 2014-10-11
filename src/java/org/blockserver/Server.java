@@ -264,7 +264,7 @@ public class Server implements Context{
 			logger.warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
 		}
 		isNextChatMgrFirst = false;
-	}*/
+	}
 	/**
 	 * <p>Add a player to the list of online players.</p>
 	 * 
