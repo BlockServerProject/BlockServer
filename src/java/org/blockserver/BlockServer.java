@@ -40,6 +40,7 @@ public class BlockServer{
 			})){
 				System.loadLibrary(addonFile.getCanonicalPath());
 			}
+		}
 		catch(IOException e){
 			System.out.println("[ERROR] Failed loading libraries!");
 			e.printStackTrace();
