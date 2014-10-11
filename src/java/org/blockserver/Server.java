@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import org.blockserver.api.SoleEventListener;
 import org.blockserver.chat.ChatManager;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.Level;
@@ -23,6 +24,7 @@ import org.blockserver.utility.ServerLogger;
 public class Server implements Context{
 	private static Server instance = null;
 
+	private SoleEventListener listener;
 	private ConsoleCommandHandler cmdHandler = null;
 	private CommandManager cmdMgr;
 	private ChatManager chatMgr;
@@ -72,6 +74,9 @@ public class Server implements Context{
 		instance = i;
 	}
 
+	public SoleEventListener getSoleEventListener(){
+		return listener;
+	}
 	/**
 	 * <p>Get the server scheduler instance.</p>
 	 * 
@@ -249,7 +254,7 @@ public class Server implements Context{
 	public ChatManager getChatMgr(){
 		return chatMgr;
 	}
-	public void setChatMgr(Class<? extends ChatManager> type) throws ReflectiveOperationException{
+/*	public void setChatMgr(Class<? extends ChatManager> type) throws ReflectiveOperationException{
 		setChatMgr(type.newInstance());
 	}
 	public void setChatMgr(ChatManager chatMgr){
@@ -259,7 +264,7 @@ public class Server implements Context{
 			logger.warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
 		}
 		isNextChatMgrFirst = false;
-	}
+	}*/
 	/**
 	 * <p>Add a player to the list of online players.</p>
 	 * 
@@ -292,29 +297,9 @@ public class Server implements Context{
 		return motd;
 	}
 
-	/**
-	 * <p>Construct a new instance of the server.
-	 *   <code>Server.setInstance()</code> is called in this constructor,
-	 *   so using this constructor automatically changes the static instance
-	 *   <code>Server.instance</code> to this new instance.
-	 * 
-	 * @param name - name of the server visible to clients
-	 * @param ip - IP to run the server on, most often equal to "0.0.0.0"
-	 * @param port - port to run the server on
-	 * @param maxPlayers - the maximum number of players to allow connected
-	 * @param version - the Minecraft version the server is compatible with
-	 * @param motd - the message to send to the player when he logins
-	 * @param defaultLevel - the default level name
-	 * @param defaultLevelGenSet - the default level generation settings
-	 * @param dbType - the player database class to use as player database
-	 * @param worldsDir - the {@link File} directory to save worlds in
-	 * @param playersDir - the {@link File} directory to save player data in, if used by <code>dbType</code>
-	 * @param pluginsDir - the {@link File} directory to save plugins data in and load from
-	 * @throws Exception
-	 */
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
 			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
-			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
+			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType, SoleEventListener listener,
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
