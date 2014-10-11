@@ -254,10 +254,10 @@ public class Server implements Context{
 	public ChatManager getChatMgr(){
 		return chatMgr;
 	}
-/*	public void setChatMgr(Class<? extends ChatManager> type) throws ReflectiveOperationException{
+	private void setChatMgr(Class<? extends ChatManager> type) throws ReflectiveOperationException{
 		setChatMgr(type.newInstance());
 	}
-	public void setChatMgr(ChatManager chatMgr){
+	private void setChatMgr(ChatManager chatMgr){
 		this.chatMgr = chatMgr;
 		chatMgr.initialize(this);
 		if(!isNextChatMgrFirst){
