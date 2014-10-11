@@ -29,15 +29,20 @@ public class BlockServer{
 	public static final File ADVANCED_CONFIG_FILE = new File(".", "advanced-config.properties"); // less likely to have users carelessly editing this
 	public static void main(String[] args){
 		File here = new File(".");
-		final File addons = new File(here, "addons");
-		addons.mkdirs();
-		for(File addonFile: addons.listFiles(new FilenameFilter(){
-			@Override
-			public boolean accept(File dir, String name){
-				return dir.equals(addons) && name.toLowerCase(Locale.US).endsWith(".jar");
+		try{
+			final File addons = new File(here, "addons");
+			addons.mkdirs();
+			for(File addonFile: addons.listFiles(new FilenameFilter(){
+				@Override
+				public boolean accept(File dir, String name){
+					return dir.equals(addons) && name.toLowerCase(Locale.US).endsWith(".jar");
+				}
+			})){
+				System.loadLibrary(addonFile.getCanonicalPath());
 			}
-		})){
-			System.loadLibrary(addonFile.getCanonicalPath());
+		catch(IOException e){
+			System.out.println("[ERROR] Failed loading libraries!");
+			e.printStackTrace();
 		}
 		if(!CONFIG_FILE.isFile()){
 			generateConfig();
