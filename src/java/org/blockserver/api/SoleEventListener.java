@@ -1,6 +1,5 @@
 package org.blockserver.api;
 
-import java.util.List;
 import org.blockserver.player.Player;
 
 public interface SoleEventListener{
