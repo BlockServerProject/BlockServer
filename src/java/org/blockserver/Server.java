@@ -45,9 +45,9 @@ public class Server implements Context{
 	private short serverPort;
 	private int maxPlayers;
 
+	private File dataDir = new File(".");
 	private File worldsDir;
 	private File playersDir;
-	private File pluginsDir;
 	private String defaultLevel;
 
 	private boolean serverRunning = false;
@@ -180,6 +180,10 @@ public class Server implements Context{
 	public Player getPlayer(String ip, int port){
 		return players.get(ip + Integer.toString(port));
 	}
+
+	public File getDataDir(){
+		return dataDir;
+	}
 	/**
 	 * <p>Get the folder where worlds are saved in.</p>
 	 * 
@@ -195,13 +199,6 @@ public class Server implements Context{
 	 */
 	public File getPlayersDir(){
 		return playersDir;
-	}
-	/**
-	 * <p>Get the folder where plugins are loaded from and whose data are saved in.</p>
-	 * @return the folder where plugins are loaded from and whose data are saved in.
-	 */
-	public File getPluginsDir(){
-		return pluginsDir;
 	}
 	/**
 	 * <p>Get the <code>PlayerDatabase</code> instance that the server is using to save player data.</p>
@@ -254,6 +251,7 @@ public class Server implements Context{
 	public ChatManager getChatMgr(){
 		return chatMgr;
 	}
+	@SuppressWarnings("unused")
 	private void setChatMgr(Class<? extends ChatManager> type) throws ReflectiveOperationException{
 		setChatMgr(type.newInstance());
 	}
