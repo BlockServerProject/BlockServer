@@ -160,49 +160,57 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	}
 
 	public void update(long ticks){
-		if(this.ACKQueue.size() > 0){
-			int[] array = new int[this.ACKQueue.size()];
-			int offset = 0;
-			for(Integer i: ACKQueue){
-				array[offset++] = i;
+		synchronized(ACKQueue){
+			if(this.ACKQueue.size() > 0){
+				int[] array = new int[this.ACKQueue.size()];
+				int offset = 0;
+				for(Integer i: ACKQueue){
+					array[offset++] = i;
+				}
+				ACKPacket pck = new ACKPacket(array);
+				pck.encode();
+				server.sendPacket(pck.getBuffer(), ip, port);
 			}
-			ACKPacket pck = new ACKPacket(array);
-			pck.encode();
-			server.sendPacket(pck.getBuffer(), ip, port);
 		}
-		if(NACKQueue.size() > 0){
-			int[] array = new int[NACKQueue.size()];
-			int offset = 0;
-			for(Integer i: NACKQueue){
-				array[offset++] = i;
+		synchronized(NACKQueue){
+			if(NACKQueue.size() > 0){
+				int[] array = new int[NACKQueue.size()];
+				int offset = 0;
+				for(Integer i: NACKQueue){
+					array[offset++] = i;
+				}
+				NACKPacket pck = new NACKPacket(array);
+				pck.encode();
+				server.sendPacket(pck.getBuffer(), ip, port);
 			}
-			NACKPacket pck = new NACKPacket(array);
-			pck.encode();
-			server.sendPacket(pck.getBuffer(), ip, port);
 		}
-		if(queue.packets.size() > 0){
-			queue.encode();
-			server.sendPacket(queue.getBuffer(), ip, port);
-			recoveryQueue.put(queue.sequenceNumber, queue);
-			queue.packets.clear();
+		synchronized(queue){
+			if(queue.packets.size() > 0){
+				queue.encode();
+				server.sendPacket(queue.getBuffer(), ip, port);
+				recoveryQueue.put(queue.sequenceNumber, queue);
+				queue.packets.clear();
+			}
 		}
 	}
 
 	public void addToQueue(BaseDataPacket pck){
-		pck.encode();
-		BlockServer.Debugging.logSentDataPacket(pck, this);
-		InternalPacket ipck = new InternalPacket();
-		ipck.buffer = pck.getBuffer();
-		ipck.reliability = 2;
-		ipck.messageIndex = messageIndex++;
-		ipck.toBinary();
-		if(queue.getLength() >= mtuSize){
-			queue.sequenceNumber = sequenceNum++;
-			queue.encode();
-			server.sendPacket(queue.getBuffer(), ip, port);
-			queue.packets.clear();
+		synchronized(queue){
+			pck.encode();
+			BlockServer.Debugging.logSentDataPacket(pck, this);
+			InternalPacket ipck = new InternalPacket();
+			ipck.buffer = pck.getBuffer();
+			ipck.reliability = 2;
+			ipck.messageIndex = messageIndex++;
+			ipck.toBinary();
+			if(queue.getLength() >= mtuSize){
+				queue.sequenceNumber = sequenceNum++;
+				queue.encode();
+				server.sendPacket(queue.getBuffer(), ip, port);
+				queue.packets.clear();
+			}
+			queue.packets.add(ipck);
 		}
-		queue.packets.add(ipck);
 	}
 	public void handlePacket(CustomPacket pck){
 		if(pck.sequenceNumber - this.lastSequenceNum == 1){
@@ -213,7 +221,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 				NACKQueue.add(i);
 			}
 		}
-		ACKQueue.add(pck.sequenceNumber);
+		synchronized(ACKQueue){
+			ACKQueue.add(pck.sequenceNumber);
+		}
 		for(InternalPacket ipck : pck.packets){
 			BlockServer.Debugging.logReceivedInternalPacket(ipck, this);
 			switch (ipck.buffer[0]){
