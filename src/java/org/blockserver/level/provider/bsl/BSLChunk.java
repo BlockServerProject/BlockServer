@@ -17,6 +17,7 @@ import org.blockserver.io.bsf.BSFWriter;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
 
+//TODO getBlocks, getDamages, getSkyLights, getBlockLights without ByteBuffer!
 public class BSLChunk implements IChunk{
 	private Server server;
 	private File file;
@@ -119,6 +120,7 @@ public class BSLChunk implements IChunk{
 		}
 		return bb.array();
 	}
+	
 	@Override
 	public byte[] getTiles(){
 		// TODO Auto-generated method stub
