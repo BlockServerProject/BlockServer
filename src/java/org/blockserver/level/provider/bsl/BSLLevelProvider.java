@@ -19,6 +19,7 @@ public class BSLLevelProvider extends LevelProvider{
 		this.server = server;
 		dir = file;
 		chunksDir = new File(file, "chunks");
+		chunksDir.mkdirs();
 	}
 
 	@Override
