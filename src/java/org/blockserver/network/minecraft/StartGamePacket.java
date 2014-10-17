@@ -2,25 +2,22 @@ package org.blockserver.network.minecraft;
 
 import java.nio.ByteBuffer;
 
-import org.blockserver.level.Level;
+import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 
 public class StartGamePacket extends BaseDataPacket{
+	public Vector3 spawnpos;
+	public Vector3d playerpos;
+	
 	public long seed;
-	public int unknown;
+	public int generator;
 	public int gamemode;
 	public int eid;
-	public float spawnX;
-	public float spawnY;
-	public float spawnZ;
-
-	public StartGamePacket(Level level, int eid){
-		this(level.getSpawnPos(), level.getDefaultGamemode(), level.getSeed(), eid);
-	}
-	public StartGamePacket(Vector3d spawnpos, int gamemode, long seed, int eid){
-		spawnX = (float) spawnpos.getX();
-		spawnY = (float) spawnpos.getY();
-		spawnZ = (float) spawnpos.getZ();
+	
+	public StartGamePacket(Vector3 spawnpos, Vector3d playerpos, int gamemode, long seed, int eid){
+		this.spawnpos = spawnpos;
+		this.playerpos = playerpos;
+		
 		this.gamemode = gamemode;
 		this.seed = seed;
 		this.eid = eid;
@@ -28,15 +25,18 @@ public class StartGamePacket extends BaseDataPacket{
 
 	@Override
 	public void encode(){
-		bb = ByteBuffer.allocate(29); //Not sure about this, I think its right
-		bb.put(START_GAME);
+		bb = ByteBuffer.allocate( 1 + (Integer.BYTES * 7) + (Float.BYTES * 3) ); //Not sure about this, I think its right
+		bb.put(START_GAME); 
 		bb.putInt((int) seed);
-		bb.putInt(unknown);
+		bb.putInt(generator);
 		bb.putInt(gamemode);
 		bb.putInt(eid);
-		bb.putFloat(spawnX);
-		bb.putFloat(spawnY);
-		bb.putFloat(spawnZ);
+		bb.putInt( spawnpos.getX() );
+		bb.putInt( spawnpos.getY() );
+		bb.putInt( spawnpos.getZ() );
+		bb.putFloat( (float) playerpos.getX() );
+		bb.putFloat( (float) playerpos.getY() );
+		bb.putFloat( (float) playerpos.getZ() );
 	}
 
 	@Override

@@ -177,7 +177,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), entityID);
 						addToQueue(sgp);
 						*/
-						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
+						StartGamePacket sgp = new StartGamePacket( level.getSpawnPos().toVector3(), new Vector3d(x, y, z), 1, level.getSeed(), 0);
 						addToQueue(sgp);
 						sendChatArgs(server.getMOTD());
 						server.getChatMgr().broadcast(name + " joined the game.");
