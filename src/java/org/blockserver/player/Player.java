@@ -3,6 +3,7 @@ package org.blockserver.player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -13,12 +14,15 @@ import org.blockserver.Server;
 import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
 import org.blockserver.item.Inventory;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.IChunk;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
 import org.blockserver.network.minecraft.DisconnectPacket;
+import org.blockserver.network.minecraft.FullChunkDataPacket;
 import org.blockserver.network.minecraft.LoginPacket;
 import org.blockserver.network.minecraft.LoginStatusPacket;
 import org.blockserver.network.minecraft.MessagePacket;
@@ -52,6 +56,8 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	private int maxHealth;
 	private Server server;
 	protected Inventory inventory;
+	
+	private ChunkSender sender;
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
 		super(0, 0, 0, null);
@@ -70,6 +76,86 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		}
 		catch(Exception e){
 			e.printStackTrace();
+		}
+		
+		sender = new ChunkSender();
+	}
+	
+	private final class ChunkSender extends Thread {
+		public final HashMap<ChunkPosition, IChunk> useChunks = new HashMap<>();
+		
+		private final HashMap<Integer, ArrayList<ChunkPosition>> MapOrder = new HashMap<>();
+		private final HashMap<ChunkPosition, Boolean> requestChunks = new HashMap<>();
+		private final ArrayList<Integer> orders = new ArrayList<>();
+		
+		public boolean first = true;
+		public int lastCX = 0, lastCZ = 0;
+		
+		@Override
+		public final void run() {
+			while ( !isInterrupted() ) {
+				int centerX = (int) Math.floor(x)/16;
+				int centerZ = (int) Math.floor(z)/16;
+				
+				try {
+					if( centerX == lastCX && centerZ == lastCZ && !first ) {
+						Thread.sleep(100);
+						continue;
+					}
+				} catch (InterruptedException e) {
+					continue;
+				}
+				first = false;
+				lastCX = centerX; lastCZ = centerZ;
+				int radius = 4;
+				
+				MapOrder.clear(); requestChunks.clear(); orders.clear();
+				
+				for (int x = -radius; x <= radius; ++x) {
+					for (int z = -radius; z <= radius; ++z) {
+						int distance = (x*x) + (z*z);
+						int chunkX = x + centerX;
+						int chunkZ = z + centerZ;
+						if( !MapOrder.containsKey( distance ) ) {
+							MapOrder.put(distance, new ArrayList<ChunkPosition>());
+						}
+						requestChunks.put(ChunkPosition.byDirectIndex(chunkX, chunkZ), true);
+						MapOrder.get(distance).add( ChunkPosition.byDirectIndex(chunkX, chunkZ) );
+						orders.add(distance);
+					}
+				}
+				Collections.sort(orders);
+
+				for( Integer i : orders ) {
+					for( ChunkPosition v : MapOrder.get(i) ) {
+						try {
+							if( useChunks.containsKey(v) ) { continue; }
+							level.getLevelProvider().loadChunk(v);
+							useChunks.put(v, level.getLevelProvider().getChunk(v) );
+							addToQueue( new FullChunkDataPacket( useChunks.get(v) ) );
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				//TODO Unload Unused Chunks
+				/*
+				ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
+				for( int i = 0; i < v2a.length; i++ ) {
+					ChunkPosition v = v2a[i];
+					if( !useChunks.containsKey( v2a ) ) {
+						level.releaseChunk(v);
+						useChunks.remove(v);
+					}
+				}
+				*/
+				
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					
+				}
+			}
 		}
 	}
 
@@ -179,6 +265,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						*/
 						StartGamePacket sgp = new StartGamePacket( level.getSpawnPos().toVector3(), new Vector3d(x, y, z), 1, level.getSeed(), 0);
 						addToQueue(sgp);
+						
+						sender.start();
+						
 						sendChatArgs(server.getMOTD());
 						server.getChatMgr().broadcast(name + " joined the game.");
 						for(Player other: server.getConnectedPlayers()){
