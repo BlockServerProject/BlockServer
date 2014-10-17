@@ -16,6 +16,7 @@ import org.blockserver.entity.Entity;
 import org.blockserver.item.Inventory;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
+import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
@@ -30,6 +31,9 @@ import org.blockserver.network.minecraft.PacketIDs;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
 import org.blockserver.network.minecraft.ServerHandshakePacket;
+import org.blockserver.network.minecraft.SetHealthPacket;
+import org.blockserver.network.minecraft.SetSpawnPositionPacket;
+import org.blockserver.network.minecraft.SetTimePacket;
 import org.blockserver.network.minecraft.StartGamePacket;
 import org.blockserver.network.raknet.ACKPacket;
 import org.blockserver.network.raknet.AcknowledgePacket;
@@ -60,7 +64,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	private ChunkSender sender;
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
-		super(0, 0, 0, server.getLevel("world", true, true) );
+		super(128, 4, 128, server.getLevel("world", true, true) );
 		this.ip = ip.replace("/", "");
 		this.port = port;
 		mtuSize = mtu;
@@ -93,6 +97,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		
 		@Override
 		public final void run() {
+			System.out.println( "In ChunkSender" );
 			while ( !isInterrupted() ) {
 				int centerX = (int) Math.floor(x)/16;
 				int centerZ = (int) Math.floor(z)/16;
@@ -105,6 +110,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 				} catch (InterruptedException e) {
 					continue;
 				}
+				System.out.println( "Do ChunkSender " + centerX + ", " + centerZ );
 				first = false;
 				lastCX = centerX; lastCZ = centerZ;
 				int radius = 4;
@@ -149,13 +155,14 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					}
 				}
 				*/
-				
+				System.out.println( "Do Finish" );
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
 					
 				}
 			}
+			System.out.println( "Out ChunkSender" );
 		}
 	}
 
@@ -203,7 +210,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 			ipck.reliability = 2;
 			ipck.messageIndex = messageIndex++;
 			ipck.toBinary();
-			if(queue.getLength() >= mtuSize){
+			if(queue.getLength() + pck.getBuffer().length >= mtuSize){
 				queue.sequenceNumber = sequenceNum++;
 				queue.encode();
 				server.sendPacket(queue.getBuffer(), ip, port);
@@ -276,8 +283,18 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						StartGamePacket sgp = new StartGamePacket( level.getSpawnPos().toVector3(), new Vector3d(x, y, z), 1, level.getSeed(), 0);
 						addToQueue(sgp);
 						
+						SetTimePacket stp = new SetTimePacket(0);
+						addToQueue(stp);
+						
+						SetSpawnPositionPacket sspp = new SetSpawnPositionPacket( new Vector3(128, 4, 128) );
+						addToQueue(sspp);
+						
+						SetHealthPacket setHealth = new SetHealthPacket((byte) 0x20);
+						addToQueue(setHealth);
+						
 						sender.start();
 						
+						/*
 						sendChatArgs(server.getMOTD());
 						server.getChatMgr().broadcast(name + " joined the game.");
 						for(Player other: server.getConnectedPlayers()){
@@ -285,6 +302,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 								spawnPlayer(other);
 							}
 						}
+						*/
 					}
 					break;
 				case DISCONNECT:

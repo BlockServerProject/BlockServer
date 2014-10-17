@@ -15,6 +15,7 @@ import org.blockserver.entity.SavedEntity;
 import org.blockserver.io.bsf.BSFReader;
 import org.blockserver.io.bsf.BSFWriter;
 import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.ChunkPosition.MiniChunkPosition;
 import org.blockserver.level.provider.IChunk;
 
 //TODO getBlocks, getDamages, getSkyLights, getBlockLights without ByteBuffer!
@@ -33,6 +34,9 @@ public class BSLChunk implements IChunk{
 	}
 
 	private void load() throws IOException{
+		if( !file.exists() ) {
+			generate(); return;
+		}
 		FileInputStream is = new FileInputStream(file);
 		BSFReader reader = new BSFReader(is);
 		// blocks
@@ -61,6 +65,28 @@ public class BSLChunk implements IChunk{
 		}
 		reader.close();
 	}
+	
+	public final static int D = 0x1000;
+	
+	//TODO Linking to Flat Generator
+	//TODO Handle biome Content
+	private void generate() throws IOException {
+		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
+			BSLMiniChunk mini = new BSLMiniChunk(new MiniChunkPosition(pos.getX(), Y, pos.getZ()), new byte[0x1000], new byte[0x500], new byte[0x500], new byte[0x500], new byte[0x1], new byte[0x1]);
+			if(Y == 0) {
+				for(int x = 0; x < 16; x++) {
+					for(int z = 0; z < 16; z++) {
+						mini.setBlockID((byte)x, (byte) 0, (byte) z, (byte) 0x07);
+						mini.setBlockID((byte)x, (byte) 1, (byte)z, (byte) 0x03);
+						mini.setBlockID((byte)x, (byte) 2, (byte)z, (byte) 0x03);
+						mini.setBlockID((byte)x, (byte) 3, (byte) z, (byte) 0x02);
+					}
+				}
+			}
+		}
+		save();
+	}
+	
 	public void save() throws IOException{
 		BSFWriter writer = new BSFWriter(new FileOutputStream(file), null); // passing null won't trigger NullPointerException unless I call writeAll().
 		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
@@ -77,6 +103,8 @@ public class BSLChunk implements IChunk{
 			EntityType<? extends SavedEntity> type = entity.getType();
 			type.write(writer, entity);
 		}
+		writer.flush();
+		writer.close();
 	}
 
 	@Override

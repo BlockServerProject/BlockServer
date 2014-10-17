@@ -2,7 +2,9 @@ package org.blockserver.level.provider.bsl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
+
 import org.blockserver.Server;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.LevelProvider;
@@ -11,7 +13,7 @@ import org.blockserver.math.Vector3d;
 public class BSLLevelProvider extends LevelProvider{
 	private Server server;
 	private File dir, chunksDir;
-	private Map<ChunkPosition, BSLChunk> cachedChunks;
+	private Map<ChunkPosition, BSLChunk> cachedChunks = new HashMap<ChunkPosition, BSLChunk>();
 
 	public BSLLevelProvider(Server server, File file, String name){
 		super(name);
@@ -90,7 +92,7 @@ public class BSLLevelProvider extends LevelProvider{
 	}
 
 	public File toFile(ChunkPosition pos){
-		return new File(chunksDir, String.format("%d,%d.bsc", pos.getX(), pos.getZ()));
+		return new File(chunksDir, String.format("%d_%d.bsc", pos.getX(), pos.getZ()));
 	}
 
 	@Override

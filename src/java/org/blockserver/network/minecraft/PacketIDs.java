@@ -1,7 +1,7 @@
 package org.blockserver.network.minecraft;
 
 public interface PacketIDs{
-	public static final int CURRENT_PROTOCOL = 18;
+	public static final byte CURRENT_PROTOCOL = 18;
 
 	public static final byte PING = (byte)0x00;
 	public static final byte PONG = (byte)0x03;
@@ -71,4 +71,6 @@ public interface PacketIDs{
 	public static final byte ADVENTURE_SETTINGS = (byte)0xb7;
 	public static final byte ENTITY_DATA = (byte)0xb8;
 	public static final byte PLAYER_INPUT = (byte)0xb9;
+	
+	public static final byte FULL_CHUNK_DATA_PACKET = (byte)0xba;
 }

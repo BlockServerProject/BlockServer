@@ -16,11 +16,13 @@ public class BSLMiniChunk{
 		this.damages = damages;
 		this.blockLights = blockLights;
 		this.skyLights = skyLights;
+		/*
 		this.biomes = biomes;
 		ByteBuffer bb = ByteBuffer.wrap(biomeColors);
 		for(int i = 0; i < 256; i++){
 			this.biomeColors[i] = bb.getInt();
 		}
+		*/
 	}
 
 	public byte getBlockID(byte x, byte y, byte z){

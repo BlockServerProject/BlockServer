@@ -20,7 +20,9 @@ import org.blockserver.level.generator.GenerationSettings;
 import org.blockserver.level.generator.GeneratorManager;
 import org.blockserver.level.provider.LevelProviderManager;
 import org.blockserver.level.provider.LevelProviderType;
+import org.blockserver.level.provider.bsl.BSLLevelProvider;
 import org.blockserver.level.provider.bsl.BSLLevelProviderType;
+import org.blockserver.math.Vector3d;
 import org.blockserver.network.PacketHandler;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
@@ -249,12 +251,9 @@ public class Server implements Context{
 			return levels.get(name);
 		}
 		if(load){
-			boolean success = loadLevel(name, generate);
-			if(success){
-				return levels.get(name);
-			}
+			loadLevel(name, generate);
 		}
-		return null;
+		return levels.get(name);
 	}
 	/**
 	 * <p>Get the server command manager.</p>
@@ -457,10 +456,9 @@ public class Server implements Context{
 	public boolean loadLevel(String name, boolean generate){
 		File dir = new File(getWorldsDir(), name);
 		if(dir.isDirectory()){
-			// TODO Auto-generated method stub
-			return false;
-		}
-		if(generate){
+			//TODO: Customable Load Process
+			levels.put(name, new Level(name, 0L, 1, new Vector3d(128, 4, 128), new BSLLevelProvider(this, dir, name), this) );
+		} else if(generate){
 			return generateLevel(name);
 		}
 		return false;
@@ -472,8 +470,7 @@ public class Server implements Context{
 	 * @return whether the level is successfully generated.
 	 */
 	public boolean generateLevel(String name){
-		generateLevel(name, getDefaultLevelGenerationSettings());
-		return false;
+		return generateLevel(name, getDefaultLevelGenerationSettings());
 	}
 	/**
 	 * <p>Generate a level.</p>
@@ -483,7 +480,9 @@ public class Server implements Context{
 	 * @return whether the level is successfully generated.
 	 */
 	public boolean generateLevel(String name, GenerationSettings settings){
-		// TODO Auto-generated method stub
-		return false;
+		File file = new File(worldsDir, name);
+		file.mkdirs();
+		levels.put(name, new Level( new BSLLevelProvider(this, file, name) ));
+		return true;
 	}
 }
