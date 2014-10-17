@@ -3,7 +3,6 @@ package org.blockserver.level.provider.bsl;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
-
 import org.blockserver.Server;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.LevelProvider;
@@ -55,29 +54,34 @@ public class BSLLevelProvider extends LevelProvider{
 	}
 	@Override
 	public boolean saveChunk(ChunkPosition pos){
-		// TODO Auto-generated method stub
-		return false;
+		if( !cachedChunks.containsKey(pos) ) return false;
+		try{
+			cachedChunks.get(pos).save();
+		}
+		catch(IOException e){
+			e.printStackTrace();
+			return false;
+		}
+		return true;
 	}
 	@Override
 	public boolean isChunkLoaded(ChunkPosition pos){
-		// TODO Auto-generated method stub
-		return false;
+		return cachedChunks.containsKey(pos);
 	}
 	@Override
 	public boolean isChunkGenerated(ChunkPosition pos){
-		// TODO Auto-generated method stub
-		return false;
+		return toFile(pos).exists();
 	}
 	@Override
 	public boolean deleteChunk(ChunkPosition pos){
-		// TODO Auto-generated method stub
-		return false;
+		toFile(pos).delete();
+		return true;
 	}
 
 	@Override
 	public Vector3d getSpawn(){
-		// TODO Auto-generated method stub
-		return null;
+		//TODO Custom Spawn point
+		return new Vector3d(128, 4, 128);
 	}
 
 	@Override
