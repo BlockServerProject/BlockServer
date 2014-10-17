@@ -12,6 +12,7 @@ public abstract class LevelProvider{
 	}
 	public abstract void init();
 	public abstract boolean loadChunk(ChunkPosition pos); // remember to mark this as synchronized in subclasses
+	public abstract IChunk getChunk(ChunkPosition pos);
 	public abstract boolean saveChunk(ChunkPosition pos); // remember to mark this as synchronized in subclasses
 	public abstract boolean isChunkLoaded(ChunkPosition pos);
 	public abstract boolean isChunkGenerated(ChunkPosition pos);

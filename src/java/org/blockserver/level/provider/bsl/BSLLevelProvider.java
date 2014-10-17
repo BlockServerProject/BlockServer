@@ -92,4 +92,9 @@ public class BSLLevelProvider extends LevelProvider{
 	public File toFile(ChunkPosition pos){
 		return new File(chunksDir, String.format("%d,%d.bsc", pos.getX(), pos.getZ()));
 	}
+
+	@Override
+	public BSLChunk getChunk(ChunkPosition pos){
+		return cachedChunks.get(pos);
+	}
 }
