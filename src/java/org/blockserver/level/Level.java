@@ -44,6 +44,7 @@ public class Level{
 	}
 	private void initialize(){
 		provider.init();
+		/*
 		new Thread(new Runnable(){
 			@Override
 			public void run(){
@@ -57,6 +58,7 @@ public class Level{
 				}
 			}
 		}).start();
+		*/
 	}
 
 	public String getName(){
