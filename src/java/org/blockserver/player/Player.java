@@ -60,7 +60,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	private ChunkSender sender;
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
-		super(0, 0, 0, null);
+		super(0, 0, 0, server.getLevel("world", true, true) );
 		this.ip = ip.replace("/", "");
 		this.port = port;
 		mtuSize = mtu;
