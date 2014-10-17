@@ -1,12 +1,105 @@
 package org.blockserver.utility;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.zip.DeflaterOutputStream;
+
+import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
 
 public class Utils{
+	/**
+	 * Left-side Int
+	 * @param i Int to make Left-side
+	 * @return Left-sided Int
+	 */
+	public final static byte[] LInt(int i) {
+		ByteBuffer buffer = ByteBuffer.allocate(4);
+		buffer.putInt(i);
+		byte[] result = new byte[4];
+		result[0] = buffer.array()[3];
+		result[1] = buffer.array()[2];
+		result[2] = buffer.array()[1];
+		result[3] = buffer.array()[0];
+		return result;
+	}
+	
+	/**
+	 * Delete Folder with Sub-files
+	 * @param file Folder to Delete
+	 */
+	public static void recursiveDelete(File file) {
+	    if( !file.exists() ) { return; }
+	    if (file.isDirectory()) {
+	        for (File f : file.listFiles()) {
+		        recursiveDelete(f);
+		    }
+		}
+		file.delete();
+	}
+	
+	/**
+	 * File to ByteArray
+	 * @param file File to Read
+	 * @return File's Buffer
+	 * @author Blue Electric
+	 */
+	public final static byte[] FiletoByteArray(File file) {
+		try {
+			FileInputStream fis = new FileInputStream(file);
+			byte[] result = new byte[ fis.available() ];
+			fis.read(result); fis.close();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Write Bytes to File
+	 * @param bs Byte Array to Write
+	 * @param file File to Write
+	 * @return OK?
+	 */
+	public final static boolean WriteByteArraytoFile(byte[] bs, File file) {
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(bs); fos.close();
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * Compress byte for Sending Chunk or Etc.
+	 * @param compress Bytes to Compress
+	 * @return compressed Byte
+	 * @author Blue Electric
+	 */
+	public final static byte[] compressByte(byte[] compress) throws Exception {
+		return compressByte( new byte[][]{compress} );
+	}
+	
+	public final static byte[] compressByte(byte[]... compress) throws Exception {
+		ByteOutputStream bos = new ByteOutputStream();
+		DeflaterOutputStream dos = new DeflaterOutputStream( bos );
+		for(byte[] ba : compress) {
+			dos.write(ba);
+		}
+		dos.close();
+		byte[] buf = bos.getBytes();
+		bos.close();
+		return buf;
+	}
+	
 	public static int getTriad(byte[] data, int offset){
 		return (int) (data[offset++] << 16 | data[offset++] << 8  | data[offset]);
 	}
