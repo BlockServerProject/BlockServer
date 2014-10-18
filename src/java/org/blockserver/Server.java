@@ -458,6 +458,7 @@ public class Server implements Context{
 		if(dir.isDirectory()){
 			//TODO: Customable Load Process
 			levels.put(name, new Level(name, 0L, 1, new Vector3d(128, 4, 128), new BSLLevelProvider(this, dir, name), this) );
+			return true;
 		} else if(generate){
 			return generateLevel(name);
 		}
@@ -482,7 +483,8 @@ public class Server implements Context{
 	public boolean generateLevel(String name, GenerationSettings settings){
 		File file = new File(worldsDir, name);
 		file.mkdirs();
-		levels.put(name, new Level( new BSLLevelProvider(this, file, name) ));
+		//TODO: Customable Load Process
+		levels.put(name, new Level( name, 0L, 1, new Vector3d(128, 4, 128), new BSLLevelProvider(this, file, name), this ));
 		return true;
 	}
 }

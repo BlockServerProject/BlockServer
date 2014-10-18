@@ -65,7 +65,8 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	private ChunkSender sender;
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
-		super(128, 4, 128, server.getLevel("world", true, true) );
+		//TODO Default Level by Config
+		super(128, 4, 128, server.getDefaultLevel() );
 		this.ip = ip.replace("/", "");
 		this.port = port;
 		mtuSize = mtu;
