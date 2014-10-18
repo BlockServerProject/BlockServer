@@ -16,8 +16,8 @@ public class BSLMiniChunk{
 		this.damages = damages;
 		this.blockLights = blockLights;
 		this.skyLights = skyLights;
-		/*
 		this.biomes = biomes;
+		/*
 		ByteBuffer bb = ByteBuffer.wrap(biomeColors);
 		for(int i = 0; i < 256; i++){
 			this.biomeColors[i] = bb.getInt();
@@ -83,11 +83,14 @@ public class BSLMiniChunk{
 		return biomes;
 	}
 	public byte[] getBiomeColors(){
+		return new byte[0x400];
+		/*
 		ByteBuffer bb = ByteBuffer.allocate(0x400);
 		for(int i: biomeColors){
 			bb.putInt(i);
 		}
 		return bb.array();
+		*/
 	}
 
 	public MiniChunkPosition getPosition(){
