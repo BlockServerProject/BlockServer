@@ -9,8 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.zip.DeflaterOutputStream;
-
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream;
+import java.io.ByteArrayOutputStream;
 
 public class Utils{
 	/**
@@ -89,13 +88,13 @@ public class Utils{
 	}
 	
 	public final static byte[] compressByte(byte[]... compress) throws Exception {
-		ByteOutputStream bos = new ByteOutputStream();
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		DeflaterOutputStream dos = new DeflaterOutputStream( bos );
 		for(byte[] ba : compress) {
 			dos.write(ba);
 		}
 		dos.close();
-		byte[] buf = bos.getBytes();
+		byte[] buf = bos.toByteArray();
 		bos.close();
 		return buf;
 	}

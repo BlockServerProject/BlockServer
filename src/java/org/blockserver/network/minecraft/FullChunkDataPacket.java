@@ -1,8 +1,6 @@
 package org.blockserver.network.minecraft;
 
 import java.nio.ByteBuffer;
-
-import org.blockserver.BlockServer;
 import org.blockserver.level.provider.IChunk;
 import org.blockserver.utility.Utils;
 

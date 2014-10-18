@@ -1,7 +1,5 @@
 package org.blockserver.level.provider.bsl;
 
-import java.nio.ByteBuffer;
-
 import org.blockserver.level.provider.ChunkPosition.MiniChunkPosition;
 import org.blockserver.utility.Utils;
 
