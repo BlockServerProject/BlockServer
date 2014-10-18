@@ -333,15 +333,15 @@ public class Server implements Context{
 			File worldsDir, File playersDir) throws Exception{
 		this(name, ip, port, maxPlayers, version, motd, defaultLevel, defaultLevelGenSet,
 				chatMgrType.newInstance(), dbType.newInstance(), entityTypeMgrType.newInstance(),
-				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in));
+				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in), new ServerLogger.DefaultServerLogger());
 	}
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
 			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
 			ChatManager chatMgr, PlayerDatabase db, EntityTypeManager entityTypeMgr, SoleEventListener listener,
-			File worldsDir, File playersDir, ConsoleCommandSource consoleSource) throws Exception{
+			File worldsDir, File playersDir, ConsoleCommandSource consoleSource, ServerLogger logger) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
-		logger = new ServerLogger();
+		this.logger = logger;
 		startTime = System.currentTimeMillis();
 		serverip = ip;
 		serverPort = port;
