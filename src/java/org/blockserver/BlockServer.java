@@ -150,6 +150,7 @@ public class BlockServer{
 		private OutputStreamWriter os;
 		private Debugging(){
 			try{
+				new File("logs").mkdirs();
 				os = new OutputStreamWriter(new FileOutputStream(debugFile, true));
 			}
 			catch(IOException e){

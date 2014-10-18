@@ -159,4 +159,8 @@ public class Vector3d{
 	public double[] toArray(){
 		return new double[]{x, y, z};
 	}
+	
+	public Vector3 toVector3() {
+		return new Vector3((int) x, (int) y, (int) z);
+	}
 }

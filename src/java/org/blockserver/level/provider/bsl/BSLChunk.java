@@ -12,16 +12,19 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.entity.EntityType;
 import org.blockserver.entity.SavedEntity;
+import org.blockserver.io.bsf.BSF;
 import org.blockserver.io.bsf.BSFReader;
 import org.blockserver.io.bsf.BSFWriter;
 import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.ChunkPosition.MiniChunkPosition;
 import org.blockserver.level.provider.IChunk;
 
+//TODO getBlocks, getDamages, getSkyLights, getBlockLights without ByteBuffer!
 public class BSLChunk implements IChunk{
 	private Server server;
 	private File file;
 	private ChunkPosition pos;
-	private Map<Integer, SavedEntity> entities;
+	private Map<Integer, SavedEntity> entities = new HashMap<Integer, SavedEntity>();
 	private BSLMiniChunk[] minichunks = new BSLMiniChunk[WORLD_MINICHUNK_CNT];
 
 	public BSLChunk(Server server, File chunkFile, ChunkPosition pos) throws IOException{
@@ -32,6 +35,9 @@ public class BSLChunk implements IChunk{
 	}
 
 	private void load() throws IOException{
+		if( !file.exists() ) {
+			generate(); return;
+		}
 		FileInputStream is = new FileInputStream(file);
 		BSFReader reader = new BSFReader(is);
 		// blocks
@@ -60,8 +66,32 @@ public class BSLChunk implements IChunk{
 		}
 		reader.close();
 	}
+	
+	public static final byte[] FLATREPEAT = new byte[]{0x07, 0x03, 0x03, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	//TODO Linking to Flat Generator
+	//TODO Handle biome Content
+	private void generate() throws IOException {
+		//TODO: Failed to Generate...
+		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
+			ByteBuffer bb = ByteBuffer.allocate(0x1000);
+			while( bb.hasRemaining() ) {
+				bb.put(FLATREPEAT);
+			}
+			BSLMiniChunk mini = new BSLMiniChunk(new MiniChunkPosition(pos.getX(), Y, pos.getZ()), bb.array(), new byte[0x800], new byte[0x800], new byte[0x800], new byte[0x100], new byte[0x400]);
+			minichunks[Y] = mini;
+		}
+		save();
+	}
+	
 	public void save() throws IOException{
-		BSFWriter writer = new BSFWriter(new FileOutputStream(file), null); // passing null won't trigger NullPointerException unless I call writeAll().
+		/*
+		java.lang.NullPointerException
+		at org.blockserver.io.bsf.BSFWriter.init(BSFWriter.java:28)
+		at org.blockserver.io.bsf.BSFWriter.<init>(BSFWriter.java:23)
+		at org.blockserver.io.bsf.BSFWriter.<init>(BSFWriter.java:17)
+		at org.blockserver.level.provider.bsl.BSLChunk.save(BSLChunk.java:101)
+		*/
+		BSFWriter writer = new BSFWriter(new FileOutputStream(file), BSF.Type.LEVEL_INDEX); //Don't use NULL type on BSFWriter!
 		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
 			writer.write(minichunks[Y].getBlocks());
 			writer.write(minichunks[Y].getDamages());
@@ -70,12 +100,15 @@ public class BSLChunk implements IChunk{
 			writer.write(minichunks[Y].getBiomes());
 			writer.write(minichunks[Y].getBiomeColors());
 		}
+		writer.writeInt( entities.size() );
 		// TODO write tiles
 		for(SavedEntity entity: entities.values()){
 			writer.writeByte(entity.getTypeID());
 			EntityType<? extends SavedEntity> type = entity.getType();
 			type.write(writer, entity);
 		}
+		writer.flush();
+		writer.close();
 	}
 
 	@Override
@@ -119,6 +152,7 @@ public class BSLChunk implements IChunk{
 		}
 		return bb.array();
 	}
+	
 	@Override
 	public byte[] getTiles(){
 		// TODO Auto-generated method stub
