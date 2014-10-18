@@ -32,7 +32,7 @@ public class FullChunkDataPacket extends BaseDataPacket{
 		}
 		byte[] compressed;
 		try{
-			compressed = Utils.compressByte( Utils.putLTriad(chunk.getX()), Utils.putLTriad(chunk.getZ()), chunk.getBlocks(), chunk.getDamages(), chunk.getSkyLights(), chunk.getBlockLights(), afterBuffer.array() );
+			compressed = Utils.compressByte( Utils.LInt(chunk.getX()), Utils.LInt(chunk.getZ()), chunk.getBlocks(), chunk.getDamages(), chunk.getSkyLights(), chunk.getBlockLights(), afterBuffer.array() );
 		}
 		catch(Exception e){
 			e.printStackTrace();
