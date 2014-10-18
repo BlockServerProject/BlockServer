@@ -7,7 +7,7 @@ import org.blockserver.utility.Utils;
 public class FullChunkDataPacket extends BaseDataPacket{
 	private IChunk chunk;
 	
-	public final static int UNCOMPRESSED_CHUNK_LENGTH = (Integer.BYTES * 2) + 0x8000 + (0x4000*3) + 0x100 + 0x400;
+	public final static int UNCOMPRESSED_CHUNK_LENGTH = (0x04 * 2) + 0x8000 + (0x4000*3) + 0x100 + 0x400;
 	public static final byte[] BIOMECOLOR = new byte[]{0x00 ,(byte) 0x85 ,(byte) 0xb2 ,0x4a};
 	
 	public FullChunkDataPacket(IChunk chunk){
