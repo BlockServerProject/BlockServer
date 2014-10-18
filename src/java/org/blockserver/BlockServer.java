@@ -104,7 +104,7 @@ public class BlockServer{
 			System.exit(2);
 		}
 	}
-	private static void generateConfig(){
+	public static void generateConfig(){
 		ConfigAgent.saveConfig(ConfigAgent.generateConfig(), CONFIG_FILE, "BlockServer config file for normal settings");
 		ConfigAgent.saveConfig(ConfigAgent.getAdvancedConfig(), ADVANCED_CONFIG_FILE, "BlockServer config file for advanced settings: only edit these if you know what you are doing!");
 	}

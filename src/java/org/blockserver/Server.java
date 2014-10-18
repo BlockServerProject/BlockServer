@@ -327,11 +327,20 @@ public class Server implements Context{
 
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
 			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
-			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType, Class<? extends EntityTypeManager> entityTypeMgrType, SoleEventListener listener,
+			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
+			Class<? extends EntityTypeManager> entityTypeMgrType, SoleEventListener listener,
 			File worldsDir, File playersDir) throws Exception{
+		this(name, ip, port, maxPlayers, version, motd, defaultLevel, defaultLevelGenSet,
+				chatMgrType.newInstance(), dbType.newInstance(), entityTypeMgrType.newInstance(),
+				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in), new ServerLogger.DefaultServerLogger());
+	}
+	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
+			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
+			ChatManager chatMgr, PlayerDatabase db, EntityTypeManager entityTypeMgr, SoleEventListener listener,
+			File worldsDir, File playersDir, ConsoleCommandSource consoleSource, ServerLogger logger) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
-		logger = new ServerLogger();
+		this.logger = logger;
 		startTime = System.currentTimeMillis();
 		serverip = ip;
 		serverPort = port;
@@ -340,7 +349,7 @@ public class Server implements Context{
 		MCVERSION = version;
 		this.motd = motd;
 		serverID = new Random().nextLong();
-		players = new HashMap<String, Player>(maxPlayers);
+		players = new HashMap<String, Player>(maxPlayers + 1, ((float) maxPlayers) / (maxPlayers + 1)); // no need to pre-allocate memory
 		this.playersDir = playersDir;
 		worldsDir.mkdirs();
 		this.worldsDir = worldsDir;
@@ -354,15 +363,15 @@ public class Server implements Context{
 		}
 		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
 		packetHandler = new PacketHandler(this);
-		cmdHandler = new ConsoleCommandHandler(this);
+		cmdHandler = new ConsoleCommandHandler(this, consoleSource);
 		cmdMgr = new CommandManager(this);
-		setChatMgr(chatMgrType.newInstance()); // gracefully throw out the exception to the one who asked for it :P
-		setEntityTypeMgr(entityTypeMgrType.newInstance());
+		setChatMgr(chatMgr); // gracefully throw out the exception to the one who asked for it :P
+		setEntityTypeMgr(entityTypeMgr);
 		Collection<LevelProviderType<?>> coll = new ArrayList<LevelProviderType<?>>(1);
 		coll.add(new BSLLevelProviderType());
 		levelProviderMgr = new LevelProviderManager(coll, this);
 		generatorMgr = new GeneratorManager();
-		playerDb = dbType.newInstance();
+		playerDb = db;
 		this.listener = listener;
 	}
 	/**
