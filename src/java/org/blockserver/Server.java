@@ -328,7 +328,16 @@ public class Server implements Context{
 
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
 			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
-			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType, Class<? extends EntityTypeManager> entityTypeMgrType, SoleEventListener listener,
+			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
+			Class<? extends EntityTypeManager> entityTypeMgrType, SoleEventListener listener,
+			File worldsDir, File playersDir) throws Exception{
+		this(name, ip, port, maxPlayers, version, motd, defaultLevel, defaultLevelGenSet,
+				chatMgrType.newInstance(), dbType.newInstance(), entityTypeMgrType.newInstance(),
+				listener, worldsDir, playersDir);
+	}
+	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
+			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
+			ChatManager chatMgr, PlayerDatabase db, EntityTypeManager entityTypeMgr, SoleEventListener listener,
 			File worldsDir, File playersDir) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
@@ -357,13 +366,13 @@ public class Server implements Context{
 		packetHandler = new PacketHandler(this);
 		cmdHandler = new ConsoleCommandHandler(this);
 		cmdMgr = new CommandManager(this);
-		setChatMgr(chatMgrType.newInstance()); // gracefully throw out the exception to the one who asked for it :P
-		setEntityTypeMgr(entityTypeMgrType.newInstance());
+		setChatMgr(chatMgr); // gracefully throw out the exception to the one who asked for it :P
+		setEntityTypeMgr(entityTypeMgr);
 		Collection<LevelProviderType<?>> coll = new ArrayList<LevelProviderType<?>>(1);
 		coll.add(new BSLLevelProviderType());
 		levelProviderMgr = new LevelProviderManager(coll, this);
 		generatorMgr = new GeneratorManager();
-		playerDb = dbType.newInstance();
+		playerDb = db;
 		this.listener = listener;
 	}
 	/**
