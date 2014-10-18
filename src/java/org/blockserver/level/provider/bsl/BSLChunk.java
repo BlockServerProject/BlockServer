@@ -91,7 +91,7 @@ public class BSLChunk implements IChunk{
 		at org.blockserver.io.bsf.BSFWriter.<init>(BSFWriter.java:17)
 		at org.blockserver.level.provider.bsl.BSLChunk.save(BSLChunk.java:101)
 		*/
-		BSFWriter writer = new BSFWriter(new FileOutputStream(file), BSF.Type.CHUNK_BSL); //Don't use NULL type on BSFWriter!
+		BSFWriter writer = new BSFWriter(new FileOutputStream(file), BSF.Type.LEVEL_INDEX); //Don't use NULL type on BSFWriter!
 		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
 			writer.write(minichunks[Y].getBlocks());
 			writer.write(minichunks[Y].getDamages());
