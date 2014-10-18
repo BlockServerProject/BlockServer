@@ -350,7 +350,7 @@ public class Server implements Context{
 		MCVERSION = version;
 		this.motd = motd;
 		serverID = new Random().nextLong();
-		players = new HashMap<String, Player>(maxPlayers + 1, 1f); // no need to pre-allocate memory
+		players = new HashMap<String, Player>(maxPlayers + 1, ((float) maxPlayers) / (maxPlayers + 1)); // no need to pre-allocate memory
 		this.playersDir = playersDir;
 		worldsDir.mkdirs();
 		this.worldsDir = worldsDir;

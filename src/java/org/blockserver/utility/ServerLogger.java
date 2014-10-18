@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public interface ServerLogger{
-	public void log(Level lvl, String format, Object... message);
 	public void trace(String format, Object... message);
 	public void fatal(String format, Object... message);
 	public void warning(String format, Object... message);
