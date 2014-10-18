@@ -387,6 +387,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		}
 		addToQueue(new DisconnectPacket());
 		disconnect(String.format("kicked (%s)", reason));
+		while ( sender.isAlive() ) {
+			sender.interrupt();
+		}
 	}
 	protected void disconnect(String reason){
 		server.getLogger().info("%s (%s:%d) disconnected: %s.", name, ip, port, reason);
