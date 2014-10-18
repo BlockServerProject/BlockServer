@@ -25,7 +25,7 @@ public class StartGamePacket extends BaseDataPacket{
 
 	@Override
 	public void encode(){
-		bb = ByteBuffer.allocate( 1 + (Integer.BYTES * 7) + (Float.BYTES * 3) ); //Not sure about this, I think its right
+		bb = ByteBuffer.allocate(  1 + (0x04 * 11) ); //Not sure about this, I think its right
 		bb.put(START_GAME); 
 		bb.putInt((int) seed);
 		bb.putInt(generator);

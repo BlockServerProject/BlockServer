@@ -30,7 +30,8 @@ public final class MovePlayerPacket extends BaseDataPacket{
 
 	@Override
 	public void encode() {
-		bb = ByteBuffer.allocate( 2 + Integer.BYTES + (Float.BYTES * 6) );
+		//PID + isTeleport + (eid, xyz, ypb)
+		bb = ByteBuffer.allocate( 2 + (0x04 * 7) );
 		bb.put(MOVE_PLAYER);
 		bb.putInt(eid);
 		bb.putFloat(x);
