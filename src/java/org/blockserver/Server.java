@@ -333,12 +333,12 @@ public class Server implements Context{
 			File worldsDir, File playersDir) throws Exception{
 		this(name, ip, port, maxPlayers, version, motd, defaultLevel, defaultLevelGenSet,
 				chatMgrType.newInstance(), dbType.newInstance(), entityTypeMgrType.newInstance(),
-				listener, worldsDir, playersDir);
+				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in));
 	}
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
 			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
 			ChatManager chatMgr, PlayerDatabase db, EntityTypeManager entityTypeMgr, SoleEventListener listener,
-			File worldsDir, File playersDir) throws Exception{
+			File worldsDir, File playersDir, ConsoleCommandSource consoleSource) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
 		logger = new ServerLogger();
@@ -364,7 +364,7 @@ public class Server implements Context{
 		}
 		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
 		packetHandler = new PacketHandler(this);
-		cmdHandler = new ConsoleCommandHandler(this);
+		cmdHandler = new ConsoleCommandHandler(this, consoleSource);
 		cmdMgr = new CommandManager(this);
 		setChatMgr(chatMgr); // gracefully throw out the exception to the one who asked for it :P
 		setEntityTypeMgr(entityTypeMgr);

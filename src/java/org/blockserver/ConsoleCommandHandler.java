@@ -1,8 +1,6 @@
 package org.blockserver;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import org.blockserver.cmd.CommandIssuer;
 
@@ -11,14 +9,16 @@ import org.blockserver.cmd.CommandIssuer;
  */
 public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	private Server server;
+	private ConsoleCommandSource source;
 	protected boolean running;
 
 	/**
 	 * <p>Constructs a new <code>ConsoleCommandHandler</code> instance.</p>
 	 * @param server
 	 */
-	public ConsoleCommandHandler(Server server){
+	public ConsoleCommandHandler(Server server, ConsoleCommandSource source){
 		this.server = server;
+		this.source = source;
 		setName("ConsoleHandler");
 	}
 
@@ -26,10 +26,9 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	public void run(){
 		running = true;
 		server.getLogger().info("Console Handler started.");
-		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
 		while(running){
 			try{
-				String input = console.readLine();
+				String input = source.readLine();
 				if(input != null){
 					input = input.trim();
 					if(!input.isEmpty()){
