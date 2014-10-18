@@ -27,6 +27,7 @@ import org.blockserver.network.minecraft.FullChunkDataPacket;
 import org.blockserver.network.minecraft.LoginPacket;
 import org.blockserver.network.minecraft.LoginStatusPacket;
 import org.blockserver.network.minecraft.MessagePacket;
+import org.blockserver.network.minecraft.MovePlayerPacket;
 import org.blockserver.network.minecraft.PacketIDs;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
@@ -312,6 +313,13 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					MessagePacket mpk = new MessagePacket(ipck.buffer);
 					mpk.decode();
 					server.getChatMgr().handleChat(this, mpk.getMessage());
+					break;
+				case MOVE_PLAYER:
+					MovePlayerPacket movePlayer = new MovePlayerPacket( ipck.buffer );
+					movePlayer.decode();
+					x = movePlayer.x;
+					y = movePlayer.y;
+					z = movePlayer.z;
 					break;
 				default:
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);

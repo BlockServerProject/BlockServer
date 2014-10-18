@@ -12,6 +12,10 @@ public final class MovePlayerPacket extends BaseDataPacket{
 	public float bodyYaw;
 	public boolean isTeleport = false;
 
+	public MovePlayerPacket(byte[] buffer){
+		this.bb = ByteBuffer.wrap(buffer);
+	}
+	
 	@Override
 	public void decode() {
 		bb.get();
