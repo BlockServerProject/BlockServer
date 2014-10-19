@@ -17,7 +17,7 @@ public class Utils{
 	 * @param i Int to make Left-side
 	 * @return Left-sided Int
 	 */
-	public final static byte[] LInt(int i) {
+	public final static byte[] writeLInt(int i) {
 		ByteBuffer buffer = ByteBuffer.allocate(4);
 		buffer.putInt(i);
 		byte[] result = new byte[4];
@@ -33,64 +33,60 @@ public class Utils{
 	 * @param file Folder to Delete
 	 */
 	public static void recursiveDelete(File file) {
-	    if( !file.exists() ) { return; }
-	    if (file.isDirectory()) {
-	        for (File f : file.listFiles()) {
-		        recursiveDelete(f);
+	    if(!file.exists()){
+	    	return;
+	    }
+	    if(file.isDirectory()){
+	        for(File f: file.listFiles()){
+		        if(f.getParentFile().equals(file)){
+		        	recursiveDelete(f);
+		        }
 		    }
 		}
 		file.delete();
 	}
 	
 	/**
-	 * File to ByteArray
+	 * Read File to byte array
 	 * @param file File to Read
 	 * @return File's Buffer
 	 * @author Blue Electric
 	 */
-	public final static byte[] FiletoByteArray(File file) {
-		try {
+	public final static byte[] fileToByteArray(File file) {
+		try{
 			FileInputStream fis = new FileInputStream(file);
-			byte[] result = new byte[ fis.available() ];
+			byte[] result = new byte[fis.available()];
 			fis.read(result); fis.close();
 			return result;
-		} catch (Exception e) {
+		}
+		catch(Exception e){
 			e.printStackTrace();
 			return null;
 		}
 	}
 	
 	/**
-	 * Write Bytes to File
+	 * Write bytes to File
 	 * @param bs Byte Array to Write
 	 * @param file File to Write
 	 * @return OK?
 	 */
-	public final static boolean WriteByteArraytoFile(byte[] bs, File file) {
-		try {
+	public final static boolean writeByteArraytoFile(byte[] bs, File file){
+		try{
 			FileOutputStream fos = new FileOutputStream(file);
 			fos.write(bs); fos.close();
 			return true;
-		} catch (Exception e) {
+		}
+		catch(Exception e){
 			e.printStackTrace();
 			return false;
 		}
 	}
-	
-	/**
-	 * Compress byte for Sending Chunk or Etc.
-	 * @param compress Bytes to Compress
-	 * @return compressed Byte
-	 * @author Blue Electric
-	 */
-	public final static byte[] compressByte(byte[] compress) throws Exception {
-		return compressByte( new byte[][]{compress} );
-	}
-	
-	public final static byte[] compressByte(byte[]... compress) throws Exception {
+
+	public final static byte[] compressByte(byte[]... compress) throws Exception{
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DeflaterOutputStream dos = new DeflaterOutputStream( bos );
-		for(byte[] ba : compress) {
+		DeflaterOutputStream dos = new DeflaterOutputStream(bos);
+		for(byte[] ba: compress){
 			dos.write(ba);
 		}
 		dos.close();
@@ -98,7 +94,7 @@ public class Utils{
 		bos.close();
 		return buf;
 	}
-	
+
 	public static int getTriad(byte[] data, int offset){
 		return (int) (data[offset++] << 16 | data[offset++] << 8  | data[offset]);
 	}

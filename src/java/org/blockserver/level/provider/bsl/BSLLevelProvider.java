@@ -20,6 +20,7 @@ public class BSLLevelProvider extends LevelProvider{
 	private Server server;
 	private File dir, chunksDir;
 	private Vector3d spawnPos;
+	private Gettable<Generator> generator;
 	private Map<ChunkPosition, BSLChunk> cachedChunks = new HashMap<ChunkPosition, BSLChunk>();
 
 	public BSLLevelProvider(Server server, File file, String name){
@@ -68,12 +69,12 @@ public class BSLLevelProvider extends LevelProvider{
 	}
 
 	@Override
-	public boolean loadChunk(ChunkPosition pos){
+	public boolean loadChunk(ChunkPosition pos, int reason){
 		if(cachedChunks.containsKey(pos)){
 			return false;
 		}
 		try{
-			cachedChunks.put(pos, new BSLChunk(server, toFile(pos), pos));
+			cachedChunks.put(pos, new BSLChunk(server, toFile(pos), pos, this, reason));
 			return true;
 		}
 		catch(IOException e){
@@ -124,5 +125,9 @@ public class BSLLevelProvider extends LevelProvider{
 	@Override
 	public BSLChunk getChunk(ChunkPosition pos){
 		return cachedChunks.get(pos);
+	}
+
+	public Generator getGenerator(){
+		return generator.get();
 	}
 }

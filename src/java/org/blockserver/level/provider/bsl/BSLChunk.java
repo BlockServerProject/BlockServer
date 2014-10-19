@@ -15,8 +15,8 @@ import org.blockserver.entity.SavedEntity;
 import org.blockserver.io.bsf.BSF;
 import org.blockserver.io.bsf.BSFReader;
 import org.blockserver.io.bsf.BSFWriter;
+import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
-import org.blockserver.level.provider.ChunkPosition.MiniChunkPosition;
 import org.blockserver.level.provider.IChunk;
 
 //TODO getBlocks, getDamages, getSkyLights, getBlockLights without ByteBuffer!
@@ -24,19 +24,21 @@ public class BSLChunk implements IChunk{
 	private Server server;
 	private File file;
 	private ChunkPosition pos;
+	private BSLLevelProvider provider;
 	private Map<Integer, SavedEntity> entities = new HashMap<Integer, SavedEntity>();
 	private BSLMiniChunk[] minichunks = new BSLMiniChunk[WORLD_MINICHUNK_CNT];
 
-	public BSLChunk(Server server, File chunkFile, ChunkPosition pos) throws IOException{
+	public BSLChunk(Server server, File chunkFile, ChunkPosition pos, BSLLevelProvider provider, int reason) throws IOException{
 		this.server = server;
 		file = chunkFile;
 		this.pos = pos;
-		load();
+		this.provider = provider;
+		load(reason);
 	}
 
-	private void load() throws IOException{
+	private void load(int flag) throws IOException{
 		if(!file.exists()){
-			generate();
+			generate(flag);
 			return;
 		}
 		FileInputStream is = new FileInputStream(file);
@@ -68,19 +70,12 @@ public class BSLChunk implements IChunk{
 		reader.close();
 	}
 	
-	public static final byte[] FLATREPEAT = new byte[]{0x07, 0x03, 0x03, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	//TODO Linking to Flat Generator
 	//TODO Handle biome Content
-	private void generate() throws IOException {
-		//TODO: Failed to Generate...
-		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
-			ByteBuffer bb = ByteBuffer.allocate(0x1000);
-			while( bb.hasRemaining() ) {
-				bb.put(FLATREPEAT);
-			}
-			BSLMiniChunk mini = new BSLMiniChunk(new MiniChunkPosition(pos.getX(), Y, pos.getZ()), bb.array(), new byte[0x800], new byte[0x800], new byte[0x800], new byte[0x100], new byte[0x400]);
-			minichunks[Y] = mini;
-		}
+	private void generate(int flag) throws IOException {
+		// TODO use generators
+		Generator generator = provider.getGenerator();
+		generator.generateChunk(pos, flag);
 		save();
 	}
 	

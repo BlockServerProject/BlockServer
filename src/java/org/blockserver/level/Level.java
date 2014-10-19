@@ -86,13 +86,18 @@ public class Level{
 		return name;
 	}
 	public Generator getGenerator(){
-		try{
-			return generator == null ? server.getGeneratorMgr().generate(server.getDefaultLevelGenerator().getSimpleName(), provider, seed, new Random(), 0, ""):generator;
+		if(generator == null){
+			try{
+				generator = server.getGeneratorMgr().generate(
+						server.getDefaultLevelGenerator().getSimpleName(), provider,
+						seed, new Random(), 0, "");
+			}
+			catch(Throwable e){
+				e.printStackTrace();
+				return null;
+			}
 		}
-		catch(Throwable e){
-			e.printStackTrace();
-			return null;
-		}
+		return generator;
 	}
 
 	public Block getBlock(int x, int y, int z){

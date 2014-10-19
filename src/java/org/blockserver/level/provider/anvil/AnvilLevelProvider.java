@@ -128,7 +128,7 @@ public class AnvilLevelProvider extends LevelProvider{
 	}
 
 	@Override
-	public boolean loadChunk(ChunkPosition pos){
+	public boolean loadChunk(ChunkPosition pos, int reason){
 		// TODO Auto-generated method stub
 		return false;
 	}

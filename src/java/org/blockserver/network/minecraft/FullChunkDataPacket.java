@@ -30,13 +30,20 @@ public class FullChunkDataPacket extends BaseDataPacket{
 		}
 		byte[] compressed;
 		try{
-			compressed = Utils.compressByte( Utils.LInt(chunk.getX()), Utils.LInt(chunk.getZ()), chunk.getBlocks(), chunk.getDamages(), chunk.getSkyLights(), chunk.getBlockLights(), afterBuffer.array() );
+			compressed = Utils.compressByte(
+					Utils.writeLInt(chunk.getX()),
+					Utils.writeLInt(chunk.getZ()),
+					chunk.getBlocks(),
+					chunk.getDamages(),
+					chunk.getSkyLights(),
+					chunk.getBlockLights(),
+					afterBuffer.array());
 		}
 		catch(Exception e){
 			e.printStackTrace();
 			return;
 		}
-		bb = ByteBuffer.allocate( 1 + compressed.length );
+		bb = ByteBuffer.allocate(1 + compressed.length);
 		bb.put(FULL_CHUNK_DATA_PACKET);
 		bb.put(compressed);
 	}

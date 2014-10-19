@@ -2,6 +2,7 @@ package org.blockserver.level.generator;
 
 import java.util.Random;
 
+import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.LevelProvider;
 
 @SuppressWarnings("unused")
@@ -28,7 +29,7 @@ public class FlatGenerator implements Generator{
 		
 	}
 	@Override
-	public void generateChunk(int flag){
+	public void generateChunk(ChunkPosition pos, int flag){
 		// TODO Auto-generated method stub
 		
 	}

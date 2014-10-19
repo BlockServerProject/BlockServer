@@ -14,6 +14,7 @@ import org.blockserver.Server;
 import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
 import org.blockserver.item.Inventory;
+import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
 import org.blockserver.math.Vector3;
@@ -134,9 +135,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 							if(useChunks.containsKey(v)){
 								continue;
 							}
-							level.getLevelProvider().loadChunk(v);
+							level.getLevelProvider().loadChunk(v, Generator.FLAG_GENERATOR_USAGE);
 							useChunks.put(v, level.getLevelProvider().getChunk(v) );
-							addToQueue( new FullChunkDataPacket( useChunks.get(v) ) );
+							addToQueue(new FullChunkDataPacket(useChunks.get(v)));
 						}
 						catch(Exception e){
 							e.printStackTrace();
