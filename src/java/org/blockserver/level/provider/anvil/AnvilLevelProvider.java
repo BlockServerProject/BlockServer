@@ -15,6 +15,7 @@ import org.blockserver.io.nbt.NBTReader;
 import org.blockserver.io.nbt.StringTag;
 import org.blockserver.level.Level;
 import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.IChunk;
 import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3d;
 
@@ -169,5 +170,10 @@ public class AnvilLevelProvider extends LevelProvider{
 	@Override
 	public Server getServer(){
 		return server;
+	}
+	@Override
+	public IChunk getChunk(ChunkPosition pos){
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

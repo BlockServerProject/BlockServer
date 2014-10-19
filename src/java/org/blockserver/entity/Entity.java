@@ -27,6 +27,9 @@ public abstract class Entity extends Moveable{
 	protected Entity(double x, double y, double z, Level level, int eid){
 		super(x, y, z);
 		this.level = level;
+		if(level == null) {
+			throw new RuntimeException();
+		}
 		trace = new Throwable("Debug stack trace");
 		this.eid = eid;
 		setSpeed(new YPSControlledVector3d(0, 0, 0), MODIFIER_PITCH_NEUTRALIZER);

@@ -94,7 +94,7 @@ public class PacketHandler extends Thread{
 						player.handlePacket(packet);
 					}
 					else{
-						server.getLogger().warning("Cannot find player at %s:%d, data packet with pid %d (%s) sent",
+						server.getLogger().debug("Cannot find player at %s:%d, data packet with pid %d (%s) sent",
 								pck.getAddress().toString().replace("/", ""),
 								pck.getPort(),
 								packet.getBuffer()[0], // does not shift the ByteBuffer

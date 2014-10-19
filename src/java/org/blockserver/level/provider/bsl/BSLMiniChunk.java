@@ -1,7 +1,5 @@
 package org.blockserver.level.provider.bsl;
 
-import java.nio.ByteBuffer;
-
 import org.blockserver.level.provider.ChunkPosition.MiniChunkPosition;
 import org.blockserver.utility.Utils;
 
@@ -17,10 +15,12 @@ public class BSLMiniChunk{
 		this.blockLights = blockLights;
 		this.skyLights = skyLights;
 		this.biomes = biomes;
+		/*
 		ByteBuffer bb = ByteBuffer.wrap(biomeColors);
 		for(int i = 0; i < 256; i++){
 			this.biomeColors[i] = bb.getInt();
 		}
+		*/
 	}
 
 	public byte getBlockID(byte x, byte y, byte z){
@@ -81,11 +81,14 @@ public class BSLMiniChunk{
 		return biomes;
 	}
 	public byte[] getBiomeColors(){
+		return new byte[0x400];
+		/*
 		ByteBuffer bb = ByteBuffer.allocate(0x400);
 		for(int i: biomeColors){
 			bb.putInt(i);
 		}
 		return bb.array();
+		*/
 	}
 
 	public MiniChunkPosition getPosition(){

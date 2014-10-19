@@ -3,6 +3,7 @@ package org.blockserver.player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -13,19 +14,27 @@ import org.blockserver.Server;
 import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
 import org.blockserver.item.Inventory;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.IChunk;
+import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
 import org.blockserver.network.minecraft.DisconnectPacket;
+import org.blockserver.network.minecraft.FullChunkDataPacket;
 import org.blockserver.network.minecraft.LoginPacket;
 import org.blockserver.network.minecraft.LoginStatusPacket;
 import org.blockserver.network.minecraft.MessagePacket;
+import org.blockserver.network.minecraft.MovePlayerPacket;
 import org.blockserver.network.minecraft.PacketIDs;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
 import org.blockserver.network.minecraft.ServerHandshakePacket;
+import org.blockserver.network.minecraft.SetHealthPacket;
+import org.blockserver.network.minecraft.SetSpawnPositionPacket;
+import org.blockserver.network.minecraft.SetTimePacket;
 import org.blockserver.network.minecraft.StartGamePacket;
 import org.blockserver.network.raknet.ACKPacket;
 import org.blockserver.network.raknet.AcknowledgePacket;
@@ -52,9 +61,12 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	private int maxHealth;
 	private Server server;
 	protected Inventory inventory;
+	
+	private ChunkSender sender;
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
-		super(0, 0, 0, null);
+		//TODO Default Level by Config
+		super(128, 4, 128, server.getDefaultLevel() );
 		this.ip = ip.replace("/", "");
 		this.port = port;
 		mtuSize = mtu;
@@ -71,52 +83,143 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		catch(Exception e){
 			e.printStackTrace();
 		}
+		
+		sender = new ChunkSender();
+	}
+	
+	private final class ChunkSender extends Thread {
+		public final HashMap<ChunkPosition, IChunk> useChunks = new HashMap<>();
+		
+		private final HashMap<Integer, ArrayList<ChunkPosition>> MapOrder = new HashMap<>();
+		private final HashMap<ChunkPosition, Boolean> requestChunks = new HashMap<>();
+		private final ArrayList<Integer> orders = new ArrayList<>();
+		
+		public boolean first = true;
+		public int lastCX = 0, lastCZ = 0;
+		
+		@Override
+		public final void run() {
+			System.out.println( "In ChunkSender" );
+			while ( !isInterrupted() ) {
+				int centerX = (int) Math.floor(x)/16;
+				int centerZ = (int) Math.floor(z)/16;
+				
+				try {
+					if( centerX == lastCX && centerZ == lastCZ && !first ) {
+						Thread.sleep(100);
+						continue;
+					}
+				} catch (InterruptedException e) {
+					continue;
+				}
+				System.out.println( "Do ChunkSender " + centerX + ", " + centerZ );
+				first = false;
+				lastCX = centerX; lastCZ = centerZ;
+				int radius = 4;
+				
+				MapOrder.clear(); requestChunks.clear(); orders.clear();
+				
+				for (int x = -radius; x <= radius; ++x) {
+					for (int z = -radius; z <= radius; ++z) {
+						int distance = (x*x) + (z*z);
+						int chunkX = x + centerX;
+						int chunkZ = z + centerZ;
+						if( !MapOrder.containsKey( distance ) ) {
+							MapOrder.put(distance, new ArrayList<ChunkPosition>());
+						}
+						requestChunks.put(ChunkPosition.byDirectIndex(chunkX, chunkZ), true);
+						MapOrder.get(distance).add( ChunkPosition.byDirectIndex(chunkX, chunkZ) );
+						orders.add(distance);
+					}
+				}
+				Collections.sort(orders);
+
+				for( Integer i : orders ) {
+					for( ChunkPosition v : MapOrder.get(i) ) {
+						try {
+							if( useChunks.containsKey(v) ) { continue; }
+							level.getLevelProvider().loadChunk(v);
+							useChunks.put(v, level.getLevelProvider().getChunk(v) );
+							addToQueue( new FullChunkDataPacket( useChunks.get(v) ) );
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+				//TODO Unload Unused Chunks
+				/*
+				ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
+				for( int i = 0; i < v2a.length; i++ ) {
+					ChunkPosition v = v2a[i];
+					if( !useChunks.containsKey( v2a ) ) {
+						level.releaseChunk(v);
+						useChunks.remove(v);
+					}
+				}
+				*/
+				System.out.println( "Do Finish" );
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					
+				}
+			}
+			System.out.println( "Out ChunkSender" );
+		}
 	}
 
 	public void update(long ticks){
-		if(this.ACKQueue.size() > 0){
-			int[] array = new int[this.ACKQueue.size()];
-			int offset = 0;
-			for(Integer i: ACKQueue){
-				array[offset++] = i;
+		synchronized(ACKQueue){
+			if(this.ACKQueue.size() > 0){
+				int[] array = new int[this.ACKQueue.size()];
+				int offset = 0;
+				for(Integer i: ACKQueue){
+					array[offset++] = i;
+				}
+				ACKPacket pck = new ACKPacket(array);
+				pck.encode();
+				server.sendPacket(pck.getBuffer(), ip, port);
 			}
-			ACKPacket pck = new ACKPacket(array);
-			pck.encode();
-			server.sendPacket(pck.getBuffer(), ip, port);
 		}
-		if(NACKQueue.size() > 0){
-			int[] array = new int[NACKQueue.size()];
-			int offset = 0;
-			for(Integer i: NACKQueue){
-				array[offset++] = i;
+		synchronized(NACKQueue){
+			if(NACKQueue.size() > 0){
+				int[] array = new int[NACKQueue.size()];
+				int offset = 0;
+				for(Integer i: NACKQueue){
+					array[offset++] = i;
+				}
+				NACKPacket pck = new NACKPacket(array);
+				pck.encode();
+				server.sendPacket(pck.getBuffer(), ip, port);
 			}
-			NACKPacket pck = new NACKPacket(array);
-			pck.encode();
-			server.sendPacket(pck.getBuffer(), ip, port);
 		}
-		if(queue.packets.size() > 0){
-			queue.encode();
-			server.sendPacket(queue.getBuffer(), ip, port);
-			recoveryQueue.put(queue.sequenceNumber, queue);
-			queue.packets.clear();
+		synchronized(queue){
+			if(queue.packets.size() > 0){
+				queue.encode();
+				server.sendPacket(queue.getBuffer(), ip, port);
+				recoveryQueue.put(queue.sequenceNumber, queue);
+				queue.packets.clear();
+			}
 		}
 	}
 
 	public void addToQueue(BaseDataPacket pck){
-		pck.encode();
-		BlockServer.Debugging.logSentDataPacket(pck, this);
-		InternalPacket ipck = new InternalPacket();
-		ipck.buffer = pck.getBuffer();
-		ipck.reliability = 2;
-		ipck.messageIndex = messageIndex++;
-		ipck.toBinary();
-		if(queue.getLength() >= mtuSize){
-			queue.sequenceNumber = sequenceNum++;
-			queue.encode();
-			server.sendPacket(queue.getBuffer(), ip, port);
-			queue.packets.clear();
+		synchronized(queue){
+			pck.encode();
+			BlockServer.Debugging.logSentDataPacket(pck, this);
+			InternalPacket ipck = new InternalPacket();
+			ipck.buffer = pck.getBuffer();
+			ipck.reliability = 2;
+			ipck.messageIndex = messageIndex++;
+			ipck.toBinary();
+			if(queue.getLength() + pck.getBuffer().length >= mtuSize){
+				queue.sequenceNumber = sequenceNum++;
+				queue.encode();
+				server.sendPacket(queue.getBuffer(), ip, port);
+				queue.packets.clear();
+			}
+			queue.packets.add(ipck);
 		}
-		queue.packets.add(ipck);
 	}
 	public void handlePacket(CustomPacket pck){
 		if(pck.sequenceNumber - this.lastSequenceNum == 1){
@@ -127,7 +230,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 				NACKQueue.add(i);
 			}
 		}
-		ACKQueue.add(pck.sequenceNumber);
+		synchronized(ACKQueue){
+			ACKQueue.add(pck.sequenceNumber);
+		}
 		for(InternalPacket ipck : pck.packets){
 			BlockServer.Debugging.logReceivedInternalPacket(ipck, this);
 			switch (ipck.buffer[0]){
@@ -177,8 +282,21 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), entityID);
 						addToQueue(sgp);
 						*/
-						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
+						StartGamePacket sgp = new StartGamePacket( level.getSpawnPos().toVector3(), new Vector3d(x, y, z), 1, level.getSeed(), 0);
 						addToQueue(sgp);
+						
+						SetTimePacket stp = new SetTimePacket(0);
+						addToQueue(stp);
+						
+						SetSpawnPositionPacket sspp = new SetSpawnPositionPacket( new Vector3(128, 4, 128) );
+						addToQueue(sspp);
+						
+						SetHealthPacket setHealth = new SetHealthPacket((byte) 0x20);
+						addToQueue(setHealth);
+						
+						sender.start();
+						
+						/*
 						sendChatArgs(server.getMOTD());
 						server.getChatMgr().broadcast(name + " joined the game.");
 						for(Player other: server.getConnectedPlayers()){
@@ -186,6 +304,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 								spawnPlayer(other);
 							}
 						}
+						*/
 					}
 					break;
 				case DISCONNECT:
@@ -195,6 +314,13 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					MessagePacket mpk = new MessagePacket(ipck.buffer);
 					mpk.decode();
 					server.getChatMgr().handleChat(this, mpk.getMessage());
+					break;
+				case MOVE_PLAYER:
+					MovePlayerPacket movePlayer = new MovePlayerPacket( ipck.buffer );
+					movePlayer.decode();
+					x = movePlayer.x;
+					y = movePlayer.y;
+					z = movePlayer.z;
 					break;
 				default:
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
@@ -262,6 +388,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		}
 		addToQueue(new DisconnectPacket());
 		disconnect(String.format("kicked (%s)", reason));
+		while ( sender.isAlive() ) {
+			sender.interrupt();
+		}
 	}
 	protected void disconnect(String reason){
 		server.getLogger().info("%s (%s:%d) disconnected: %s.", name, ip, port, reason);
