@@ -5,7 +5,7 @@ import org.blockserver.utility.Utils;
 
 public class BSLMiniChunk{
 	private byte[] blocks, damages, blockLights, skyLights, biomes;
-	private int[] biomeColors;
+	private int[] biomeColors = new int[0x100];;
 	private MiniChunkPosition pos;
 
 	public BSLMiniChunk(MiniChunkPosition position, byte[] blocks, byte[] damages, byte[] blockLights, byte[] skyLights, byte[] biomes, byte[] biomeColors){
@@ -15,12 +15,10 @@ public class BSLMiniChunk{
 		this.blockLights = blockLights;
 		this.skyLights = skyLights;
 		this.biomes = biomes;
-		/*
 		ByteBuffer bb = ByteBuffer.wrap(biomeColors);
-		for(int i = 0; i < 256; i++){
+		for(int i = 0; i < 0x100; i++){
 			this.biomeColors[i] = bb.getInt();
 		}
-		*/
 	}
 
 	public byte getBlockID(byte x, byte y, byte z){
@@ -81,14 +79,11 @@ public class BSLMiniChunk{
 		return biomes;
 	}
 	public byte[] getBiomeColors(){
-		return new byte[0x400];
-		/*
 		ByteBuffer bb = ByteBuffer.allocate(0x400);
 		for(int i: biomeColors){
 			bb.putInt(i);
 		}
 		return bb.array();
-		*/
 	}
 
 	public MiniChunkPosition getPosition(){

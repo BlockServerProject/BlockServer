@@ -141,7 +141,6 @@ public class BSLChunk implements IChunk{
 		}
 		return bb.array();
 	}
-	
 	@Override
 	public byte[] getTiles(){
 		// TODO Auto-generated method stub
