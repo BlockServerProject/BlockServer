@@ -17,7 +17,7 @@ public final class MovePlayerPacket extends BaseDataPacket{
 	}
 	
 	@Override
-	public void decode() {
+	public void decode(){
 		bb.get();
 		eid = bb.getInt();
 		x = bb.getFloat();
@@ -29,9 +29,9 @@ public final class MovePlayerPacket extends BaseDataPacket{
 	}
 
 	@Override
-	public void encode() {
+	public void encode(){
 		//PID + isTeleport + (eid, xyz, ypb)
-		bb = ByteBuffer.allocate( 2 + (0x04 * 7) );
+		bb = ByteBuffer.allocate(2 + (0x04 * 7));
 		bb.put(MOVE_PLAYER);
 		bb.putInt(eid);
 		bb.putFloat(x);

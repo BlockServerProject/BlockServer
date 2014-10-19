@@ -11,10 +11,10 @@ public class SetTimePacket extends BaseDataPacket{
 	
 	public void encode(){
 		bb = ByteBuffer.allocate( 2 + 0x04 );
-		bb.put( SET_TIME );
-		bb.putInt( time );
+		bb.put(SET_TIME);
+		bb.putInt(time);
 		//TODO 0x00
-		bb.put( (byte) 0x80 ); //true
+		bb.put((byte) 0x80);
 	}
 	
 	public void decode(){

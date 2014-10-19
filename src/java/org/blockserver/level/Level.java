@@ -7,7 +7,7 @@ import java.util.List;
 import org.blockserver.Server;
 import org.blockserver.blocks.Block;
 import org.blockserver.entity.Entity;
-import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.LevelCorruptedException;
 import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
@@ -24,25 +24,28 @@ public class Level{
 	private LevelProvider provider;
 	private Server server;
 
-	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProvider provider, Server server){
-		this(name, seed, defaultGamemode, spawnPos, provider, server, server.getWorldsDir());
+	public Level(String name, LevelProvider provider){
+		
 	}
-	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProvider provider, Server server, File worldsDir){
-		this.name = name;
-		worldDir = new File(worldsDir, name);
-		worldDir.mkdirs();
-		this.seed = seed;
-		this.defaultGamemode = defaultGamemode;
-		this.spawnPos = spawnPos;
-		this.provider = provider;
-		this.server = server;
-		initialize();
-	}
-	public Level(LevelProvider provider){
-		this.provider = provider;
-		initialize();
-	}
-	private void initialize(){
+//	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProvider provider, Server server){
+//		this(name, seed, defaultGamemode, spawnPos, provider, server, server.getWorldsDir());
+//	}
+//	public Level(String name, long seed, int defaultGamemode, Vector3d spawnPos, LevelProvider provider, Server server, File worldsDir) throws LevelCorruptedException{
+//		this.name = name;
+//		worldDir = new File(worldsDir, name);
+//		worldDir.mkdirs();
+//		this.seed = seed;
+//		this.defaultGamemode = defaultGamemode;
+//		this.spawnPos = spawnPos;
+//		this.provider = provider;
+//		this.server = server;
+//		initialize();
+//	}
+//	public Level(LevelProvider provider) throws LevelCorruptedException{
+//		this.provider = provider;
+//		initialize();
+//	}
+	private void initialize() throws LevelCorruptedException{
 		provider.init();
 		/*
 		new Thread(new Runnable(){

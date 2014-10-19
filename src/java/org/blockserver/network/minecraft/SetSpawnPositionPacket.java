@@ -12,11 +12,11 @@ public class SetSpawnPositionPacket extends BaseDataPacket{
 	}
 	
 	public void encode(){
-		bb = ByteBuffer.allocate( 2 + (0x04 * 2) );
-		bb.put( SET_SPAWN_POSITION );
-		bb.putInt( vector.getX() );
-		bb.putInt( vector.getZ() );
-		bb.put( (byte) vector.getY() );
+		bb = ByteBuffer.allocate(2 + (0x04 * 2));
+		bb.put(SET_SPAWN_POSITION);
+		bb.putInt(vector.getX());
+		bb.putInt(vector.getZ());
+		bb.put((byte) vector.getY());
 	}
 	
 	public void decode(){

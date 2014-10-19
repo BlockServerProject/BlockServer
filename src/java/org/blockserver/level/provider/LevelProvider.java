@@ -10,7 +10,7 @@ public abstract class LevelProvider{
 	protected LevelProvider(String name){
 		ownerName = name;
 	}
-	public abstract void init();
+	public abstract void init() throws LevelCorruptedException;
 	public abstract boolean loadChunk(ChunkPosition pos); // remember to mark this as synchronized in subclasses
 	public abstract IChunk getChunk(ChunkPosition pos);
 	public abstract boolean saveChunk(ChunkPosition pos); // remember to mark this as synchronized in subclasses

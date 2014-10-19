@@ -35,8 +35,9 @@ public class BSLChunk implements IChunk{
 	}
 
 	private void load() throws IOException{
-		if( !file.exists() ) {
-			generate(); return;
+		if(!file.exists()){
+			generate();
+			return;
 		}
 		FileInputStream is = new FileInputStream(file);
 		BSFReader reader = new BSFReader(is);
@@ -84,14 +85,7 @@ public class BSLChunk implements IChunk{
 	}
 	
 	public void save() throws IOException{
-		/*
-		java.lang.NullPointerException
-		at org.blockserver.io.bsf.BSFWriter.init(BSFWriter.java:28)
-		at org.blockserver.io.bsf.BSFWriter.<init>(BSFWriter.java:23)
-		at org.blockserver.io.bsf.BSFWriter.<init>(BSFWriter.java:17)
-		at org.blockserver.level.provider.bsl.BSLChunk.save(BSLChunk.java:101)
-		*/
-		BSFWriter writer = new BSFWriter(new FileOutputStream(file), BSF.Type.LEVEL_INDEX); //Don't use NULL type on BSFWriter!
+		BSFWriter writer = new BSFWriter(new FileOutputStream(file), BSF.Type.LEVEL_INDEX);
 		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
 			writer.write(minichunks[Y].getBlocks());
 			writer.write(minichunks[Y].getDamages());
@@ -100,7 +94,7 @@ public class BSLChunk implements IChunk{
 			writer.write(minichunks[Y].getBiomes());
 			writer.write(minichunks[Y].getBiomeColors());
 		}
-		writer.writeInt( entities.size() );
+		writer.writeInt(entities.size());
 		// TODO write tiles
 		for(SavedEntity entity: entities.values()){
 			writer.writeByte(entity.getTypeID());

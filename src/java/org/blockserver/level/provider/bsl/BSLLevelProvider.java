@@ -1,18 +1,23 @@
 package org.blockserver.level.provider.bsl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.blockserver.Server;
+import org.blockserver.io.bsf.BSF;
+import org.blockserver.io.bsf.BSFReader;
 import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.LevelCorruptedException;
 import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3d;
 
 public class BSLLevelProvider extends LevelProvider{
 	private Server server;
 	private File dir, chunksDir;
+	private Vector3d spawnPos;
 	private Map<ChunkPosition, BSLChunk> cachedChunks = new HashMap<ChunkPosition, BSLChunk>();
 
 	public BSLLevelProvider(Server server, File file, String name){
@@ -24,19 +29,39 @@ public class BSLLevelProvider extends LevelProvider{
 	}
 
 	@Override
-	public void init(){
-		if(dir.isDirectory()){
-			@SuppressWarnings("unused")
-			File index = new File(dir, "index.bsf");
-			// TODO BSF LEVEL_INDEX reading
+	public void init() throws LevelCorruptedException{
+		File index = new File(dir, "index.bsf");
+		if(dir.isDirectory() && index.isFile()){
+			try{
+				BSFReader reader = new BSFReader(new FileInputStream(index));
+				try{
+					Map<String, Object> data = reader.readAll();
+					reader.close();
+					if(!reader.getType().equals(BSF.Type.LEVEL_INDEX)){
+						throw new BSF.InvalidBSFFileException("BSF level index corrupted: incorrect type!");
+					}
+					spawnPos = new Vector3d(
+							(double) data.get(BSF.LI_SPAWN_X),
+							(double) data.get(BSF.LI_SPAWN_Y),
+							(double) data.get(BSF.LI_SPAWN_Z));
+				}
+				catch(BSF.InvalidBSFFileException | NullPointerException e){
+					try{
+						reader.close();
+					}
+					catch(Exception ex){}
+					throw new LevelCorruptedException(e, this);
+				}
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 		}
 		else{
 			if(!dir.mkdirs()){
 				throw new RuntimeException("Unable to make world directories");
 			}
-			@SuppressWarnings("unused")
-			File index = new File(dir, "index.bsf");
-			// TODO BSF LEVEL_INDEX loading
+			// TODO level generation
 		}
 	}
 
@@ -82,8 +107,7 @@ public class BSLLevelProvider extends LevelProvider{
 
 	@Override
 	public Vector3d getSpawn(){
-		//TODO Custom Spawn point
-		return new Vector3d(128, 4, 128);
+		return spawnPos;
 	}
 
 	@Override

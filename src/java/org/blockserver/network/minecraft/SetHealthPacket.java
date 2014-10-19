@@ -12,8 +12,8 @@ public class SetHealthPacket extends BaseDataPacket{
 	
 	public void encode(){
 		bb = ByteBuffer.allocate( 2);
-		bb.put( SET_HEALTH );
-		bb.put( (byte) health );
+		bb.put(SET_HEALTH);
+		bb.put(health);
 	}
 	
 	public void decode(){

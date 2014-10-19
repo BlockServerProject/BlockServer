@@ -8,7 +8,7 @@ public class FullChunkDataPacket extends BaseDataPacket{
 	private IChunk chunk;
 	
 	public final static int UNCOMPRESSED_CHUNK_LENGTH = (0x04 * 2) + 0x8000 + (0x4000*3) + 0x100 + 0x400;
-	public static final byte[] BIOMECOLOR = new byte[]{0x00 ,(byte) 0x85 ,(byte) 0xb2 ,0x4a};
+	public static final byte[] BIOME_COLOR = new byte[]{0x00 ,(byte) 0x85 ,(byte) 0xb2 ,0x4a};
 	
 	public FullChunkDataPacket(IChunk chunk){
 		this.chunk = chunk;
@@ -26,7 +26,7 @@ public class FullChunkDataPacket extends BaseDataPacket{
 		}
 		last += 0x400;
 		while( afterBuffer.position() != last ) {
-			afterBuffer.put(BIOMECOLOR);
+			afterBuffer.put(BIOME_COLOR);
 		}
 		byte[] compressed;
 		try{
@@ -37,7 +37,7 @@ public class FullChunkDataPacket extends BaseDataPacket{
 			return;
 		}
 		bb = ByteBuffer.allocate( 1 + compressed.length );
-		bb.put( FULL_CHUNK_DATA_PACKET );
+		bb.put(FULL_CHUNK_DATA_PACKET);
 		bb.put(compressed);
 	}
 	@Override

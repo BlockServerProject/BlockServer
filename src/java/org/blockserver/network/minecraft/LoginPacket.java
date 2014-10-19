@@ -14,9 +14,7 @@ public class LoginPacket extends BaseDataPacket{
 	}
 
 	@Override
-	public void encode(){
-
-	}
+	public void encode(){}
 
 	@Override
 	public void decode(){
