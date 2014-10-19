@@ -47,8 +47,7 @@ public class ConfigAgent{
 			throw new RuntimeException(e.getCause().getMessage());
 		}
 	}
-	
-	@SuppressWarnings("finally")
+
 	public static Properties loadConfig(File file){
 		if(!file.exists()){
 			throw new RuntimeException("The file given does not exist!");
@@ -57,12 +56,10 @@ public class ConfigAgent{
 			Properties prop = new Properties();
 			try{
 				prop.load(new FileInputStream(file));
+				return prop;
 			}
 			catch(IOException e){
 				throw new RuntimeException(e.getCause().getMessage());
-			}
-			finally{
-				return prop;
 			}
 		}
 	}
