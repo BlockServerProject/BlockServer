@@ -35,7 +35,12 @@ public class BSFPlayerDatabase extends PlayerDatabase implements GeneralConstant
 				String caseName = (String) data.get(BSF.P_CASE_NAME);
 				double[] v = (double[]) data.get(BSF.P_VECTORS);
 				Vector3d coords = new Vector3d(v[0], v[1], v[2]);
-				Level level = getServer().getLevel((String) data.get(BSF.P_WORLD_NAME), true, false);
+				String levelName = (String) data.get(BSF.P_WORLD_NAME);
+				Level level = getServer().getLevel(levelName, true, false);
+				if(level == null){
+					getServer().getLogger().warning("Player %s has been teleported to default level because the original level %s cannot be found.", caseName, levelName);
+					level = getServer().getDefaultLevel();
+				}
 				Inventory inv = new Inventory((IInventory<? extends IItem>) data.get(BSF.P_I_INVENTORY), player, getServer());
 				return new PlayerData(level, coords, caseName, inv);
 			}
@@ -43,11 +48,8 @@ public class BSFPlayerDatabase extends PlayerDatabase implements GeneralConstant
 				e.printStackTrace();
 			}
 			catch(BufferUnderflowException e){
-				return dummy(player, name);
+				e.printStackTrace();
 			}
-		}
-		else{
-			throw new RuntimeException("Tried to load a player file that doesn't exist.");
 		}
 		return dummy(player, name);
 	}

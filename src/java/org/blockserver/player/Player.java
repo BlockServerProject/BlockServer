@@ -17,6 +17,7 @@ import org.blockserver.item.Inventory;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
 import org.blockserver.math.Vector3;
+import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
@@ -64,8 +65,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	private ChunkSender sender;
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
-		//TODO Default Level by Config
-		super(128, 4, 128, server.getDefaultLevel() );
+		super(new Vector3d(0, 128, 0), null);
 		this.ip = ip.replace("/", "");
 		this.port = port;
 		mtuSize = mtu;
@@ -82,14 +82,12 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		
 		sender = new ChunkSender();
 	}
 	
-	private final class ChunkSender extends Thread {
+	private final class ChunkSender extends Thread{
 		public final HashMap<ChunkPosition, IChunk> useChunks = new HashMap<>();
-		
-		private final HashMap<Integer, ArrayList<ChunkPosition>> MapOrder = new HashMap<>();
+		private final HashMap<Integer, ArrayList<ChunkPosition>> mapOrder = new HashMap<>();
 		private final HashMap<ChunkPosition, Boolean> requestChunks = new HashMap<>();
 		private final ArrayList<Integer> orders = new ArrayList<>();
 		
@@ -97,50 +95,50 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		public int lastCX = 0, lastCZ = 0;
 		
 		@Override
-		public final void run() {
-			System.out.println( "In ChunkSender" );
-			while ( !isInterrupted() ) {
-				int centerX = (int) Math.floor(x)/16;
-				int centerZ = (int) Math.floor(z)/16;
-				
-				try {
-					if( centerX == lastCX && centerZ == lastCZ && !first ) {
+		public final void run(){
+			System.out.println("In ChunkSender");
+			while (!isInterrupted()){
+				int centerX = (int) Math.floor(x) / 16;
+				int centerZ = (int) Math.floor(z) / 16;
+				try{
+					if(centerX == lastCX && centerZ == lastCZ && !first){
 						Thread.sleep(100);
 						continue;
 					}
-				} catch (InterruptedException e) {
+				}
+				catch(InterruptedException e){
 					continue;
 				}
-				System.out.println( "Do ChunkSender " + centerX + ", " + centerZ );
+				System.out.println("Do ChunkSender " + centerX + ", " + centerZ);
 				first = false;
 				lastCX = centerX; lastCZ = centerZ;
-				int radius = 4;
-				
-				MapOrder.clear(); requestChunks.clear(); orders.clear();
-				
-				for (int x = -radius; x <= radius; ++x) {
-					for (int z = -radius; z <= radius; ++z) {
+				final int radius = 4; // TODO change to config settings
+				mapOrder.clear(); requestChunks.clear(); orders.clear();
+				for(int x = -radius; x <= radius; ++x){
+					for(int z = -radius; z <= radius; ++z){
 						int distance = (x*x) + (z*z);
 						int chunkX = x + centerX;
 						int chunkZ = z + centerZ;
-						if( !MapOrder.containsKey( distance ) ) {
-							MapOrder.put(distance, new ArrayList<ChunkPosition>());
+						if(!mapOrder.containsKey(distance)){
+							mapOrder.put(distance, new ArrayList<ChunkPosition>());
 						}
 						requestChunks.put(ChunkPosition.byDirectIndex(chunkX, chunkZ), true);
-						MapOrder.get(distance).add( ChunkPosition.byDirectIndex(chunkX, chunkZ) );
+						mapOrder.get(distance).add(ChunkPosition.byDirectIndex(chunkX, chunkZ));
 						orders.add(distance);
 					}
 				}
 				Collections.sort(orders);
-
-				for( Integer i : orders ) {
-					for( ChunkPosition v : MapOrder.get(i) ) {
-						try {
-							if( useChunks.containsKey(v) ) { continue; }
+				for(Integer i: orders){
+					for(ChunkPosition v: mapOrder.get(i)){
+						try{
+							if(useChunks.containsKey(v)){
+								continue;
+							}
 							level.getLevelProvider().loadChunk(v);
 							useChunks.put(v, level.getLevelProvider().getChunk(v) );
 							addToQueue( new FullChunkDataPacket( useChunks.get(v) ) );
-						} catch (Exception e) {
+						}
+						catch(Exception e){
 							e.printStackTrace();
 						}
 					}
@@ -156,14 +154,13 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					}
 				}
 				*/
-				System.out.println( "Do Finish" );
-				try {
+				System.out.println("Do Finish");
+				try{
 					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					
 				}
+				catch(InterruptedException e){}
 			}
-			System.out.println( "Out ChunkSender" );
+			System.out.println("Out ChunkSender");
 		}
 	}
 
@@ -371,10 +368,10 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		for(Player player: toKick){
 			player.close("logging in from another location.");
 		}
-//		PlayerData data = server.getPlayerDatabase().load(this);
-//		setCoords(data.getCoords());
-//		this.level = data.getLevel(); // validated!
-//		start(server);
+		PlayerData data = server.getPlayerDatabase().load(this);
+		setCoords(data.getCoords());
+		level = data.getLevel(); // validated!
+		start(server);
 	}
 	public void close(String reason){
 		if(reason != null){
