@@ -97,6 +97,7 @@ public class Scheduler extends Thread{
 					try{
 						server.getLogger().info("Stopping test on the 200th tick...");
 						server.stop();
+						System.exit(0);
 					}
 					catch(RuntimeException e){
 						e.printStackTrace();
