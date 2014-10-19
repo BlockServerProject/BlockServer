@@ -11,6 +11,7 @@ import org.blockserver.chat.ChatManager;
 import org.blockserver.chat.SimpleChatManager;
 import org.blockserver.entity.EntityTypeManager;
 import org.blockserver.entity.SimpleEntityTypeManager;
+import org.blockserver.level.generator.FlatGenerator;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.player.BSFPlayerDatabase;
@@ -85,7 +86,7 @@ public class BlockServer{
 			File playersDir = ConfigAgent.readFile(here, advancedConfig, "players-include-path");
 			try{
 				Server server = new Server(serverName, ip, port, maxPlayers,
-						MinecraftVersion.V095, motd, defaultLevelName, null, // TODO GenerationSettings
+						MinecraftVersion.V095, motd, defaultLevelName, FlatGenerator.class, // TODO custom generator
 						chatMgrType, playerDbType, entityTypeMgrType, new org.blockserver.api.SoleEventListener.DummySoleEventListener(), // TODO config-controlled
 						worldsDir, playersDir);
 				server.run();

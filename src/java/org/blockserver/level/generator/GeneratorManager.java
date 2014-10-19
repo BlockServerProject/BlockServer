@@ -22,9 +22,6 @@ public class GeneratorManager{
 				int.class,
 				String.class
 				);
-		if(!c.isVarArgs()){
-			throw new NoSuchMethodException("Doesn't receive varargs parameter");
-		}
 		if((c.getModifiers() & Modifier.PUBLIC) == 0){
 			throw new NoSuchMethodException("Doesn't have public constructor");
 		}
