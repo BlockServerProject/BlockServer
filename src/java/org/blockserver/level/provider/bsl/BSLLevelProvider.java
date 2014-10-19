@@ -9,10 +9,12 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.io.bsf.BSF;
 import org.blockserver.io.bsf.BSFReader;
+import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.LevelCorruptedException;
 import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3d;
+import org.blockserver.utility.Gettable;
 
 public class BSLLevelProvider extends LevelProvider{
 	private Server server;
@@ -29,7 +31,7 @@ public class BSLLevelProvider extends LevelProvider{
 	}
 
 	@Override
-	public void init() throws LevelCorruptedException{
+	public void init(Gettable<Generator> generator) throws LevelCorruptedException{
 		File index = new File(dir, "index.bsf");
 		if(dir.isDirectory() && index.isFile()){
 			try{
@@ -50,7 +52,7 @@ public class BSLLevelProvider extends LevelProvider{
 						reader.close();
 					}
 					catch(Exception ex){}
-					throw new LevelCorruptedException(e, this);
+					throw new LevelCorruptedException(true, e, this);
 				}
 			}
 			catch(IOException e){

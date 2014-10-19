@@ -1,6 +1,7 @@
 package org.blockserver.api;
 
 import org.blockserver.player.Player;
+import org.blockserver.utility.Argument;
 
 public interface SoleEventListener{
 	public void onConnect(Player player, Argument<Boolean> allow);

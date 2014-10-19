@@ -2,7 +2,9 @@ package org.blockserver.level.provider;
 
 import org.blockserver.Server;
 import org.blockserver.level.Level;
+import org.blockserver.level.generator.Generator;
 import org.blockserver.math.Vector3d;
+import org.blockserver.utility.Gettable;
 
 public abstract class LevelProvider{
 	private Level owner = null;
@@ -10,7 +12,13 @@ public abstract class LevelProvider{
 	protected LevelProvider(String name){
 		ownerName = name;
 	}
-	public abstract void init() throws LevelCorruptedException;
+
+	/**
+	 * This method loads the level if it exists.<br>
+	 * If it doesn't, it would attempt to generate a level using the generator passed.
+	 * If the generator is null, it would be replaced by the default generator by {@link Server#getDefaultLevelGenerationSettings()}.
+	 */
+	public abstract void init(Gettable<Generator> generator) throws LevelCorruptedException;
 	public abstract boolean loadChunk(ChunkPosition pos); // remember to mark this as synchronized in subclasses
 	public abstract IChunk getChunk(ChunkPosition pos);
 	public abstract boolean saveChunk(ChunkPosition pos); // remember to mark this as synchronized in subclasses

@@ -17,7 +17,6 @@ import org.blockserver.item.Inventory;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
 import org.blockserver.math.Vector3;
-import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
@@ -277,12 +276,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						server.getLogger().info("%s (%s:%d) logged in with a fake entity ID.", name, ip, port);
 
 						login();
-						//Once we get World generation up, uncomment this:
-						/*
-						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), entityID);
-						addToQueue(sgp);
-						*/
-						StartGamePacket sgp = new StartGamePacket( level.getSpawnPos().toVector3(), new Vector3d(x, y, z), 1, level.getSeed(), 0);
+						StartGamePacket sgp = new StartGamePacket(level.getSpawnPos().toVector3(), this, StartGamePacket.GENERATOR_INFINITE, 1, level.getSeed(), 0);
 						addToQueue(sgp);
 						
 						SetTimePacket stp = new SetTimePacket(0);

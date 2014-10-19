@@ -6,6 +6,9 @@ import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 
 public class StartGamePacket extends BaseDataPacket{
+	public final static int GENERATOR_OLD = 0,
+			GENERATOR_INFINITE = 1,
+			GENERATOR_FLAT = 2;
 	public Vector3 spawnPos;
 	public Vector3d playerpos;
 	
@@ -14,10 +17,10 @@ public class StartGamePacket extends BaseDataPacket{
 	public int gamemode;
 	public int eid;
 	
-	public StartGamePacket(Vector3 spawnPos, Vector3d playerpos, int gamemode, long seed, int eid){
+	public StartGamePacket(Vector3 spawnPos, Vector3d playerpos, int generator, int gamemode, long seed, int eid){
 		this.spawnPos = spawnPos;
 		this.playerpos = playerpos;
-		
+		this.generator = generator;
 		this.gamemode = gamemode;
 		this.seed = seed;
 		this.eid = eid;

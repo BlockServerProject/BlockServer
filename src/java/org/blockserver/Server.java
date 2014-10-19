@@ -16,13 +16,13 @@ import org.blockserver.chat.ChatManager;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.entity.EntityTypeManager;
 import org.blockserver.level.Level;
-import org.blockserver.level.generator.GenerationSettings;
+import org.blockserver.level.generator.Generator;
 import org.blockserver.level.generator.GeneratorManager;
+import org.blockserver.level.provider.LevelCorruptedException;
+import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.level.provider.LevelProviderManager;
 import org.blockserver.level.provider.LevelProviderType;
-import org.blockserver.level.provider.bsl.BSLLevelProvider;
 import org.blockserver.level.provider.bsl.BSLLevelProviderType;
-import org.blockserver.math.Vector3d;
 import org.blockserver.network.PacketHandler;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
@@ -66,7 +66,7 @@ public class Server implements Context{
 	private boolean serverRunning = false;
 	private long startTime;
 	private long serverID;
-	private GenerationSettings defaultLevelGenSet;
+	private Class<? extends Generator> generator;
 	private String motd;
 
 	/**
@@ -251,7 +251,7 @@ public class Server implements Context{
 			return levels.get(name);
 		}
 		if(load){
-			loadLevel(name, generate);
+			loadLevel(name, generate, null);
 		}
 		return levels.get(name);
 	}
@@ -263,8 +263,8 @@ public class Server implements Context{
 	public CommandManager getCmdManager(){
 		return cmdMgr;
 	}
-	public GenerationSettings getDefaultLevelGenerationSettings(){
-		return defaultLevelGenSet;
+	public Class<? extends Generator> getDefaultLevelGenerator(){
+		return generator;
 	}
 	public ChatManager getChatMgr(){
 		return chatMgr;
@@ -326,16 +326,16 @@ public class Server implements Context{
 	}
 
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
-			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
+			String motd, String defaultLevel, Class<? extends Generator> generator,
 			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
 			Class<? extends EntityTypeManager> entityTypeMgrType, SoleEventListener listener,
 			File worldsDir, File playersDir) throws Exception{
-		this(name, ip, port, maxPlayers, version, motd, defaultLevel, defaultLevelGenSet,
+		this(name, ip, port, maxPlayers, version, motd, defaultLevel, generator,
 				chatMgrType.newInstance(), dbType.newInstance(), entityTypeMgrType.newInstance(),
 				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in), new ServerLogger.DefaultServerLogger());
 	}
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
-			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
+			String motd, String defaultLevel, Class<? extends Generator> generator,
 			ChatManager chatMgr, PlayerDatabase db, EntityTypeManager entityTypeMgr, SoleEventListener listener,
 			File worldsDir, File playersDir, ConsoleCommandSource consoleSource, ServerLogger logger) throws Exception{
 		Thread.currentThread().setName("ServerThread");
@@ -355,12 +355,8 @@ public class Server implements Context{
 		this.worldsDir = worldsDir;
 		int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
 		levels = new HashMap<String, Level>(cnt);
-		this.defaultLevelGenSet = defaultLevelGenSet;
+		this.generator = generator;
 		this.defaultLevel = defaultLevel;
-		boolean success = loadLevel(defaultLevel, true);
-		if(!success){
-//			throw new RuntimeException("Unable to generate default level");
-		}
 		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
 		packetHandler = new PacketHandler(this);
 		cmdHandler = new ConsoleCommandHandler(this, consoleSource);
@@ -371,8 +367,13 @@ public class Server implements Context{
 		coll.add(new BSLLevelProviderType());
 		levelProviderMgr = new LevelProviderManager(coll, this);
 		generatorMgr = new GeneratorManager();
+		generatorMgr.addGenerator(generator);
 		playerDb = db;
 		this.listener = listener;
+		boolean success = loadLevel(defaultLevel, true, null);
+		if(!success){
+//			throw new RuntimeException("Unable to generate default level");
+		}
 	}
 	/**
 	 * A file filter that filters out any non-directories and non-root directories
@@ -462,38 +463,34 @@ public class Server implements Context{
 	 * @param generate - whether to try to generate the level if it doesn't exist
 	 * @return whether the level is now loaded.
 	 */
-	public boolean loadLevel(String name, boolean generate){
+	public boolean loadLevel(String name, boolean generate, Generator generator){
 		File dir = new File(getWorldsDir(), name);
-		if(dir.isDirectory()){
-			//TODO: Customable Load Process
-//			levels.put(name, new Level(name, 0L, 1, new Vector3d(128, 4, 128), new BSLLevelProvider(this, dir, name), this) );
-			return true;
-		} else if(generate){
-			return generateLevel(name);
+		if(!dir.isDirectory() && !generate){
+			return false;
 		}
-		return false;
-	}
-	/**
-	 * <p>Generate a level.</p>
-	 * 
-	 * @param name
-	 * @return whether the level is successfully generated.
-	 */
-	public boolean generateLevel(String name){
-		return generateLevel(name, getDefaultLevelGenerationSettings());
-	}
-	/**
-	 * <p>Generate a level.</p>
-	 * 
-	 * @param name
-	 * @param settings the settings to generate a level
-	 * @return whether the level is successfully generated.
-	 */
-	public boolean generateLevel(String name, GenerationSettings settings){
-		File file = new File(worldsDir, name);
-		file.mkdirs();
-		//TODO: Customable Load Process
-//		levels.put(name, new Level( name, 0L, 1, new Vector3d(128, 4, 128), new BSLLevelProvider(this, file, name), this ));
+		LevelProvider provider = levelProviderMgr.filter(dir, name);
+		if(provider == null){
+			return false;
+		}
+		try{
+			Level level = new Level(name, provider, generator);
+			levels.put(name, level);
+			return true;
+		}
+		catch(LevelCorruptedException e){
+			if(e.isAffectingWhole()){
+				if(generate){
+					getLogger().warning("Level %s is corrupted and completely cannot be used! Regenerating level...", name);
+					// TODO regenerate
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				// TODO handle
+			}
+		}
 		return true;
 	}
 }

@@ -1,4 +1,4 @@
-package org.blockserver.api;
+package org.blockserver.utility;
 
 public class Argument<Type>{
 	protected Type value;

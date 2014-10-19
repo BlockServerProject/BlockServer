@@ -2,7 +2,6 @@ package org.blockserver.level.provider.anvil;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.blockserver.Server;
@@ -13,11 +12,13 @@ import org.blockserver.io.nbt.IntTag;
 import org.blockserver.io.nbt.LongTag;
 import org.blockserver.io.nbt.NBTReader;
 import org.blockserver.io.nbt.StringTag;
-import org.blockserver.level.Level;
+import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
+import org.blockserver.level.provider.LevelCorruptedException;
 import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3d;
+import org.blockserver.utility.Gettable;
 
 @SuppressWarnings("unused")
 public class AnvilLevelProvider extends LevelProvider{
@@ -63,10 +64,15 @@ public class AnvilLevelProvider extends LevelProvider{
 		this.dir = dir;
 	}
 	@Override
-	public void init(){
-		readNBT();
+	public void init(Gettable<Generator> generator) throws LevelCorruptedException{
+		if(dir.isDirectory()){
+			readNBT();
+		}
+		else{
+			// TODO generate
+		}
 	}
-	private void readNBT(){
+	private void readNBT() throws LevelCorruptedException{
 		File levelDotDat = new File(dir, "level.dat");
 		if(levelDotDat.isFile()){
 			try{
@@ -115,6 +121,9 @@ public class AnvilLevelProvider extends LevelProvider{
 			catch(IOException e){
 				e.printStackTrace();
 			}
+		}
+		else{
+			throw new LevelCorruptedException(true, "level.dat not found", this);
 		}
 	}
 
