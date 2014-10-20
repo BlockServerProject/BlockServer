@@ -24,7 +24,6 @@ import org.blockserver.network.minecraft.Disconnect;
 import org.blockserver.network.minecraft.LoginPacket;
 import org.blockserver.network.minecraft.LoginStatusPacket;
 import org.blockserver.network.minecraft.MessagePacket;
-import org.blockserver.network.minecraft.MovePlayerPacket;
 import org.blockserver.network.minecraft.PacketsID;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
@@ -51,9 +50,6 @@ public class Player extends Entity implements CommandIssuer{
 	private List<Integer> NACKQueue; // Not received packet queue
 	private Map<Integer, CustomPacket> recoveryQueue; // Packet sent queue to be used if not received
 	private long clientID; // Client ID From MCPE Client
-	
-	private float yaw;
-	private float pitch;
 
 	private int maxHealth;
 	private Server server;
@@ -224,12 +220,6 @@ public class Player extends Entity implements CommandIssuer{
 					mpk.decode();
 					server.getChatMgr().handleChat(this, mpk.msg);
 					break;
-					
-				case PacketsID.MOVE_PLAYER:
-					//server.getLogger().info("Move Player Packet recived.");
-					MovePlayerPacket mpp = new MovePlayerPacket(ipck.buffer);
-					this.updatePosition(mpp.x,mpp.y, mpp.z);
-					
 				default:
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
 			}
@@ -276,21 +266,6 @@ public class Player extends Entity implements CommandIssuer{
 		setCoords(data.getCoords());
 		this.level = data.getLevel(); // validated!
 //		start(server);
-	}
-	protected void updatePosition(float x, float y, float z){
-		//TODO: Send packets to other players
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		
-		//server.getLogger().info("New postion is: "+x+", "+y+", "+z);
-		
-		for(Player p: server.getConnectedPlayers()){
-			MovePlayerPacket mpp = new MovePlayerPacket(this.eid, (float) this.x, (float) this.y, (float) this.z, this.yaw, this.pitch);
-			mpp.encode();
-			p.addToQueue(mpp);
-		}
-		
 	}
 	public void close(String reason){
 		if(reason != null){
