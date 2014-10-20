@@ -192,6 +192,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		}
 		synchronized(queue){
 			if(queue.packets.size() > 0){
+                queue.sequenceNumber = sequenceNum++;
 				queue.encode();
 				server.sendPacket(queue.getBuffer(), ip, port);
 				recoveryQueue.put(queue.sequenceNumber, queue);
@@ -230,9 +231,11 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		synchronized(ACKQueue){
 			ACKQueue.add(pck.sequenceNumber);
 		}
-		for(InternalPacket ipck : pck.packets){
+		for(InternalPacket ipck : pck.packets)
+        {
 			BlockServer.Debugging.logReceivedInternalPacket(ipck, this);
-			switch (ipck.buffer[0]){
+			switch (ipck.buffer[0])
+            {
 				case PING: //PING Packet
 					PingPacket pp = new PingPacket(ipck.buffer);
 					pp.decode();
@@ -316,6 +319,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					break;
 				default:
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
+                    break;
 			}
 		}
 	}

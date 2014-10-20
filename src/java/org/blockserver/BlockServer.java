@@ -26,6 +26,7 @@ import org.blockserver.utility.MinecraftVersion;
  * @author BlockServerProject
  */
 public class BlockServer{
+
 	public final static boolean IS_DEBUG = true; // remember to remove this on production
 	public static final File CONFIG_FILE = new File(".", "config.txt"); // txt is easier for users to edit
 	public static final File ADVANCED_CONFIG_FILE = new File(".", "advanced-config.properties"); // less likely to have users carelessly editing this

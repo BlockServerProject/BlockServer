@@ -90,6 +90,7 @@ public class PacketHandler extends Thread{
 					CustomPacket packet = new CustomPacket(pck.getData());
 					packet.decode();
 					Player player = server.getPlayer(pck.getAddress().toString().replace("/",  ""), pck.getPort());
+
 					if(player instanceof Player){
 						player.handlePacket(packet);
 					}
