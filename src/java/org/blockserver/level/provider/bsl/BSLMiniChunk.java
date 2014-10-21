@@ -1,10 +1,10 @@
 package org.blockserver.level.provider.bsl;
 
+/*
 import java.nio.ByteBuffer;
 
 import org.blockserver.level.provider.ChunkPosition.MiniChunkPosition;
 import org.blockserver.utility.Utils;
-
 public class BSLMiniChunk{
 	private byte[] blocks, damages, blockLights, skyLights, biomes;
 	private int[] biomeColors = new int[0x100];;
@@ -92,3 +92,4 @@ public class BSLMiniChunk{
 		return pos;
 	}
 }
+*/

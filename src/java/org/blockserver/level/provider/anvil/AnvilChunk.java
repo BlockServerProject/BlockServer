@@ -12,7 +12,7 @@ import org.blockserver.io.nbt.NBTReader;
 import org.blockserver.level.Level;
 import org.blockserver.level.provider.IChunk;
 
-public class AnvilChunk implements IChunk{
+public class AnvilChunk extends IChunk{
 	private CompoundTag nbt;
 	public AnvilChunk(NBTReader reader, Level level) throws IOException{
 		nbt = (CompoundTag) reader.readTag();
@@ -25,31 +25,43 @@ public class AnvilChunk implements IChunk{
 	}
 
 	@Override
-	public Collection<SavedEntity> getEntities(){
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public byte[] getBlocks(){
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
 	public byte[] getDamages(){
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
 	public byte[] getSkyLights(){
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
 	public byte[] getBlockLights(){
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public byte[] getBiomeIds(){
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public int[] getBiomeColors(){
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Collection<SavedEntity> getEntities(){
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public byte[] getTiles(){
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -58,16 +70,10 @@ public class AnvilChunk implements IChunk{
 	public int getX(){
 		return ((IntTag) nbt.get("xPos")).getValue();
 	}
-
+	
 	@Override
 	public int getZ(){
 		return ((IntTag) nbt.get("zPos")).getValue();
-	}
-
-	@Override
-	public byte[] getTiles(){
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	protected void onUpdate(){

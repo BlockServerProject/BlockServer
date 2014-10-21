@@ -145,19 +145,31 @@ public class Utils{
 	}
 
 	public static void setNibble(byte x, byte y, byte z, byte nibble, byte[] buffer){
-		int offset = (x << 7) + (z << 3) + (y >> 1);
+		x &= 0x0F;
+		z &= 0x0F;
+		y &= 0x7F;
+		nibble &= 0x0F;
+		int offset = (x << 10) + (z << 6) + (y >> 1);
 		byte b = buffer[offset];
-		if((y & 1) == 0){
-			b &= 0xF0;
-			b |= (nibble & 0x0F);
+		if((y & 0x01) == 1){
+			b &= 0x0F;
+			b |= (nibble << 4);
 		}
 		else{
-			b &= 0x0F;
-			b |= ((nibble << 4) & 0xF0);
+			b &= 0xF0;
+			b |= nibble;
 		}
 		buffer[offset] = b;
 	}
 	public static byte getNibble(byte x, byte y, byte z, byte[] buffer){
-		return (byte) (0x0F & (buffer[(x << 7) + (z << 3) + (y >> 1)] >> ((y & 1) == 0 ? 0:4)));
+		x &= 0x0F;
+		z &= 0x0F;
+		y &= 0x7F;
+		int offset = (x << 10) + (z << 6) + (y >> 1);
+		byte b = buffer[offset];
+		if((y & 0x01) == 1){
+			b >>= 4;
+		}
+		return b;
 	}
 }

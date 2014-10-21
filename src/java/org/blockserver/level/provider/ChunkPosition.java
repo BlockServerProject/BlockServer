@@ -25,10 +25,6 @@ public class ChunkPosition{
 		return z;
 	}
 
-	public MiniChunkPosition getMiniChunkPos(byte Y){
-		return new MiniChunkPosition(x, Y, z);
-	}
-
 	public static ChunkPosition fromCoords(double x, double z){
 		int X = (int) Math.round(x);
 		int Z = (int) Math.round(z);
@@ -39,26 +35,5 @@ public class ChunkPosition{
 	}
 	public static ChunkPosition byDirectIndex(int x, int z){
 		return new ChunkPosition(x, z);
-	}
-
-	public static class MiniChunkPosition{
-		private int x, z;
-		private byte y;
-
-		public MiniChunkPosition(int x, byte y, int z){
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-
-		public int getX(){
-			return x;
-		}
-		public byte getY(){
-			return y;
-		}
-		public int getZ(){
-			return z;
-		}
 	}
 }

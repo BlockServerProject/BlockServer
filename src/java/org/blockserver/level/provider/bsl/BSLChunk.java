@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,13 +19,18 @@ import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
 
 //TODO getBlocks, getDamages, getSkyLights, getBlockLights without ByteBuffer!
-public class BSLChunk implements IChunk{
+public class BSLChunk extends IChunk{
 	private Server server;
 	private File file;
 	private ChunkPosition pos;
 	private BSLLevelProvider provider;
 	private Map<Integer, SavedEntity> entities = new HashMap<Integer, SavedEntity>();
-	private BSLMiniChunk[] minichunks = new BSLMiniChunk[WORLD_MINICHUNK_CNT];
+	private byte[] blockIds;
+	private byte[] blockDamages;
+	private byte[] skyLights;
+	private byte[] blockLights;
+	private byte[] biomeIds;
+	private int[] biomeColors = new int[0x100];
 
 	public BSLChunk(Server server, File chunkFile, ChunkPosition pos, BSLLevelProvider provider, int reason) throws IOException{
 		this.server = server;
@@ -44,14 +48,13 @@ public class BSLChunk implements IChunk{
 		FileInputStream is = new FileInputStream(file);
 		BSFReader reader = new BSFReader(is);
 		// blocks
-		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
-			byte[] ids = reader.read(0x1000);
-			byte[] damages = reader.read(0x800);
-			byte[] blockLights = reader.read(0x800);
-			byte[] skyLights = reader.read(0x800);
-			byte[] biomes = reader.read(0x100);
-			byte[] biomeColors = reader.read(0x400);
-			minichunks[Y] = new BSLMiniChunk(pos.getMiniChunkPos(Y), ids, damages, blockLights, skyLights, biomes, biomeColors);
+		blockIds = reader.read(0x1000);
+		blockDamages = reader.read(0x800);
+		skyLights = reader.read(0x800);
+		blockLights = reader.read(0x800);
+		biomeIds = reader.read(0x100);
+		for(int i = 0; i < 0x100; i++){
+			biomeColors[i] = reader.readInt();
 		}
 		// TODO read tiles
 		int size = reader.readInt();
@@ -81,15 +84,18 @@ public class BSLChunk implements IChunk{
 	
 	public void save() throws IOException{
 		BSFWriter writer = new BSFWriter(new FileOutputStream(file), BSF.Type.LEVEL_INDEX);
-		for(byte Y = 0; Y < WORLD_MINICHUNK_CNT; Y++){
-			writer.write(minichunks[Y].getBlocks());
-			writer.write(minichunks[Y].getDamages());
-			writer.write(minichunks[Y].getSkyLights());
-			writer.write(minichunks[Y].getBlockLights());
-			writer.write(minichunks[Y].getBiomes());
-			writer.write(minichunks[Y].getBiomeColors());
+		// blocks
+		writer.write(blockIds);
+		writer.write(blockDamages);
+		writer.write(skyLights);
+		writer.write(blockLights);
+		writer.write(biomeIds);
+		for(int color: biomeColors){
+			writer.writeInt(color);
 		}
+		// entities
 		writer.writeInt(entities.size());
+		// tiles
 		// TODO write tiles
 		for(SavedEntity entity: entities.values()){
 			writer.writeByte(entity.getTypeID());
@@ -111,35 +117,27 @@ public class BSLChunk implements IChunk{
 
 	@Override
 	public byte[] getBlocks(){
-		ByteBuffer bb = ByteBuffer.allocate(0x8000);
-		for(BSLMiniChunk mc: minichunks){
-			bb.put(mc.getBlocks());
-		}
-		return bb.array();
+		return blockIds;
 	}
 	@Override
 	public byte[] getDamages(){
-		ByteBuffer bb = ByteBuffer.allocate(0x4000);
-		for(BSLMiniChunk mc: minichunks){
-			bb.put(mc.getDamages());
-		}
-		return bb.array();
+		return blockDamages;
 	}
 	@Override
 	public byte[] getSkyLights(){
-		ByteBuffer bb = ByteBuffer.allocate(0x4000);
-		for(BSLMiniChunk mc: minichunks){
-			bb.put(mc.getSkyLights());
-		}
-		return bb.array();
+		return skyLights;
 	}
 	@Override
 	public byte[] getBlockLights(){
-		ByteBuffer bb = ByteBuffer.allocate(0x4000);
-		for(BSLMiniChunk mc: minichunks){
-			bb.put(mc.getBlockLights());
-		}
-		return bb.array();
+		return blockLights;
+	}
+	@Override
+	public byte[] getBiomeIds(){
+		return biomeIds;
+	}
+	@Override
+	public int[] getBiomeColors(){
+		return biomeColors;
 	}
 	@Override
 	public byte[] getTiles(){
