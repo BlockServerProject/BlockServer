@@ -6,8 +6,12 @@ import java.util.Random;
 
 import org.blockserver.Server;
 import org.blockserver.blocks.Block;
+import org.blockserver.blocks.BlockType;
+import org.blockserver.blocks.UnknownBlockException;
 import org.blockserver.entity.Entity;
 import org.blockserver.level.generator.Generator;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.IChunk;
 import org.blockserver.level.provider.LevelCorruptedException;
 import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3;
@@ -101,10 +105,30 @@ public class Level{
 	}
 
 	public Block getBlock(int x, int y, int z){
+		ChunkPosition pos = ChunkPosition.fromCoords(x, z);
+		IChunk chunk = provider.getChunk(pos);
+		if(chunk != null){
+			byte id = chunk.getBlock((byte) x, (byte) y, (byte) z);
+			byte damage = chunk.getDamage((byte) x, (byte) y, (byte) z);
+			try{
+				return new Block(BlockType.getByID(id, damage));
+			}
+			catch(UnknownBlockException e){
+				// e.printStackTrace();
+				return new Block("Unknown", id, damage);
+			}
+		}
 		return null;
 	}
-	public void setBlock(Vector3 coords, Block block){
-
+	public boolean setBlock(Vector3 coords, Block block){
+		ChunkPosition pos = ChunkPosition.fromCoords(coords);
+		IChunk chunk = provider.getChunk(pos);
+		if(chunk == null){
+			return false;
+		}
+		chunk.setBlock(coords.getChunkX(), coords.getChunkY(), coords.getChunkZ(), (byte) block.getID());
+		chunk.setDamage(coords.getChunkX(), coords.getChunkY(), coords.getChunkZ(), (byte) block.getDamage());
+		return true;
 	}
 
 	public double getGravityAt(Vector3 coords){

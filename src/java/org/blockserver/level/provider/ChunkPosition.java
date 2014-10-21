@@ -1,5 +1,7 @@
 package org.blockserver.level.provider;
 
+import org.blockserver.math.Vector3;
+
 public class ChunkPosition{
 	private int x, z;
 	private ChunkPosition(int x, int z){
@@ -35,5 +37,9 @@ public class ChunkPosition{
 	}
 	public static ChunkPosition byDirectIndex(int x, int z){
 		return new ChunkPosition(x, z);
+	}
+
+	public static ChunkPosition fromCoords(Vector3 coords){
+		return fromCoords(coords.getX(), coords.getZ());
 	}
 }

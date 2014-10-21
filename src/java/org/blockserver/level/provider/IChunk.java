@@ -25,7 +25,7 @@ public abstract class IChunk implements GeneralConstants{
 		z &= 0x0F;
 		return getBlocks()[(x << 11) + (z << 7) + y];
 	}
-	public byte getDamages(byte x, byte y, byte z){
+	public byte getDamage(byte x, byte y, byte z){
 		return Utils.getNibble(x, y, z, getDamages());
 	}
 	public byte getSkyLight(byte x, byte y, byte z){
@@ -35,9 +35,25 @@ public abstract class IChunk implements GeneralConstants{
 		return Utils.getNibble(x, y, z, getBlockLights());
 	}
 	public byte getBiomeId(byte x, byte z){
-		return getBiomeIds()[(x << 4) + z];
+		return getBiomeIds()[(z << 4) + x];
 	}
 	public int getBiomeColor(byte x, byte z){
-		return getBiomeColors()[(x << 4) + z];
+		return getBiomeColors()[(z << 4) + x];
 	}
+	public void setBlock(byte x, byte y, byte z, byte block){
+		getBlocks()[(x << 11) + (z << 7) + y] = block;
+	}
+	public void setDamage(byte x, byte y, byte z, byte damage){
+		Utils.setNibble(x, y, z, damage, getDamages());
+	}
+	public void setSkyLight(byte x, byte y, byte z, byte light){
+		Utils.setNibble(x, y, z, light, getSkyLights());
+	}
+	public void setBlockLight(byte x, byte y, byte z, byte light){
+		Utils.setNibble(x, y, z, light, getBlockLights());
+	}
+	public void setBiomeId(byte x, byte z, byte biome){
+		getBiomeIds()[z << 4 + x] = biome;
+	}
+	
 }

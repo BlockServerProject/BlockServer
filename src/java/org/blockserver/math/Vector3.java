@@ -18,6 +18,15 @@ public class Vector3{
 	public int getX(){
 		return x;
 	}
+	public byte getChunkX(){
+		return (byte) (x & 0x0F);
+	}
+	public byte getChunkY(){
+		return (byte) (y & 0x0F);
+	}
+	public byte getChunkZ(){
+		return (byte) (z & 0x0F);
+	}
 	public int getY(){
 		return y;
 	}
