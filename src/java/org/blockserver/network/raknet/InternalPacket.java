@@ -65,7 +65,7 @@ public class InternalPacket{
 		}
 		if(hasSplit){
 			bb.putInt(splitCount);
-			bb.getShort(splitID);
+			bb.putShort(splitID);
 			bb.putInt(splitIndex);
 		}
 		bb.put(buffer);
