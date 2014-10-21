@@ -102,7 +102,7 @@ public class Utils{
 		return (int) (bb.get() << 16 | bb.get() << 8 | bb.get());
 	}
 	public static int getLTriad(byte[] data, int offset){
-		return (int) (data[offset++] | data[offset++] << 8 | data[offset] << 16);
+		return (data[offset] & 0xff) | (data[offset+1] & 0xff) << 8 | (data[offset+2] & 0xff) << 16;
 	}
 
 	public static byte[] putTriad(int v){
