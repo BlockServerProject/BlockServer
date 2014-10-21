@@ -17,7 +17,7 @@ public class Utils{
 	 * @param i Int to make Left-side
 	 * @return Left-sided Int
 	 */
-	public final static byte[] writeLInt(int i) {
+	public final static byte[] writeLInt_(int i) {
 		ByteBuffer buffer = ByteBuffer.allocate(4);
 		buffer.putInt(i);
 		byte[] result = new byte[4];

@@ -1,6 +1,8 @@
 package org.blockserver.network.minecraft;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import org.blockserver.level.provider.IChunk;
 import org.blockserver.utility.Utils;
 
@@ -30,14 +32,21 @@ public class FullChunkDataPacket extends BaseDataPacket{
 		}
 		byte[] compressed;
 		try{
-			compressed = Utils.compressByte(
-					Utils.writeLInt(chunk.getX()),
-					Utils.writeLInt(chunk.getZ()),
-					chunk.getBlocks(),
-					chunk.getDamages(),
-					chunk.getSkyLights(),
-					chunk.getBlockLights(),
-					afterBuffer.array());
+			ByteBuffer bb = ByteBuffer.allocate(8 + 0x1000 + 0x800 * 3 + 0x100 + 0x500).order(ByteOrder.LITTLE_ENDIAN);
+			bb.putInt(chunk.getX());
+			bb.putInt(chunk.getZ());
+			bb.put(chunk.getBlocks());
+			bb.put(chunk.getDamages());
+			bb.put(chunk.getSkyLights());
+			bb.put(chunk.getBlockLights());
+			bb.put(chunk.getBiomeIds());
+			for(int i: chunk.getBiomeColors()){
+				bb.put((byte) (i & 0x0F));
+				bb.put((byte) ((i << 8) & 0x0F));
+				bb.put((byte) ((i << 16) & 0x0F));
+				bb.put((byte) ((i << 24) & 0x0F));
+			}
+			compressed = Utils.compressByte(bb.array());
 		}
 		catch(Exception e){
 			e.printStackTrace();
