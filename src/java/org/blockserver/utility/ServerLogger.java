@@ -11,13 +11,13 @@ public interface ServerLogger{
 	public void error(String format, Object... message);
 	public void info(String format, Object... message);
 	public void debug(String format, Object... message);
-	public static class DefaultServerLogger implements ServerLogger{
+	public static class Log4jServerLogger implements ServerLogger{
 		private Logger logger;
-		
-		public DefaultServerLogger(){
+
+		public Log4jServerLogger(){
 			logger = LogManager.getLogger("Server");
 		}
-		
+
 		public void log(Level lvl, String format, Object... message){
 			logger.log(lvl, format, message);
 		}

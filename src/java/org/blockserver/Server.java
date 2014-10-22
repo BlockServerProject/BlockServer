@@ -332,7 +332,7 @@ public class Server implements Context{
 			File worldsDir, File playersDir) throws Exception{
 		this(name, ip, port, maxPlayers, version, motd, defaultLevel, generator,
 				chatMgrType.newInstance(), dbType.newInstance(), entityTypeMgrType.newInstance(),
-				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in), new ServerLogger.DefaultServerLogger());
+				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in), new ServerLogger.Log4jServerLogger());
 	}
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
 			String motd, String defaultLevel, Class<? extends Generator> generator,

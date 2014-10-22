@@ -1,33 +1,43 @@
 package org.blockserver.utility;
 
 public enum MinecraftVersion {
-	V081, V090, V091, V092, V093, V094, V095;
-
-	public static String versionToString(MinecraftVersion version){
-		if(version == V081){
+	V081{
+		@Override public String toString(){
 			return "0.8.1";
 		}
-		else if(version == V090){
+	},
+	V090{
+		@Override public String toString(){
 			return "0.9.0";
 		}
-		else if(version == V091){
+	},
+	V091{
+		@Override public String toString(){
 			return "0.9.1";
 		}
-		else if(version == V092){
+	},
+	V092{
+		@Override public String toString(){
 			return "0.9.2";
 		}
-		else if(version == V093){
+	},
+	V093{
+		@Override public String toString(){
 			return "0.9.3";
 		}
-		else if(version == V094){
+	},
+	V094{
+		@Override public String toString(){
 			return "0.9.4";
 		}
-		else if(version == V095){
+	},
+	V095{
+		@Override public String toString(){
 			return "0.9.5";
 		}
-		else{
-			return null;
-		}
-	}
+	};
 
+	public static String versionToString(MinecraftVersion version){
+		return version.toString();
+	}
 }
