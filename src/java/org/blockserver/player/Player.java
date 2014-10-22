@@ -45,7 +45,9 @@ import org.blockserver.network.raknet.NACKPacket;
 import org.blockserver.scheduler.CallbackTask;
 
 public class Player extends Entity implements CommandIssuer, PacketIDs{
+	public static long MAX_PING = 15000L;
 	private String name;
+	private long lastPing, pingMeasure = 0 / 0;
 	private String ip;
 	private int port;
 
@@ -67,6 +69,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
 		super(new Vector3d(0, 128, 0), null);
+		lastPing = System.currentTimeMillis(); // should I use nanos instead?
 		this.ip = ip.replace("/", "");
 		this.port = port;
 		mtuSize = mtu;
@@ -190,6 +193,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 				server.sendPacket(pck.getBuffer(), ip, port);
 			}
 		}
+		if(System.currentTimeMillis() - lastPing >= MAX_PING){
+			close(String.format("Ping timeout: %d seconds", (System.currentTimeMillis() - lastPing) / 1000d));
+		}
 		synchronized(queue){
 			if(queue.packets.size() > 0){
                 queue.sequenceNumber = sequenceNum++;
@@ -234,11 +240,12 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		for(InternalPacket ipck : pck.packets)
         {
 			BlockServer.Debugging.logReceivedInternalPacket(ipck, this);
-			switch (ipck.buffer[0])
-            {
+			switch (ipck.buffer[0]){
 				case PING: //PING Packet
 					PingPacket pp = new PingPacket(ipck.buffer);
 					pp.decode();
+					pingMeasure = System.currentTimeMillis() - lastPing;
+					lastPing = System.currentTimeMillis();
 					PongPacket reply = new PongPacket(pp.pingID);
 					addToQueue(reply);
 					break;
@@ -248,7 +255,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					//Send a ServerHandshake packet
 					ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
 					addToQueue(shp);
-					break;
+					break
 				case CLIENT_HANDSHAKE:
 					ClientHandShakePacket chs = new ClientHandShakePacket(ipck.buffer);
 					chs.decode();
@@ -418,6 +425,12 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 	}
 	public String getIdentifier(){ // why not just use EID?
 		return ip + Integer.toString(port);
+	}
+	public long getLastPing(){
+		return lastPing;
+	}
+	public long getPingMeasure(){
+		return pingMeasure;
 	}
 	@Override
 	public byte getTypeID(){
