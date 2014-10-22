@@ -1,6 +1,8 @@
 package org.blockserver.network.minecraft;
 
-public interface PacketIDs{
+import org.blockserver.GeneralConstants;
+
+public interface PacketIDs extends GeneralConstants{
 	public static final byte CURRENT_PROTOCOL = 18;
 
 	public static final byte PING = (byte)0x00;

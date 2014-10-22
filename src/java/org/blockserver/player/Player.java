@@ -45,7 +45,7 @@ import org.blockserver.network.raknet.NACKPacket;
 import org.blockserver.scheduler.CallbackTask;
 
 public class Player extends Entity implements CommandIssuer, PacketIDs{
-	public static long MAX_PING = 15000L;
+	public /*final*/ static long MAX_PING = 15000L;
 	private String name;
 	private long lastPing, pingMeasure = 0 / 0;
 	private String ip;
@@ -237,10 +237,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		synchronized(ACKQueue){
 			ACKQueue.add(pck.sequenceNumber);
 		}
-		for(InternalPacket ipck : pck.packets)
-        {
+		for(InternalPacket ipck : pck.packets){
 			BlockServer.Debugging.logReceivedInternalPacket(ipck, this);
-			switch (ipck.buffer[0]){
+			switch(ipck.buffer[0]){
 				case PING: //PING Packet
 					PingPacket pp = new PingPacket(ipck.buffer);
 					pp.decode();
@@ -255,7 +254,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					//Send a ServerHandshake packet
 					ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
 					addToQueue(shp);
-					break
+					break;
 				case CLIENT_HANDSHAKE:
 					ClientHandShakePacket chs = new ClientHandShakePacket(ipck.buffer);
 					chs.decode();
