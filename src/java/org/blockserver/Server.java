@@ -50,6 +50,7 @@ public class Server implements Context{
 	private Map<String, Player> players;
 	private Map<String, Level> levels;
 
+	private Runnable wrapperStopCallback = null;
 	private boolean stopped = false;
 	private final MinecraftVersion MCVERSION;
 	private String VERSION = "0.1 - DEV";
@@ -182,6 +183,9 @@ public class Server implements Context{
 	}
 	public boolean isStopped(){
 		return stopped;
+	}
+	public void setWrapperStopCallback(Runnable r){
+		wrapperStopCallback = r;
 	}
 	/**
 	 * <p>Get a Player object by the player address.</p<
@@ -436,6 +440,9 @@ public class Server implements Context{
 		packetHandler.end();
 		cmdHandler.end();
 		stopped = true;
+		if(wrapperStopCallback != null){
+			wrapperStopCallback.run();
+		}
 	}
 
 	@Override
