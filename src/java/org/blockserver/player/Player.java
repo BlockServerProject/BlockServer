@@ -47,7 +47,7 @@ import org.blockserver.scheduler.CallbackTask;
 public class Player extends Entity implements CommandIssuer, PacketIDs{
 	public /*final*/ static long MAX_PING = 15000L;
 	private String name;
-	private long lastPing, pingMeasure = 0 / 0;
+	private long lastPing, pingMeasure = 0;
 	private String ip;
 	private int port;
 

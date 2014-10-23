@@ -1,6 +1,7 @@
 package org.blockserver.level.provider;
 
 import org.blockserver.math.Vector3;
+import org.blockserver.math.Vector3d;
 
 public class ChunkPosition{
 	private int x, z;
@@ -41,5 +42,8 @@ public class ChunkPosition{
 
 	public static ChunkPosition fromCoords(Vector3 coords){
 		return fromCoords(coords.getX(), coords.getZ());
+	}
+	public static ChunkPosition fromCoords(Vector3d spawn){
+		return fromCoords(spawn.getX(), spawn.getZ());
 	}
 }

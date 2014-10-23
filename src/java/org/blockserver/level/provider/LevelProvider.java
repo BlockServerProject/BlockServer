@@ -19,6 +19,7 @@ public abstract class LevelProvider{
 	 * If the generator is null, it would be replaced by the default generator by {@link Server#getDefaultLevelGenerationSettings()}.
 	 */
 	public abstract void init(Gettable<Generator> generator) throws LevelCorruptedException;
+	public abstract void firstInit();
 	public abstract boolean loadChunk(ChunkPosition pos, int reason); // remember to mark this as synchronized in subclasses
 	public abstract IChunk getChunk(ChunkPosition pos);
 	public abstract boolean saveChunk(ChunkPosition pos); // remember to mark this as synchronized in subclasses

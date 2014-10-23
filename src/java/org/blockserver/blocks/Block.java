@@ -20,6 +20,9 @@ public class Block{
 		this.name = name.isEmpty() ? "Unknown":name;
 	}
 
+	public Block(int id, int damage){
+		this("Unknown", id, damage);
+	}
 	public byte getID(){
 		return id;
 	}

@@ -72,6 +72,10 @@ public class AnvilLevelProvider extends LevelProvider{
 			// TODO generate
 		}
 	}
+	@Override
+	public void firstInit(){
+		// TODO
+	}
 	private void readNBT() throws LevelCorruptedException{
 		File levelDotDat = new File(dir, "level.dat");
 		if(levelDotDat.isFile()){

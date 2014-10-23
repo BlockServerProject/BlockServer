@@ -2,6 +2,7 @@ package org.blockserver.level.provider.bsl;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Map;
 import org.blockserver.Server;
 import org.blockserver.io.bsf.BSF;
 import org.blockserver.io.bsf.BSFReader;
+import org.blockserver.io.bsf.BSFWriter;
 import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.LevelCorruptedException;
@@ -64,7 +66,26 @@ public class BSLLevelProvider extends LevelProvider{
 			if(!dir.mkdirs()){
 				throw new RuntimeException("Unable to make world directories");
 			}
-			// TODO level generation
+			firstInit();
+			generator.get().initLevel();
+		}
+	}
+	@Override
+	public void firstInit(){
+		try{
+			BSFWriter writer = new BSFWriter(new FileOutputStream(
+					new File(dir, "index.bsf")), BSF.Type.LEVEL_INDEX);
+			Map<String, Object> args = new HashMap<String, Object>(5);
+			args.put(BSF.LI_SPAWN_X, 0d);
+			args.put(BSF.LI_SPAWN_Y, 0d);
+			args.put(BSF.LI_SPAWN_Z, 0d);
+			args.put(BSF.LI_GENERATOR, generator.get().getClass().getCanonicalName());
+//			args.put(BSF.LI_GENERATION_OPTS, generator.get().getArgs()); // TODO
+			writer.writeAll(args);
+			writer.close();
+		}
+		catch(IOException e){
+			e.printStackTrace();
 		}
 	}
 
