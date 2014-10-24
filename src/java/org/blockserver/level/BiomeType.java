@@ -7,19 +7,6 @@ package org.blockserver.level;
 public enum BiomeType{
 	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
 	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
-	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
-	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
-	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
-	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
-	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
-	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
-	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
-	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
-	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
-	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
-	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
-	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
-	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
 	;
 	private byte id;
 	private String name;
