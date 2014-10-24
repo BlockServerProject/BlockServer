@@ -8,6 +8,7 @@ import java.util.Random;
 import org.blockserver.blocks.Block;
 import org.blockserver.level.BiomeType;
 import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.IChunk;
 import org.blockserver.level.provider.LevelProvider;
 import org.blockserver.math.Vector3d;
 
@@ -114,8 +115,21 @@ public class FlatGenerator implements Generator{
 	}
 	@Override
 	public void generateChunk(ChunkPosition pos, int flag){
-		// TODO Auto-generated method stub
-		
+		IChunk chunk = provider.getChunk(pos);
+		int curY = 0;
+		for(BlockLayer layer: layers){
+			for(byte y = (byte) curY; y < curY + layer.getHeight(); y++){
+				for(byte x = 0; x < 16; x++){
+					for(byte z = 0; z < 16; z++){
+						chunk.setBlock(x, y, z, layer.getBlock().getID());
+						chunk.setBlock(x, y, z, layer.getBlock().getDamage());
+						chunk.setSkyLight(x, y, z, (byte) 15);
+						chunk.setBlockLight(x, y, z, (byte) 15);
+						chunk.setBiomeId(x, z, biomeType.getID());
+					}
+				}
+			}
+		}
 	}
 	public long getSeed(){
 		return seed;

@@ -16,6 +16,12 @@ public abstract class IChunk implements GeneralConstants{
 	public abstract byte[] getBlockLights();
 	public abstract byte[] getBiomeIds();
 	public abstract int[] getBiomeColors();
+//	public abstract void setBlocks(byte[] b);
+//	public abstract void setDamages(byte[] d);
+//	public abstract void setSkyLights(byte[] l);
+//	public abstract void setBlockLights(byte[] l);
+//	public abstract void setBiomeIds(byte[] b);
+//	public abstract void setBiomeColors(int[] c);
 	public abstract int getX();
 	public abstract int getZ();
 	public abstract byte[] getTiles();
