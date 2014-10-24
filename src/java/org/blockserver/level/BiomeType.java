@@ -5,16 +5,23 @@ package org.blockserver.level;
  * https://github.com/erich666/Mineways/blob/master/Win/biomes.cpp
  */
 public enum BiomeType{
+	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
+	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
 	;
 	private byte id;
+	private String name;
 	private final float temperature, rainfall;
 	private final int grass, foliage;
-	BiomeType(int id, float temperature, float rainfall, int grass, int foliage){
+	BiomeType(String name, int id, float temperature, float rainfall, int grass, int foliage){
+		this.name = name;
 		this.id = (byte) id;
 		this.temperature = temperature;
 		this.rainfall = rainfall;
 		this.grass = grass;
 		this.foliage = foliage;
+	}
+	public String getName(){
+		return name;
 	}
 	public byte getID(){
 		return id;
