@@ -14,39 +14,25 @@ public class FullChunkDataPacket extends BaseDataPacket{
 	
 	public FullChunkDataPacket(IChunk chunk){
 		this.chunk = chunk;
-		System.out.println( "FullChunk: " + chunk.getX() + ", " + chunk.getZ() );
 	}
 
 	@Override
 	public void encode(){
 		//TODO add Tiles to Chunk Packet
-		//TODO handle BIOMECOLOR or BIOMEIDs
-		ByteBuffer afterBuffer = ByteBuffer.allocate(0x100 + 0x400);
-		int last = 0x100;
-		while( afterBuffer.position() != last ) {
-			afterBuffer.put((byte) 0xff);
-		}
-		last += 0x400;
-		while( afterBuffer.position() != last ) {
-			afterBuffer.put(BIOME_COLOR);
-		}
 		byte[] compressed;
 		try{
-			ByteBuffer bb = ByteBuffer.allocate(8 + 0x1000 + 0x800 * 3 + 0x100 + 0x500).order(ByteOrder.LITTLE_ENDIAN);
-			bb.putInt(chunk.getX());
-			bb.putInt(chunk.getZ());
-			bb.put(chunk.getBlocks());
-			bb.put(chunk.getDamages());
-			bb.put(chunk.getSkyLights());
-			bb.put(chunk.getBlockLights());
-			bb.put(chunk.getBiomeIds());
+			ByteBuffer ab = ByteBuffer.allocate(0x400);
 			for(int i: chunk.getBiomeColors()){
-				bb.put((byte) (i & 0x0F));
-				bb.put((byte) ((i << 8) & 0x0F));
-				bb.put((byte) ((i << 16) & 0x0F));
-				bb.put((byte) ((i << 24) & 0x0F));
+				ab.put((byte) (i & 0x0F));
+				ab.put((byte) ((i << 8) & 0x0F));
+				ab.put((byte) ((i << 16) & 0x0F));
+				ab.put((byte) ((i << 24) & 0x0F));
 			}
-			compressed = Utils.compressByte(bb.array());
+			//Why Buffer size is MiniChunk's size!?
+			//Why use ByteBuffer!?
+			//Why replace LInt to Int!?
+			compressed = Utils.compressByte( Utils.writeLInt_( chunk.getX() ),Utils.writeLInt_( chunk.getZ() ), chunk.getBlocks(),
+					chunk.getDamages(), chunk.getSkyLights(), chunk.getBlockLights(), chunk.getBiomeIds(), ab.array() );
 		}
 		catch(Exception e){
 			e.printStackTrace();

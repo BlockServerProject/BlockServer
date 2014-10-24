@@ -85,7 +85,7 @@ public abstract class Moveable extends Vector3d{
 	/**
 	 * Updates the coordinates of the Moveable
 	 */
-	public void onTickUpdate(){
+	public void onTickUpdate(long tick){
 		instanceAdd(getSpeed());
 	}
 
