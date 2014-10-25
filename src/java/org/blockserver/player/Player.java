@@ -2,9 +2,13 @@ package org.blockserver.player;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -13,6 +17,7 @@ import org.blockserver.BlockServer;
 import org.blockserver.Server;
 import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
+import org.blockserver.entity.SavedEntity;
 import org.blockserver.item.Inventory;
 import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
@@ -82,6 +87,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		recoveryQueue = new HashMap<Integer, CustomPacket>();
 		try{
 			server.getScheduler().addTask(new CallbackTask(this, "update", 10, true)); // do this with the entity context?
+			server.getScheduler().addTask(new CallbackTask(this, "sendChunk", 1, true));
 		}
 		catch(Exception e){
 			e.printStackTrace();
@@ -89,82 +95,269 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		sender = new ChunkSender();
 	}
 	
-	private final class ChunkSender extends Thread{
-		public final HashMap<ChunkPosition, IChunk> useChunks = new HashMap<>();
-		private final HashMap<Integer, ArrayList<ChunkPosition>> mapOrder = new HashMap<>();
-		private final HashMap<ChunkPosition, Boolean> requestChunks = new HashMap<>();
-		private final ArrayList<Integer> orders = new ArrayList<>();
+	public static final byte[] FLATREPEAT = new byte[]{0x07, 0x03, 0x03, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+	public static final byte[] BIOMECOLOR = new byte[]{0x00 ,(byte) 0x85 ,(byte) 0xb2 ,0x4a};
+	
+	/**
+	 * I'm can't handle BSLChunk, Dummy Chunk for Sending Test
+	 * @author Blue Electric
+	 */
+	public final class DummyChunk extends IChunk {
+		public final byte[] blockIDs;
+		public final byte[] blockDamages;
+		public final byte[] skyLights;
+		public final byte[] blockLights;
+		public final byte[] biomeIds;
+		public final int[] biomeColors;
 		
-		public boolean first = true;
-		public int lastCX = 0, lastCZ = 0;
+		public final int x, z;
+		
+		public DummyChunk(int x, int z) {
+			this.x = x; this.z = z;
+			blockIDs = new byte[0x8000];
+			blockDamages = new byte[0x4000];
+			skyLights = new byte[0x4000];
+			blockLights = new byte[0x4000];
+			biomeIds = new byte[0x100];
+			for(int i = 0; i < blockIDs.length; i+=FLATREPEAT.length) {
+				System.arraycopy(FLATREPEAT, 0, blockIDs, i, FLATREPEAT.length);
+			}
+			
+			//GOD... WHY!!!!!!! WHY GRASS IS DARKJET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			biomeColors = new int[0x100];
+			for(int i = 0; i < biomeColors.length; i++) {
+				biomeColors[i] = 0xff;
+			}
+		}
 		
 		@Override
-		public final void run(){
-			System.out.println("In ChunkSender");
-			while (!isInterrupted()){
-				int centerX = (int) Math.floor(x) / 16;
-				int centerZ = (int) Math.floor(z) / 16;
-				try{
-					if(centerX == lastCX && centerZ == lastCZ && !first){
-						Thread.sleep(100);
-						continue;
-					}
+		public Map<Integer, SavedEntity> getMappedEntities(){
+			return null;
+		}
+
+		@Override
+		public Collection<SavedEntity> getEntities(){
+			return null;
+		}
+
+		@Override
+		public byte[] getBlocks(){
+			return blockIDs;
+		}
+
+		@Override
+		public byte[] getDamages(){
+			return blockDamages;
+		}
+
+		@Override
+		public byte[] getSkyLights(){
+			return skyLights;
+		}
+
+		@Override
+		public byte[] getBlockLights(){
+			return blockLights;
+		}
+
+		@Override
+		public byte[] getBiomeIds(){
+			return biomeIds;
+		}
+
+		@Override
+		public int[] getBiomeColors(){
+			return biomeColors;
+		}
+
+		@Override
+		public int getX(){
+			return x;
+		}
+
+		@Override
+		public int getZ(){
+			return z;
+		}
+
+		@Override
+		public byte[] getTiles(){
+			return null;
+		}
+		
+	}
+	
+	public final class ChunkSender {
+		public final class ChunkCache {
+			public final IChunk chunk;
+			private boolean sended = false;
+			
+			public ChunkCache(IChunk chunk) {
+				this.chunk = chunk;
+			}
+			
+			public void send() throws Exception {
+				if(sended) { return; }
+				sendQueue();
+				addToQueue( new FullChunkDataPacket(chunk) );
+				lastChunkSeq = queue.sequenceNumber;
+				sendQueue();
+				sended = true;
+			}
+			public boolean isSended() {
+				return sended;
+			}
+		}
+		
+		protected final HashMap<ChunkPosition, ChunkCache> useChunks = new HashMap<>();
+		private final HashMap<Integer, ArrayList<ChunkPosition>> MapOrder = new HashMap<>();
+		private final HashMap<ChunkPosition, Boolean> requestChunks = new HashMap<>();
+		private final ArrayList<Integer> orders = new ArrayList<>();
+		private final LinkedList<ChunkCache> sendChunk = new LinkedList<>();
+		private int totalSend = 0;
+		private boolean first = true;
+		private int lastCX = 0, lastCZ = 0;
+		private int lastChunkSeq = -1;
+		private final Object lastChunkLock = new Object();
+		
+		public final void destroy() {
+			//TODO: Release Chunk
+			/*
+			for( ChunkCache cc : useChunks.values() ) {
+				level.releaseChunk( cc.chunk.x, cc.chunk.z );
+			}
+			*/
+		}
+		
+		public final void ACKReceive(int seq) {
+			synchronized (lastChunkLock) {
+				if(seq >= lastChunkSeq) {
+					lastChunkSeq = -1;
 				}
-				catch(InterruptedException e){
-					continue;
-				}
-				System.out.println("Do ChunkSender " + centerX + ", " + centerZ);
+			}
+		}
+		
+		public final boolean updateChunk() throws Exception {
+			if( first && totalSend == 56 ) {
+				InitPlayer();
 				first = false;
-				lastCX = centerX; lastCZ = centerZ;
-				final int radius = 4; // TODO change to config settings
-				mapOrder.clear(); requestChunks.clear(); orders.clear();
-				for(int x = -radius; x <= radius; ++x){
-					for(int z = -radius; z <= radius; ++z){
-						int distance = (x*x) + (z*z);
-						int chunkX = x + centerX;
-						int chunkZ = z + centerZ;
-						if(!mapOrder.containsKey(distance)){
-							mapOrder.put(distance, new ArrayList<ChunkPosition>());
-						}
-						requestChunks.put(ChunkPosition.byDirectIndex(chunkX, chunkZ), true);
-						mapOrder.get(distance).add(ChunkPosition.byDirectIndex(chunkX, chunkZ));
+			}
+			synchronized (lastChunkLock) {
+				if( lastChunkSeq != -1 ) { return false; }
+			}
+			if( !sendFourChunk() ) {
+				return refreshChunkList();
+			}
+			return true;
+		}
+		
+		private final boolean sendFourChunk() throws Exception {
+			return sendOneChunk() && sendOneChunk() && sendOneChunk() && sendOneChunk();
+		}
+		
+		private final boolean sendOneChunk() throws Exception {
+			ChunkCache cc = sendChunk.poll();
+			if( cc == null ) {
+				return false;
+			}
+			if( !cc.isSended() ) {
+				cc.send();
+				totalSend++;
+				Thread.sleep(1);
+			} else {
+				return sendOneChunk();
+			}
+			return true;
+		}
+		
+		private final boolean refreshChunkList() {
+			if(name == null) {
+				return false;
+			}
+			
+			int centerX = (int) ( (int) Math.floor(x) / 16 );
+			int centerZ = (int) ( (int) Math.floor(z) / 16 );
+			
+			if( centerX == lastCX && centerZ == lastCZ && !first ) {
+				return true;
+			}
+			lastCX = centerX; lastCZ = centerZ;
+			int radius = 4; //TODO Receive it from Config
+			
+			MapOrder.clear(); requestChunks.clear(); orders.clear();
+			
+			for (int x = -radius; x <= radius; ++x) {
+				for (int z = -radius; z <= radius; ++z) {
+					int distance = (x*x) + (z*z);
+					int chunkX = x + centerX;
+					int chunkZ = z + centerZ;
+					ChunkPosition v = ChunkPosition.byDirectIndex(chunkX, chunkZ);
+					if( !MapOrder.containsKey( distance ) ) {
+						MapOrder.put(distance, new ArrayList<ChunkPosition>());
+					}
+					requestChunks.put(v, true);
+					MapOrder.get(distance).add( v );
+					if( !orders.contains(distance) ) {
 						orders.add(distance);
 					}
 				}
-				Collections.sort(orders);
-				for(Integer i: orders){
-					for(ChunkPosition v: mapOrder.get(i)){
-						try{
-							if(useChunks.containsKey(v)){
-								continue;
-							}
-							level.getLevelProvider().loadChunk(v, Generator.FLAG_GENERATOR_USAGE);
-							useChunks.put(v, level.getLevelProvider().getChunk(v) );
-							addToQueue(new FullChunkDataPacket(useChunks.get(v)));
-						}
-						catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-				}
-				//TODO Unload Unused Chunks
-				/*
-				ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
-				for( int i = 0; i < v2a.length; i++ ) {
-					ChunkPosition v = v2a[i];
-					if( !useChunks.containsKey( v2a ) ) {
-						level.releaseChunk(v);
-						useChunks.remove(v);
-					}
-				}
-				*/
-				System.out.println("Do Finish");
-				try{
-					Thread.sleep(100);
-				}
-				catch(InterruptedException e){}
 			}
-			System.out.println("Out ChunkSender");
+			Collections.sort(orders);
+			
+			for( Integer i : orders ) {
+				for( ChunkPosition v : MapOrder.get(i) ) {
+					try {
+						if( useChunks.containsKey(v) ) { continue; }
+						ChunkCache cc = new ChunkCache( new DummyChunk(v.getX(), v.getZ()) );
+						useChunks.put(v, cc);	
+						if( !sendChunk.contains(cc) ) {
+							sendChunk.add( cc );
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			//TODO: Release Chunk
+			/*
+			Vector2[] v2a = useChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
+			for( int i = 0; i < v2a.length; i++ ) {
+				Vector2 v = v2a[i];
+				if( !requestChunks.containsKey( v ) ) {
+					owner.level.releaseChunk(v);
+					useChunks.remove(v);
+				}
+			}
+			*/
+			return false;
+		}
+	}
+	
+	public final void InitPlayer() {
+		addToQueue( new SetTimePacket( 0 ) );
+		MovePlayerPacket player = new MovePlayerPacket(getEID(), (float) x, (float) y, (float) z, (float) getYaw(), (float) getPitch(), (float) 0, false);
+		addToQueue(player);
+		
+		//TODO: Add player for other Player
+		//AddPlayerPacket app = new AddPlayerPacket(Player.this);
+		//leader.player.broadcastPacket(app, false, Player.this);
+		
+		sendChatArgs(server.getMOTD());
+		server.getChatMgr().broadcast(name + " joined the game.");
+		for(Player other: server.getConnectedPlayers()){
+			if(!(other.clientID == this.clientID)){
+				spawnPlayer(other);
+			}
+		}
+	}
+	
+	public void sendChunk(long tick){
+		try{
+			sender.updateChunk();
+		}
+		catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 
@@ -217,14 +410,20 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 			ipck.messageIndex = messageIndex++;
 			ipck.toBinary();
 			if(queue.getLength() + pck.getBuffer().length >= mtuSize){
-				queue.sequenceNumber = sequenceNum++;
-				queue.encode();
-				server.sendPacket(queue.getBuffer(), ip, port);
-				queue.packets.clear();
+				sendQueue();
 			}
 			queue.packets.add(ipck);
 		}
 	}
+	public void sendQueue() {
+		synchronized(queue){
+			queue.sequenceNumber = sequenceNum++;
+			queue.encode();
+			server.sendPacket(queue.getBuffer(), ip, port);
+			queue.packets.clear();
+		}
+	}
+	
 	public void handlePacket(CustomPacket pck){
 		if(pck.sequenceNumber - this.lastSequenceNum == 1){
 			lastSequenceNum = pck.sequenceNumber;
@@ -283,7 +482,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						server.getLogger().info("%s (%s:%d) logged in with a fake entity ID.", name, ip, port);
 
 						login();
-						StartGamePacket sgp = new StartGamePacket(level.getSpawnPos().toVector3(), this, StartGamePacket.GENERATOR_INFINITE, 1, level.getSeed(), 0);
+						//Re-enable it
+						//StartGamePacket sgp = new StartGamePacket(level.getSpawnPos().toVector3(), this, StartGamePacket.GENERATOR_INFINITE, 1, level.getSeed(), 0);
+						StartGamePacket sgp = new StartGamePacket(new Vector3(128, 4, 128), this, StartGamePacket.GENERATOR_INFINITE, 1, 0L, 0);
 						addToQueue(sgp);
 						
 						SetTimePacket stp = new SetTimePacket(0);
@@ -294,18 +495,6 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						
 						SetHealthPacket setHealth = new SetHealthPacket((byte) 0x20);
 						addToQueue(setHealth);
-						
-						sender.start();
-						
-						/*
-						sendChatArgs(server.getMOTD());
-						server.getChatMgr().broadcast(name + " joined the game.");
-						for(Player other: server.getConnectedPlayers()){
-							if(!(other.clientID == this.clientID)){
-								spawnPlayer(other);
-							}
-						}
-						*/
 					}
 					break;
 				case DISCONNECT:
@@ -335,6 +524,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		if(pck instanceof ACKPacket){ // When we receive a ACK Packet then
 			for(int i: pck.sequenceNumbers){
 				//server.getLogger().info("ACK Packet Received Seq: %d", i);
+				sender.ACKReceive(i);
 				recoveryQueue.remove(i);
 			}
 		}
@@ -379,9 +569,13 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		for(Player player: toKick){
 			player.close("logging in from another location.");
 		}
+		level = server.getDefaultLevel();
+		//TODO: Re-enable this.
+		/*
 		PlayerData data = server.getPlayerDatabase().load(this);
 		setCoords(data.getCoords());
 		level = data.getLevel(); // validated!
+		*/
 		start(server);
 	}
 	public void close(String reason){
@@ -390,9 +584,6 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		}
 		addToQueue(new DisconnectPacket());
 		disconnect(String.format("kicked (%s)", reason));
-		while ( sender.isAlive() ) {
-			sender.interrupt();
-		}
 	}
 	protected void disconnect(String reason){
 		server.getLogger().info("%s (%s:%d) disconnected: %s.", name, ip, port, reason);

@@ -240,7 +240,7 @@ public class Server implements Context{
 	 * @return the default level of the server.
 	 */
 	public Level getDefaultLevel() {
-		return levels.get(defaultLevel);
+		return getLevel(defaultLevel, false, false);
 	}
 	/**
 	 * <p>Get a level by its name, and load and/or generate it if necessary and required.</p>

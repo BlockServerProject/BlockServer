@@ -27,7 +27,7 @@ public abstract class Entity extends Moveable{
 	protected Entity(double x, double y, double z, Level level, int eid){
 		super(x, y, z);
 		this.level = level;
-		trace = new Throwable("Debug stack trace");
+		//trace = new Throwable("Debug stack trace");
 		this.eid = eid;
 		setSpeed(new YPSControlledVector3d(0, 0, 0), MODIFIER_PITCH_NEUTRALIZER);
 	}
@@ -55,7 +55,8 @@ public abstract class Entity extends Moveable{
 	}
 	public void validate(){
 		if(!isValid()){
-			throw new IllegalStateException("Level field of Entity not initialized", trace);
+			//TODO: Re-enable it.
+			//throw new IllegalStateException("Level field of Entity not initialized", trace);
 		}
 	}
 
@@ -94,9 +95,9 @@ public abstract class Entity extends Moveable{
 	}
 
 	@Override
-	public void onTickUpdate(){
+	public void onTickUpdate(long tick){
 		validate();
-		super.onTickUpdate();
+		super.onTickUpdate(tick);
 	}
 
 	@Override
