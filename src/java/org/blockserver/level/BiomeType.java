@@ -22,6 +22,12 @@ public enum BiomeType{
 	MUSHROOM_ISLAND("Mushroom Island", 14, 0.9f, 1.0f, 0x92BD59, 0x77AB2F),
 	MUSHROOM_ISLAND_SHORE("Mushroom Island Shore", 15, 0.9f, 1.0f, 0x92BD59, 0x77AB2F),
 	BEACH("Beach", 16, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
+	DESERT_HILLS("Desert Hills", 17, 2.0f, 0.0f, 0x92BD59, 0x77AB2F),
+	FOREST_HILLS("Forest Hills", 18, 0.7f, 0.8f, 0x92BD59, 0x77AB2F),
+	TAIGA_HILLS("Taiga Hills", 19, 0.2f, 0.7f, 0x92BD59, 0x77AB2F),
+	EXTREME_HILLS_EDGE("Extreme Hills Edge", 20, 0.2f, 0.3f, 0x92BD59, 0x77AB2F),
+	JUNGLE("Jungle", 21, 1.2f, 0.9f, 0x92BD59, 0x77AB2F),
+	JUNGLE_HILLS("Jungle Hills", 22, 1.2f, 0.9f, 0x92BD59, 0x77AB2F),
 	;
 	private byte id;
 	private String name;
