@@ -62,6 +62,7 @@ public class Scheduler extends Thread{
 		setName("ServerSchedulerThread");
 		while(isRunning) {
 			currentTick++;
+			server.getCmdManager().dispatchQueue();
 			if(!tasks.isEmpty()) {
 				for(int i = 0; i < tasks.size(); i++){
 					Task t = tasks.get(i);

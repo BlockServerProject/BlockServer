@@ -11,6 +11,7 @@ import org.blockserver.Server;
 public class CommandManager{
 	private Server server;
 	private Map<String, Command> cmds;
+	private List<CmdExec> execs = new ArrayList<CmdExec>();
 
 	public CommandManager(Server server){
 		this.server = server;
@@ -38,7 +39,7 @@ public class CommandManager{
 		return true;
 	}
 
-	public void runCommand(CommandIssuer issuer, String line){
+	private void execCommand(CommandIssuer issuer, String line){
 		String[] arrayArgs = line.split(" ");
 		List<String> args = new ArrayList<String>(arrayArgs.length);
 		for(String arg: arrayArgs){
@@ -70,5 +71,36 @@ public class CommandManager{
 	}
 	public Map<String, Command> getCommands(){
 		return cmds;
+	}
+
+	public void queueCommand(CommandIssuer issuer, String line){
+		synchronized(execs){
+			execs.add(new CmdExec(issuer, line));
+		}
+	}
+	public void dispatchQueue(){
+		synchronized(execs){
+			for(CmdExec exec: execs){
+				exec.run(this);
+			}
+			execs.clear();
+		}
+	}
+	public static class CmdExec{
+		private CommandIssuer sender;
+		private String cmd;
+		public CmdExec(CommandIssuer issuer, String line){
+			sender = issuer;
+			cmd = line;
+		}
+		public CommandIssuer getIssuer(){
+			return sender;
+		}
+		public String getCommandLine(){
+			return cmd;
+		}
+		public void run(CommandManager mgr){
+			mgr.execCommand(sender, cmd);
+		}
 	}
 }

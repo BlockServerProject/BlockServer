@@ -31,8 +31,8 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 				String input = source.readLine();
 				if(input != null){
 					input = input.trim();
-					if(!input.isEmpty()){
-						sudoCommand(input.trim());
+					if(input.length() > 0){
+						sudoCommand(input);
 					}
 				}
 			}
@@ -61,7 +61,7 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	}
 	@Override
 	public void sudoCommand(String line){
-		server.getCmdManager().runCommand(this, line.trim());
+		server.getCmdManager().queueCommand(this, line.trim());
 	}
 	@Override
 	public int getHelpLines(){

@@ -47,7 +47,7 @@ import org.blockserver.scheduler.CallbackTask;
 public class Player extends Entity implements CommandIssuer, PacketIDs{
 	public /*final*/ static long MAX_PING = 15000L;
 	private String name;
-	private long lastPing, pingMeasure = 0;
+	private long lastPing, pingMeasure = 0, lastValidPing = 0;
 	private String ip;
 	private int port;
 
@@ -226,12 +226,14 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		}
 	}
 	public void handlePacket(CustomPacket pck){
-		if(pck.sequenceNumber - this.lastSequenceNum == 1){
+		if(pck.sequenceNumber - lastSequenceNum == 1){
 			lastSequenceNum = pck.sequenceNumber;
 		}
 		else{
-			for(int i = this.lastSequenceNum; i < pck.sequenceNumber; ++i){
-				NACKQueue.add(i);
+			synchronized(NACKQueue){
+				for(int i = lastSequenceNum; i < pck.sequenceNumber; ++i){
+					NACKQueue.add(i);
+				}
 			}
 		}
 		synchronized(ACKQueue){
@@ -244,6 +246,9 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					PingPacket pp = new PingPacket(ipck.buffer);
 					pp.decode();
 					pingMeasure = System.currentTimeMillis() - lastPing;
+					if(pingMeasure != 0){
+						lastValidPing = pingMeasure;
+					}
 					lastPing = System.currentTimeMillis();
 					PongPacket reply = new PongPacket(pp.pingID);
 					addToQueue(reply);
@@ -429,7 +434,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		return lastPing;
 	}
 	public long getPingMeasure(){
-		return pingMeasure;
+		return pingMeasure != 0 ? pingMeasure : (lastValidPing != 0 ? lastValidPing:System.currentTimeMillis() - lastPing);
 	}
 	@Override
 	public byte getTypeID(){
@@ -454,7 +459,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 
 	@Override
 	public void sudoCommand(String line){
-		server.getCmdManager().runCommand(this, line.substring(1));
+		server.getCmdManager().queueCommand(this, line.substring(1));
 	}
 	@Override
 	public int getHelpLines(){

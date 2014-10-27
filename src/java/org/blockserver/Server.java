@@ -35,7 +35,7 @@ public class Server implements Context{
 	private static Server instance = null;
 
 	private SoleEventListener listener;
-	private ConsoleCommandHandler cmdHandler = null;
+	private ConsoleCommandHandler consoleHandler = null;
 	private CommandManager cmdMgr;
 	private ChatManager chatMgr;
 	private EntityTypeManager entityTypeMgr;
@@ -90,6 +90,9 @@ public class Server implements Context{
 
 	public SoleEventListener getSoleEventListener(){
 		return listener;
+	}
+	public ConsoleCommandHandler getConsoleHandler(){
+		return consoleHandler;
 	}
 	/**
 	 * <p>Get the server scheduler instance.</p>
@@ -363,7 +366,7 @@ public class Server implements Context{
 		this.defaultLevel = defaultLevel;
 		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
 		packetHandler = new PacketHandler(this);
-		cmdHandler = new ConsoleCommandHandler(this, consoleSource);
+		consoleHandler = new ConsoleCommandHandler(this, consoleSource);
 		cmdMgr = new CommandManager(this);
 		setChatMgr(chatMgr); // gracefully throw out the exception to the one who asked for it :P
 		setEntityTypeMgr(entityTypeMgr);
@@ -408,7 +411,7 @@ public class Server implements Context{
 			logger.info("Server Scheduler Started...");
 			playerDb.init(this);
 			packetHandler.start();
-			cmdHandler.start();
+			consoleHandler.start();
 			logger.info("Started server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
 		}
 		catch(SocketException e){
@@ -436,11 +439,14 @@ public class Server implements Context{
 			player.close("server is stopping");
 		}
 		serverRunning = false;
+		logger.debug("Stopping scheduler...");
 		scheduler.end();
+		logger.debug("Stopping packet handler...");
 		packetHandler.end();
-		cmdHandler.end();
+		consoleHandler.end();
 		stopped = true;
 		if(wrapperStopCallback != null){
+			System.out.println("Stopping wrapper " + wrapperStopCallback.toString());
 			wrapperStopCallback.run();
 		}
 	}
