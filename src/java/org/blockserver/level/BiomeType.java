@@ -7,6 +7,21 @@ package org.blockserver.level;
 public enum BiomeType{
 	OCEAN("Ocean", 0, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
 	PLAINS("Plains", 1, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
+	DESERT("Desert", 2, 2.0f, 0.0f, 0x92BD59, 0x77AB2F),
+	EXTREME_HILLS("Extreme Hills", 3, 0.2f, 0.3f, 0x92BD59, 0x77AB2F),
+	FOREST("Forest", 4, 0.7f, 0.8f, 0x92BD59, 0x77AB2F),
+	TAIGA("Taiga", 5, 0.05f, 0.8f, 0x92BD59, 0x77AB2F),
+	SWAMPLAND("Swampland", 6, 0.8f, 0.9f, 0x92BD59, 0x77AB2F),
+	RIVER("River", 7, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
+	NETHER("Nether", 8, 2.0f, 0.0f, 0x92BD59, 0x77AB2F),
+	END("End", 9, 0.5f, 0.5f, 0x92BD59, 0x77AB2F),
+	FROZEN_OCEAN("Frozen Ocean", 10, 0.0f, 0.5f, 0x92BD59, 0x77AB2F),
+	FROZEN_RIVER("Frozen River", 11, 0.0f, 0.5f, 0x92BD59, 0x77AB2F),
+	ICE_PLAINS("Ice Plains", 12, 0.0f, 0.5f, 0x92BD59, 0x77AB2F),
+	ICE_MOUNTAINS("Ice Mountains", 13, 0.0f, 0.5f, 0x92BD59, 0x77AB2F),
+	MUSHROOM_ISLAND("Mushroom Island", 14, 0.9f, 1.0f, 0x92BD59, 0x77AB2F),
+	MUSHROOM_ISLAND_SHORE("Mushroom Island Shore", 15, 0.9f, 1.0f, 0x92BD59, 0x77AB2F),
+	BEACH("Beach", 16, 0.8f, 0.4f, 0x92BD59, 0x77AB2F),
 	;
 	private byte id;
 	private String name;
