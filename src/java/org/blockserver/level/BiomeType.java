@@ -39,7 +39,7 @@ public enum BiomeType{
 	COLD_TAIGA_HILLS("Cold Taiga Hills", 31, -0.5f, 0.4f, 0x92BD59, 0x77AB2F),
 	MEGA_TAIGA("Mega Taiga", 32, 0.3f, 0.8f, 0x92BD59, 0x77AB2F),
 	MEGA_TAIGA_HILLS("Mega Taiga Hills", 33, 0.3f, 0.8f, 0x92BD59, 0x77AB2F),
-	EXTREME_HILLS+("Extreme Hills+", 34, 0.2f, 0.3f, 0x92BD59, 0x77AB2F),
+	//EXTREME_HILLS+("Extreme Hills+", 34, 0.2f, 0.3f, 0x92BD59, 0x77AB2F),
 	SAVANNA("Savanna", 35, 1.2f, 0.0f, 0x92BD59, 0x77AB2F),
 	SAVANNA_PLATEAU("Savanna Plateau", 36, 1.0f, 0.0f, 0x92BD59, 0x77AB2F),
 	MESA("Mesa", 37, 2.0f, 0.0f, 0x92BD59, 0x77AB2F),
@@ -57,7 +57,7 @@ public enum BiomeType{
 	//    { /* 156 */ "Birch Forest Hills M",		0.6f, 0.6f, 0x92BD59, 0x77AB2F },
 	//    { /* 157 */ "Roofed Forest M",			0.7f, 0.8f, 0x92BD59, 0x77AB2F },
 	//    { /* 158 */ "Cold Taiga M",				-0.5f, 0.4f, 0x92BD59, 0x77AB2F },
-	//    { /* 160 */ "Mega Spruce Taiga",		0.25f, 0.8f, 0x92BD59, 0x77AB2F },	// special exception, temperature not 0.3
+	//    { /* 160 */ "Mega Spruce Taiga",		0.25f, 0.8f, 0x92BD59, 0x77AB2F },	// special exception look down
 	//    { /* 161 */ "Mega Spruce Taiga Hills",	0.3f, 0.8f, 0x92BD59, 0x77AB2F },
 	//    { /* 162 */ "Extreme Hills+ M",			0.2f, 0.3f, 0x92BD59, 0x77AB2F },
 	//    { /* 163 */ "Savanna M",				1.2f, 0.0f, 0x92BD59, 0x77AB2F },
