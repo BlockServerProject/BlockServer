@@ -1,11 +1,12 @@
 package org.blockserver;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public interface ConsoleCommandSource{
+public interface ConsoleCommandSource extends Closeable{
 	public class InputStreamConsoleCommandSource implements
 			ConsoleCommandSource{
 		private BufferedReader reader;
@@ -18,6 +19,15 @@ public interface ConsoleCommandSource{
 		@Override
 		public String readLine() throws IOException{
 			return reader.readLine();
+		}
+		@Override
+		public void close(){
+			try{
+				reader.close();
+			}
+			catch(IOException e){
+				e.printStackTrace();
+			}
 		}
 	}
 

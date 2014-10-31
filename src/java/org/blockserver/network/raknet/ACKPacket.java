@@ -1,10 +1,10 @@
 package org.blockserver.network.raknet;
 
-import org.blockserver.network.RaknetsID;
+import org.blockserver.network.RaknetIDs;
 
 public class ACKPacket extends AcknowledgePacket{
 	public byte getPID() {
-		return RaknetsID.ACK;
+		return RaknetIDs.ACK;
 	}
 
 	public ACKPacket(int[] numbers){

@@ -52,6 +52,7 @@ public class ConsoleCommandHandler extends Thread implements CommandIssuer{
 	 */
 	public void end() throws Exception{
 		running = false;
+		source.close();
 		join();
 	}
 

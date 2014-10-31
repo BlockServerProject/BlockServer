@@ -17,7 +17,6 @@ import org.blockserver.item.Inventory;
 import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
-import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
@@ -196,33 +195,46 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		if(System.currentTimeMillis() - lastPing >= MAX_PING){
 			close(String.format("Ping timeout: %d seconds", (System.currentTimeMillis() - lastPing) / 1000d));
 		}
-		synchronized(queue){
-			if(queue.packets.size() > 0){
-                queue.sequenceNumber = sequenceNum++;
-				queue.encode();
-				server.sendPacket(queue.getBuffer(), ip, port);
-				recoveryQueue.put(queue.sequenceNumber, queue);
-				queue.packets.clear();
-			}
+		if(queue.packets.size() > 0){
+            queue.sequenceNumber = sequenceNum++;
+			queue.encode();
+			server.sendPacket(queue.getBuffer(), ip, port);
+			recoveryQueue.put(queue.sequenceNumber, queue);
+			queue.packets.clear();
 		}
 	}
 
+	public void sendDirectDataPacket(BaseDataPacket pck){
+		CustomPacket pk = new CustomPacket();
+		pck.encode();
+		InternalPacket ipk = new InternalPacket();
+		ipk.buffer = pck.getBuffer();
+		ipk.reliability = 2;
+		ipk.messageIndex = messageIndex++;
+		ipk.toBinary();
+		pk.packets.add(ipk);
+		server.sendPacket(pk.getBuffer(), ip, port);
+	}
 	public void addToQueue(BaseDataPacket pck){
+		pck.encode();
+		BlockServer.Debugging.logSentDataPacket(pck, this);
+		InternalPacket ipck = new InternalPacket();
+		ipck.buffer = pck.getBuffer();
+		ipck.reliability = 2;
+		ipck.messageIndex = messageIndex++;
+		ipck.toBinary();
+		byte[] send = null;
 		synchronized(queue){
-			pck.encode();
-			BlockServer.Debugging.logSentDataPacket(pck, this);
-			InternalPacket ipck = new InternalPacket();
-			ipck.buffer = pck.getBuffer();
-			ipck.reliability = 2;
-			ipck.messageIndex = messageIndex++;
-			ipck.toBinary();
 			if(queue.getLength() + pck.getBuffer().length >= mtuSize){
 				queue.sequenceNumber = sequenceNum++;
 				queue.encode();
-				server.sendPacket(queue.getBuffer(), ip, port);
+				send = queue.getBuffer();
 				queue.packets.clear();
 			}
 			queue.packets.add(ipck);
+		}
+		if(send != null){
+			server.sendPacket(send, ip, port);
 		}
 	}
 	public void handlePacket(CustomPacket pck){
@@ -294,7 +306,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 						SetTimePacket stp = new SetTimePacket(0);
 						addToQueue(stp);
 						
-						SetSpawnPositionPacket sspp = new SetSpawnPositionPacket( new Vector3(128, 4, 128) );
+						SetSpawnPositionPacket sspp = new SetSpawnPositionPacket(level.getSpawnPos().floor());
 						addToQueue(sspp);
 						
 						SetHealthPacket setHealth = new SetHealthPacket((byte) 0x20);
@@ -322,7 +334,7 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 					server.getChatMgr().handleChat(this, mpk.getMessage());
 					break;
 				case MOVE_PLAYER:
-					MovePlayerPacket movePlayer = new MovePlayerPacket( ipck.buffer );
+					MovePlayerPacket movePlayer = new MovePlayerPacket(ipck.buffer);
 					movePlayer.decode();
 					x = movePlayer.x;
 					y = movePlayer.y;
@@ -390,12 +402,23 @@ public class Player extends Entity implements CommandIssuer, PacketIDs{
 		start(server);
 	}
 	public void close(String reason){
+		close(reason, false);
+	}
+	public void close(String reason, boolean direct){
+		if(direct){
+			sendDirectDataPacket(new DisconnectPacket());
+			disconnect("reason");
+			while(sender.isAlive()){
+				sender.interrupt();
+			}
+			return;
+		}
 		if(reason != null){
 			sendChat(reason);
 		}
 		addToQueue(new DisconnectPacket());
 		disconnect(String.format("kicked (%s)", reason));
-		while ( sender.isAlive() ) {
+		while(sender.isAlive()){
 			sender.interrupt();
 		}
 	}

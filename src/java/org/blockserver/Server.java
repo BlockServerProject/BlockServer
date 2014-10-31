@@ -284,7 +284,7 @@ public class Server implements Context{
 		this.chatMgr = chatMgr;
 		chatMgr.initialize(this);
 		if(!isNextChatMgrFirst){
-			logger.warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
+			getLogger().warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
 		}
 		isNextChatMgrFirst = false;
 	}
@@ -406,27 +406,27 @@ public class Server implements Context{
 	public void run(){
 		serverRunning = true;
 		try{
-			logger.info("This is version " + VERSION);
+			getLogger().info("This is version " + VERSION);
 			scheduler.Start();
-			logger.info("Server Scheduler Started...");
+			getLogger().info("Server Scheduler Started...");
 			playerDb.init(this);
 			packetHandler.start();
 			consoleHandler.start();
-			logger.info("Started server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
+			getLogger().info("Started server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
 		}
 		catch(SocketException e){
-			logger.fatal("COULD NOT BIND TO PORT - Maybe another server is running on %d?", serverPort);
-			logger.fatal("Shutting down server due to error.");
+			getLogger().fatal("COULD NOT BIND TO PORT - Maybe another server is running on %d?", serverPort);
+			getLogger().fatal("Shutting down server due to error.");
 			System.exit(1);
 		}
 		catch(IOException e){
 			int time = (int) (System.currentTimeMillis() - this.startTime);
-			logger.warning("IOException at: " + time + " ms");
+			getLogger().warning("IOException at: " + time + " ms");
 		}
 		catch(Exception e){
 			int time = (int) (System.currentTimeMillis() - this.startTime);
-			logger.warning("Exception at: " + time + " ms");
-			logger.warning(e.getMessage());
+			getLogger().warning("Exception at: " + time + " ms");
+			getLogger().warning(e.getMessage());
 		}
 	}
 	/**
@@ -439,14 +439,15 @@ public class Server implements Context{
 			player.close("server is stopping");
 		}
 		serverRunning = false;
-		logger.debug("Stopping scheduler...");
+		getLogger().debug("Stopping scheduler...");
 		scheduler.end();
-		logger.debug("Stopping packet handler...");
+		getLogger().debug("Stopping packet handler...");
 		packetHandler.end();
+		getLogger().debug("Stopping console command reader...");
 		consoleHandler.end();
 		stopped = true;
 		if(wrapperStopCallback != null){
-			System.out.println("Stopping wrapper " + wrapperStopCallback.toString());
+			getLogger().debug("Stopping wrapper " + wrapperStopCallback.toString());
 			wrapperStopCallback.run();
 		}
 	}
