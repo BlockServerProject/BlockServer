@@ -482,7 +482,7 @@ public class Server implements Context{
 		if(!dir.isDirectory() && !generate){
 			return false;
 		}
-		LevelProvider provider = levelProviderMgr.filter(dir, name);
+		LevelProvider provider = levelProviderMgr.filter(dir, name, generator.getSeed());
 		if(provider == null){
 			return false;
 		}

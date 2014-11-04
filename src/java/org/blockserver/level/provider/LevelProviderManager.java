@@ -14,10 +14,10 @@ public class LevelProviderManager{
 		this.server = server;
 		this.types = new HashMap<String, LevelProviderType<?>>(types.size());
 	}
-	public LevelProvider filter(File folder, String name){
+	public LevelProvider filter(File folder, String name, long seed){
 		for(LevelProviderType<?> type: types.values()){
 			if(type.supports(folder)){
-				return type.instantiate(server, folder, name);
+				return type.instantiate(server, folder, name, seed);
 			}
 		}
 		return null;

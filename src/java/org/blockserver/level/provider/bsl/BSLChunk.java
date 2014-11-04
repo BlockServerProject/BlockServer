@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import org.blockserver.entity.SavedEntity;
 import org.blockserver.io.bsf.BSF;
 import org.blockserver.io.bsf.BSFReader;
 import org.blockserver.io.bsf.BSFWriter;
+import org.blockserver.level.BiomeType;
 import org.blockserver.level.generator.Generator;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
@@ -72,16 +74,21 @@ public class BSLChunk extends IChunk{
 		}
 		reader.close();
 	}
-	
-	//TODO Linking to Flat Generator
-	//TODO Handle biome Content
 	private void generate(int flag) throws IOException {
-		// TODO use generators
 		Generator generator = provider.getGenerator();
-		generator.generateChunk(pos, flag);
+		blockIds = new byte[0x1000];
+		blockDamages = new byte[0x0800];
+		skyLights = new byte[0x0800];
+		Arrays.fill(skyLights, (byte) 0xFF);
+		blockLights = new byte[0x0800];
+		Arrays.fill(blockLights, (byte) 0xFF);
+		biomeIds = new byte[0x0100];
+		biomeColors = new int[0x0100];
+		Arrays.fill(biomeColors, BiomeType.OCEAN.getGrass()); // default color
+		generator.generateChunk(pos, this, flag);
 		save();
 	}
-	
+
 	public void save() throws IOException{
 		BSFWriter writer = new BSFWriter(new FileOutputStream(file), BSF.Type.LEVEL_INDEX);
 		// blocks

@@ -21,7 +21,7 @@ public class BSLLevelProviderType extends LevelProviderType<BSLLevelProvider>{
 		return new File(worldDir, "index.bsf").isFile();
 	}
 	@Override
-	public BSLLevelProvider instantiate(Server server, File worldDir, String name){
-		return new BSLLevelProvider(server, worldDir, name);
+	public BSLLevelProvider instantiate(Server server, File worldDir, String name, long seed){
+		return new BSLLevelProvider(server, worldDir, name, seed);
 	}
 }

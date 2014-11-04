@@ -10,7 +10,6 @@ import org.blockserver.level.BiomeType;
 import org.blockserver.level.provider.ChunkPosition;
 import org.blockserver.level.provider.IChunk;
 import org.blockserver.level.provider.LevelProvider;
-import org.blockserver.math.Vector3d;
 
 public class FlatGenerator implements Generator{
 	private LevelProvider provider;
@@ -109,28 +108,24 @@ public class FlatGenerator implements Generator{
 		return provider;
 	}
 	@Override
-	public void initLevel(){
-		Vector3d spawn = provider.getSpawn();
-		generateChunk(ChunkPosition.fromCoords(spawn), FLAG_GENERATE_SPAWN);
-	}
-	@Override
-	public void generateChunk(ChunkPosition pos, int flag){
-		IChunk chunk = provider.getChunk(pos);
+	public void generateChunk(ChunkPosition pos, IChunk chunk, int flag){
 		int curY = 0;
 		for(BlockLayer layer: layers){
 			for(byte y = (byte) curY; y < curY + layer.getHeight(); y++){
 				for(byte x = 0; x < 16; x++){
 					for(byte z = 0; z < 16; z++){
 						chunk.setBlock(x, y, z, layer.getBlock().getID());
-						chunk.setBlock(x, y, z, layer.getBlock().getDamage());
+						chunk.setDamage(x, y, z, layer.getBlock().getDamage());
 						chunk.setSkyLight(x, y, z, (byte) 15);
 						chunk.setBlockLight(x, y, z, (byte) 15);
 						chunk.setBiomeId(x, z, biomeType.getID());
+						chunk.setBiomeColor(x, z, biomeType.getGrass());
 					}
 				}
 			}
 		}
 	}
+	@Override
 	public long getSeed(){
 		return seed;
 	}
@@ -154,6 +149,9 @@ public class FlatGenerator implements Generator{
 	}
 	public List<StructDef> getStructDefs(){
 		return structDefs;
+	}
+	public String getArgs(){
+		return opts;
 	}
 	protected class BlockLayer{
 		private Block block;

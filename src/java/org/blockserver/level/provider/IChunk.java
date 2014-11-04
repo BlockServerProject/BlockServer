@@ -61,5 +61,7 @@ public abstract class IChunk implements GeneralConstants{
 	public void setBiomeId(byte x, byte z, byte biome){
 		getBiomeIds()[z << 4 + x] = biome;
 	}
-	
+	public void setBiomeColor(byte x, byte z, int color){
+		getBiomeColors()[z << 4 + x] = color;
+	}
 }
