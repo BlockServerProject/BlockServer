@@ -57,7 +57,7 @@ public enum BiomeType{
 	BIRCH_FOREST_HILLS_M("Birch Forest Hills M", 156, 0.6f, 0.6f, 0x92BD59, 0x77AB2F),
 	ROOFED_FOREST_M("Roofed Forest M", 157, 0.7f, 0.8f, 0x92BD59, 0x77AB2F),
 	COLD_TAIGA("Cold Taiga M", 158, -0.5f, 0.4f, 0x92BD59, 0x77AB2F),
-	MEGA_SPRUCE_TAIGA"Mega Spruce Taiga", 160, 0.25f, 0.8f, 0x92BD59, 0x77AB2F),	// special exception look down
+	MEGA_SPRUCE_TAIGA("Mega Spruce Taiga", 160, 0.25f, 0.8f, 0x92BD59, 0x77AB2F),	// special exception look down
 	MEGA_SPRUCE_TAIGA_HILLS("Mega Spruce Taiga Hills", 161, 0.3f, 0.8f, 0x92BD59, 0x77AB2F),
 	//    { /* 162 */ "Extreme Hills+ M",			0.2f, 0.3f, 0x92BD59, 0x77AB2F },
 	//    { /* 163 */ "Savanna M",				1.2f, 0.0f, 0x92BD59, 0x77AB2F },
