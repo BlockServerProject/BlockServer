@@ -35,7 +35,7 @@ public enum MinecraftVersion {
 		@Override public String toString(){
 			return "0.9.5";
 		}
-	};
+	},
 	V0100{
 		@Override public String toString(){
 			return "0.10.0";
