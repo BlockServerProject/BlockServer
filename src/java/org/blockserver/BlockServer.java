@@ -9,6 +9,9 @@ import java.util.Properties;
 
 import org.blockserver.chat.ChatManager;
 import org.blockserver.chat.SimpleChatManager;
+import org.blockserver.entity.EntityTypeManager;
+import org.blockserver.entity.SimpleEntityTypeManager;
+import org.blockserver.level.generator.FlatGenerator;
 import org.blockserver.network.minecraft.BaseDataPacket;
 import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.player.BSFPlayerDatabase;
@@ -23,6 +26,7 @@ import org.blockserver.utility.MinecraftVersion;
  * @author BlockServerProject
  */
 public class BlockServer{
+
 	public final static boolean IS_DEBUG = true; // remember to remove this on production
 	public static final File CONFIG_FILE = new File(".", "config.txt"); // txt is easier for users to edit
 	public static final File ADVANCED_CONFIG_FILE = new File(".", "advanced-config.properties"); // less likely to have users carelessly editing this
@@ -42,6 +46,7 @@ public class BlockServer{
 			String defaultLevelName = config.getProperty("default-level");
 			Class<? extends ChatManager> chatMgrType = null;
 			Class<? extends PlayerDatabase> playerDbType = null;
+			Class<? extends EntityTypeManager> entityTypeMgrType = null;
 			try{
 				Class<?> chatMgr = ConfigAgent.readClass(advancedConfig, "chat-manager-class-name");
 				chatMgrType = chatMgr.asSubclass(ChatManager.class);
@@ -66,12 +71,24 @@ public class BlockServer{
 				System.out.println("Player database type in advanced config must be subclass of PlayerDatabase. Default (BSFPlayerDatabase) will be used.");
 				playerDbType = BSFPlayerDatabase.class;
 			}
+			try{
+				Class<?> entityTypeMgr = ConfigAgent.readClass(advancedConfig, "entity-type-manager-class-name");
+				entityTypeMgrType = entityTypeMgr.asSubclass(EntityTypeManager.class);
+			}
+			catch(ClassNotFoundException e){
+				System.out.println("Entity type manager type in advanced config is not found. Default (SimpleEntityTypeManager) will be used.");
+				entityTypeMgrType = SimpleEntityTypeManager.class;
+			}
+			catch(ClassCastException e){
+				System.out.println("Entity type manager type in advanced config must be subclass of EntityTypeManager. Default (SimpleEntityTypeManager) will be used.");
+				entityTypeMgrType = SimpleEntityTypeManager.class;
+			}
 			File worldsDir = ConfigAgent.readFile(here, advancedConfig, "levels-include-path");
 			File playersDir = ConfigAgent.readFile(here, advancedConfig, "players-include-path");
 			try{
 				Server server = new Server(serverName, ip, port, maxPlayers,
-						MinecraftVersion.V095, motd, defaultLevelName, null, // TODO GenerationSettings
-						chatMgrType, playerDbType, new org.blockserver.api.SoleEventListener.DummySoleEventListener(), // TODO config-controlled
+						MinecraftVersion.V095, motd, defaultLevelName, FlatGenerator.class, // TODO custom generator
+						chatMgrType, playerDbType, entityTypeMgrType, new org.blockserver.api.SoleEventListener.DummySoleEventListener(), // TODO config-controlled
 						worldsDir, playersDir);
 				server.run();
 			}
@@ -89,7 +106,7 @@ public class BlockServer{
 			System.exit(2);
 		}
 	}
-	private static void generateConfig(){
+	public static void generateConfig(){
 		ConfigAgent.saveConfig(ConfigAgent.generateConfig(), CONFIG_FILE, "BlockServer config file for normal settings");
 		ConfigAgent.saveConfig(ConfigAgent.getAdvancedConfig(), ADVANCED_CONFIG_FILE, "BlockServer config file for advanced settings: only edit these if you know what you are doing!");
 	}
@@ -135,6 +152,7 @@ public class BlockServer{
 		private OutputStreamWriter os;
 		private Debugging(){
 			try{
+				new File("logs").mkdirs();
 				os = new OutputStreamWriter(new FileOutputStream(debugFile, true));
 			}
 			catch(IOException e){
@@ -160,9 +178,9 @@ public class BlockServer{
 			try{
 				instance.os.append(String.format(
 						"[PACKET OUT] Sent packet to %s of pid %d" + System.getProperty("line.separator"),
-						to.getName(), pk.getBuffer().array()[0]));
+						to.getName(), pk.getBuffer()[0]));
 				instance.os.append("[PACKET OUT BUFFER] Buffer: 0x");
-				for(byte b: pk.getBuffer().array()){
+				for(byte b: pk.getBuffer()){
 					instance.os.append(Integer.toHexString(b));
 				}
 				instance.os.append(System.getProperty("line.separator"));

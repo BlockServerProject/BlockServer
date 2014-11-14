@@ -1,7 +1,5 @@
 package org.blockserver.network.raknet;
 
-import java.nio.ByteBuffer;
-
 public class NACKPacket extends AcknowledgePacket {
 	public NACKPacket(int[] numbers){
 		sequenceNumbers = numbers;
@@ -15,7 +13,7 @@ public class NACKPacket extends AcknowledgePacket {
 		return 0;
 	}
 	@Override
-	public ByteBuffer getBuffer(){
-		return ByteBuffer.wrap(buffer);
+	public byte[] getBuffer(){
+		return buffer;
 	}
 }

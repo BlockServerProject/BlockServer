@@ -1,7 +1,7 @@
 package org.blockserver.network;
 
-@SuppressWarnings("serial")
-public class PacketEncodeException extends RuntimeException {
+public class PacketEncodeException extends RuntimeException{
+	private static final long serialVersionUID = -7582017283053003465L;
 	public PacketEncodeException() {
 		super("An Exception happened while encoding a packet.");
 	}
@@ -9,6 +9,6 @@ public class PacketEncodeException extends RuntimeException {
 		super(message);
 	}
 	public PacketEncodeException(byte pid){
-		super("An Exception happened while encoding a packet with the ID of: "+pid);
+		super(String.format("An Exception happened while encoding a packet with the ID of: %d", pid));
 	}
 }

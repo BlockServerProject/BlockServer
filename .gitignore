@@ -36,10 +36,10 @@ local.properties
 diff.txt
 
 # Generated files
-players/
-worlds/
-logs/
-/advanced-config.properties
-/config.txt
-/build
-/levels
+players
+worlds
+logs
+levels
+advanced-config.properties
+config.txt
+build

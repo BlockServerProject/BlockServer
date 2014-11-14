@@ -1,12 +1,10 @@
 package org.blockserver.network.raknet;
 
-import java.nio.ByteBuffer;
-
-import org.blockserver.network.RaknetsID;
+import org.blockserver.network.RaknetIDs;
 
 public class ACKPacket extends AcknowledgePacket{
 	public byte getPID() {
-		return RaknetsID.ACK;
+		return RaknetIDs.ACK;
 	}
 
 	public ACKPacket(int[] numbers){
@@ -17,7 +15,7 @@ public class ACKPacket extends AcknowledgePacket{
 	}
 
 	@Override
-	public ByteBuffer getBuffer(){
-		return ByteBuffer.wrap(buffer);
+	public byte[] getBuffer(){
+		return buffer;
 	}
 }

@@ -2,27 +2,25 @@ package org.blockserver.network.minecraft;
 
 import java.nio.ByteBuffer;
 
-import org.blockserver.level.Level;
+import org.blockserver.math.Vector3;
 import org.blockserver.math.Vector3d;
 
-public class StartGamePacket implements BaseDataPacket{
-	protected ByteBuffer buffer;
-	public byte PID = PacketsID.START_GAME;
-	public int seed;
-	public int unknown;
+public class StartGamePacket extends BaseDataPacket{
+	public final static int GENERATOR_OLD = 0,
+			GENERATOR_INFINITE = 1,
+			GENERATOR_FLAT = 2;
+	public Vector3 spawnPos;
+	public Vector3d playerpos;
+	
+	public long seed;
+	public int generator;
 	public int gamemode;
 	public int eid;
-	public float spawnX;
-	public float spawnY;
-	public float spawnZ;
-
-	public StartGamePacket(Level level, int eid){
-		this(level.getSpawnPos(), level.getDefaultGamemode(), level.getSeed(), eid);
-	}
-	public StartGamePacket(Vector3d spawnpos, int gamemode, int seed, int eid){
-		this.spawnX = (float) spawnpos.getX();
-		this.spawnY = (float) spawnpos.getY();
-		this.spawnZ = (float) spawnpos.getZ();
+	
+	public StartGamePacket(Vector3 spawnPos, Vector3d playerpos, int generator, int gamemode, long seed, int eid){
+		this.spawnPos = spawnPos;
+		this.playerpos = playerpos;
+		this.generator = generator;
 		this.gamemode = gamemode;
 		this.seed = seed;
 		this.eid = eid;
@@ -30,22 +28,20 @@ public class StartGamePacket implements BaseDataPacket{
 
 	@Override
 	public void encode(){
-		buffer = ByteBuffer.allocate(29); //Not sure about this, I think its right
-		buffer.put(PID);
-		buffer.putInt(seed);
-		buffer.putInt(unknown);
-		buffer.putInt(gamemode);
-		buffer.putInt(eid);
-		buffer.putFloat(spawnX);
-		buffer.putFloat(spawnY);
-		buffer.putFloat(spawnZ);
+		bb = ByteBuffer.allocate(1 + (0x04 * 11)); //Not sure about this, I think its right
+		bb.put(START_GAME); 
+		bb.putInt((int) seed);
+		bb.putInt(generator);
+		bb.putInt(gamemode);
+		bb.putInt(eid);
+		bb.putInt(spawnPos.getX());
+		bb.putInt(spawnPos.getY());
+		bb.putInt(spawnPos.getZ());
+		bb.putFloat((float) playerpos.getX());
+		bb.putFloat((float) playerpos.getY());
+		bb.putFloat((float) playerpos.getZ());
 	}
 
 	@Override
 	public void decode(){}
-
-	@Override
-	public ByteBuffer getBuffer(){
-		return buffer;
-	}
 }

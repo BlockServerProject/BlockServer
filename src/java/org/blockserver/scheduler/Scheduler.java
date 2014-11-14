@@ -31,7 +31,9 @@ public class Scheduler extends Thread{
 		if(t.isSetup()){
 			t.setID(ids++);
 			t.setDelay((t.getDelay() + currentTick));
-			tasks.add(t);
+			synchronized(tasks){
+				tasks.add(t);
+			}
 			return t.getID();
 		}
 		return -1;
@@ -39,15 +41,19 @@ public class Scheduler extends Thread{
 
 	public void removeTasks(int id){
 		int i = 0;
-		for(Task t: tasks){
-			if(t.getID() == id){
-				tasks.remove(i);
+		synchronized(tasks){
+			for(Task t: tasks){
+				if(t.getID() == id){
+					tasks.remove(i);
+				}
+				i++;
 			}
-			i++;
 		}
 	}
 	public void removeAllTasks(){
-		tasks.clear();
+		synchronized(tasks){
+			tasks.clear();
+		}
 	}
 
 	public void Start() throws Exception{
@@ -62,30 +68,33 @@ public class Scheduler extends Thread{
 		setName("ServerSchedulerThread");
 		while(isRunning) {
 			currentTick++;
+			server.getCmdManager().dispatchQueue();
 			if(!tasks.isEmpty()) {
-				for(int i = 0; i < tasks.size(); i++){
-					Task t = tasks.get(i);
-					if(t == null){
-						continue;
-					}
-					if(t.getDelay() == currentTick){
-						t.onRun(server, currentTick);
-						int times = t.getRepeatTimes();
-						if(times > 0){
-							if(--times == 0){
+				synchronized(tasks){
+					for(int i = 0; i < tasks.size(); i++){
+						Task t = tasks.get(i);
+						if(t == null){
+							continue;
+						}
+						if(t.getDelay() == currentTick){
+							t.onRun(server, currentTick);
+							int times = t.getRepeatTimes();
+							if(times > 0){
+								if(--times == 0){
+									t.onFinish(currentTick);
+									tasks.remove(i);
+									continue;
+								}
+								t.setRepeatTimes(times);
+								t.setDelay(currentTick + t.getDefaultDelay());
+							}
+							else if(times == -1){ // -1 Repeat forever
+								t.setDelay(currentTick + t.getDefaultDelay());
+							}
+							else{
 								t.onFinish(currentTick);
 								tasks.remove(i);
-								continue;
 							}
-							t.setRepeatTimes(times);
-							t.setDelay(currentTick + t.getDefaultDelay());
-						}
-						else if(times == -1){ // -1 Repeat forever
-							t.setDelay(currentTick + t.getDefaultDelay());
-						}
-						else{
-							t.onFinish(currentTick);
-							tasks.remove(i);
 						}
 					}
 				}
@@ -97,6 +106,7 @@ public class Scheduler extends Thread{
 					try{
 						server.getLogger().info("Stopping test on the 200th tick...");
 						server.stop();
+						System.exit(0);
 					}
 					catch(RuntimeException e){
 						e.printStackTrace();
@@ -113,8 +123,9 @@ public class Scheduler extends Thread{
 			throw new RuntimeException("Cannot stop non-running scheduler!");
 		}
 		isRunning = false;
-		join();
-		tasks.clear();
+		synchronized(tasks){
+			tasks.clear();
+		}
 	}
 
 	public long getCurrentTick(){

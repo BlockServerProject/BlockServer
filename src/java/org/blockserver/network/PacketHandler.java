@@ -41,23 +41,23 @@ public class PacketHandler extends Thread{
 			try{
 				DatagramPacket pck = socket.receive();
 				byte pid = pck.getData()[0];
-				if(pid >= RaknetsID.UNCONNECTED_PING && pid <= RaknetsID.ADVERTISE_SYSTEM){ // RakNet Login Packets Range
+				if(pid >= RaknetIDs.UNCONNECTED_PING && pid <= RaknetIDs.ADVERTISE_SYSTEM){ // RakNet Login Packets Range
 					switch(pid){
-						case RaknetsID.UNCONNECTED_PING: //ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
-						case RaknetsID.UNCONNECTED_PING_OPEN_CONNECTIONS: // (0x02)
+						case RaknetIDs.UNCONNECTED_PING: //ID_CONNECTED_PING_OPEN_CONNECTIONS (0x01)
+						case RaknetIDs.UNCONNECTED_PING_OPEN_CONNECTIONS: // (0x02)
 							ConnectedPingPacket pingPk = new ConnectedPingPacket(pck, server);
 							ByteBuffer response = pingPk.getResponse();
 							DatagramPacket packet1c = new DatagramPacket(response.array(), response.capacity(), pck.getAddress(), pck.getPort());
 							sendPacket(packet1c);
 							break;
-						case RaknetsID.OPEN_CONNECTION_REQUEST_1: //ID_OPEN_CONNECTION_REQUEST_1 (0x05)
+						case RaknetIDs.OPEN_CONNECTION_REQUEST_1: //ID_OPEN_CONNECTION_REQUEST_1 (0x05)
 							ConnectionRequest1Packet crPk1 = new ConnectionRequest1Packet(pck, server);
 							ByteBuffer response6 = crPk1.getResponse();
 							byte protocol = ((ConnectionRequest1Packet) crPk1).getProtocol();
-							if (protocol != RaknetsID.STRUCTURE) {
+							if (protocol != RaknetIDs.STRUCTURE) {
 								//Wrong protocol
 								server.getLogger().warning("Client " + pck.getAddress().getHostName() + ":" + pck.getPort() + " RakNet protocol is outdated, current protocol is 5");
-								IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(pck.getAddress(), pck.getPort(), (byte) RaknetsID.STRUCTURE, server);
+								IncompatibleProtocolPacket pk = new IncompatibleProtocolPacket(pck.getAddress(), pck.getPort(), (byte) RaknetIDs.STRUCTURE, server);
 								sendPacket(pk.getPacket());
 							}
 							else{
@@ -65,7 +65,7 @@ public class PacketHandler extends Thread{
 								sendPacket(packet06);
 							}
 							break;
-						case RaknetsID.OPEN_CONNECTION_REQUEST_2: //ID_OPEN_CONNECTION_REQUEST_2 (0x07)
+						case RaknetIDs.OPEN_CONNECTION_REQUEST_2: //ID_OPEN_CONNECTION_REQUEST_2 (0x07)
 							ConnectionRequest2 crPk2 = new ConnectionRequest2(pck, server);
 							ByteBuffer response8 = crPk2.getResponse();
 							DatagramPacket packet08 = new DatagramPacket(response8.array(), response8.capacity(), pck.getAddress(), pck.getPort());
@@ -86,25 +86,26 @@ public class PacketHandler extends Thread{
 							server.getLogger().warning("Recived unsupported raknet packet! PID: %02X", pid);
 					}
 				}
-				else if(pid >= RaknetsID.DATA_PACKET_0 &&  pid <= RaknetsID.DATA_PACKET_F){ // Custom Data Packet Range
+				else if(pid >= RaknetIDs.DATA_PACKET_0 &&  pid <= RaknetIDs.DATA_PACKET_F){ // Custom Data Packet Range
 					CustomPacket packet = new CustomPacket(pck.getData());
 					packet.decode();
 					Player player = server.getPlayer(pck.getAddress().toString().replace("/",  ""), pck.getPort());
+
 					if(player instanceof Player){
 						player.handlePacket(packet);
 					}
 					else{
-						server.getLogger().warning("Cannot find player at %s:%d, data packet with pid %d (%s) sent",
+						server.getLogger().debug("Cannot find player at %s:%d, data packet with pid %d (%s) sent",
 								pck.getAddress().toString().replace("/", ""),
 								pck.getPort(),
-								packet.getBuffer().get(0), // does not shift the ByteBuffer
+								packet.getBuffer()[0], // does not shift the ByteBuffer
 								packet.getClass().getSimpleName());
 					}
 				}
-				else if(pid == RaknetsID.ACK || pid == RaknetsID.NACK){
+				else if(pid == RaknetIDs.ACK || pid == RaknetIDs.NACK){
 					Player player = server.getPlayer(pck.getAddress().toString().replace("/", ""), pck.getPort());
 					if(player != null){
-						player.handleAcknowledgePackets(pid == RaknetsID.ACK ? new ACKPacket(pck.getData()) : new NACKPacket(pck.getData()));
+						player.handleAcknowledgePackets(pid == RaknetIDs.ACK ? new ACKPacket(pck.getData()) : new NACKPacket(pck.getData()));
 					}
 				}
 				else{ // Unknown Packet Received!! New Protocol Changes?
@@ -126,7 +127,15 @@ public class PacketHandler extends Thread{
 			throw new RuntimeException("Tried to stop non-running packet handler");
 		}
 		isRunning = false;
-		socket.close();
-		join();
+		new Thread(new Runnable(){
+			@Override public void run(){
+				try{
+					server.getLogger().debug("Socket closing...");
+					socket.close();
+				}
+				catch(NullPointerException e){}
+			}
+		}).start();
+		server.getLogger().debug("Socket closed.");
 	}
 }

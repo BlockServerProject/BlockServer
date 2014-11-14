@@ -4,30 +4,43 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import org.blockserver.api.SoleEventListener;
 import org.blockserver.chat.ChatManager;
 import org.blockserver.cmd.CommandManager;
+import org.blockserver.entity.EntityTypeManager;
 import org.blockserver.level.Level;
-import org.blockserver.level.generator.GenerationSettings;
+import org.blockserver.level.generator.Generator;
+import org.blockserver.level.generator.GeneratorManager;
+import org.blockserver.level.provider.LevelCorruptedException;
+import org.blockserver.level.provider.LevelProvider;
+import org.blockserver.level.provider.LevelProviderManager;
+import org.blockserver.level.provider.LevelProviderType;
+import org.blockserver.level.provider.bsl.BSLLevelProviderType;
 import org.blockserver.network.PacketHandler;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
 import org.blockserver.scheduler.Scheduler;
 import org.blockserver.utility.MinecraftVersion;
 import org.blockserver.utility.ServerLogger;
+import org.blockserver.utility.Utils;
 
 public class Server implements Context{
 	private static Server instance = null;
 
 	private SoleEventListener listener;
-	private ConsoleCommandHandler cmdHandler = null;
+	private ConsoleCommandHandler consoleHandler = null;
 	private CommandManager cmdMgr;
 	private ChatManager chatMgr;
+	private EntityTypeManager entityTypeMgr;
+	private LevelProviderManager levelProviderMgr;
+	private GeneratorManager generatorMgr;
 	private boolean isNextChatMgrFirst = true;
 	private ServerLogger logger;
 	private Scheduler scheduler;
@@ -37,7 +50,8 @@ public class Server implements Context{
 	private Map<String, Player> players;
 	private Map<String, Level> levels;
 
-	private boolean stopped= false;
+	private Runnable wrapperStopCallback = null;
+	private boolean stopped = false;
 	private final MinecraftVersion MCVERSION;
 	private String VERSION = "0.1 - DEV";
 	private String serverName;
@@ -53,7 +67,7 @@ public class Server implements Context{
 	private boolean serverRunning = false;
 	private long startTime;
 	private long serverID;
-	private GenerationSettings defaultLevelGenSet;
+	private Class<? extends Generator> generator;
 	private String motd;
 
 	/**
@@ -76,6 +90,9 @@ public class Server implements Context{
 
 	public SoleEventListener getSoleEventListener(){
 		return listener;
+	}
+	public ConsoleCommandHandler getConsoleHandler(){
+		return consoleHandler;
 	}
 	/**
 	 * <p>Get the server scheduler instance.</p>
@@ -170,6 +187,9 @@ public class Server implements Context{
 	public boolean isStopped(){
 		return stopped;
 	}
+	public void setWrapperStopCallback(Runnable r){
+		wrapperStopCallback = r;
+	}
 	/**
 	 * <p>Get a Player object by the player address.</p<
 	 * 
@@ -180,7 +200,15 @@ public class Server implements Context{
 	public Player getPlayer(String ip, int port){
 		return players.get(ip + Integer.toString(port));
 	}
-
+	public Player[] getPlayers(String regex){
+		List<Player> ps = new ArrayList<Player>(1);
+		for(Player player: players.values()){
+			if(player.getName().matches(regex)){
+				ps.add(player);
+			}
+		}
+		return Utils.toArray(ps, Player.class);
+	}
 	public File getDataDir(){
 		return dataDir;
 	}
@@ -230,12 +258,9 @@ public class Server implements Context{
 			return levels.get(name);
 		}
 		if(load){
-			boolean success = loadLevel(name, generate);
-			if(success){
-				return levels.get(name);
-			}
+			loadLevel(name, generate, null);
 		}
-		return null;
+		return levels.get(name);
 	}
 	/**
 	 * <p>Get the server command manager.</p>
@@ -245,8 +270,8 @@ public class Server implements Context{
 	public CommandManager getCmdManager(){
 		return cmdMgr;
 	}
-	public GenerationSettings getDefaultLevelGenerationSettings(){
-		return defaultLevelGenSet;
+	public Class<? extends Generator> getDefaultLevelGenerator(){
+		return generator;
 	}
 	public ChatManager getChatMgr(){
 		return chatMgr;
@@ -259,9 +284,21 @@ public class Server implements Context{
 		this.chatMgr = chatMgr;
 		chatMgr.initialize(this);
 		if(!isNextChatMgrFirst){
-			logger.warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
+			getLogger().warning("Using new ChatManager: %s", chatMgr.getClass().getSimpleName());
 		}
 		isNextChatMgrFirst = false;
+	}
+	public EntityTypeManager getEntityTypeMgr(){
+		return entityTypeMgr;
+	}
+	public void setEntityTypeMgr(EntityTypeManager entityTypeMgr){
+		this.entityTypeMgr = entityTypeMgr;
+	}
+	public LevelProviderManager getLevelProviderMgr(){
+		return levelProviderMgr;
+	}
+	public GeneratorManager getGeneratorMgr(){
+		return generatorMgr;
 	}
 	/**
 	 * <p>Add a player to the list of online players.</p>
@@ -287,7 +324,7 @@ public class Server implements Context{
 	public int getPlayersConnected(){
 		return players.size();
 	}
-	public Collection<Player> getConnectedPlayers() {
+	public Collection<Player> getConnectedPlayers(){
 		return players.values();
 	}
 	
@@ -296,12 +333,21 @@ public class Server implements Context{
 	}
 
 	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
-			String motd, String defaultLevel, GenerationSettings defaultLevelGenSet,
-			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType, SoleEventListener listener,
+			String motd, String defaultLevel, Class<? extends Generator> generator,
+			Class<? extends ChatManager> chatMgrType, Class<? extends PlayerDatabase> dbType,
+			Class<? extends EntityTypeManager> entityTypeMgrType, SoleEventListener listener,
 			File worldsDir, File playersDir) throws Exception{
+		this(name, ip, port, maxPlayers, version, motd, defaultLevel, generator,
+				chatMgrType.newInstance(), dbType.newInstance(), entityTypeMgrType.newInstance(),
+				listener, worldsDir, playersDir, new ConsoleCommandSource.InputStreamConsoleCommandSource(System.in), new ServerLogger.Log4jServerLogger());
+	}
+	public Server(String name, String ip, short port, int maxPlayers, MinecraftVersion version,
+			String motd, String defaultLevel, Class<? extends Generator> generator,
+			ChatManager chatMgr, PlayerDatabase db, EntityTypeManager entityTypeMgr, SoleEventListener listener,
+			File worldsDir, File playersDir, ConsoleCommandSource consoleSource, ServerLogger logger) throws Exception{
 		Thread.currentThread().setName("ServerThread");
 		setInstance(this);
-		logger = new ServerLogger();
+		this.logger = logger;
 		startTime = System.currentTimeMillis();
 		serverip = ip;
 		serverPort = port;
@@ -310,24 +356,31 @@ public class Server implements Context{
 		MCVERSION = version;
 		this.motd = motd;
 		serverID = new Random().nextLong();
-		players = new HashMap<String, Player>(maxPlayers);
+		players = new HashMap<String, Player>(maxPlayers + 1, ((float) maxPlayers) / (maxPlayers + 1)); // no need to pre-allocate memory
 		this.playersDir = playersDir;
 		worldsDir.mkdirs();
 		this.worldsDir = worldsDir;
 		int cnt = worldsDir.list(new RootDirectoryFilter(worldsDir)).length;
 		levels = new HashMap<String, Level>(cnt);
-		this.defaultLevelGenSet = defaultLevelGenSet;
+		this.generator = generator;
 		this.defaultLevel = defaultLevel;
-		boolean success = loadLevel(defaultLevel, true);
+		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
+		packetHandler = new PacketHandler(this);
+		consoleHandler = new ConsoleCommandHandler(this, consoleSource);
+		cmdMgr = new CommandManager(this);
+		setChatMgr(chatMgr); // gracefully throw out the exception to the one who asked for it :P
+		setEntityTypeMgr(entityTypeMgr);
+		Collection<LevelProviderType<?>> coll = new ArrayList<LevelProviderType<?>>(1);
+		coll.add(new BSLLevelProviderType());
+		levelProviderMgr = new LevelProviderManager(coll, this);
+		generatorMgr = new GeneratorManager();
+		generatorMgr.addGenerator(generator);
+		playerDb = db;
+		this.listener = listener;
+		boolean success = loadLevel(defaultLevel, true, null);
 		if(!success){
 //			throw new RuntimeException("Unable to generate default level");
 		}
-		scheduler = new Scheduler(this);// Minecraft default Ticks Per Seconds(20)
-		packetHandler = new PacketHandler(this);
-		cmdHandler = new ConsoleCommandHandler(this);
-		cmdMgr = new CommandManager(this);
-		setChatMgr(chatMgrType.newInstance()); // gracefully throw out the exception to the one who asked for it :P
-		playerDb = dbType.newInstance();
 	}
 	/**
 	 * A file filter that filters out any non-directories and non-root directories
@@ -353,27 +406,27 @@ public class Server implements Context{
 	public void run(){
 		serverRunning = true;
 		try{
-			logger.info("This is version " + VERSION);
+			getLogger().info("This is version " + VERSION);
 			scheduler.Start();
-			logger.info("Server Scheduler Started...");
+			getLogger().info("Server Scheduler Started...");
 			playerDb.init(this);
 			packetHandler.start();
-			cmdHandler.start();
-			logger.info("Started server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
+			consoleHandler.start();
+			getLogger().info("Started server on: *:" + serverPort + ", implementing " + MinecraftVersion.versionToString(MCVERSION));
 		}
 		catch(SocketException e){
-			logger.fatal("COULD NOT BIND TO PORT - Maybe another server is running on %d?", serverPort);
-			logger.fatal("Shutting down server due to error.");
+			getLogger().fatal("COULD NOT BIND TO PORT - Maybe another server is running on %d?", serverPort);
+			getLogger().fatal("Shutting down server due to error.");
 			System.exit(1);
 		}
 		catch(IOException e){
 			int time = (int) (System.currentTimeMillis() - this.startTime);
-			logger.warning("IOException at: " + time + " ms");
+			getLogger().warning("IOException at: " + time + " ms");
 		}
 		catch(Exception e){
 			int time = (int) (System.currentTimeMillis() - this.startTime);
-			logger.warning("Exception at: " + time + " ms");
-			logger.warning(e.getMessage());
+			getLogger().warning("Exception at: " + time + " ms");
+			getLogger().warning(e.getMessage());
 		}
 	}
 	/**
@@ -386,10 +439,17 @@ public class Server implements Context{
 			player.close("server is stopping");
 		}
 		serverRunning = false;
+		getLogger().debug("Stopping scheduler...");
 		scheduler.end();
+		getLogger().debug("Stopping packet handler...");
 		packetHandler.end();
-		cmdHandler.end();
+		getLogger().debug("Stopping console command reader...");
+		consoleHandler.end();
 		stopped = true;
+		if(wrapperStopCallback != null){
+			getLogger().debug("Stopping wrapper " + wrapperStopCallback.toString());
+			wrapperStopCallback.run();
+		}
 	}
 
 	@Override
@@ -417,36 +477,34 @@ public class Server implements Context{
 	 * @param generate - whether to try to generate the level if it doesn't exist
 	 * @return whether the level is now loaded.
 	 */
-	public boolean loadLevel(String name, boolean generate){
+	public boolean loadLevel(String name, boolean generate, Generator generator){
 		File dir = new File(getWorldsDir(), name);
-		if(dir.isDirectory()){
-			// TODO Auto-generated method stub
+		if(!dir.isDirectory() && !generate){
 			return false;
 		}
-		if(generate){
-			return generateLevel(name);
+		LevelProvider provider = levelProviderMgr.filter(dir, name, generator.getSeed());
+		if(provider == null){
+			return false;
 		}
-		return false;
-	}
-	/**
-	 * <p>Generate a level.</p>
-	 * 
-	 * @param name
-	 * @return whether the level is successfully generated.
-	 */
-	public boolean generateLevel(String name){
-		generateLevel(name, getDefaultLevelGenerationSettings());
-		return false;
-	}
-	/**
-	 * <p>Generate a level.</p>
-	 * 
-	 * @param name
-	 * @param settings the settings to generate a level
-	 * @return whether the level is successfully generated.
-	 */
-	public boolean generateLevel(String name, GenerationSettings settings){
-		// TODO Auto-generated method stub
-		return false;
+		try{
+			Level level = new Level(name, provider, generator);
+			levels.put(name, level);
+			return true;
+		}
+		catch(LevelCorruptedException e){
+			if(e.isAffectingWhole()){
+				if(generate){
+					getLogger().warning("Level %s is corrupted and completely cannot be used! Regenerating level...", name);
+					// TODO regenerate
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				// TODO handle
+			}
+		}
+		return true;
 	}
 }

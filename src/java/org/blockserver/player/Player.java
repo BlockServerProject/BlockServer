@@ -3,6 +3,7 @@ package org.blockserver.player;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -12,22 +13,28 @@ import org.blockserver.BlockServer;
 import org.blockserver.Server;
 import org.blockserver.cmd.CommandIssuer;
 import org.blockserver.entity.Entity;
-import org.blockserver.entity.EntityType;
 import org.blockserver.item.Inventory;
+import org.blockserver.level.generator.Generator;
+import org.blockserver.level.provider.ChunkPosition;
+import org.blockserver.level.provider.IChunk;
 import org.blockserver.math.Vector3d;
 import org.blockserver.network.minecraft.AddPlayerPacket;
 import org.blockserver.network.minecraft.BaseDataPacket;
-import org.blockserver.network.minecraft.ChatPacket;
 import org.blockserver.network.minecraft.ClientConnectPacket;
 import org.blockserver.network.minecraft.ClientHandShakePacket;
-import org.blockserver.network.minecraft.Disconnect;
+import org.blockserver.network.minecraft.DisconnectPacket;
+import org.blockserver.network.minecraft.FullChunkDataPacket;
 import org.blockserver.network.minecraft.LoginPacket;
 import org.blockserver.network.minecraft.LoginStatusPacket;
 import org.blockserver.network.minecraft.MessagePacket;
-import org.blockserver.network.minecraft.PacketsID;
+import org.blockserver.network.minecraft.MovePlayerPacket;
+import org.blockserver.network.minecraft.PacketIDs;
 import org.blockserver.network.minecraft.PingPacket;
 import org.blockserver.network.minecraft.PongPacket;
 import org.blockserver.network.minecraft.ServerHandshakePacket;
+import org.blockserver.network.minecraft.SetHealthPacket;
+import org.blockserver.network.minecraft.SetSpawnPositionPacket;
+import org.blockserver.network.minecraft.SetTimePacket;
 import org.blockserver.network.minecraft.StartGamePacket;
 import org.blockserver.network.raknet.ACKPacket;
 import org.blockserver.network.raknet.AcknowledgePacket;
@@ -36,8 +43,10 @@ import org.blockserver.network.raknet.InternalPacket;
 import org.blockserver.network.raknet.NACKPacket;
 import org.blockserver.scheduler.CallbackTask;
 
-public class Player extends Entity implements CommandIssuer{
+public class Player extends Entity implements CommandIssuer, PacketIDs{
+	public /*final*/ static long MAX_PING = 15000L;
 	private String name;
+	private long lastPing, pingMeasure = 0, lastValidPing = 0;
 	private String ip;
 	private int port;
 
@@ -54,9 +63,12 @@ public class Player extends Entity implements CommandIssuer{
 	private int maxHealth;
 	private Server server;
 	protected Inventory inventory;
+	
+	private ChunkSender sender;
 
 	public Player(Server server, String ip, int port, short mtu, long clientID){
-		super(0, 0, 0, null);
+		super(new Vector3d(0, 128, 0), null);
+		lastPing = System.currentTimeMillis(); // should I use nanos instead?
 		this.ip = ip.replace("/", "");
 		this.port = port;
 		mtuSize = mtu;
@@ -73,113 +85,213 @@ public class Player extends Entity implements CommandIssuer{
 		catch(Exception e){
 			e.printStackTrace();
 		}
+		sender = new ChunkSender();
+	}
+	
+	private final class ChunkSender extends Thread{
+		public final HashMap<ChunkPosition, IChunk> useChunks = new HashMap<>();
+		private final HashMap<Integer, ArrayList<ChunkPosition>> mapOrder = new HashMap<>();
+		private final HashMap<ChunkPosition, Boolean> requestChunks = new HashMap<>();
+		private final ArrayList<Integer> orders = new ArrayList<>();
+		
+		public boolean first = true;
+		public int lastCX = 0, lastCZ = 0;
+		
+		@Override
+		public final void run(){
+			System.out.println("In ChunkSender");
+			while (!isInterrupted()){
+				int centerX = (int) Math.floor(x) / 16;
+				int centerZ = (int) Math.floor(z) / 16;
+				try{
+					if(centerX == lastCX && centerZ == lastCZ && !first){
+						Thread.sleep(100);
+						continue;
+					}
+				}
+				catch(InterruptedException e){
+					continue;
+				}
+				System.out.println("Do ChunkSender " + centerX + ", " + centerZ);
+				first = false;
+				lastCX = centerX; lastCZ = centerZ;
+				final int radius = 4; // TODO change to config settings
+				mapOrder.clear(); requestChunks.clear(); orders.clear();
+				for(int x = -radius; x <= radius; ++x){
+					for(int z = -radius; z <= radius; ++z){
+						int distance = (x*x) + (z*z);
+						int chunkX = x + centerX;
+						int chunkZ = z + centerZ;
+						if(!mapOrder.containsKey(distance)){
+							mapOrder.put(distance, new ArrayList<ChunkPosition>());
+						}
+						requestChunks.put(ChunkPosition.byDirectIndex(chunkX, chunkZ), true);
+						mapOrder.get(distance).add(ChunkPosition.byDirectIndex(chunkX, chunkZ));
+						orders.add(distance);
+					}
+				}
+				Collections.sort(orders);
+				for(Integer i: orders){
+					for(ChunkPosition v: mapOrder.get(i)){
+						try{
+							if(useChunks.containsKey(v)){
+								continue;
+							}
+							level.getLevelProvider().loadChunk(v, Generator.FLAG_GENERATOR_USAGE);
+							useChunks.put(v, level.getLevelProvider().getChunk(v) );
+							addToQueue(new FullChunkDataPacket(useChunks.get(v)));
+						}
+						catch(Exception e){
+							e.printStackTrace();
+						}
+					}
+				}
+				//TODO Unload Unused Chunks
+				/*
+				ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
+				for( int i = 0; i < v2a.length; i++ ) {
+					ChunkPosition v = v2a[i];
+					if( !useChunks.containsKey( v2a ) ) {
+						level.releaseChunk(v);
+						useChunks.remove(v);
+					}
+				}
+				*/
+				System.out.println("Do Finish");
+				try{
+					Thread.sleep(100);
+				}
+				catch(InterruptedException e){}
+			}
+			System.out.println("Out ChunkSender");
+		}
 	}
 
 	public void update(long ticks){
-		if(this.ACKQueue.size() > 0){
-			int[] array = new int[this.ACKQueue.size()];
-			int offset = 0;
-			for(Integer i: ACKQueue){
-				array[offset++] = i;
+		synchronized(ACKQueue){
+			if(this.ACKQueue.size() > 0){
+				int[] array = new int[this.ACKQueue.size()];
+				int offset = 0;
+				for(Integer i: ACKQueue){
+					array[offset++] = i;
+				}
+				ACKPacket pck = new ACKPacket(array);
+				pck.encode();
+				server.sendPacket(pck.getBuffer(), ip, port);
 			}
-			ACKPacket pck = new ACKPacket(array);
-			pck.encode();
-			server.sendPacket(pck.getBuffer().array(), ip, port);
 		}
-		if(NACKQueue.size() > 0){
-			int[] array = new int[NACKQueue.size()];
-			int offset = 0;
-			for(Integer i: NACKQueue){
-				array[offset++] = i;
+		synchronized(NACKQueue){
+			if(NACKQueue.size() > 0){
+				int[] array = new int[NACKQueue.size()];
+				int offset = 0;
+				for(Integer i: NACKQueue){
+					array[offset++] = i;
+				}
+				NACKPacket pck = new NACKPacket(array);
+				pck.encode();
+				server.sendPacket(pck.getBuffer(), ip, port);
 			}
-			NACKPacket pck = new NACKPacket(array);
-			pck.encode();
-			server.sendPacket(pck.getBuffer().array(), ip, port);
+		}
+		if(System.currentTimeMillis() - lastPing >= MAX_PING){
+			close(String.format("Ping timeout: %d seconds", (System.currentTimeMillis() - lastPing) / 1000d));
 		}
 		if(queue.packets.size() > 0){
+            queue.sequenceNumber = sequenceNum++;
 			queue.encode();
-			server.sendPacket(queue.getBuffer().array(), ip, port);
+			server.sendPacket(queue.getBuffer(), ip, port);
 			recoveryQueue.put(queue.sequenceNumber, queue);
 			queue.packets.clear();
 		}
 	}
 
+	public void sendDirectDataPacket(BaseDataPacket pck){
+		CustomPacket pk = new CustomPacket();
+		pck.encode();
+		InternalPacket ipk = new InternalPacket();
+		ipk.buffer = pck.getBuffer();
+		ipk.reliability = 2;
+		ipk.messageIndex = messageIndex++;
+		ipk.toBinary();
+		pk.packets.add(ipk);
+		server.sendPacket(pk.getBuffer(), ip, port);
+	}
 	public void addToQueue(BaseDataPacket pck){
 		pck.encode();
 		BlockServer.Debugging.logSentDataPacket(pck, this);
 		InternalPacket ipck = new InternalPacket();
-		ipck.buffer = pck.getBuffer().array();
+		ipck.buffer = pck.getBuffer();
 		ipck.reliability = 2;
 		ipck.messageIndex = messageIndex++;
 		ipck.toBinary();
-		if(queue.getLength() >= mtuSize){
-			queue.sequenceNumber = sequenceNum++;
-			queue.encode();
-			server.sendPacket(queue.getBuffer().array(), ip, port);
-			queue.packets.clear();
+		byte[] send = null;
+		synchronized(queue){
+			if(queue.getLength() + pck.getBuffer().length >= mtuSize){
+				queue.sequenceNumber = sequenceNum++;
+				queue.encode();
+				send = queue.getBuffer();
+				queue.packets.clear();
+			}
+			queue.packets.add(ipck);
 		}
-		queue.packets.add(ipck);
+		if(send != null){
+			server.sendPacket(send, ip, port);
+		}
 	}
 	public void handlePacket(CustomPacket pck){
-		if(pck.sequenceNumber - this.lastSequenceNum == 1){
+		if(pck.sequenceNumber - lastSequenceNum == 1){
 			lastSequenceNum = pck.sequenceNumber;
 		}
 		else{
-			for(int i = this.lastSequenceNum; i < pck.sequenceNumber; ++i){
-				NACKQueue.add(i);
+			synchronized(NACKQueue){
+				for(int i = lastSequenceNum; i < pck.sequenceNumber; ++i){
+					NACKQueue.add(i);
+				}
 			}
 		}
-		ACKQueue.add(pck.sequenceNumber);
+		synchronized(ACKQueue){
+			ACKQueue.add(pck.sequenceNumber);
+		}
 		for(InternalPacket ipck : pck.packets){
 			BlockServer.Debugging.logReceivedInternalPacket(ipck, this);
-			switch (ipck.buffer[0]){
-				case PacketsID.PING: //PING Packet
+			switch(ipck.buffer[0]){
+				case PING: //PING Packet
 					PingPacket pp = new PingPacket(ipck.buffer);
 					pp.decode();
+					pingMeasure = System.currentTimeMillis() - lastPing;
+					if(pingMeasure != 0){
+						lastValidPing = pingMeasure;
+					}
+					lastPing = System.currentTimeMillis();
 					PongPacket reply = new PongPacket(pp.pingID);
 					addToQueue(reply);
 					break;
-				case PacketsID.CLIENT_CONNECT: // 0x09. Use the constants class
+				case CLIENT_CONNECT: // 0x09. Use the constants class
 					ClientConnectPacket ccp = new ClientConnectPacket(ipck.buffer);
 					ccp.decode();
 					//Send a ServerHandshake packet
 					ServerHandshakePacket shp = new ServerHandshakePacket(this.port, ccp.session);
 					addToQueue(shp);
 					break;
-				case PacketsID.CLIENT_HANDSHAKE:
+				case CLIENT_HANDSHAKE:
 					ClientHandShakePacket chs = new ClientHandShakePacket(ipck.buffer);
 					chs.decode();
 					break;
-				case PacketsID.LOGIN:
+				case LOGIN:
 					LoginPacket lp = new LoginPacket(ipck.buffer);
 					server.getLogger().info("Login Packet: %d", ipck.buffer.length);
 					lp.decode();
-					if(lp.protocol != PacketsID.CURRENT_PROTOCOL || lp.protocol2 != PacketsID.CURRENT_PROTOCOL){
-						if(lp.protocol < PacketsID.CURRENT_PROTOCOL || lp.protocol2 < PacketsID.CURRENT_PROTOCOL){
+					if(lp.protocol != CURRENT_PROTOCOL || lp.protocol2 != CURRENT_PROTOCOL){
+						if(lp.protocol < CURRENT_PROTOCOL || lp.protocol2 < CURRENT_PROTOCOL){
 							addToQueue(new LoginStatusPacket(1)); // Client outdated
 							close("Wrong Protocol: Client is outdated.");
 						}
 
-						if(lp.protocol > PacketsID.CURRENT_PROTOCOL || lp.protocol2 > PacketsID.CURRENT_PROTOCOL){
+						if(lp.protocol > CURRENT_PROTOCOL || lp.protocol2 > CURRENT_PROTOCOL){
 							addToQueue(new LoginStatusPacket(2)); // Server outdated
 							close("Wrong Protocol: Server is outdated.");
 						}
 					}
 					addToQueue(new LoginStatusPacket(0)); // No error with the protocol.
-					/*
-					ArrayList<Player> players = server.getConnectedPlayers();
-					server.getLogger().info("Size is "+players.size());
-					for(int i = 0; i <= players.size(); i++){
-						Player p = players.get(i);
-						if(p.getName().equalsIgnoreCase(lp.username)){
-							//Name conflict, disconnect the original player
-							server.getLogger().info(p.getName()+"("+p.getIP()+":"+p.getPort()+") disconnected: Name Conflict.");
-							server.removePlayer(p);
-							server.getLogger().info(server.getPlayersConnected()+" players are connected.");
-							p.close("Another user logged in with your name.");
-						}
-					}
-					*/
 					if(lp.username.length() < 3 || lp.username.length() > 15){
 						close("Username is not valid.");
 					}
@@ -187,41 +299,50 @@ public class Player extends Entity implements CommandIssuer{
 						name = lp.username;
 						server.getLogger().info("%s (%s:%d) logged in with a fake entity ID.", name, ip, port);
 
-//						login();
-						//Once we get World generation up, uncomment this:
+						login();
+						StartGamePacket sgp = new StartGamePacket(level.getSpawnPos().toVector3(), this, StartGamePacket.GENERATOR_INFINITE, 1, level.getSeed(), 0);
+						addToQueue(sgp);
+						
+						SetTimePacket stp = new SetTimePacket(0);
+						addToQueue(stp);
+						
+						SetSpawnPositionPacket sspp = new SetSpawnPositionPacket(level.getSpawnPos().floor());
+						addToQueue(sspp);
+						
+						SetHealthPacket setHealth = new SetHealthPacket((byte) 0x20);
+						addToQueue(setHealth);
+						
+						sender.start();
+						
 						/*
-						StartGamePacket sgp = new StartGamePacket(server.getDefaultLevel(), this.entityID);
-						addToQueue(sgp);
-						*/
-						StartGamePacket sgp = new StartGamePacket(new Vector3d(100d, 2d, 100d), 1, 100, 1);
-						addToQueue(sgp);
 						sendChatArgs(server.getMOTD());
-
-						server.getChatMgr().broadcast(name+" joined the game.");
-
+						server.getChatMgr().broadcast(name + " joined the game.");
 						for(Player other: server.getConnectedPlayers()){
 							if(!(other.clientID == this.clientID)){
 								spawnPlayer(other);
 							}
 						}
+						*/
 					}
 					break;
-				case PacketsID.DISCONNECT:
+				case DISCONNECT:
 					disconnect("disconnected by client");
 					break;
-				case PacketsID.CHAT:
-					server.getLogger().info("ChatPacket used for chat (Unusual).");
-					ChatPacket cpk = new ChatPacket(ipck.buffer);
-					cpk.decode();
-					server.getChatMgr().handleChat(this, cpk.message);
-					break;
-				case PacketsID.MESSAGE:
+				case MESSAGE:
 					MessagePacket mpk = new MessagePacket(ipck.buffer);
 					mpk.decode();
-					server.getChatMgr().handleChat(this, mpk.msg);
+					server.getChatMgr().handleChat(this, mpk.getMessage());
+					break;
+				case MOVE_PLAYER:
+					MovePlayerPacket movePlayer = new MovePlayerPacket(ipck.buffer);
+					movePlayer.decode();
+					x = movePlayer.x;
+					y = movePlayer.y;
+					z = movePlayer.z;
 					break;
 				default:
 					server.getLogger().debug("Unsupported packet recived: %02x", ipck.buffer[0]);
+                    break;
 			}
 		}
 	}
@@ -237,7 +358,7 @@ public class Player extends Entity implements CommandIssuer{
 		else if(pck instanceof NACKPacket){
 			for(int i: pck.sequenceNumbers){
 				server.getLogger().info("NACK Packet Received Seq: %d", i);
-				server.sendPacket(this.recoveryQueue.get(i).getBuffer().array(), this.ip, this.port);
+				server.sendPacket(recoveryQueue.get(i).getBuffer(), ip, port);
 			}
 		}
 		else{
@@ -258,27 +379,54 @@ public class Player extends Entity implements CommandIssuer{
 		sendChat(msg, "");
 	}
 	public void spawnPlayer(Player other){
-		addToQueue(new AddPlayerPacket(other));
+		if(other != this){
+			addToQueue(new AddPlayerPacket(other));
+		}
 	}
 
 	protected void login(){
+		List<Player> toKick = new ArrayList<Player>();
+		for(Player player: server.getConnectedPlayers()){
+			if(player != null && player != this){
+				if(player.getName().equalsIgnoreCase(name)){
+					toKick.add(player);
+				}
+			}
+		}
+		for(Player player: toKick){
+			player.close("logging in from another location.");
+		}
 		PlayerData data = server.getPlayerDatabase().load(this);
 		setCoords(data.getCoords());
-		this.level = data.getLevel(); // validated!
-//		start(server);
+		level = data.getLevel(); // validated!
+		start(server);
 	}
 	public void close(String reason){
+		close(reason, false);
+	}
+	public void close(String reason, boolean direct){
+		if(direct){
+			sendDirectDataPacket(new DisconnectPacket());
+			disconnect("reason");
+			while(sender.isAlive()){
+				sender.interrupt();
+			}
+			return;
+		}
 		if(reason != null){
 			sendChat(reason);
 		}
-		addToQueue(new Disconnect());
+		addToQueue(new DisconnectPacket());
 		disconnect(String.format("kicked (%s)", reason));
+		while(sender.isAlive()){
+			sender.interrupt();
+		}
 	}
 	protected void disconnect(String reason){
 		server.getLogger().info("%s (%s:%d) disconnected: %s.", name, ip, port, reason);
 		server.getChatMgr().broadcast(name+" left the game.");
 		server.removePlayer(this);
-		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
+//		server.getPlayerDatabase().save(new PlayerData(level, this, getIName(), getInventory()));
 	}
 
 	public InetAddress getAddress(){
@@ -305,9 +453,15 @@ public class Player extends Entity implements CommandIssuer{
 	public String getIdentifier(){ // why not just use EID?
 		return ip + Integer.toString(port);
 	}
+	public long getLastPing(){
+		return lastPing;
+	}
+	public long getPingMeasure(){
+		return pingMeasure != 0 ? pingMeasure : (lastValidPing != 0 ? lastValidPing:System.currentTimeMillis() - lastPing);
+	}
 	@Override
-	public EntityType getType() {
-		return EntityType.PLAYER;
+	public byte getTypeID(){
+		return 63;
 	}
 	@Override
 	public int getMaxHealth(){
@@ -328,7 +482,7 @@ public class Player extends Entity implements CommandIssuer{
 
 	@Override
 	public void sudoCommand(String line){
-		server.getCmdManager().runCommand(this, line.substring(1));
+		server.getCmdManager().queueCommand(this, line.substring(1));
 	}
 	@Override
 	public int getHelpLines(){

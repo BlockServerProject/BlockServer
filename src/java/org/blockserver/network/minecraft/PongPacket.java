@@ -5,39 +5,29 @@ import java.nio.ByteBuffer;
 /**
  * Implements a 0x03 PONG Packet.
  */
-public class PongPacket implements BaseDataPacket{
-	private ByteBuffer buffer;
-	public final byte PID = PacketsID.PONG;
+public class PongPacket extends BaseDataPacket{
 	public long pingID;
 	public long unknown;
 	
 	public PongPacket(long pingID){
 		this.pingID = pingID;
-		this.unknown = pingID + System.currentTimeMillis();
+		unknown = pingID + System.currentTimeMillis();
+		bb = ByteBuffer.allocate(17);
 	}
 	public PongPacket(byte[] buffer){
-		this.buffer = ByteBuffer.wrap(buffer);
+		bb = ByteBuffer.wrap(buffer);
 	}
 
 	@Override
 	public void encode(){
-		buffer = ByteBuffer.allocate(17);
-		buffer.put(this.PID);
-		buffer.putLong(this.pingID);
-		buffer.putLong(this.unknown);
+		bb.put(PONG);
+		bb.putLong(pingID);
+		bb.putLong(unknown);
 	}
 
 	@Override
-	public void decode(){ // We can send the Ping Packet and receive a Pong Packet. To check if the player is gone or have lagg
-		if(buffer.get() != PID){
-			return;
-		}
-		pingID = buffer.getLong();
-		unknown = buffer.getLong();
-	}
-
-	@Override
-	public ByteBuffer getBuffer(){
-		return this.buffer;
+	public void decode(){ // We can send the Ping Packet and receive a Pong Packet. To check if the player is gone or have lag
+		pingID = bb.getLong();
+		unknown = bb.getLong();
 	}
 }

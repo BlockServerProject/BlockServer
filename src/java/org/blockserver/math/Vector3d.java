@@ -120,9 +120,12 @@ public class Vector3d{
 	public Vector3d abs(){
 		return new Vector3d(Math.abs(x), Math.abs(y), Math.abs(z));
 	}
+	public double length(){
+		return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+	}
 	public double distance(Vector3d other){
 		Vector3d delta = subtract(other).abs();
-		return Math.sqrt(Math.pow(delta.x, 2) + Math.pow(delta.y, 2) + Math.pow(delta.z, 2));
+		return delta.length();
 	}
 
 	public static Vector3d merge(Vector3d... vectors){
@@ -155,5 +158,9 @@ public class Vector3d{
 
 	public double[] toArray(){
 		return new double[]{x, y, z};
+	}
+	
+	public Vector3 toVector3() {
+		return new Vector3((int) x, (int) y, (int) z);
 	}
 }

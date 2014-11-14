@@ -26,11 +26,13 @@ public class ConfigAgent{
 		String ip = "0.0.0.0";
 		String chatMgrType = "org.blockserver.chat.SimpleChatManager";
 		String playerDbType = "org.blockserver.player.BSFPlayerDatabase";
+		String entityTypeMgrType = "org.blockserver.entity.SimpleEntityTypeManager";
 		String levelsDir = "levels";
 		String playerDir = "players";
 		prop.setProperty("ip", ip);
 		prop.setProperty("chat-manager-class-name", chatMgrType);
 		prop.setProperty("player-database-class-name", playerDbType);
+		prop.setProperty("entity-type-manager-class-name", entityTypeMgrType);
 		prop.setProperty("levels-include-path", levelsDir);
 		prop.setProperty("players-include-path", playerDir);
 		return prop;
@@ -45,8 +47,7 @@ public class ConfigAgent{
 			throw new RuntimeException(e.getCause().getMessage());
 		}
 	}
-	
-	@SuppressWarnings("finally")
+
 	public static Properties loadConfig(File file){
 		if(!file.exists()){
 			throw new RuntimeException("The file given does not exist!");
@@ -55,12 +56,10 @@ public class ConfigAgent{
 			Properties prop = new Properties();
 			try{
 				prop.load(new FileInputStream(file));
+				return prop;
 			}
 			catch(IOException e){
 				throw new RuntimeException(e.getCause().getMessage());
-			}
-			finally{
-				return prop;
 			}
 		}
 	}

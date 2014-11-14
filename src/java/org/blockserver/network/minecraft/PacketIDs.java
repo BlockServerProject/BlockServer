@@ -1,21 +1,18 @@
 package org.blockserver.network.minecraft;
 
-public interface PacketsID{
-	public static final int CURRENT_PROTOCOL = 18;
+import org.blockserver.GeneralConstants;
+
+public interface PacketIDs extends GeneralConstants{
+	public static final byte CURRENT_PROTOCOL = 18;
 
 	public static final byte PING = (byte)0x00;
 	public static final byte PONG = (byte)0x03;
-
 	public static final byte CLIENT_CONNECT = (byte)0x09;
 	public static final byte SERVER_HANDSHAKE = (byte)0x10;
-
 	public static final byte CLIENT_HANDSHAKE = (byte)0x13;
-
 	public static final byte SERVER_FULL = (byte)0x14;
 	public static final byte DISCONNECT = (byte)0x15;
-
 	public static final byte BANNED = (byte)0x17;
-
 	public static final byte LOGIN = (byte)0x82;
 	public static final byte LOGIN_STATUS = (byte)0x83;
 	public static final byte READY = (byte)0x84;
@@ -25,13 +22,11 @@ public interface PacketsID{
 	public static final byte ADD_MOB = (byte)0x88;
 	public static final byte ADD_PLAYER = (byte)0x89;
 	public static final byte REMOVE_PLAYER = (byte)0x8a;
-
 	public static final byte ADD_ENTITY = (byte)0x8c;
 	public static final byte REMOVE_ENTITY = (byte)0x8d;
 	public static final byte ADD_ITEM_ENTITY = (byte)0x8e;
 	public static final byte TAKE_ITEM_ENTITY = (byte)0x8f;
 	public static final byte MOVE_ENTITY = (byte)0x90;
-
 	public static final byte MOVE_ENTITY_POSROT = (byte)0x93;
 	public static final byte ROTATE_HEAD = (byte)0x94;
 	public static final byte MOVE_PLAYER = (byte)0x95;
@@ -50,7 +45,6 @@ public interface PacketsID{
 	public static final byte INTERACT = (byte)0xa2;
 	public static final byte USE_ITEM = (byte)0xa3;
 	public static final byte PLAYER_ACTION = (byte)0xa4;
-
 	public static final byte HURT_ARMOR = (byte)0xa6;
 	public static final byte SET_ENTITY_DATA = (byte)0xa7;
 	public static final byte SET_ENTITY_MOTION = (byte)0xa8;
@@ -71,4 +65,5 @@ public interface PacketsID{
 	public static final byte ADVENTURE_SETTINGS = (byte)0xb7;
 	public static final byte ENTITY_DATA = (byte)0xb8;
 	public static final byte PLAYER_INPUT = (byte)0xb9;
+	public static final byte FULL_CHUNK_DATA_PACKET = (byte)0xba;
 }

@@ -2,8 +2,12 @@ package org.blockserver.network.minecraft;
 
 import java.nio.ByteBuffer;
 
-public interface BaseDataPacket{
-	public void encode();
-	public void decode();
-	public ByteBuffer getBuffer();
+public abstract class BaseDataPacket implements PacketIDs{
+	protected ByteBuffer bb;
+
+	public abstract void encode();
+	public abstract void decode();
+	public byte[] getBuffer(){
+		return bb.array();
+	}
 }
