@@ -1,0 +1,63 @@
+<project name="BlockServer" basedir="." default="run">
+	<property name="main.dir"    value="src/main"/>
+	<property name="src.dir"	 value="${main.dir}/java"/>
+	<property name="build.dir"   value="build"/>
+	<property name="classes.dir" value="${build.dir}/classes"/>
+	<property name="res.dir"     value="${main.dir}/resources"/>
+	<property name="jar.dir"	 value="${build.dir}/jars"/>
+	<property name="main-class"  value="org.blockserver.TravisTest"/>
+	<property name="lib.dir"	 value="${basedir}/lib"/>
+	<property name="doc.dir"	 value="docs"/>
+	<property name="clones.dir"  value="${basedir}/../clones"/>
+	<property name="extjar.dir" value=".."/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+
+	<target name="prepare">
+		<mkdir dir="${clones.dir}"/>
+		<delete dir="${clones.dir}/IO-Lib-Clone"/>
+		<echo>Cloning IO-Lib to ${clones.dir}/IO-Lib-Clone/...</echo>
+		<exec executable="git">
+			<arg value="clone"/>
+			<arg value="https://github.com/BlockServerProject/BlockServer-IO-Lib.git"/>
+			<arg value="${clones.dir}/IO-Lib-Clone/"/>
+		</exec>
+		<delete file="${lib.dir}/IO-Lib.jar"/>
+		<ant antfile="${clones.dir}/IO-Lib-Clone/build.xml" target="export">
+			<property name="src.dir" value="${main.dir}"/>
+			<property name="export.target" value="${lib.dir}/IO-Lib.jar"/>
+		</ant>
+		
+		<delete dir="${clones.dir}/IO-Lib-Clone"/>
+		<echo>Done building IO-Lib jar</echo>
+	</target>
+	<target name="compile" depends="clean,prepare">
+		<mkdir dir="${classes.dir}"/>
+		<copy file="${res.dir}/log4j2.xml" tofile="${classes.dir}/log4j2.xml"/>
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
+	</target>
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}"/>
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}"/>
+			</manifest>
+		</jar>
+	</target>
+	<target name="run" depends="jar">
+		<java fork="true" classname="${main-class}" timeout="30000">
+			<classpath>
+				<path refid="classpath"/>
+				<path location="${jar.dir}/${ant.project.name}.jar"/>
+			</classpath>
+		</java>
+	</target>
+	<target name="doc" depends="compile" description="generate documentation">
+		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}"/>
+	</target>
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
+</project>

@@ -1,0 +1,22 @@
+language: java
+
+script: ant run
+
+before_script:
+  - ant -version
+  - cd ..
+  - git clone https://github.com/BlockServerProject/BSF-Lib.git IO-Lib
+  - dir
+  - cd IO-Lib
+  - dir
+  - ant expjarparent
+  - cd ..
+  - dir
+  - cd $TRAVIS_BUILD_DIR
+
+after_success:
+  - wget -O upload.php https://gist.githubusercontent.com/PEMapModder/6ac745b5ff0283c8c02f/raw/upload.php
+  
+branches:
+  - master
+  - level-rewrite
