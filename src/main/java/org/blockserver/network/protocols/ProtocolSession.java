@@ -1,5 +1,5 @@
 package org.blockserver.network.protocols;
 
 public abstract class ProtocolSession{
-	// TODO
+	public abstract Protocol getProtocol();
 }

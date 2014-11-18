@@ -58,8 +58,13 @@ public class UDPInterface{
 		while(running){
 			DatagramPacket pk = new DatagramPacket(new byte[65535], 65535);
 			sk.receive(pk);
-			// TODO protocol manager handle
+			WrappedPacket wp = new WrappedPacket(pk.getData(),
+					WrappedPacket.TRAFFIC_UDP, pk.getSocketAddress());
+			
 		}
+	}
+	public DatagramSocket getSocket(){
+		return sk;
 	}
 	public void shutdown(){
 		running = false;
