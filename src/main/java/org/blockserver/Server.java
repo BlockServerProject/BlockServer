@@ -1,0 +1,74 @@
+package org.blockserver;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
+
+import org.blockserver.ticker.ServerTicker;
+import org.blockserver.ticker.Task;
+import org.blockserver.ui.ConsoleOut;
+import org.blockserver.ui.Logger;
+
+public class Server{
+	private InetAddress address;
+	private int port;
+	private ServerTicker ticker;
+	private Logger logger;
+	private ArrayList<Runnable> shutdownRuns = new ArrayList<Runnable>();
+	// TODO ProtocolManager
+
+	/**
+	 * get the server logger for wrapping the {@linkplain ConsoleOut} passed in constructor
+	 * @return {@linkplain ServerLogger} wrapping a {@linkplain ConsoleOut}
+	 */
+	public Logger getLogger(){
+		return logger;
+	}
+	/**
+	 * Package internal constructor used in {@linkplain ServerBuilder#build()} internally
+	 * @see ServerBuilder#build()
+	 * @param address
+	 * @param port
+	 * @param out
+	 */
+
+	Server(InetAddress address, int port, ConsoleOut out){
+		Thread.currentThread().setName("BlockServer");
+		this.address = address;
+		this.port = port;
+		logger = new Logger(out);
+		ticker = new ServerTicker(this, 50);
+	}
+	/**
+	 * Start the server operation. This method blocks until the server is stopped.
+	 */
+	public void start(){
+		ticker.start();
+	}
+	/**
+	 * Stop the server. This calls {@linkplain Task#onFinalize()} on all
+	 * {@linkplain Task}s in {@linkplain ServerTicker}.tasks
+	 */
+	public void stop(){
+		ticker.stop();
+		for(Runnable r: shutdownRuns){
+			r.run();
+		}
+	}
+	/**
+	 * Adds <code>function</code> to an {@linkplain ArrayList} such that
+	 * it will be run when the server stops (without uncatchable crashing).<br>
+	 * This method is thread-safe.
+	 * @param function the {@linkplain Runnable} to be run
+	 */
+	public void registerShutdownFunction(Runnable function){
+		synchronized(shutdownRuns){
+			shutdownRuns.add(function);
+		}
+	}
+	public InetAddress getAddress(){
+		return address;
+	}
+	public int getPort(){
+		return port;
+	}
+}
