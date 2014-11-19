@@ -3,6 +3,8 @@ package org.blockserver;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
+import org.blockserver.network.bridge.NetworkBridgeManager;
+import org.blockserver.network.protocol.ProtocolManager;
 import org.blockserver.ticker.ServerTicker;
 import org.blockserver.ticker.Task;
 import org.blockserver.ui.ConsoleOut;
@@ -14,15 +16,44 @@ public class Server{
 	private ServerTicker ticker;
 	private Logger logger;
 	private ArrayList<Runnable> shutdownRuns = new ArrayList<Runnable>();
-	// TODO ProtocolManager
+	private NetworkBridgeManager bridges = new NetworkBridgeManager(this);
+	private ProtocolManager protocols = new ProtocolManager(this);
 
 	/**
-	 * get the server logger for wrapping the {@linkplain ConsoleOut} passed in constructor
+	 * Get the server logger for wrapping the {@linkplain ConsoleOut} passed in constructor
 	 * @return {@linkplain ServerLogger} wrapping a {@linkplain ConsoleOut}
 	 */
 	public Logger getLogger(){
 		return logger;
 	}
+	public NetworkBridgeManager getBridges(){
+		return bridges;
+	}
+	public ProtocolManager getProtocols(){
+		return protocols;
+	}
+	/**
+	 * Adds <code>function</code> to an {@linkplain ArrayList} such that
+	 * it will be run when the server stops (without uncatchable crashing).<br>
+	 * This method is thread-safe.
+	 * @param function the {@linkplain Runnable} to be run
+	 */
+	public void registerShutdownFunction(Runnable function){
+		synchronized(shutdownRuns){
+			shutdownRuns.add(function);
+		}
+	}
+	/**
+	 * Get the IP the server is running on, usually localhost
+	 * @return the IP the server is running on
+	 */
+	public InetAddress getAddress(){
+		return address;
+	}
+	public int getPort(){
+		return port;
+	}
+
 	/**
 	 * Package internal constructor used in {@linkplain ServerBuilder#build()} internally
 	 * @see ServerBuilder#build()
@@ -53,22 +84,5 @@ public class Server{
 		for(Runnable r: shutdownRuns){
 			r.run();
 		}
-	}
-	/**
-	 * Adds <code>function</code> to an {@linkplain ArrayList} such that
-	 * it will be run when the server stops (without uncatchable crashing).<br>
-	 * This method is thread-safe.
-	 * @param function the {@linkplain Runnable} to be run
-	 */
-	public void registerShutdownFunction(Runnable function){
-		synchronized(shutdownRuns){
-			shutdownRuns.add(function);
-		}
-	}
-	public InetAddress getAddress(){
-		return address;
-	}
-	public int getPort(){
-		return port;
 	}
 }

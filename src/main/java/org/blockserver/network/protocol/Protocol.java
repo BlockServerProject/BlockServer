@@ -1,6 +1,4 @@
-package org.blockserver.network.protocols;
-
-import org.blockserver.network.WrappedPacket;
+package org.blockserver.network.protocol;
 
 public abstract class Protocol{
 	public abstract ProtocolSession openSession(WrappedPacket pk);

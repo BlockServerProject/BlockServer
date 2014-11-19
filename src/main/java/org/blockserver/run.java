@@ -1,3 +1,5 @@
+package org.blockserver;
+
 import org.blockserver.Server;
 import org.blockserver.ServerBuilder;
 
