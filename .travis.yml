@@ -1,9 +1,9 @@
 language: java
 
-script: ant run
+script: mvn package
 
 before_script:
-  - ant -version
+  - mvn -version
   - cd ..
   - git clone https://github.com/BlockServerProject/BSF-Lib.git IO-Lib
   - dir
