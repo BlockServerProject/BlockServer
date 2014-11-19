@@ -28,4 +28,7 @@ public class PocketProtocol extends Protocol implements PocketProtocolConstants{
 	private void advertize(WrappedPacket pk){
 		// TODO
 	}
+	public Server getServer(){
+		return server;
+	}
 }

@@ -8,6 +8,7 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 
 import org.blockserver.Server;
+import org.blockserver.utils.Callable;
 
 public class NonBlockUDPSocket extends Thread{
 	private UDPBridge udp;
@@ -36,6 +37,7 @@ public class NonBlockUDPSocket extends Thread{
 				throw new RuntimeException(e);
 			}
 			socket.setSoTimeout(0);
+			getServer().registerShutdownFunction(new Callable(this, "stop", boolean.class));
 			while(running){
 				DatagramPacket pk = new DatagramPacket(new byte[1024 * 1024], 1024 * 1024);
 				socket.receive(pk);
@@ -47,6 +49,9 @@ public class NonBlockUDPSocket extends Thread{
 		}
 		catch(IOException e){
 			e.printStackTrace();
+		}
+		catch(NoSuchMethodException e){
+			e.printStackTrace(); // won't happen
 		}
 	}
 	public DatagramPacket receive(){

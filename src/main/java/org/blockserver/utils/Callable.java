@@ -6,9 +6,9 @@ import java.lang.reflect.Method;
 public class Callable implements Runnable{
 	private Object object;
 	private Method method;
-	public Callable(Object object, String method) throws NoSuchMethodException{
+	public Callable(Object object, String method, Class<?>... types) throws NoSuchMethodException{
 		this.object = object;
-		this.method = object.getClass().getMethod(method);
+		this.method = object.getClass().getMethod(method, types);
 		if(this.method.getExceptionTypes().length > 0){
 			throw new IllegalArgumentException("The method throws exceptions");
 		}
