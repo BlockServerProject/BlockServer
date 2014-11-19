@@ -19,6 +19,9 @@ public class Server{
 	private NetworkBridgeManager bridges = new NetworkBridgeManager(this);
 	private ProtocolManager protocols = new ProtocolManager(this);
 
+	public ServerTicker getTicker(){
+		return ticker;
+	}
 	/**
 	 * Get the server logger for wrapping the {@linkplain ConsoleOut} passed in constructor
 	 * @return {@linkplain ServerLogger} wrapping a {@linkplain ConsoleOut}
@@ -44,12 +47,16 @@ public class Server{
 		}
 	}
 	/**
-	 * Get the IP the server is running on, usually localhost
-	 * @return the IP the server is running on
+	 * Get the IP the server's default bridge(s) is/are running on, usually localhost
+	 * @return the default IP
 	 */
 	public InetAddress getAddress(){
 		return address;
 	}
+	/**
+	 * Get the port the server's default bridge(s) is/are running on, by default 19132
+	 * @return the default port
+	 */
 	public int getPort(){
 		return port;
 	}
