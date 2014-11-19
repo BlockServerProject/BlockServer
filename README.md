@@ -1,9 +1,24 @@
 BlockServer
 ===========
-#### _new_ branch: [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=new)](https://travis-ci.org/BlockServerProject/BlockServer)
+#### branch `new`: [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=new)](https://travis-ci.org/BlockServerProject/BlockServer)
 
 [![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=beaconmine|?#blockserverproject,#beaconmine,#pocketbukkit)
 
-BlockServer is a free, open source, Minecraft PE server. It is meant for everyone to use, and that means *you* can use it too! BlockServer is released under the [GNU GPL v2 Public License](http://www.gnu.org/licenses/gpl-2.0.txt). Need some help? Join our IRC channel on `#blockserverproject`; most of the time someone will be there (life is busy though). Finally, some help is welcome. Forks and pull requests are encouraged. You can check [our TODOs](https://github.com/BlockServerProject/BlockServer/issues?q=is%3Aopen+is%3Aissue+label%3ATODO). However, if you want to add some new TODOs, request it on the IRC on [our forums](http://beaconpe.net/forums).
+## What is BlockServer?
+BlockServer is a free, open-source Minecraft: PE server software.
 
-##REMEMBER: Only YOU can help blockserver!
+## Does BlockServer only support MCPE?
+If you download BlockServer only, yes. But if you inject extra code into BlockServer, new protocols will be registered in the server software and it can support players connecting from **any** protocols, including non-minecraft protocols.
+
+## Is BlockServer ready to use?
+Unfortunately, no. Currently, BlockServer is still in early development stage that cannot work yet (due to a recent rewrite). We expect it to be easily usable soon, however.
+
+## How do I run BlockServer when it is ready?
+* If you download an archived `.jar` file, you can run the jar directly with the `java -jar <jar file>` command.
+* If you download the source, you have to compile the source files at `/src/main/java` first. The following extra libraries are required to run BlockServer:
+  * BlockServer-IO-Lib, which can be downloaded [here](https://github.com/BlockServerProject/BlockServer-IO-Lib).
+  * log4j2 core and API, which are included inside the repo in the `/lib` directory.
+Then run `java org.blockserver.run` in the root folder where the compiled classes are contained in.
+
+## Can I contribute code?
+Of course yes! We need your help! However, before writing code, please read our [contribution guidelines](https://github.com/BlockServerProject/BlockServer-IO-Lib/blob/new/CONTRIBUTING.md) first.

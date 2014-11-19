@@ -29,6 +29,7 @@ public class ServerTicker{
 		while(running){
 			tick++;
 			tick();
+			// calculate server load
 			long now = System.nanoTime();
 			long diff = now - lastTickNano;
 			loadMeasure = diff * 100D /  sleep;
