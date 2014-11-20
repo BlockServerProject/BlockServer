@@ -1,17 +1,9 @@
 language: java
 
-script: ant run
+script: mvn test
 
 before_script:
-  - ant -version
-  - cd ..
-  - git clone https://github.com/BlockServerProject/BSF-Lib.git IO-Lib
-  - dir
-  - cd IO-Lib
-  - dir
-  - ant expjarparent
-  - cd ..
-  - dir
+  - mvn -version
   - cd $TRAVIS_BUILD_DIR
 
 after_success:
