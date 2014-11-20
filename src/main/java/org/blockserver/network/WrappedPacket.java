@@ -1,7 +1,8 @@
-package org.blockserver.network.protocol;
+package org.blockserver.network;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import org.blockserver.network.bridge.NetworkBridge;
 
@@ -10,7 +11,7 @@ public class WrappedPacket{
 	private SocketAddress addr;
 	private NetworkBridge bridge;
 	public WrappedPacket(byte[] buffer, SocketAddress addr, NetworkBridge bridge){
-		bb = ByteBuffer.wrap(buffer);
+		bb = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
 		this.addr = addr;
 		this.bridge = bridge;
 	}

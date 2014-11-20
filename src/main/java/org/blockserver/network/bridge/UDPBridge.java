@@ -5,7 +5,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.blockserver.Server;
-import org.blockserver.network.protocol.WrappedPacket;
+import org.blockserver.network.WrappedPacket;
 
 public class UDPBridge extends NetworkBridge{
 	private NetworkBridgeManager mgr;

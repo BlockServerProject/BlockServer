@@ -1,5 +1,6 @@
 package org.blockserver;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -9,6 +10,7 @@ public class ServerBuilder{
 	private InetAddress address;
 	private int port = -1;
 	private ConsoleOut out = null;
+	private File includePath = null;
 	public ServerBuilder(){
 		try{
 			address = InetAddress.getByName("localhost");
@@ -30,10 +32,16 @@ public class ServerBuilder{
 		this.out = out;
 		return this;
 	}
+	public ServerBuilder setIncludePath(File dir){
+		this.includePath = dir;
+		dir.mkdirs();
+		return this;
+	}
 
 	public Server build(){
 		validate(port != -1, "port");
 		validate(out != null, "out");
+		validate(includePath != null, "includePath");
 		return new Server(address, port, out);
 	}
 	private void validate(boolean bool, String field){

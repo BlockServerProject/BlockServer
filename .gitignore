@@ -34,3 +34,7 @@ world/
 #Intellij
 .idea/
 *.impl
+
+# Generated files
+data/
+logs/

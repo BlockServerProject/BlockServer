@@ -6,18 +6,21 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.blockserver.ui.Log4j2ServerLogger;
+import org.blockserver.ui.Log4j2ConsoleOut;
 import org.blockserver.utils.ServerConfig;
 
 public class run{
+	public static File DIR;
 	public static void main(String[] arguments){
 		ArrayList<String> args = new ArrayList<String>(Arrays.asList(arguments));
 		ServerBuilder builder = new ServerBuilder();
-		String includePath = ".";
+		String includePath = "data";
 		int pos = args.indexOf("--file");
 		if(pos != -1 && pos != args.size() - 1){
 			includePath = args.get(pos + 1);
 		}
+		DIR = new File(includePath);
+		DIR.mkdirs();
 		ServerConfig config = new ServerConfig(new File(includePath));
 		String ip = config.getStringProperty(ServerConfig.PROPERTY_IP);
 		try{
@@ -29,8 +32,9 @@ public class run{
 					+ "and start the server again.");
 			System.exit(2);
 		}
-		builder.setPort(config.getIntProperty(ServerConfig.PROPERTY_PORT, 19132));
-		builder.setConsoleOut(new Log4j2ServerLogger());
+		builder.setPort(config.getIntProperty(ServerConfig.PROPERTY_PORT, 19132))
+				.setConsoleOut(new Log4j2ConsoleOut())
+				.setIncludePath(DIR);
 		Server server = builder.build();
 		server.start();
 	}

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.blockserver.Server;
+import org.blockserver.network.WrappedPacket;
 
 public class ProtocolManager{
 	private Server server;

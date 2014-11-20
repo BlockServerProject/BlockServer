@@ -3,7 +3,7 @@ package org.blockserver.network.bridge;
 import java.util.ArrayList;
 
 import org.blockserver.Server;
-import org.blockserver.network.protocol.WrappedPacket;
+import org.blockserver.network.WrappedPacket;
 import org.blockserver.ticker.CallableTask;
 
 public class NetworkBridgeManager{

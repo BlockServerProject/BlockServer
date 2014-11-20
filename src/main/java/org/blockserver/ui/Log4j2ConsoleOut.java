@@ -2,7 +2,7 @@ package org.blockserver.ui;
 
 import org.apache.logging.log4j.LogManager;
 
-public class Log4j2ServerLogger implements ConsoleOut{
+public class Log4j2ConsoleOut implements ConsoleOut{
 	private org.apache.logging.log4j.Logger logger =
 			LogManager.getLogger("BlockServer");
 	@Override

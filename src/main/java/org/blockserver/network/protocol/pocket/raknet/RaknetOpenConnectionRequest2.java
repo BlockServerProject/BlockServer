@@ -1,0 +1,20 @@
+package org.blockserver.network.protocol.pocket.raknet;
+
+import java.nio.ByteBuffer;
+
+public class RaknetOpenConnectionRequest2{
+	public byte[] magic;
+	public byte security;
+	public int cookie;
+	public short serverPort;
+	public short mtu;
+	public long clientId;
+	public RaknetOpenConnectionRequest2(ByteBuffer bb){
+		bb.get(magic);
+		security = bb.get();
+		cookie = bb.getInt();
+		serverPort = bb.getShort();
+		mtu = bb.getShort();
+		clientId = bb.getLong();
+	}
+}
