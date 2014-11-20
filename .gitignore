@@ -12,6 +12,7 @@ local.properties
 .loadpath
 target/
 world/
+lib/IO-Lib.jar
 
 # External tool builders
 .externalToolBuilders/
