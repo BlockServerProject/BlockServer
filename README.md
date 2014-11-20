@@ -21,4 +21,4 @@ Unfortunately, no. Currently, BlockServer is still in early development stage th
 Then run `java org.blockserver.run` in the root folder where the compiled classes are contained in.
 
 ## Can I contribute code?
-Of course yes! We need your help! However, before writing code, please read our [contribution guidelines](https://github.com/BlockServerProject/BlockServer-IO-Lib/blob/new/CONTRIBUTING.md) first.
+Of course yes! We need your help! However, before writing code, please read our [contribution guidelines](https://github.com/BlockServerProject/BlockServer/blob/new/CONTRIBUTING.md) first.
