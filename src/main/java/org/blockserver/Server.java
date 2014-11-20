@@ -16,7 +16,7 @@ public class Server{
 	private ServerTicker ticker;
 	private Logger logger;
 	private ArrayList<Runnable> shutdownRuns = new ArrayList<Runnable>();
-	private NetworkBridgeManager bridges = new NetworkBridgeManager(this);
+	private NetworkBridgeManager bridges;
 	private ProtocolManager protocols = new ProtocolManager(this);
 
 	public ServerTicker getTicker(){
@@ -70,11 +70,12 @@ public class Server{
 	 */
 
 	Server(InetAddress address, int port, ConsoleOut out){
-		Thread.currentThread().setName("BlockServer");
+		Thread.currentThread().setName("BlockServerPE");
 		this.address = address;
 		this.port = port;
 		logger = new Logger(out);
 		ticker = new ServerTicker(this, 50);
+		bridges = new NetworkBridgeManager(this);
 	}
 	/**
 	 * Start the server operation. This method blocks until the server is stopped.

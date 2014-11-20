@@ -14,6 +14,7 @@ public class ServerTicker{
 	private boolean lastTickDone = false;
 	private long lastTickNano;
 	private double loadMeasure = 0D;
+	private long startTime;
 	private ArrayList<RegisteredTask> tasks = new ArrayList<RegisteredTask>();
 
 	public ServerTicker(Server server, int sleepNanos){
@@ -25,19 +26,20 @@ public class ServerTicker{
 			throw new IllegalStateException("Ticker is already running");
 		}
 		running = true;
-		lastTickNano = System.nanoTime();
+		startTime = System.currentTimeMillis();
+		lastTickNano = System.currentTimeMillis(); //System.nanoTime(); Fix...
 		while(running){
 			tick++;
 			tick();
 			// calculate server load
-			long now = System.nanoTime();
+			long now = System.currentTimeMillis(); //System.nanoTime(); Fix...
 			long diff = now - lastTickNano;
 			loadMeasure = diff * 100D /  sleep;
 			if(loadMeasure > 80D){
 				AntiSpam.act(new Runnable(){
 					@Override
 					public void run(){
-						server.getLogger().warning("The server load is too high! (%d / 100)", loadMeasure);
+						server.getLogger().warning("The server load is too high! (%f / 100)", loadMeasure);
 					}
 				}, ANTISPAM_LOAD_MEASURE_TOO_HIGH, 5000);
 			}
@@ -91,5 +93,8 @@ public class ServerTicker{
 		synchronized(tasks){
 			return tasks.remove(task);
 		}
+	}
+	public long getStartTime(){
+		return startTime;
 	}
 }
