@@ -103,6 +103,10 @@ public class PEByteBuffer {
 	 * -----------------------
 	 */
 	
+	/**
+	 * Get a string from the buffer (short + bytes).
+	 * @return The string.
+	 */
 	public String getString(){
 		String str = null;
 		
@@ -114,6 +118,9 @@ public class PEByteBuffer {
 		return str;
 	}
 	
+	/**
+	 * Recieve MAGIC from the buffer! (16 bytes).
+	 */
 	public void getMAGIC(){
 		buf.get(new byte[16]);
 	}
@@ -124,17 +131,42 @@ public class PEByteBuffer {
 	 * Non-Special methods. (GET)
 	 * -----------------------
 	 */
+	
+	/**
+	 * Get a byte from the buffer.
+	 * @return A byte.
+	 */
 	public byte getByte(){
 		return buf.get();
 	}
+	/**
+	 * Get an integer from the buffer.
+	 * @return An integer.
+	 */
 	public int getInt(){
 		return buf.getInt();
 	}
+	/**
+	 * Get a short from the buffer.
+	 * @return A short.
+	 */
 	public short getShort(){
 		return buf.getShort();
 	}
+	/**
+	 * Get a long from the buffer.
+	 * @return A long.
+	 */
 	public long getLong(){
 		return buf.getLong();
+	}
+	
+	/**
+	 * Return a representation of this buffer as a byte array.
+	 * @return The buffer in a byte array.
+	 */
+	public byte[] toBytes(){
+		return buf.array();
 	}
 	
 	
