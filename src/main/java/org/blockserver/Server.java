@@ -13,12 +13,16 @@ import org.blockserver.ui.Logger;
 public class Server{
 	private InetAddress address;
 	private int port;
+	private String serverName;
 	private ServerTicker ticker;
 	private Logger logger;
 	private ArrayList<Runnable> shutdownRuns = new ArrayList<Runnable>();
 	private NetworkBridgeManager bridges;
 	private ProtocolManager protocols = new ProtocolManager(this);
 
+	public String getServerName(){
+		return serverName;
+	}
 	public ServerTicker getTicker(){
 		return ticker;
 	}
@@ -69,10 +73,11 @@ public class Server{
 	 * @param out
 	 */
 
-	Server(InetAddress address, int port, ConsoleOut out){
+	Server(InetAddress address, int port, String serverName, ConsoleOut out){
 		Thread.currentThread().setName("BlockServerPE");
 		this.address = address;
 		this.port = port;
+		this.serverName = serverName;
 		logger = new Logger(out);
 		ticker = new ServerTicker(this, 50);
 		bridges = new NetworkBridgeManager(this);

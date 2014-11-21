@@ -9,6 +9,7 @@ import org.blockserver.ui.ConsoleOut;
 public class ServerBuilder{
 	private InetAddress address;
 	private int port = -1;
+	private String serverName = null;
 	private ConsoleOut out = null;
 	private File includePath = null;
 	public ServerBuilder(){
@@ -28,6 +29,10 @@ public class ServerBuilder{
 		this.port = port;
 		return this;
 	}
+	public ServerBuilder setServerName(String name){
+		serverName = name;
+		return this;
+	}
 	public ServerBuilder setConsoleOut(ConsoleOut out){
 		this.out = out;
 		return this;
@@ -40,14 +45,16 @@ public class ServerBuilder{
 
 	public Server build(){
 		validate(port != -1, "port");
+		validate(serverName != null, "serverName");
 		validate(out != null, "out");
 		validate(includePath != null, "includePath");
-		return new Server(address, port, out);
+		return new Server(address, port, serverName, out);
 	}
 	private void validate(boolean bool, String field){
 		if(!bool){
 			throw new IllegalStateException("Field ServerBuilder." + field
 					+ " not initialized!");
+		
 		}
 	}
 }

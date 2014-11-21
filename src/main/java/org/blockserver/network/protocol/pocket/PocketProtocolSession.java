@@ -3,6 +3,7 @@ package org.blockserver.network.protocol.pocket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
+import org.blockserver.Server;
 import org.blockserver.network.WrappedPacket;
 import org.blockserver.network.bridge.NetworkBridge;
 import org.blockserver.network.protocol.ProtocolManager;
@@ -12,6 +13,8 @@ import org.blockserver.network.protocol.pocket.raknet.RaknetOpenConnectionReply1
 import org.blockserver.network.protocol.pocket.raknet.RaknetOpenConnectionReply2;
 import org.blockserver.network.protocol.pocket.raknet.RaknetOpenConnectionRequest1;
 import org.blockserver.network.protocol.pocket.raknet.RaknetOpenConnectionRequest2;
+import org.blockserver.network.protocol.pocket.raknet.RaknetUnconnectedPing;
+import org.blockserver.network.protocol.pocket.raknet.RaknetUnconnectedPong;
 
 public class PocketProtocolSession implements ProtocolSession, PocketProtocolConstants{
 	private ProtocolManager mgr;
@@ -32,6 +35,10 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 		ByteBuffer bb = pk.bb();
 		byte pid = bb.get();
 		switch(pid){
+			case RAKNET_BROADCAST_PING_1:
+			case RAKNET_BROADCAST_PING_2:
+				replyToBroadcastPing(bb);
+				break;
 			case RAKNET_OPEN_CONNECTION_REQUEST_1:
 				replyToRequest1(bb);
 				break;
@@ -39,6 +46,12 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 				replyToRequest2(bb);
 				break;
 		}
+	}
+
+	private void replyToBroadcastPing(ByteBuffer bb){
+		RaknetUnconnectedPing ping = new RaknetUnconnectedPing(bb);
+		RaknetUnconnectedPong pong = new RaknetUnconnectedPong(ping.pingId, SERVER_ID, ping.magic, getServer().getServerName());
+		sendPacket(pong.getBuffer());
 	}
 
 	private void replyToRequest1(ByteBuffer bb){
@@ -68,6 +81,9 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	}
 	public long getClientId(){
 		return clientId;
+	}
+	public Server getServer(){
+		return bridge.getServer();
 	}
 
 	public void sendPacket(byte[] buffer){
