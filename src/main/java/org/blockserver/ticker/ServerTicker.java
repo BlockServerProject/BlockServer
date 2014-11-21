@@ -43,7 +43,7 @@ public class ServerTicker{
 					}
 				}, ANTISPAM_LOAD_MEASURE_TOO_HIGH, 5000);
 			}
-			long need = sleep - diff;
+			long need = (sleep - diff) * 1000000L;
 			int nanos = (int) (need % 1000000L);
 			while(nanos < 0){
 				nanos += 1000000;
