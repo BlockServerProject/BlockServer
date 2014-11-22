@@ -74,7 +74,7 @@ public class Server{
 	 */
 
 	Server(InetAddress address, int port, String serverName, ConsoleOut out){
-		Thread.currentThread().setName("BlockServerPE");
+		Thread.currentThread().setName("BlockServerPE-" + serverName);
 		this.address = address;
 		this.port = port;
 		this.serverName = serverName;
