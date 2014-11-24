@@ -18,13 +18,16 @@ public class ProtocolManager{
 		protocols.add(protocol);
 	}
 	public void handlePacket(WrappedPacket pk){
+		System.out.println("[ProtocolManager] Handling packet from " + pk.getAddress().toString());
 		if(sessions.containsKey(pk.getAddress())){
+			getServer().getLogger().debug("Handling packet by session %s", pk.getAddress());
 			sessions.get(pk.getAddress()).handlePacket(pk);
 		}
 		else{
 			for(Protocol ptc: protocols){
 				ProtocolSession ps = ptc.openSession(pk);
 				if(ps != null){
+					getServer().getLogger().debug("Opening session %s", pk.getAddress());
 					sessions.put(pk.getAddress(), ps);
 					break;
 				}

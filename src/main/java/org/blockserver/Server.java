@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import org.blockserver.network.bridge.NetworkBridgeManager;
 import org.blockserver.network.protocol.ProtocolManager;
+import org.blockserver.network.protocol.pocket.PocketProtocol;
 import org.blockserver.ticker.ServerTicker;
 import org.blockserver.ticker.Task;
 import org.blockserver.ui.ConsoleOut;
@@ -18,7 +19,7 @@ public class Server{
 	private Logger logger;
 	private ArrayList<Runnable> shutdownRuns = new ArrayList<Runnable>();
 	private NetworkBridgeManager bridges;
-	private ProtocolManager protocols = new ProtocolManager(this);
+	private ProtocolManager protocols;
 
 	public String getServerName(){
 		return serverName;
@@ -80,6 +81,8 @@ public class Server{
 		this.serverName = serverName;
 		logger = new Logger(out);
 		ticker = new ServerTicker(this, 50);
+		protocols = new ProtocolManager(this);
+		protocols.addProtocol(new PocketProtocol(this));
 		bridges = new NetworkBridgeManager(this);
 	}
 	/**

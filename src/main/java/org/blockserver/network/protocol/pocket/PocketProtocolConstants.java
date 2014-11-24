@@ -7,7 +7,7 @@ public interface PocketProtocolConstants{
 	 * Server ID sent to clients.
 	 * This ID is the same in every runtime, but also random.
 	 */
-	public final static long SERVER_ID = new Random().nextLong();
+	public static long SERVER_ID = new Random().nextLong();
 	/**
 	 * Current RakNet protocol version used by MCPE.<br>
 	 * Since there is so far only one RakNet protocol version used, we will not handle dynamic RakNet versions;

@@ -3,11 +3,9 @@ package org.blockserver.network.bridge;
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.Arrays;
 
 import org.blockserver.Server;
 import org.blockserver.network.WrappedPacket;
-import org.blockserver.utils.AntiSpam;
 
 public class UDPBridge extends NetworkBridge{
 	private NetworkBridgeManager mgr;
@@ -25,20 +23,15 @@ public class UDPBridge extends NetworkBridge{
 	public WrappedPacket receive(){
 		DatagramPacket dp = socket.receive();
 		if(dp != null){
-			final byte[] data = dp.getData();
-			AntiSpam.act(new Runnable(){
-				@Override
-				public void run(){
-					mgr.getServer().getLogger().buffer("Received packet: ", data, "");
-				}
-			}, "UDPBridge.receive().debug", 2000);
+			byte[] data = dp.getData();
 			WrappedPacket wp = new WrappedPacket(data, dp.getSocketAddress(), this);
 			return wp;
 		}
 		return null;
 	}
 	public boolean send(byte[] buffer, SocketAddress addr){
-		mgr.getServer().getLogger().info("Sending buffer: %s", Arrays.toString(buffer));
+		mgr.getServer().getLogger().buffer("Sending buffer: ", buffer, "");
+		mgr.getServer().getLogger().debug(new String(buffer));
 		return socket.send(buffer, addr);
 	}
 	public void stop(){
