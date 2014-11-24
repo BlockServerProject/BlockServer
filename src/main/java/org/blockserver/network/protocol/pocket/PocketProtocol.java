@@ -37,10 +37,11 @@ public class PocketProtocol extends Protocol implements PocketProtocolConstants{
 		return null;
 	}
 	private void advertize(WrappedPacket pk){
-		System.out.println("Advertizing server to " + pk.getAddress().toString());
 		RaknetUnconnectedPing ping = new RaknetUnconnectedPing(pk.bb());
 		RaknetUnconnectedPong pong = new RaknetUnconnectedPong(ping.pingId, SERVER_ID, ping.magic, server.getServerName());
 		pk.getBridge().send(pong.getBuffer(), pk.getAddress());
+		getServer().getLogger().buffer("Advertizing server to " + pk.getAddress().toString() + ", incoming packet ", pk.bb().array(), "");
+		getServer().getLogger().buffer("Outgoing buffer ", pk.bb().array(), "");
 	}
 	public Server getServer(){
 		return server;

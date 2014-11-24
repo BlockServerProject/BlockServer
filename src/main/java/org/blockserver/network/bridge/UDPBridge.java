@@ -30,8 +30,6 @@ public class UDPBridge extends NetworkBridge{
 		return null;
 	}
 	public boolean send(byte[] buffer, SocketAddress addr){
-		mgr.getServer().getLogger().buffer("Sending buffer: ", buffer, "");
-		mgr.getServer().getLogger().debug(new String(buffer));
 		return socket.send(buffer, addr);
 	}
 	public void stop(){

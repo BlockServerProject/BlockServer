@@ -24,13 +24,15 @@ public class Logger{
 		out.fatal(String.format(msg, args));
 	}
 	public void buffer(String prefix, byte[] buffer, String suffix){
-		StringBuilder out = new StringBuilder(buffer.length * 2);
+		StringBuilder out = new StringBuilder(buffer.length * 3);
 		for(byte bite: buffer){
-			String string = Integer.toHexString(bite);
+			String string = Integer.toHexString(bite & 0xFF);
 			while(string.length() < 2){
 				string = "0" + string;
 			}
+			
 			out.append(string);
+			out.append(',');
 		}
 		debug(prefix + "0x" + out.toString() + suffix);
 	}
