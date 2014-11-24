@@ -23,7 +23,7 @@
 	    <artifactId>IO-Lib</artifactId>
 	    <version>1.0</version>
 	    <scope>system</scope>
-	    <systemPath>${project.basedir}/lib/IO-Lib.jar</systemPath>
+	    <systemPath>lib/IO-Lib.jar</systemPath>
 	  </dependency>
 	  
 	  <!-- May be needed later.
