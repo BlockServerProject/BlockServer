@@ -1,6 +1,6 @@
 language: java
 
-script: mvn test
+script: ./maven-tests.sh
 
 before_script:
   - mvn -version
