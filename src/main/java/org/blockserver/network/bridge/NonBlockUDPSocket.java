@@ -15,7 +15,7 @@ public class NonBlockUDPSocket extends Thread{
 	private SocketAddress addr;
 	private DatagramSocket socket;
 	private ArrayList<DatagramPacket> receivedPacketQueue = new ArrayList<DatagramPacket>();
-	private boolean running;
+	private boolean running = true; // I forget to set this to default true every time and go into strange bugs!
 	public NonBlockUDPSocket(UDPBridge udp, SocketAddress address){
 		this.udp = udp;
 		addr = address;
@@ -24,6 +24,7 @@ public class NonBlockUDPSocket extends Thread{
 	@Override
 	public void run(){
 		setName("UDPSocket");
+		udp.getServer().getLogger().info("Starting UDP bridge on %s...", addr.toString());
 		try{
 			socket = new DatagramSocket(null);
 			socket.setBroadcast(true);
@@ -56,11 +57,9 @@ public class NonBlockUDPSocket extends Thread{
 	}
 	public DatagramPacket receive(){
 		if(receivedPacketQueue.isEmpty()){
-			System.out.println("No packets");
 			return null;
 		}
 		synchronized(receivedPacketQueue){
-			System.out.println("Packet received");
 			return receivedPacketQueue.remove(0);
 		}
 	}

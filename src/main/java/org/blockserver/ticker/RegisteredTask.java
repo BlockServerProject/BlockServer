@@ -9,7 +9,7 @@ public class RegisteredTask{
 		return new RegisteredTask(task, delay, 0);
 	}
 	public static RegisteredTask repeat(Task task, int repeat){
-		return new RegisteredTask(task, 0, repeat);
+		return new RegisteredTask(task, 1, repeat);
 	}
 	public static RegisteredTask delayAndRepeat(Task task, int delay, int repeat){
 		return new RegisteredTask(task, delay, repeat);

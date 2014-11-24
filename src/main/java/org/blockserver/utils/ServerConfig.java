@@ -73,7 +73,7 @@ public class ServerConfig{
 	}
 	private void generateAdvancedConfig(File file) throws IOException{
 		Properties properties = new Properties();
-		properties.setProperty(PROPERTY_IP, "localhost");
+		properties.setProperty(PROPERTY_IP, "0.0.0.0");
 		// TODO more properties
 		properties.store(new FileOutputStream(file), ADVANCED_COMMENT);
 	}
