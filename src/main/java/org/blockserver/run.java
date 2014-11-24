@@ -34,7 +34,8 @@ public class run{
 		}
 		builder.setPort(config.getIntProperty(ServerConfig.PROPERTY_PORT, 19132))
 				.setConsoleOut(new Log4j2ConsoleOut())
-				.setIncludePath(DIR);
+				.setIncludePath(DIR)
+				.setServerName(config.getStringProperty(ServerConfig.PROPERTY_SERVER_NAME));
 		Server server = builder.build();
 		server.start();
 	}

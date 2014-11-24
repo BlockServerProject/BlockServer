@@ -56,9 +56,11 @@ public class NonBlockUDPSocket extends Thread{
 	}
 	public DatagramPacket receive(){
 		if(receivedPacketQueue.isEmpty()){
+			System.out.println("No packets");
 			return null;
 		}
 		synchronized(receivedPacketQueue){
+			System.out.println("Packet received");
 			return receivedPacketQueue.remove(0);
 		}
 	}

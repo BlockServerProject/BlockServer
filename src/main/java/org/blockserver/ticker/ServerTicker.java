@@ -12,14 +12,14 @@ public class ServerTicker{
 	private long tick = -1L;
 	private boolean running = false;
 	private boolean lastTickDone = false;
-	private long lastTickNano;
+	private long lastTickMilli;
 	private double loadMeasure = 0D;
 	private long startTime;
 	private ArrayList<RegisteredTask> tasks = new ArrayList<RegisteredTask>();
 
 	public ServerTicker(Server server, int sleepNanos){
 		this.server = server;
-		this.sleep = sleepNanos * 1000000L;
+		this.sleep = sleepNanos;
 	}
 	public void start(){
 		if(running){
@@ -27,13 +27,13 @@ public class ServerTicker{
 		}
 		running = true;
 		startTime = System.currentTimeMillis();
-		lastTickNano = System.currentTimeMillis(); //System.nanoTime(); Fix...
 		while(running){
+			lastTickMilli = System.currentTimeMillis();
 			tick++;
 			tick();
 			// calculate server load
-			long now = System.currentTimeMillis(); //System.nanoTime(); Fix...
-			long diff = now - lastTickNano;
+			long now = System.currentTimeMillis();
+			long diff = now - lastTickMilli;
 			loadMeasure = diff * 100D /  sleep;
 			if(loadMeasure > 80D){
 				AntiSpam.act(new Runnable(){
@@ -42,15 +42,11 @@ public class ServerTicker{
 						server.getLogger().warning("The server load is too high! (%f / 100)", loadMeasure);
 					}
 				}, ANTISPAM_LOAD_MEASURE_TOO_HIGH, 5000);
+				continue;
 			}
-			long need = (sleep - diff) * 1000000L;
-			int nanos = (int) (need % 1000000L);
-			while(nanos < 0){
-				nanos += 1000000;
-			}
-			int millis = (int) ((need - nanos) / 1000000L);
+			long need = sleep - diff;
 			try{
-				Thread.sleep(millis, nanos);
+				Thread.sleep(need);
 			}
 			catch(InterruptedException e){
 				e.printStackTrace();
