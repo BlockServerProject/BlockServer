@@ -1,6 +1,8 @@
 package org.blockserver.network.protocol.pocket.subprotocol.v0_10_0;
 
 import org.blockserver.Server;
+import org.blockserver.network.protocol.pocket.raknet.RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket;
+import org.blockserver.network.protocol.pocket.subprotocol.PocketDataPacket;
 import org.blockserver.network.protocol.pocket.subprotocol.PocketSubprotocol;
 
 public class PocketSubprotocol_0_10_0 extends PocketSubprotocol{
@@ -19,5 +21,15 @@ public class PocketSubprotocol_0_10_0 extends PocketSubprotocol{
 	@Override
 	public String getSubprotocolName(){
 		return "0.10.0";
+	}
+	@Override
+	protected void handleDataPacket(PocketDataPacket dp){
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
+	public PocketDataPacket getDataPacketByPid(byte pid){
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

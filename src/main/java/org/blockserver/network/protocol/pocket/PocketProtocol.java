@@ -29,7 +29,7 @@ public class PocketProtocol extends Protocol implements PocketProtocolConstants{
 				return null;
 			}
 			else if(pid == RAKNET_OPEN_CONNECTION_REQUEST_1){
-				PocketProtocolSession session = new PocketProtocolSession(protocols, pk.getBridge(), pk.getAddress());
+				PocketProtocolSession session = new PocketProtocolSession(protocols, pk.getBridge(), pk.getAddress(), this);
 				session.handlePacket(pk);
 				return session;
 			}

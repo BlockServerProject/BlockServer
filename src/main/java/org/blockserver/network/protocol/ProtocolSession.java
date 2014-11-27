@@ -2,6 +2,7 @@ package org.blockserver.network.protocol;
 
 import java.net.SocketAddress;
 
+import org.blockserver.Server;
 import org.blockserver.network.WrappedPacket;
 
 public interface ProtocolSession{
@@ -9,4 +10,5 @@ public interface ProtocolSession{
 	public SocketAddress getAddress();
 	public void sendPacket(byte[] buffer);
 	public void closeSession();
+	public Server getServer();
 }

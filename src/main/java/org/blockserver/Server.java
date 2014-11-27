@@ -5,7 +5,9 @@ import java.util.ArrayList;
 
 import org.blockserver.network.bridge.NetworkBridgeManager;
 import org.blockserver.network.protocol.ProtocolManager;
+import org.blockserver.network.protocol.ProtocolSession;
 import org.blockserver.network.protocol.pocket.PocketProtocol;
+import org.blockserver.player.Player;
 import org.blockserver.ticker.ServerTicker;
 import org.blockserver.ticker.Task;
 import org.blockserver.ui.ConsoleOut;
@@ -100,5 +102,10 @@ public class Server{
 		for(Runnable r: shutdownRuns){
 			r.run();
 		}
+	}
+
+	public Player newSession(ProtocolSession protocolSession){
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

@@ -2,10 +2,11 @@ package org.blockserver.network.protocol.pocket.raknet;
 
 import java.nio.ByteBuffer;
 
+import org.blockserver.network.protocol.pocket.PocketProtocolConstants;
 import org.blockserver.network.protocol.pocket.subprotocol.PocketSubprotocol;
 import org.blockserver.network.protocol.pocket.subprotocol.PocketSubprotocolManager;
 
-public class McpeLoginPacket{
+public class McpeLoginPacket implements PocketProtocolConstants{
 	public String username;
 	public int protocol1;
 	public int protocol2;

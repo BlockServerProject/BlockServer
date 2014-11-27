@@ -23,4 +23,20 @@ public abstract class Utils{
 				+ (triad[1] << 8)
 				+ (triad[2] << 16);
 	}
+	public static boolean inArray(byte needle, byte[] haystack){
+		for(byte item: haystack){
+			if(item == needle){
+				return true;
+			}
+		}
+		return false;
+	}
+	public static <T> boolean inArray(T object, T[] array){
+		for(T item: array){
+			if(object.equals(item)){
+				return true;
+			}
+		}
+		return false;
+	}
 }

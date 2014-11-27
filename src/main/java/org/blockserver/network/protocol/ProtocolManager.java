@@ -34,6 +34,11 @@ public class ProtocolManager{
 			}
 		}
 	}
+	/**
+	 * This is an internal function. Do <b>NOT</b> use this method from outside.
+	 * @param address
+	 * @return
+	 */
 	public boolean closeSession(SocketAddress address){
 		return sessions.remove(address) != null;
 	}

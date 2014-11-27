@@ -1,25 +1,29 @@
 package org.blockserver.network.protocol.pocket.subprotocol;
 
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import org.blockserver.io.BinaryReader;
-import org.blockserver.utils.ByteBufferWriter;
+import org.blockserver.io.BinaryWriter;
+import org.blockserver.network.protocol.pocket.PocketProtocolConstants;
 
-public abstract class PocketDataPacket{
-	protected ByteBufferWriter bw;
-	protected BinaryReader br;
-	public final void decode(byte[] array){
-		br = new BinaryReader(new ByteArrayInputStream(array));
-		decode();
-	}
-	protected void decode(){
-		throw new UnsupportedOperationException(getClass().getSimpleName() + " cannot be decoded!");
+public abstract class PocketDataPacket implements PocketProtocolConstants{
+	public void decode(BinaryReader reader){
+		throw new RuntimeException(getClass().getSimpleName() + " cannot be decoded");
 	}
 	public final byte[] encode(){
-		_encode();
-		return bw.getBuffer();
+		try{
+			BinaryWriter writer = new BinaryWriter(new ByteArrayOutputStream(getLength()));
+			_encode(writer);
+			ByteArrayOutputStream os = (ByteArrayOutputStream) writer.getOutputStream();
+			return os.toByteArray();
+		}
+		catch(IOException e){
+			throw new RuntimeException(e);
+		}
 	}
-	protected void _encode(){
-		throw new UnsupportedOperationException(getClass().getSimpleName() + " cannot be encoded!");
+	protected void _encode(BinaryWriter writer) throws IOException{
+		throw new RuntimeException(getClass().getSimpleName() + " cannot be encoded");
 	}
+	protected abstract int getLength();
 }

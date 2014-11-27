@@ -24,6 +24,15 @@ public interface PocketProtocolConstants{
 	public final static byte RAKNET_BROADCAST_PONG_2                =       0x1D;
 	public final static byte RAKNET_CUSTOM_PACKET_MIN               = (byte)0x80;
 	public final static byte RAKNET_CUSTOM_PACKET_MAX               = (byte)0x8F;
+	public final static byte RAKNET_CUSTOM_PACKET_DEFAULT           = (byte)0x84;
 	public final static byte RAKNET_NACK                            = (byte)0xA0;
 	public final static byte RAKNET_ACK                             = (byte)0xC0;
+	public final static byte[] RAKNET_HAS_MESSAGE_RELIABILITIES = {
+		0x02, 0x03, 0x04, 0x06, 0x07
+	};
+	public final static byte[] RAKNET_HAS_ORDER_RELIABILITIES = {
+		0x01, 0x03, 0x04, 0x07
+	};
+
+	public final static byte MC_LOGIN_PACKET = (byte) 0x82;
 }
