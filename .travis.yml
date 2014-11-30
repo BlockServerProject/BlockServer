@@ -1,6 +1,6 @@
 language: java
 
-script: sudo ./maven-test.sh
+script: "./maven-test.sh"
 
 before_script:
   - mvn -version
