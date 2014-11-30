@@ -1,14 +1,25 @@
 package org.blockserver.network.protocol.pocket.subprotocol;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import org.blockserver.io.BinaryReader;
+import org.blockserver.io.BinaryUtils;
 import org.blockserver.io.BinaryWriter;
 import org.blockserver.network.protocol.pocket.PocketProtocolConstants;
 
 public abstract class PocketDataPacket implements PocketProtocolConstants{
-	public void decode(BinaryReader reader){
+	public abstract byte getPid();
+	public final void decode(byte[] buffer){
+		try{
+			_decode(new BinaryReader(new ByteArrayInputStream(buffer), BinaryUtils.LITTLE_ENDIAN));
+		}
+		catch(IOException e){
+			throw new RuntimeException(e);
+		}
+	}
+	protected void _decode(BinaryReader reader) throws IOException{
 		throw new RuntimeException(getClass().getSimpleName() + " cannot be decoded");
 	}
 	public final byte[] encode(){

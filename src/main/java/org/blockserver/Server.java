@@ -4,9 +4,11 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 
 import org.blockserver.network.bridge.NetworkBridgeManager;
+import org.blockserver.network.bridge.UDPBridge;
 import org.blockserver.network.protocol.ProtocolManager;
 import org.blockserver.network.protocol.ProtocolSession;
 import org.blockserver.network.protocol.pocket.PocketProtocol;
+import org.blockserver.network.protocol.pocket.subprotocol.v20.PocketSubprotocolV20;
 import org.blockserver.player.Player;
 import org.blockserver.ticker.ServerTicker;
 import org.blockserver.ticker.Task;
@@ -75,7 +77,6 @@ public class Server{
 	 * @param port
 	 * @param out
 	 */
-
 	Server(InetAddress address, int port, String serverName, ConsoleOut out){
 		Thread.currentThread().setName("BlockServerPE");
 		this.address = address;
@@ -84,8 +85,14 @@ public class Server{
 		logger = new Logger(out);
 		ticker = new ServerTicker(this, 50);
 		protocols = new ProtocolManager(this);
-		protocols.addProtocol(new PocketProtocol(this));
 		bridges = new NetworkBridgeManager(this);
+		registerModules();
+	}
+	private void registerModules(){
+		PocketProtocol pocket = new PocketProtocol(this);
+		protocols.addProtocol(pocket);
+		bridges.addBridge(new UDPBridge(bridges));
+		pocket.getSubprotocols().registerSubprotocol(new PocketSubprotocolV20(this));
 	}
 	/**
 	 * Start the server operation. This method blocks until the server is stopped.

@@ -1,34 +1,24 @@
 package org.blockserver.network.protocol.pocket.subprotocol.v20;
 
 import org.blockserver.Server;
-import org.blockserver.network.protocol.pocket.subprotocol.PocketDataPacket;
-import org.blockserver.network.protocol.pocket.subprotocol.PocketSubprotocol;
+import org.blockserver.network.protocol.pocket.subprotocol.generic.PocketSubprotocolGeneric;
+import org.blockserver.network.protocol.pocket.subprotocol.generic.StartGamePacket;
 
-public class PocketSubprotocolV20 extends PocketSubprotocol{
-	private Server server;
+public class PocketSubprotocolV20 extends PocketSubprotocolGeneric{
 	public PocketSubprotocolV20(Server server){
-		this.server = server;
+		super(server);
+		parser.add(MC_START_GAME_PACKET, StartGamePacket.class);
+		// TODO more
 	}
-	@Override
-	public Server getServer(){
-		return server;
-	}
+
 	@Override
 	public int getSubprotocolVersionId(){
 		return 20;
 	}
+
 	@Override
 	public String getSubprotocolName(){
-		return "0.10.0";
+		return "V20 compatible for MCPE alpha 0.10.4";
 	}
-	@Override
-	protected void handleDataPacket(PocketDataPacket dp){
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public PocketDataPacket getDataPacketByPid(byte pid){
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 }

@@ -11,13 +11,15 @@ public class NetworkBridgeManager{
 	private ArrayList<NetworkBridge> bridges = new ArrayList<NetworkBridge>();
 	public NetworkBridgeManager(Server server){
 		this.server = server;
-		bridges.add(new UDPBridge(this));
 		try{
 			server.getTicker().addRepeatingTask(new CallableTask(this, "tick"), 1);
 		}
 		catch(NoSuchMethodException e){
 			e.printStackTrace();
 		}
+	}
+	public void addBridge(NetworkBridge bridge){
+		bridges.add(bridge);
 	}
 	public Server getServer(){
 		return server;
