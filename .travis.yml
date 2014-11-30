@@ -1,6 +1,8 @@
 language: java
 
-script: "./maven-test.sh"
+script:
+  - chmod ugoa+x ./maven-test.sh
+  - ./maven-test.sh
 
 before_script:
   - mvn -version
