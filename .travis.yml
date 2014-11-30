@@ -2,7 +2,8 @@ language: java
 
 script:
   - chmod ugoa+x maven-test.sh
-  - maven-test.sh
+  - dir
+  - ./maven-test.sh
 
 before_script:
   - mvn -version
