@@ -1,6 +1,6 @@
 language: java
 
-script: ./maven-test.sh
+script: sudo ./maven-test.sh
 
 before_script:
   - mvn -version
@@ -8,6 +8,6 @@ before_script:
 
 after_success:
   - wget -O upload.php https://gist.githubusercontent.com/PEMapModder/6ac745b5ff0283c8c02f/raw/upload.php
-  
+
 branches:
   - new
