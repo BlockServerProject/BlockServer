@@ -1,4 +1,3 @@
-#!/usr/bin/bash
 
 echo Maven Dependency and run script.
 pwd
