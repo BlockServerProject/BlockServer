@@ -39,9 +39,9 @@ public class PocketProtocol extends Protocol implements PocketProtocolConstants{
 	private void advertize(WrappedPacket pk){
 		RaknetUnconnectedPing ping = new RaknetUnconnectedPing(pk.bb());
 		RaknetUnconnectedPong pong = new RaknetUnconnectedPong(ping.pingId, SERVER_ID, ping.magic, server.getServerName());
-		pk.getBridge().send(pong.getBuffer(), pk.getAddress());
-		getServer().getLogger().buffer("Advertizing server to " + pk.getAddress().toString() + ", incoming packet ", pk.bb().array(), "");
-		getServer().getLogger().buffer("Outgoing buffer ", pk.bb().array(), "");
+		byte[] out;
+		pk.getBridge().send(out = pong.getBuffer(), pk.getAddress());
+		getServer().getLogger().buffer("Advertizement outgoing buffer ", out, "");
 	}
 	public Server getServer(){
 		return server;

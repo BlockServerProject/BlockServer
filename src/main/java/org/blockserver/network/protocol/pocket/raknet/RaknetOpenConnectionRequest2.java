@@ -3,7 +3,7 @@ package org.blockserver.network.protocol.pocket.raknet;
 import java.nio.ByteBuffer;
 
 public class RaknetOpenConnectionRequest2{
-	public byte[] magic;
+	public byte[] magic = new byte[16];
 	public byte security;
 	public int cookie;
 	public short serverPort;

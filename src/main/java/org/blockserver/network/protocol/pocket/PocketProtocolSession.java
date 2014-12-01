@@ -37,6 +37,7 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 		this.addr = addr;
 		this.pocket = pocket;
 		subprotocols = pocket.getSubprotocols();
+		getServer().getLogger().debug("Started session from %s", addr.toString());
 	}
 	public SocketAddress getAddress(){
 		return addr;

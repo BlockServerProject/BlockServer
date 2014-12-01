@@ -30,7 +30,6 @@ public class Logger{
 			while(string.length() < 2){
 				string = "0" + string;
 			}
-			
 			out.append(string);
 			out.append(',');
 		}
