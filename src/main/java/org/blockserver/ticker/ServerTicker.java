@@ -2,6 +2,7 @@ package org.blockserver.ticker;
 
 import java.util.ArrayList;
 
+import org.blockserver.Info;
 import org.blockserver.Server;
 import org.blockserver.utils.AntiSpam;
 
@@ -26,7 +27,7 @@ public class ServerTicker{
 			throw new IllegalStateException("Ticker is already running");
 		}
 		running = true;
-		server.getLogger().info("Starting BlockServer beta 1.0.0...");
+		server.getLogger().info("%s %s is now running.", Info.SOFTWARE_NAME, Info.VERSION_STRING());
 		startTime = System.currentTimeMillis();
 		while(running){
 			lastTickMilli = System.currentTimeMillis();

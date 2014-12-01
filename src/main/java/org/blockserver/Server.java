@@ -94,7 +94,7 @@ public class Server{
 		protocols.addProtocol(pocket);
 		bridges.addBridge(new UDPBridge(bridges));
 		pocket.getSubprotocols().registerSubprotocol(new PocketSubprotocolV20(this));
-		logger.info("Done!");
+		logger.info("Modules registered!");
 	}
 	/**
 	 * Start the server operation. This method blocks until the server is stopped.
