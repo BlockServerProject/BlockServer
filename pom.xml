@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.blockserver</groupId>
   <artifactId>BlockServer</artifactId>
-  <version>Beta-1.0.0</version>
+  <version>Beta 1.0.0 development snapshot</version>
   <packaging>jar</packaging>
   
   <dependencies>
