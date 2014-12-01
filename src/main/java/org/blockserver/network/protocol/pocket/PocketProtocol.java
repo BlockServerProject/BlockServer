@@ -49,4 +49,8 @@ public class PocketProtocol extends Protocol implements PocketProtocolConstants{
 	public PocketSubprotocolManager getSubprotocols(){
 		return subprotocols;
 	}
+	@Override
+	public String getDescription(){
+		return "Accepts connections from MCPE devices";
+	}
 }

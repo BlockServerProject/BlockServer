@@ -20,6 +20,7 @@ public class NetworkBridgeManager{
 	}
 	public void addBridge(NetworkBridge bridge){
 		bridges.add(bridge);
+		server.getLogger().info("Started network bridge %s: %s", bridge.getClass().getSimpleName(), bridge.getDescription());
 	}
 	public Server getServer(){
 		return server;

@@ -13,6 +13,7 @@ public class PocketSubprotocolManager{
 	}
 	public void registerSubprotocol(PocketSubprotocol sub){
 		subs.put(sub.getSubprotocolVersionId(), sub);
+		getServer().getLogger().info("PocketProtocol now accepts MCPE protocol %s", sub.getSubprotocolName());
 	}
 	public Server getServer(){
 		return protocol.getServer();

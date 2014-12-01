@@ -38,4 +38,8 @@ public class UDPBridge extends NetworkBridge{
 	public Server getServer(){
 		return mgr.getServer();
 	}
+	@Override
+	public String getDescription(){
+		return "A network connection bridge in the UDP protocol to allow MCPE connection";
+	}
 }

@@ -9,4 +9,5 @@ public abstract class NetworkBridge{
 	public abstract boolean send(byte[] buffer, SocketAddress addr);
 	public abstract WrappedPacket receive();
 	public abstract Server getServer();
+	public abstract String getDescription();
 }

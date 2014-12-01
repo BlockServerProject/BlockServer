@@ -24,7 +24,7 @@ public class NonBlockUDPSocket extends Thread{
 	@Override
 	public void run(){
 		setName("UDPSocket");
-		udp.getServer().getLogger().info("Starting UDP bridge on %s...", addr.toString());
+		udp.getServer().getLogger().info("Binding UDP socket on %s...", addr.toString());
 		try{
 			socket = new DatagramSocket(null);
 			socket.setBroadcast(true);

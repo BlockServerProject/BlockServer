@@ -89,10 +89,12 @@ public class Server{
 		registerModules();
 	}
 	private void registerModules(){
+		logger.info("Registering modules...");
 		PocketProtocol pocket = new PocketProtocol(this);
 		protocols.addProtocol(pocket);
 		bridges.addBridge(new UDPBridge(bridges));
 		pocket.getSubprotocols().registerSubprotocol(new PocketSubprotocolV20(this));
+		logger.info("Done!");
 	}
 	/**
 	 * Start the server operation. This method blocks until the server is stopped.

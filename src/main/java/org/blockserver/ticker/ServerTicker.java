@@ -26,6 +26,7 @@ public class ServerTicker{
 			throw new IllegalStateException("Ticker is already running");
 		}
 		running = true;
+		server.getLogger().info("Starting BlockServer beta 1.0.0...");
 		startTime = System.currentTimeMillis();
 		while(running){
 			lastTickMilli = System.currentTimeMillis();
