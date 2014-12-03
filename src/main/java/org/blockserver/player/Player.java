@@ -1,7 +1,7 @@
 package org.blockserver.player;
 
 import org.blockserver.Server;
-import org.blockserver.network.protocol.ProtocolSession;
+import org.blockserver.net.protocol.ProtocolSession;
 
 public class Player{
 	private Server server;

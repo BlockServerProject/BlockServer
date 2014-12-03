@@ -3,12 +3,12 @@ package org.blockserver;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-import org.blockserver.network.bridge.NetworkBridgeManager;
-import org.blockserver.network.bridge.UDPBridge;
-import org.blockserver.network.protocol.ProtocolManager;
-import org.blockserver.network.protocol.ProtocolSession;
-import org.blockserver.network.protocol.pocket.PocketProtocol;
-import org.blockserver.network.protocol.pocket.subprotocol.v20.PocketSubprotocolV20;
+import org.blockserver.net.bridge.NetworkBridgeManager;
+import org.blockserver.net.bridge.UDPBridge;
+import org.blockserver.net.protocol.ProtocolManager;
+import org.blockserver.net.protocol.ProtocolSession;
+import org.blockserver.net.protocol.pe.PocketProtocol;
+import org.blockserver.net.protocol.pe.sub.v20.PocketSubprotocolV20;
 import org.blockserver.player.Player;
 import org.blockserver.ticker.ServerTicker;
 import org.blockserver.ticker.Task;
