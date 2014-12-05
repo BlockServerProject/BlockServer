@@ -2,8 +2,6 @@ package org.blockserver.player;
 
 import org.blockserver.Server;
 
-import com.sun.istack.internal.NotNull;
-
 public abstract class PlayerDatabase{
 	private Server server = null;
 	public void init(Server server){
@@ -18,7 +16,6 @@ public abstract class PlayerDatabase{
 	 * @param player player to check
 	 * @return A {@link PlayerData} object representing the data
 	 */
-	@NotNull
 	public abstract PlayerData readPlayer(Player player);
 	/**
 	 * Saves data of a player into the database.
