@@ -2,11 +2,14 @@ package org.blockserver.player;
 
 import org.blockserver.Server;
 
+import com.sun.istack.internal.NotNull;
+
 public abstract class PlayerDatabase{
-	private Server server;
-	public PlayerDatabase(Server server){
+	private Server server = null;
+	public void init(Server server){
 		this.server = server;
 	}
+	
 	public Server getServer(){
 		return server;
 	}
@@ -15,6 +18,7 @@ public abstract class PlayerDatabase{
 	 * @param player player to check
 	 * @return A {@link PlayerData} object representing the data
 	 */
+	@NotNull
 	public abstract PlayerData readPlayer(Player player);
 	/**
 	 * Saves data of a player into the database.
@@ -26,5 +30,10 @@ public abstract class PlayerDatabase{
 		PlayerData data = new PlayerData();
 		data.player = player;
 		return data;
+	}
+	public void validate() throws IllegalStateException{
+		if(!(server instanceof Server)){
+			throw new IllegalStateException("Database not initialized");
+		}
 	}
 }

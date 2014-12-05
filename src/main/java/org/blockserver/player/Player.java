@@ -14,7 +14,9 @@ public class Player{
 		openDatabase();
 	}
 	private void openDatabase(){
-		// TODO
+		@SuppressWarnings("unused")
+		PlayerData data = server.getPlayerDatabase().readPlayer(this);
+		// TODO read the data
 	}
 	public ProtocolSession getProtocolSession(){
 		return protocol;
@@ -24,5 +26,11 @@ public class Player{
 	}
 	public Server getServer(){
 		return server;
+	}
+	public void kick(String reason){
+		close(reason);
+	}
+	public void close(String reason){
+		protocol.closeSession(reason);
 	}
 }

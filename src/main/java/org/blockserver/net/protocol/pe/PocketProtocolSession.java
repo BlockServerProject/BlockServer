@@ -83,7 +83,7 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	private void sendIncompatibility(byte[] magic){
 		RaknetIncompatibleProtocolVersion ipv = new RaknetIncompatibleProtocolVersion(magic, SERVER_ID);
 		sendPacket(ipv.getBuffer());
-		closeSession();
+		closeSession("Protocol version not supported by server.");
 	}
 
 	private void replyToRequest2(ByteBuffer bb){
@@ -134,11 +134,14 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 		return bridge.getServer();
 	}
 
+	@Override
 	public void sendPacket(byte[] buffer){
 		bridge.send(buffer, getAddress());
 	}
-	public void closeSession(){
+	@Override
+	public void closeSession(String reason){
 		mgr.closeSession(getAddress());
+		disconnect(reason);
 	}
 	public void disconnect(String reason){
 		// TODO

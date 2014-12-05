@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.blockserver.player.PlayerDatabase;
 import org.blockserver.ui.ConsoleOut;
 
 public class ServerBuilder{
@@ -12,6 +13,7 @@ public class ServerBuilder{
 	private String serverName = null;
 	private ConsoleOut out = null;
 	private File includePath = null;
+	private PlayerDatabase playerDb = null;
 	public ServerBuilder(){
 		try{
 			address = InetAddress.getByName("localhost");
@@ -42,13 +44,18 @@ public class ServerBuilder{
 		dir.mkdirs();
 		return this;
 	}
+	public ServerBuilder setPlayerDatabase(PlayerDatabase db){
+		playerDb = db;
+		return this;
+	}
 
 	public Server build(){
 		validate(port != -1, "port");
 		validate(serverName != null, "serverName");
 		validate(out != null, "out");
 		validate(includePath != null, "includePath");
-		return new Server(address, port, serverName, out);
+		validate(playerDb != null, "playerDb");
+		return new Server(address, port, serverName, out, playerDb);
 	}
 	private void validate(boolean bool, String field){
 		if(!bool){

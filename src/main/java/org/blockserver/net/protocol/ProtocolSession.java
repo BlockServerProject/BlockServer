@@ -8,6 +8,6 @@ public interface ProtocolSession{
 	public void handlePacket(WrappedPacket pk);
 	public SocketAddress getAddress();
 	public void sendPacket(byte[] buffer);
-	public void closeSession();
+	public void closeSession(String reason);
 	public Server getServer();
 }
