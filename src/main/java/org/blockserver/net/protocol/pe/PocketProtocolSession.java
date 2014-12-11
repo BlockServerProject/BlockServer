@@ -47,6 +47,7 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	public void handlePacket(WrappedPacket pk){
 		ByteBuffer bb = pk.bb();
 		byte pid = bb.get();
+		getServer().getLogger().debug("(PID: "+pid+") Handling packet from: "+addr.toString());
 		if(RAKNET_CUSTOM_PACKET_MIN <= pid && pid <= RAKNET_CUSTOM_PACKET_MAX){
 			handleCustomPacket(bb);
 		}
@@ -87,14 +88,17 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	}
 
 	private void replyToRequest2(ByteBuffer bb){
+		getServer().getLogger().debug("Replying to request 2.");
 		RaknetOpenConnectionRequest2 req2 = new RaknetOpenConnectionRequest2(bb);
 		clientId = req2.clientId;
 		mtu = req2.mtu;
 		RaknetOpenConnectionReply2 rep2 = new RaknetOpenConnectionReply2(req2.magic, req2.serverPort, mtu);
 		sendPacket(rep2.getBuffer());
+		getServer().getLogger().buffer("Reply 2 out: ", rep2.getBuffer(), "End.");
 	}
 
 	private void handleCustomPacket(ByteBuffer bb){
+		//getServer().getLogger().buffer("DataPacket IN: ", bb.array(), "END.");
 		RaknetReceivedCustomPacket cp = new RaknetReceivedCustomPacket(bb);
 		for(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk: cp.packets){
 			handleDataPacket(pk);

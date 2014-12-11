@@ -29,7 +29,8 @@ public class RaknetReceivedCustomPacket implements PocketProtocolConstants{
 			byte flag = bb.get();
 			reliability = (byte) (flag >> 5);
 			hasSplit = (flag & 0x10) == 0x10;
-			int length = ((bb.getShort() + 7) >> 3);
+			int length = bb.getShort() * 8;
+			//int length = ((bb.getShort() + 7) >> 3);
 			if(Utils.inArray(reliability, RAKNET_HAS_MESSAGE_RELIABILITIES)){
 				messageIndex = Utils.readLTriad(bb);
 			}

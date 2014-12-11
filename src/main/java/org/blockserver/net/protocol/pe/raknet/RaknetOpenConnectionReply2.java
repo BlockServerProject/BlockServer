@@ -8,6 +8,7 @@ public class RaknetOpenConnectionReply2 implements PocketProtocolConstants{
 	private ByteBuffer bb;
 	public RaknetOpenConnectionReply2(byte[] magic, short port, short mtu){
 		bb = ByteBuffer.allocate(30);
+		bb.put(RAKNET_OPEN_CONNECTION_REPLY_2);
 		bb.put(magic);
 		bb.putLong(SERVER_ID);
 		bb.putShort(port);
