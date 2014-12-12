@@ -20,6 +20,7 @@ import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPong;
 import org.blockserver.net.protocol.pe.sub.PocketSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PocketSubprotocolManager;
 import org.blockserver.player.Player;
+import org.blockserver.utils.AntiSpam;
 
 public class PocketProtocolSession implements ProtocolSession, PocketProtocolConstants{
 	private ProtocolManager mgr;
@@ -47,9 +48,9 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	public void handlePacket(WrappedPacket pk){
 		ByteBuffer bb = pk.bb();
 		byte pid = bb.get();
-		getServer().getLogger().debug("(PID: "+pid+") Handling packet from: "+addr.toString());
+		debug("Handling packet (PID " + pid + ")");
 		if(RAKNET_CUSTOM_PACKET_MIN <= pid && pid <= RAKNET_CUSTOM_PACKET_MAX){
-			handleCustomPacket(bb);
+			handleCustomPacket(pid, bb);
 		}
 		else{
 			switch(pid){
@@ -88,17 +89,36 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	}
 
 	private void replyToRequest2(ByteBuffer bb){
-		getServer().getLogger().debug("Replying to request 2.");
+		debug("Replying to request 2.");
 		RaknetOpenConnectionRequest2 req2 = new RaknetOpenConnectionRequest2(bb);
 		clientId = req2.clientId;
 		mtu = req2.mtu;
 		RaknetOpenConnectionReply2 rep2 = new RaknetOpenConnectionReply2(req2.magic, req2.serverPort, mtu);
 		sendPacket(rep2.getBuffer());
-		getServer().getLogger().buffer("Reply 2 out: ", rep2.getBuffer(), "End.");
+		buffer("Reply 2 out: ", rep2.getBuffer(), "End.");
 	}
 
-	private void handleCustomPacket(ByteBuffer bb){
-		//getServer().getLogger().buffer("DataPacket IN: ", bb.array(), "END.");
+	private void handleCustomPacket(final byte pid, final ByteBuffer bb){
+		AntiSpam.act(new Runnable(){
+			@Override
+			public void run(){
+				byte[] buffer = new byte[bb.remaining()];
+				int start = bb.position();
+				int end = start + bb.remaining();
+				for(int i = start; i < end; i++){
+					buffer[i - start] = bb.get(i);
+				}
+				StringBuilder sb = new StringBuilder(Integer.toHexString(pid));
+				for(byte b: buffer){
+					String s = Integer.toHexString(b);
+					while(s.length() < 2){
+						s = "0" + s;
+					}
+					sb.append(s);
+				}
+				System.out.println("Full encapsulated packet buffer: " + sb.toString());
+			}
+		}, "PocketProtocolSession custom", 2000);
 		RaknetReceivedCustomPacket cp = new RaknetReceivedCustomPacket(bb);
 		for(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk: cp.packets){
 			handleDataPacket(pk);
@@ -155,5 +175,13 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	}
 	public Player getPlayer(){
 		return player;
+	}
+	private void debug(String msg){
+		getServer().getLogger().debug("[PocketProtocolSession %s] %s", getAddress().toString(),
+				msg);
+	}
+	private void buffer(String front, byte[] buffer, String end){
+		getServer().getLogger().buffer("[PocketProtocolSession " + getAddress().toString()
+				+ "] " + front, buffer, end);
 	}
 }
