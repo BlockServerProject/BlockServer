@@ -6,6 +6,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.blockserver.player.DummyPlayerDatabase;
 import org.blockserver.ui.Log4j2ConsoleOut;
 import org.blockserver.utils.ServerConfig;
 
@@ -35,7 +36,8 @@ public class run{
 		builder.setPort(config.getIntProperty(ServerConfig.PROPERTY_PORT, 19132))
 				.setConsoleOut(new Log4j2ConsoleOut())
 				.setIncludePath(DIR)
-				.setServerName(config.getStringProperty(ServerConfig.PROPERTY_SERVER_NAME));
+				.setServerName(config.getStringProperty(ServerConfig.PROPERTY_SERVER_NAME))
+				.setPlayerDatabase(new DummyPlayerDatabase());
 		Server server = builder.build();
 		server.start();
 	}
