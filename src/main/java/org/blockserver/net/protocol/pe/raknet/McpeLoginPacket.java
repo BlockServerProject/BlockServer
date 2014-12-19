@@ -2,11 +2,11 @@ package org.blockserver.net.protocol.pe.raknet;
 
 import java.nio.ByteBuffer;
 
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
-import org.blockserver.net.protocol.pe.sub.PocketSubprotocol;
-import org.blockserver.net.protocol.pe.sub.PocketSubprotocolManager;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
+import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
+import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 
-public class McpeLoginPacket implements PocketProtocolConstants{
+public class McpeLoginPacket implements PeProtocolConst{
 	public String username;
 	public int protocol1;
 	public int protocol2;
@@ -23,7 +23,7 @@ public class McpeLoginPacket implements PocketProtocolConstants{
 		bb.get(loginBuffer);
 		loginData = new String(loginBuffer);
 	}
-	public PocketSubprotocol getPreferredSubprotocol(PocketSubprotocolManager mgr){
+	public PeSubprotocol getPreferredSubprotocol(PeSubprotocolMgr mgr){
 		return mgr.findProtocol(protocol1, protocol2);
 	}
 }

@@ -1,17 +1,17 @@
 package org.blockserver.net.protocol.pe.sub;
 
 import org.blockserver.Server;
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
 import org.blockserver.net.protocol.pe.raknet.RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket;
 
-public abstract class PocketSubprotocol implements PocketProtocolConstants{
+public abstract class PeSubprotocol implements PeProtocolConst{
 	public abstract Server getServer();
 	public abstract int getSubprotocolVersionId();
 	public abstract String getSubprotocolName();
 	public void readDataPacket(ReceivedEncapsulatedPacket pk){
-		PocketDataPacket dp = getDataPacketByBuffer(pk.buffer);
+		PeDataPacket dp = getDataPacketByBuffer(pk.buffer);
 		handleDataPacket(dp);
 	}
-	protected abstract void handleDataPacket(PocketDataPacket dp);
-	public abstract PocketDataPacket getDataPacketByBuffer(byte[] buffer);
+	protected abstract void handleDataPacket(PeDataPacket dp);
+	public abstract PeDataPacket getDataPacketByBuffer(byte[] buffer);
 }

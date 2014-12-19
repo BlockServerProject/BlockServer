@@ -17,22 +17,22 @@ import org.blockserver.net.protocol.pe.raknet.RaknetOpenConnectionRequest2;
 import org.blockserver.net.protocol.pe.raknet.RaknetReceivedCustomPacket;
 import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPing;
 import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPong;
-import org.blockserver.net.protocol.pe.sub.PocketSubprotocol;
-import org.blockserver.net.protocol.pe.sub.PocketSubprotocolManager;
+import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
+import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 import org.blockserver.player.Player;
 import org.blockserver.utils.AntiSpam;
 
-public class PocketProtocolSession implements ProtocolSession, PocketProtocolConstants{
+public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private ProtocolManager mgr;
 	private NetworkBridge bridge;
 	private SocketAddress addr;
-	private PocketProtocol pocket;
-	private PocketSubprotocolManager subprotocols;
+	private PeProtocol pocket;
+	private PeSubprotocolMgr subprotocols;
 	private long clientId;
 	private short mtu;
-	private PocketSubprotocol subprot = null;
+	private PeSubprotocol subprot = null;
 	private Player player = null;
-	public PocketProtocolSession(ProtocolManager mgr, NetworkBridge bridge, SocketAddress addr, PocketProtocol pocket){
+	public PeProtocolSession(ProtocolManager mgr, NetworkBridge bridge, SocketAddress addr, PeProtocol pocket){
 		this.mgr = mgr;
 		this.bridge = bridge;
 		this.addr = addr;
@@ -170,7 +170,7 @@ public class PocketProtocolSession implements ProtocolSession, PocketProtocolCon
 	public void disconnect(String reason){
 		// TODO
 	}
-	public PocketProtocol getPocketProtocol(){
+	public PeProtocol getPeProtocol(){
 		return pocket;
 	}
 	public Player getPlayer(){

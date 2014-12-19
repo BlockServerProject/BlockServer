@@ -2,7 +2,7 @@ package org.blockserver.net.protocol.pe;
 
 import java.util.Random;
 
-public interface PocketProtocolConstants{
+public interface PeProtocolConst{
 	/**
 	 * Server ID sent to clients.
 	 * This ID is the same in every runtime, but also random.

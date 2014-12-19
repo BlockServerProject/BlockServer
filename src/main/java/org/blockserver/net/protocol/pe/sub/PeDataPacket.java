@@ -7,9 +7,9 @@ import java.io.IOException;
 import org.blockserver.io.BinaryReader;
 import org.blockserver.io.BinaryUtils;
 import org.blockserver.io.BinaryWriter;
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
 
-public abstract class PocketDataPacket implements PocketProtocolConstants{
+public abstract class PeDataPacket implements PeProtocolConst{
 	public abstract byte getPid();
 	public final void decode(byte[] buffer){
 		try{

@@ -9,8 +9,8 @@ import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
-import org.blockserver.net.protocol.pe.PocketProtocol;
-import org.blockserver.net.protocol.pe.sub.v20.PocketSubprotocolV20;
+import org.blockserver.net.protocol.pe.PeProtocol;
+import org.blockserver.net.protocol.pe.sub.v20.PeSubprotocolV20;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
 import org.blockserver.player.PlayerLoginInfo;
@@ -100,10 +100,10 @@ public class Server{
 	}
 	private void registerModules(){
 		logger.info("Registering modules...");
-		PocketProtocol pocket = new PocketProtocol(this);
+		PeProtocol pocket = new PeProtocol(this);
 		protocols.addProtocol(pocket);
 		bridges.addBridge(new UDPBridge(bridges));
-		pocket.getSubprotocols().registerSubprotocol(new PocketSubprotocolV20(this));
+		pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(this));
 		logger.info("Modules registered!");
 	}
 	/**

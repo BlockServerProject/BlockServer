@@ -3,24 +3,24 @@ package org.blockserver.net.protocol.pe.sub;
 import java.util.HashMap;
 
 import org.blockserver.Server;
-import org.blockserver.net.protocol.pe.PocketProtocol;
+import org.blockserver.net.protocol.pe.PeProtocol;
 
-public class PocketSubprotocolManager{
-	private PocketProtocol protocol;
-	private HashMap<Integer, PocketSubprotocol> subs = new HashMap<Integer, PocketSubprotocol>();
-	public PocketSubprotocolManager(PocketProtocol protocol){
+public class PeSubprotocolMgr{
+	private PeProtocol protocol;
+	private HashMap<Integer, PeSubprotocol> subs = new HashMap<Integer, PeSubprotocol>();
+	public PeSubprotocolMgr(PeProtocol protocol){
 		this.protocol = protocol;
 	}
-	public void registerSubprotocol(PocketSubprotocol sub){
+	public void registerSubprotocol(PeSubprotocol sub){
 		subs.put(sub.getSubprotocolVersionId(), sub);
 		getServer().getLogger().info("PocketProtocol now accepts MCPE protocol %s", sub.getSubprotocolName());
 	}
 	public Server getServer(){
 		return protocol.getServer();
 	}
-	public PocketSubprotocol findProtocol(int... versions){
+	public PeSubprotocol findProtocol(int... versions){
 		for(int version: versions){
-			PocketSubprotocol sub = subs.get(version);
+			PeSubprotocol sub = subs.get(version);
 			if(sub != null){
 				return sub;
 			}

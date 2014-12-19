@@ -3,11 +3,11 @@ package org.blockserver.net.protocol.pe.raknet;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
 import org.blockserver.utils.AntiSpam;
 import org.blockserver.utils.Utils;
 
-public class RaknetReceivedCustomPacket implements PocketProtocolConstants{
+public class RaknetReceivedCustomPacket implements PeProtocolConst{
 	public int seqNumber;
 	public ArrayList<ReceivedEncapsulatedPacket> packets = new ArrayList<ReceivedEncapsulatedPacket>(1);
 	public RaknetReceivedCustomPacket(ByteBuffer bb){

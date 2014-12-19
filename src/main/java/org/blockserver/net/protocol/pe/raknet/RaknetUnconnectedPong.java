@@ -2,9 +2,9 @@ package org.blockserver.net.protocol.pe.raknet;
 
 import java.nio.ByteBuffer;
 
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
 
-public class RaknetUnconnectedPong implements PocketProtocolConstants{
+public class RaknetUnconnectedPong implements PeProtocolConst{
 	private ByteBuffer bb;
 	public RaknetUnconnectedPong(long ping, long server, byte[] magic, String name){
 		name = "MCCPP;Demo;" + name;

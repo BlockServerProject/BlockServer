@@ -2,9 +2,9 @@ package org.blockserver.net.protocol.pe.raknet;
 
 import java.nio.ByteBuffer;
 
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
 
-public class RaknetOpenConnectionReply2 implements PocketProtocolConstants{
+public class RaknetOpenConnectionReply2 implements PeProtocolConst{
 	private ByteBuffer bb;
 	public RaknetOpenConnectionReply2(byte[] magic, short port, short mtu){
 		bb = ByteBuffer.allocate(30);

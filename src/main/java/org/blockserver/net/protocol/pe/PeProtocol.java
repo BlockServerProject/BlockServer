@@ -8,16 +8,16 @@ import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
 import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPing;
 import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPong;
-import org.blockserver.net.protocol.pe.sub.PocketSubprotocolManager;
+import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 
-public class PocketProtocol extends Protocol implements PocketProtocolConstants{
+public class PeProtocol extends Protocol implements PeProtocolConst{
 	private Server server;
 	private ProtocolManager protocols;
-	private PocketSubprotocolManager subprotocols;
-	public PocketProtocol(Server server){
+	private PeSubprotocolMgr subprotocols;
+	public PeProtocol(Server server){
 		this.server = server;
 		protocols = server.getProtocols();
-		subprotocols = new PocketSubprotocolManager(this);
+		subprotocols = new PeSubprotocolMgr(this);
 	}
 	@Override
 	public ProtocolSession openSession(WrappedPacket pk){
@@ -29,7 +29,7 @@ public class PocketProtocol extends Protocol implements PocketProtocolConstants{
 				return null;
 			}
 			else if(pid == RAKNET_OPEN_CONNECTION_REQUEST_1){
-				PocketProtocolSession session = new PocketProtocolSession(protocols, pk.getBridge(), pk.getAddress(), this);
+				PeProtocolSession session = new PeProtocolSession(protocols, pk.getBridge(), pk.getAddress(), this);
 				session.handlePacket(pk);
 				return session;
 			}
@@ -46,7 +46,7 @@ public class PocketProtocol extends Protocol implements PocketProtocolConstants{
 	public Server getServer(){
 		return server;
 	}
-	public PocketSubprotocolManager getSubprotocols(){
+	public PeSubprotocolMgr getSubprotocols(){
 		return subprotocols;
 	}
 	@Override

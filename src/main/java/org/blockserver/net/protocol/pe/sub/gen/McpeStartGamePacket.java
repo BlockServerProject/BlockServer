@@ -1,11 +1,11 @@
-package org.blockserver.net.protocol.pe.sub.generic;
+package org.blockserver.net.protocol.pe.sub.gen;
 
 import java.io.IOException;
 
 import org.blockserver.io.BinaryWriter;
-import org.blockserver.net.protocol.pe.sub.PocketDataPacket;
+import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 
-public class StartGamePacket extends PocketDataPacket{
+public class McpeStartGamePacket extends PeDataPacket{
 	public int seed;
 	public int generator;
 	public int gamemode;

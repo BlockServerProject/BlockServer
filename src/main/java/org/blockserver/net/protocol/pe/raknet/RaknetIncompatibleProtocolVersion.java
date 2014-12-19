@@ -2,9 +2,9 @@ package org.blockserver.net.protocol.pe.raknet;
 
 import java.nio.ByteBuffer;
 
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
 
-public class RaknetIncompatibleProtocolVersion implements PocketProtocolConstants{
+public class RaknetIncompatibleProtocolVersion implements PeProtocolConst{
 	private ByteBuffer bb;
 	public RaknetIncompatibleProtocolVersion(byte[] magic, long serverId){
 		bb = ByteBuffer.allocate(26);

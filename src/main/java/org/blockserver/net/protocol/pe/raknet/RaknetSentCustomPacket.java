@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.blockserver.net.bridge.NetworkBridge;
-import org.blockserver.net.protocol.pe.PocketProtocolConstants;
+import org.blockserver.net.protocol.pe.PeProtocolConst;
 import org.blockserver.utils.Utils;
 
-public class RaknetSentCustomPacket implements PocketProtocolConstants{
+public class RaknetSentCustomPacket implements PeProtocolConst{
 	public ArrayList<SentEncapsulatedPacket> packets = new ArrayList<SentEncapsulatedPacket>(1);
 	private int seqNumber;
 	public RaknetSentCustomPacket(int seqNumber){

@@ -4,18 +4,18 @@ import java.util.HashMap;
 
 import org.blockserver.Server;
 
-public class PocketDataPacketParser{
-	private HashMap<Byte, Class<? extends PocketDataPacket>> packets = new HashMap<Byte, Class<? extends PocketDataPacket>>();
+public class PeDataPacketParser{
+	private HashMap<Byte, Class<? extends PeDataPacket>> packets = new HashMap<Byte, Class<? extends PeDataPacket>>();
 	private Server server;
-	public PocketDataPacketParser(Server server){
+	public PeDataPacketParser(Server server){
 		this.server = server;
 	}
-	public void add(Byte pid, Class<? extends PocketDataPacket> clazz){
+	public void add(Byte pid, Class<? extends PeDataPacket> clazz){
 		packets.put(pid, clazz);
 	}
-	public PocketDataPacket parsePacket(byte[] buffer){
+	public PeDataPacket parsePacket(byte[] buffer){
 		try{
-			PocketDataPacket pk = packets.get(buffer[0]).newInstance();
+			PeDataPacket pk = packets.get(buffer[0]).newInstance();
 			pk.decode(buffer);
 			return pk;
 		}
