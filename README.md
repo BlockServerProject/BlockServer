@@ -2,6 +2,8 @@ BlockServer
 ===========
 #### branch `new`: [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=new)](https://travis-ci.org/BlockServerProject/BlockServer)
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/BlockServerProject/BlockServer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=beaconmine|?#blockserverproject,#beaconmine,#pocketbukkit)
 
 ## What is BlockServer?
