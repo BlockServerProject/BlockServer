@@ -2,24 +2,33 @@ package org.blockserver.net.protocol.pe;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.blockserver.Server;
 import org.blockserver.net.bridge.NetworkBridge;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
-import org.blockserver.net.protocol.pe.raknet.McpeLoginPacket;
+import org.blockserver.net.protocol.pe.play.McpeLoginPacket;
+import org.blockserver.net.protocol.pe.raknet.ACKPacket;
+import org.blockserver.net.protocol.pe.raknet.AcknowledgePacket;
+import org.blockserver.net.protocol.pe.raknet.NACKPacket;
 import org.blockserver.net.protocol.pe.raknet.RaknetIncompatibleProtocolVersion;
 import org.blockserver.net.protocol.pe.raknet.RaknetOpenConnectionReply1;
 import org.blockserver.net.protocol.pe.raknet.RaknetOpenConnectionReply2;
 import org.blockserver.net.protocol.pe.raknet.RaknetOpenConnectionRequest1;
 import org.blockserver.net.protocol.pe.raknet.RaknetOpenConnectionRequest2;
 import org.blockserver.net.protocol.pe.raknet.RaknetReceivedCustomPacket;
+import org.blockserver.net.protocol.pe.raknet.RaknetSentCustomPacket;
 import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPing;
 import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPong;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 import org.blockserver.player.Player;
+import org.blockserver.ticker.CallableTask;
 import org.blockserver.utils.AntiSpam;
 
 public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
@@ -32,16 +41,77 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private short mtu;
 	private PeSubprotocol subprot = null;
 	private Player player = null;
+	
+	private int lastSequenceNum = 0;
+	private int currentSequenceNum = 0;
+	private RaknetSentCustomPacket currentQueue;
+	private List<Integer> ACKQueue;
+	private List<Integer> NACKQueue;
+	private Map<Integer, RaknetSentCustomPacket> recoveryQueue;
+	
 	public PeProtocolSession(ProtocolManager mgr, NetworkBridge bridge, SocketAddress addr, PeProtocol pocket){
 		this.mgr = mgr;
 		this.bridge = bridge;
 		this.addr = addr;
 		this.pocket = pocket;
 		subprotocols = pocket.getSubprotocols();
+		try {
+			getServer().getTicker().addRepeatingTask(new CallableTask(this, "update", long.class), 10);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		ACKQueue = new ArrayList<Integer>();
+		NACKQueue = new ArrayList<Integer>();
+		recoveryQueue = new HashMap<Integer, RaknetSentCustomPacket>();
+		currentQueue = new RaknetSentCustomPacket();
+		
 		getServer().getLogger().debug("Started session from %s", addr.toString());
 	}
 	public SocketAddress getAddress(){
 		return addr;
+	}
+	
+	public synchronized void addToQueue(RaknetSentCustomPacket.SentEncapsulatedPacket ep){ //Use this to send encapsulatedPackets
+		currentQueue.packets.add(ep);
+	}
+	
+	public synchronized void update(long ticks){
+		synchronized (ACKQueue) {
+			if(ACKQueue.size() > 0){
+				int[] numbers = new int[ACKQueue.size()];
+				int offset = 0;
+				for(Integer i: ACKQueue){
+					numbers[offset++] = i;
+				}
+				
+				ACKPacket ack = new ACKPacket(numbers);
+				ack.encode();
+				sendPacket(ack.getBuffer());
+			}
+		}
+		
+		synchronized (NACKQueue) {
+			if(NACKQueue.size() > 0){
+				int[] numbers = new int[NACKQueue.size()];
+				int offset = 0;
+				for(Integer i: NACKQueue){
+					numbers[offset++] = i;
+				}
+				
+				NACKPacket nack = new NACKPacket(numbers);
+				nack.encode();
+				sendPacket(nack.getBuffer());
+			}
+		}
+		
+		synchronized (currentQueue) {
+			if(currentQueue.packets.size() > 0){
+				currentQueue.seqNumber = currentSequenceNum++;
+				currentQueue.send(bridge, getAddress());
+				recoveryQueue.put(currentQueue.seqNumber, currentQueue);
+				currentQueue.packets.clear();
+			}
+		}
 	}
 
 	@Override
@@ -120,6 +190,18 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			}
 		}, "PocketProtocolSession custom", 2000);
 		RaknetReceivedCustomPacket cp = new RaknetReceivedCustomPacket(bb);
+		acknowledge(cp);
+		
+		if(cp.seqNumber - lastSequenceNum == 1){
+			lastSequenceNum = cp.seqNumber;
+		} else {
+			synchronized (NACKQueue) {
+				for(int i = lastSequenceNum; i < cp.seqNumber; ++i){
+					NACKQueue.add(i);
+				}
+			}
+		}
+		
 		for(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk: cp.packets){
 			handleDataPacket(pk);
 		}
@@ -165,6 +247,26 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			break;
 		}
 	}
+	
+	public void handleAcknowledgePackets(AcknowledgePacket ap){
+		ap.decode();
+		if(ap instanceof ACKPacket){
+			for(int i: ap.sequenceNumbers){
+				getServer().getLogger().info("ACK packet recieved #"+i);
+				recoveryQueue.remove(i);
+			}
+		} else if(ap instanceof NACKPacket){
+			for(int i: ap.sequenceNumbers){
+				getServer().getLogger().warning("NACK packet recieved #"+i);
+				recoveryQueue.get(i).send(bridge, getAddress());
+			}
+		}
+	}
+	
+	private synchronized void acknowledge(RaknetReceivedCustomPacket cp){
+		ACKQueue.add(cp.seqNumber);
+		debug("Added Acknowledge packet #"+cp.seqNumber);
+	}
 
 
 	public short getMtu(){
@@ -176,7 +278,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	public Server getServer(){
 		return bridge.getServer();
 	}
-
+	
 	@Override
 	public void sendPacket(byte[] buffer){
 		bridge.send(buffer, getAddress());

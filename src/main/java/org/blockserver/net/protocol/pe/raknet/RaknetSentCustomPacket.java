@@ -10,9 +10,12 @@ import org.blockserver.utils.Utils;
 
 public class RaknetSentCustomPacket implements PeProtocolConst{
 	public ArrayList<SentEncapsulatedPacket> packets = new ArrayList<SentEncapsulatedPacket>(1);
-	private int seqNumber;
+	public int seqNumber;
 	public RaknetSentCustomPacket(int seqNumber){
 		this.seqNumber = seqNumber;
+	}
+	public RaknetSentCustomPacket(){
+		
 	}
 	public void send(NetworkBridge bridge, SocketAddress addr){
 		int length = 4;

@@ -23,6 +23,9 @@ public abstract class Utils{
 				+ (triad[1] << 8)
 				+ (triad[2] << 16);
 	}
+	public static int readLTriad(byte[] data, int offset){
+		return (data[offset] & 0xff) | (data[offset+1] & 0xff) << 8 | (data[offset+2] & 0xff) << 16;
+	}
 	public static boolean inArray(byte needle, byte[] haystack){
 		for(byte item: haystack){
 			if(item == needle){
