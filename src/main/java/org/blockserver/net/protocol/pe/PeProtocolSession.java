@@ -79,7 +79,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		if(req1.raknetVersion != RAKNET_PROTOCOL_VERSION){
 			sendIncompatibility(req1.magic);
 		}
-		RaknetOpenConnectionReply1 rep1 = new RaknetOpenConnectionReply1(req1.magic, req1.payloadLength /* + 18 */);
+		RaknetOpenConnectionReply1 rep1 = new RaknetOpenConnectionReply1(req1.magic, req1.payloadLength + 18);
 		sendPacket(rep1.getBuffer());
 	}
 	private void sendIncompatibility(byte[] magic){
@@ -116,7 +116,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 					}
 					sb.append(s);
 				}
-				System.out.println("Full encapsulated packet buffer: " + sb.toString());
+				//System.out.println("Full encapsulated packet buffer: " + sb.toString());
 			}
 		}, "PocketProtocolSession custom", 2000);
 		RaknetReceivedCustomPacket cp = new RaknetReceivedCustomPacket(bb);
@@ -125,6 +125,10 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 	}
 	private void handleDataPacket(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk){
+		if(pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09){ //MCPE Data Login packet range
+			handleDataLogin(pk);
+		}
+		
 		if(pk.buffer[0] == MC_LOGIN_PACKET){
 			McpeLoginPacket lp = new McpeLoginPacket(ByteBuffer.wrap(pk.buffer));
 			subprot = subprotocols.findProtocol(lp.protocol1, lp.protocol2);
@@ -144,6 +148,21 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 		else{
 			subprot.readDataPacket(pk);
+		}
+	}
+	
+	private void handleDataLogin(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket cp){
+		byte pid = cp.buffer[0];
+		debug("Handling Login Packet");
+		switch(pid){
+		
+		case MC_CLIENT_CONNECT:
+			debug("Handling 0x09 MC CLIENT CONNECT.");
+			break;
+			
+		default:
+			getServer().getLogger().warning("Unknown/Unsupported Login Packet recieved. Dropped "+cp.buffer.length+" bytes.");
+			break;
 		}
 	}
 

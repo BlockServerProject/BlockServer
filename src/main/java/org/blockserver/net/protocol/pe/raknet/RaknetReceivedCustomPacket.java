@@ -1,6 +1,7 @@
 package org.blockserver.net.protocol.pe.raknet;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 
 import org.blockserver.net.protocol.pe.PeProtocolConst;
@@ -27,6 +28,7 @@ public class RaknetReceivedCustomPacket implements PeProtocolConst{
 		public int splitIndex = -1;
 		public byte[] buffer;
 		public ReceivedEncapsulatedPacket(ByteBuffer bb){
+			bb.order(ByteOrder.BIG_ENDIAN);
 			byte flag = bb.get();
 			reliability = (byte) (flag >> 5);
 			hasSplit = (flag & 0x10) == 0x10;

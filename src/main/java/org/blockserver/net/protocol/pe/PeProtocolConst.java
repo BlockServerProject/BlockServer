@@ -33,6 +33,10 @@ public interface PeProtocolConst{
 	public final static byte[] RAKNET_HAS_ORDER_RELIABILITIES = {
 		0x01, 0x03, 0x04, 0x07
 	};
+	
+	public final static byte MC_CLIENT_CONNECT = (byte) 0x09;
+	public final static byte MC_SERVER_HANDSHAKE = (byte) 0x10;
+	public final static byte MC_CLIENT_HANDSHAKE = (byte) 0x13;
 
 	public final static byte MC_LOGIN_PACKET = (byte) 0x82;
 	public final static byte MC_LOGIN_STATUS_PACKET = (byte) 0x83;
