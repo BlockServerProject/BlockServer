@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.blockserver.Server;
 import org.blockserver.utils.Callable;
@@ -40,8 +41,10 @@ public class NonBlockUDPSocket extends Thread{
 			socket.setSoTimeout(0);
 			getServer().registerShutdownFunction(new Callable(this, "stop", boolean.class));
 			while(running){
-				DatagramPacket pk = new DatagramPacket(new byte[1024 * 1024], 1024 * 1024);
+				byte[] buffer = new byte[1024 * 1024];
+				DatagramPacket pk = new DatagramPacket(buffer, buffer.length);
 				socket.receive(pk);
+				pk.setData(Arrays.copyOf(buffer, pk.getLength()));
 				synchronized(receivedPacketQueue){
 					receivedPacketQueue.add(pk);
 				}
