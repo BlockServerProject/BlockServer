@@ -39,7 +39,7 @@ public class NonBlockUDPSocket extends Thread{
 				throw new RuntimeException(e);
 			}
 			socket.setSoTimeout(0);
-			getServer().registerShutdownFunction(new Callable(this, "stop", boolean.class));
+			getServer().registerShutdownFunction(new Callable(this, "_stop"));
 			while(running){
 				byte[] buffer = new byte[1024 * 1024];
 				DatagramPacket pk = new DatagramPacket(buffer, buffer.length);
@@ -78,6 +78,9 @@ public class NonBlockUDPSocket extends Thread{
 	}
 	public Server getServer(){
 		return udp.getServer();
+	}
+	public void _stop(){
+		stop(false);
 	}
 	public void stop(boolean join){
 		running = false;

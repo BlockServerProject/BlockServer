@@ -29,7 +29,6 @@ import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 import org.blockserver.player.Player;
 import org.blockserver.ticker.CallableTask;
-import org.blockserver.utils.AntiSpam;
 
 public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private ProtocolManager mgr;
@@ -55,9 +54,10 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		this.addr = addr;
 		this.pocket = pocket;
 		subprotocols = pocket.getSubprotocols();
-		try {
-			getServer().getTicker().addRepeatingTask(new CallableTask(this, "update", long.class), 10);
-		} catch (NoSuchMethodException e) {
+		try{
+			getServer().getTicker().addRepeatingTask(new CallableTask(this, "update"), 10);
+		}
+		catch(NoSuchMethodException e){
 			e.printStackTrace();
 		}
 		ACKQueue = new ArrayList<Integer>();
@@ -75,36 +75,32 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		currentQueue.packets.add(ep);
 	}
 	
-	public synchronized void update(long ticks){
-		synchronized (ACKQueue) {
+	public synchronized void update(){
+		synchronized(ACKQueue){
 			if(ACKQueue.size() > 0){
 				int[] numbers = new int[ACKQueue.size()];
 				int offset = 0;
 				for(Integer i: ACKQueue){
 					numbers[offset++] = i;
 				}
-				
 				ACKPacket ack = new ACKPacket(numbers);
 				ack.encode();
 				sendPacket(ack.getBuffer());
 			}
 		}
-		
-		synchronized (NACKQueue) {
+		synchronized(NACKQueue){
 			if(NACKQueue.size() > 0){
 				int[] numbers = new int[NACKQueue.size()];
 				int offset = 0;
 				for(Integer i: NACKQueue){
 					numbers[offset++] = i;
 				}
-				
 				NACKPacket nack = new NACKPacket(numbers);
 				nack.encode();
 				sendPacket(nack.getBuffer());
 			}
 		}
-		
-		synchronized (currentQueue) {
+		synchronized(currentQueue){
 			if(currentQueue.packets.size() > 0){
 				currentQueue.seqNumber = currentSequenceNum++;
 				currentQueue.send(bridge, getAddress());
@@ -169,26 +165,26 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	}
 
 	private void handleCustomPacket(final byte pid, final ByteBuffer bb){
-		AntiSpam.act(new Runnable(){
-			@Override
-			public void run(){
-				byte[] buffer = new byte[bb.remaining()];
-				int start = bb.position();
-				int end = start + bb.remaining();
-				for(int i = start; i < end; i++){
-					buffer[i - start] = bb.get(i);
-				}
-				StringBuilder sb = new StringBuilder(Integer.toHexString(pid));
-				for(byte b: buffer){
-					String s = Integer.toHexString(b);
-					while(s.length() < 2){
-						s = "0" + s;
-					}
-					sb.append(s);
-				}
-				//System.out.println("Full encapsulated packet buffer: " + sb.toString());
-			}
-		}, "PocketProtocolSession custom", 2000);
+//		AntiSpam.act(new Runnable(){
+//			@Override
+//			public void run(){
+//				byte[] buffer = new byte[bb.remaining()];
+//				int start = bb.position();
+//				int end = start + bb.remaining();
+//				for(int i = start; i < end; i++){
+//					buffer[i - start] = bb.get(i);
+//				}
+//				StringBuilder sb = new StringBuilder(Integer.toHexString(pid));
+//				for(byte b: buffer){
+//					String s = Integer.toHexString(b);
+//					while(s.length() < 2){
+//						s = "0" + s;
+//					}
+//					sb.append(s);
+//				}
+//				System.out.println("Full encapsulated packet buffer: " + sb.toString());
+//			}
+//		}, "PocketProtocolSession custom", 2000);
 		RaknetReceivedCustomPacket cp = new RaknetReceivedCustomPacket(bb);
 		acknowledge(cp);
 		
@@ -255,7 +251,8 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				getServer().getLogger().info("ACK packet recieved #"+i);
 				recoveryQueue.remove(i);
 			}
-		} else if(ap instanceof NACKPacket){
+		}
+		else if(ap instanceof NACKPacket){
 			for(int i: ap.sequenceNumbers){
 				getServer().getLogger().warning("NACK packet recieved #"+i);
 				recoveryQueue.get(i).send(bridge, getAddress());

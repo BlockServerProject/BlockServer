@@ -54,13 +54,20 @@ public class ServerTicker{
 				e.printStackTrace();
 			}
 		}
-		for(RegisteredTask task: tasks){
-			task.getTask().onFinalize();
+		synchronized(tasks){
+			for(RegisteredTask task: tasks){
+				task.getTask().onFinalize();
+			}
 		}
 		lastTickDone = true;
 	}
 	private void tick(){
-		for(RegisteredTask task: tasks){
+		RegisteredTask[] taskArray;
+		synchronized(tasks){
+			taskArray = new RegisteredTask[tasks.size()];
+			tasks.toArray(taskArray);
+		}
+		for(RegisteredTask task: taskArray){
 			task.check(tick);
 		}
 	}

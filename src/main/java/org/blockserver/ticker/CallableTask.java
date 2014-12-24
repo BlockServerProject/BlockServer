@@ -4,8 +4,8 @@ import org.blockserver.utils.Callable;
 
 public class CallableTask extends Task{
 	private Callable callable;
-	public CallableTask(Object object, String method, Class<?>... types) throws NoSuchMethodException{
-		this(new Callable(object, method, types));
+	public CallableTask(Object object, String method) throws NoSuchMethodException{
+		this(new Callable(object, method));
 	}
 	public CallableTask(Callable callable){
 		this.callable = callable;

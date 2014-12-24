@@ -6,11 +6,21 @@ import java.lang.reflect.Method;
 public class Callable implements Runnable{
 	private Object object;
 	private Method method;
-	public Callable(Object object, String method, Class<?>... types) throws NoSuchMethodException{
+	public Callable(Object object, String method) throws NoSuchMethodException{
 		this.object = object;
-		this.method = object.getClass().getMethod(method, types);
-		if(this.method.getExceptionTypes().length > 0){
-			throw new IllegalArgumentException("The method throws exceptions");
+		this.method = object.getClass().getMethod(method);
+		for(Class<?> exType: this.method.getExceptionTypes()){
+			try{
+				exType.asSubclass(RuntimeException.class);
+			}
+			catch(ClassCastException e){
+				try{
+					exType.asSubclass(Error.class);
+				}
+				catch(ClassCastException e2){
+					throw new IllegalArgumentException("The method throws unsupported exceptions");
+				}
+			}
 		}
 	}
 	@Override
