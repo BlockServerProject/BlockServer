@@ -1,4 +1,4 @@
-package org.blockserver.net.protocol.pe.raknet;
+package org.blockserver.net.protocol.pe.login;
 
 import org.blockserver.net.protocol.pe.PeProtocolConst;
 

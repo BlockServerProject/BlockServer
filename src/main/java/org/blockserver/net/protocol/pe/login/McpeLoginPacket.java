@@ -1,4 +1,4 @@
-package org.blockserver.net.protocol.pe.play;
+package org.blockserver.net.protocol.pe.login;
 
 import java.nio.ByteBuffer;
 

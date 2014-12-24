@@ -6,8 +6,8 @@ import org.blockserver.net.protocol.Protocol;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
-import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPing;
-import org.blockserver.net.protocol.pe.raknet.RaknetUnconnectedPong;
+import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPing;
+import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPong;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 
 public class PeProtocol extends Protocol implements PeProtocolConst{
