@@ -15,7 +15,7 @@ public class NonBlockUDPSocket extends Thread{
 	private UDPBridge udp;
 	private SocketAddress addr;
 	private DatagramSocket socket;
-	private ArrayList<DatagramPacket> receivedPacketQueue = new ArrayList<DatagramPacket>();
+	private final ArrayList<DatagramPacket> receivedPacketQueue = new ArrayList<>();
 	private boolean running = true; // I forget to set this to default true every time and go into strange bugs!
 	public NonBlockUDPSocket(UDPBridge udp, SocketAddress address){
 		this.udp = udp;
@@ -51,11 +51,8 @@ public class NonBlockUDPSocket extends Thread{
 			}
 			socket.close();
 		}
-		catch(IOException e){
+		catch(IOException | NoSuchMethodException e){
 			e.printStackTrace();
-		}
-		catch(NoSuchMethodException e){
-			e.printStackTrace(); // won't happen
 		}
 	}
 	public DatagramPacket receive(){

@@ -43,9 +43,9 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	
 	private int lastSequenceNum = 0;
 	private int currentSequenceNum = 0;
-	private RaknetSentCustomPacket currentQueue;
-	private List<Integer> ACKQueue;
-	private List<Integer> NACKQueue;
+	private final RaknetSentCustomPacket currentQueue;
+	private final List<Integer> ACKQueue;
+	private final List<Integer> NACKQueue;
 	private Map<Integer, RaknetSentCustomPacket> recoveryQueue;
 	
 	public PeProtocolSession(ProtocolManager mgr, NetworkBridge bridge, SocketAddress addr, PeProtocol pocket){
@@ -60,9 +60,9 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		catch(NoSuchMethodException e){
 			e.printStackTrace();
 		}
-		ACKQueue = new ArrayList<Integer>();
-		NACKQueue = new ArrayList<Integer>();
-		recoveryQueue = new HashMap<Integer, RaknetSentCustomPacket>();
+		ACKQueue = new ArrayList<>();
+		NACKQueue = new ArrayList<>();
+		recoveryQueue = new HashMap<>();
 		currentQueue = new RaknetSentCustomPacket();
 		
 		getServer().getLogger().debug("Started session from %s", addr.toString());
@@ -115,7 +115,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		ByteBuffer bb = pk.bb();
 		byte pid = bb.get();
 		debug("Handling packet (PID " + pid + ")");
-		if(RAKNET_CUSTOM_PACKET_MIN <= pid && pid <= RAKNET_CUSTOM_PACKET_MAX){
+		if(pid <= RAKNET_CUSTOM_PACKET_MAX){ // {@code pid} starts from 0x80, which is the smallest number for a {@code byte} in Java
 			handleCustomPacket(pid, bb);
 		}
 		else{
@@ -165,6 +165,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		getServer().getLogger().debug("Replied to request 2");
 	}
 
+	@SuppressWarnings("UnusedParameters")
 	private void handleCustomPacket(final byte pid, final ByteBuffer bb){
 //		AntiSpam.act(new Runnable(){
 //			@Override
@@ -220,6 +221,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 //			}
 //		}
 		else if(subprot == null){
+			//noinspection UnnecessaryReturnStatement
 			return; // TODO handle
 		}
 		else{

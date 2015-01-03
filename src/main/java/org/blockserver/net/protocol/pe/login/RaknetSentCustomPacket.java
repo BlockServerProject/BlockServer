@@ -9,7 +9,7 @@ import org.blockserver.net.protocol.pe.PeProtocolConst;
 import org.blockserver.utils.Utils;
 
 public class RaknetSentCustomPacket implements PeProtocolConst{
-	public ArrayList<SentEncapsulatedPacket> packets = new ArrayList<SentEncapsulatedPacket>(1);
+	public ArrayList<SentEncapsulatedPacket> packets = new ArrayList<>(1);
 	public int seqNumber;
 	public RaknetSentCustomPacket(int seqNumber){
 		this.seqNumber = seqNumber;

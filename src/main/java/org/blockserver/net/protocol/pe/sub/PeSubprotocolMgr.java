@@ -7,7 +7,7 @@ import org.blockserver.net.protocol.pe.PeProtocol;
 
 public class PeSubprotocolMgr{
 	private PeProtocol protocol;
-	private HashMap<Integer, PeSubprotocol> subs = new HashMap<Integer, PeSubprotocol>();
+	private HashMap<Integer, PeSubprotocol> subs = new HashMap<>();
 	public PeSubprotocolMgr(PeProtocol protocol){
 		this.protocol = protocol;
 	}

@@ -1,7 +1,7 @@
 package org.blockserver.ui;
 
 public class Logger{
-	private ConsoleOut out;
+	private final ConsoleOut out;
 	public Logger(ConsoleOut out){
 		this.out = out;
 	}

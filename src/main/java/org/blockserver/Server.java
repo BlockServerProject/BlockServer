@@ -3,6 +3,7 @@ package org.blockserver;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import org.blockserver.net.bridge.NetworkBridgeManager;
@@ -25,11 +26,11 @@ public class Server{
 	private String serverName;
 	private ServerTicker ticker;
 	private Logger logger;
-	private ArrayList<Runnable> shutdownRuns = new ArrayList<Runnable>();
+	private final ArrayList<Runnable> shutdownRuns = new ArrayList<>();
 	private NetworkBridgeManager bridges;
 	private ProtocolManager protocols;
 	private PlayerDatabase playerDb;
-	private HashMap<SocketAddress, Player> players = new HashMap<SocketAddress, Player>();
+	private HashMap<SocketAddress, Player> players = new HashMap<>();
 
 	public String getServerName(){
 		return serverName;
@@ -39,7 +40,7 @@ public class Server{
 	}
 	/**
 	 * Get the server logger for wrapping the {@linkplain ConsoleOut} passed in constructor
-	 * @return {@linkplain ServerLogger} wrapping a {@linkplain ConsoleOut}
+	 * @return {@linkplain Logger} wrapping a {@linkplain ConsoleOut}
 	 */
 	public Logger getLogger(){
 		return logger;
@@ -51,7 +52,7 @@ public class Server{
 		return protocols;
 	}
 	/**
-	 * Adds <code>function</code> to an {@linkplain ArrayList} such that
+	 * Adds {@code function} to an {@linkplain ArrayList} such that
 	 * it will be run when the server stops (without uncatchable crashing).<br>
 	 * This method is thread-safe.
 	 * @param function the {@linkplain Runnable} to be run
@@ -78,13 +79,17 @@ public class Server{
 	public PlayerDatabase getPlayerDatabase(){
 		return playerDb;
 	}
+	public Collection<Player> getPlayers(){
+		return players.values();
+	}
 
 	/**
 	 * Package internal constructor used in {@linkplain ServerBuilder#build()} internally
 	 * @see ServerBuilder#build()
-	 * @param address
-	 * @param port
-	 * @param out
+	 * @param address IP address that the MCPE server is run on
+	 * @param port the port that the MCPE server is run on
+	 * @param out the console output, a.k.a. the logger, of the server
+	 * @param playerDb the database to use for players
 	 */
 	Server(InetAddress address, int port, String serverName, ConsoleOut out, PlayerDatabase playerDb){
 		Thread.currentThread().setName("BlockServerPE");

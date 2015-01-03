@@ -5,7 +5,7 @@ import java.util.HashMap;
 import org.blockserver.Server;
 
 public class PeDataPacketParser{
-	private HashMap<Byte, Class<? extends PeDataPacket>> packets = new HashMap<Byte, Class<? extends PeDataPacket>>();
+	private HashMap<Byte, Class<? extends PeDataPacket>> packets = new HashMap<>();
 	private Server server;
 	public PeDataPacketParser(Server server){
 		this.server = server;

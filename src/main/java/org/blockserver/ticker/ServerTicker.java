@@ -16,7 +16,7 @@ public class ServerTicker{
 	private long lastTickMilli;
 	private double loadMeasure = 0D;
 	private long startTime;
-	private ArrayList<RegisteredTask> tasks = new ArrayList<RegisteredTask>();
+	private final ArrayList<RegisteredTask> tasks = new ArrayList<>();
 
 	public ServerTicker(Server server, int sleepNanos){
 		this.server = server;
@@ -95,8 +95,15 @@ public class ServerTicker{
 		}
 	}
 	public boolean cancelTask(Task task){
+		RegisteredTask corr = null;
 		synchronized(tasks){
-			return tasks.remove(task);
+			for(RegisteredTask rt: tasks){
+				if(rt.getTask().equals(task)){
+					corr = rt;
+					break;
+				}
+			}
+			return tasks.remove(corr);
 		}
 	}
 	public long getStartTime(){

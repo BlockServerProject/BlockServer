@@ -8,7 +8,7 @@ import org.blockserver.ticker.CallableTask;
 
 public class NetworkBridgeManager{
 	private Server server;
-	private ArrayList<NetworkBridge> bridges = new ArrayList<NetworkBridge>();
+	private ArrayList<NetworkBridge> bridges = new ArrayList<>();
 	public NetworkBridgeManager(Server server){
 		this.server = server;
 		try{

@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+@SuppressWarnings("ALL")
 public class ServerConfig{
 	public final static String PROPERTY_PORT = "port";
 	public final static String PROPERTY_SERVER_NAME = "server-name";

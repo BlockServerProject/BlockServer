@@ -3,7 +3,7 @@ package org.blockserver.utils;
 import java.util.HashMap;
 
 public final class AntiSpam{
-	private static HashMap<String, AntiSpam> map = new HashMap<String, AntiSpam>();
+	private static HashMap<String, AntiSpam> map = new HashMap<>();
 	private long timeout;
 	private AntiSpam(long timeout){
 		this.timeout = timeout;

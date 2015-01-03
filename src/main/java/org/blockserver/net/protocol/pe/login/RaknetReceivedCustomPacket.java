@@ -10,7 +10,7 @@ import org.blockserver.utils.Utils;
 
 public class RaknetReceivedCustomPacket implements PeProtocolConst{
 	public int seqNumber;
-	public ArrayList<ReceivedEncapsulatedPacket> packets = new ArrayList<ReceivedEncapsulatedPacket>(1);
+	public ArrayList<ReceivedEncapsulatedPacket> packets = new ArrayList<>(1);
 	public RaknetReceivedCustomPacket(ByteBuffer bb){
 		seqNumber = Utils.readLTriad(bb);
 		while(bb.hasRemaining()){

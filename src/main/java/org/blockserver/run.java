@@ -13,7 +13,7 @@ import org.blockserver.utils.ServerConfig;
 public class run{
 	public static File DIR;
 	public static void main(String[] arguments){
-		ArrayList<String> args = new ArrayList<String>(Arrays.asList(arguments));
+		ArrayList<String> args = new ArrayList<>(Arrays.asList(arguments));
 		ServerBuilder builder = new ServerBuilder();
 		String includePath = "data";
 		int pos = args.indexOf("--file");

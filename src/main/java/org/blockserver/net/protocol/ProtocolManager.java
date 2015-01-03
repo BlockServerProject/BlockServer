@@ -8,8 +8,8 @@ import org.blockserver.Server;
 
 public class ProtocolManager{
 	private Server server;
-	private ArrayList<Protocol> protocols = new ArrayList<Protocol>();
-	private HashMap<SocketAddress, ProtocolSession> sessions = new HashMap<SocketAddress, ProtocolSession>();
+	private ArrayList<Protocol> protocols = new ArrayList<>();
+	private HashMap<SocketAddress, ProtocolSession> sessions = new HashMap<>();
 	public ProtocolManager(Server server){
 		this.server = server;
 	}
@@ -33,8 +33,8 @@ public class ProtocolManager{
 	}
 	/**
 	 * This is an internal function. Do <b>NOT</b> use this method from outside.
-	 * @param address
-	 * @return
+	 * @param address the address that the session to be closed is connected from
+	 * @return whether there is a session with such address
 	 */
 	public boolean closeSession(SocketAddress address){
 		return sessions.remove(address) != null;

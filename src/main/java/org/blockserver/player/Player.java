@@ -14,7 +14,7 @@ public class Player{
 		openDatabase();
 	}
 	private void openDatabase(){
-		@SuppressWarnings("unused")
+		@SuppressWarnings({"unused", "UnusedAssignment"})
 		PlayerData data = server.getPlayerDatabase().readPlayer(this);
 		// TODO read the data
 	}

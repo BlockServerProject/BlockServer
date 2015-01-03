@@ -20,7 +20,7 @@ public abstract class PlayerDatabase{
 	/**
 	 * Saves data of a player into the database.
 	 * @param data A {@link PlayerData} object representing the data to save
-	 * @return <code>true</code> if data are saved, <code>false</code> otherwise.
+	 * @return {@code true} if data are saved, {@code false} otherwise.
 	 */
 	public abstract boolean savePlayer(PlayerData data);
 	public PlayerData dummy(Player player){
@@ -29,7 +29,7 @@ public abstract class PlayerDatabase{
 		return data;
 	}
 	public void validate() throws IllegalStateException{
-		if(!(server instanceof Server)){
+		if(server == null){
 			throw new IllegalStateException("Database not initialized");
 		}
 	}

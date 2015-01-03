@@ -67,7 +67,7 @@ public abstract class AcknowledgePacket implements PeProtocolConst{
 	public void decode(){
 		ByteBuffer bb = ByteBuffer.wrap(buf, 1, buf.length - 1);
 		int count = bb.getShort();
-		List<Integer> packets = new ArrayList<Integer>();
+		List<Integer> packets = new ArrayList<>();
 		for(int i = 0; i < count && bb.position() < bb.capacity(); ++i){
 			byte[] tmp = new byte[6];
 			if(bb.get() == 0x00){

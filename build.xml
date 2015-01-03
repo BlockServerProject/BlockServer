@@ -1,3 +1,4 @@
+<!--suppress ALL -->
 <project name="BlockServer" basedir="." default="run">
 	<property name="main.dir"    value="src/main"/>
 	<property name="src.dir"	 value="${main.dir}/java"/>
