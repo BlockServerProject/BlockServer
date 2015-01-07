@@ -13,6 +13,7 @@ public interface PeProtocolConst{
 	 * Since there is so far only one RakNet protocol version used, we will not handle dynamic RakNet versions;
 	 */
 	public final static byte RAKNET_PROTOCOL_VERSION = 5;
+	public final static byte[] MAGIC = new byte[] {0x00, (byte) 0xff, (byte) 0xff, 0x00, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd, 0x12, 0x34, 0x56, 0x78};
 	public final static byte RAKNET_BROADCAST_PING_1                =       0x01;
 	public final static byte RAKNET_BROADCAST_PING_2                =       0x02;
 	public final static byte RAKNET_OPEN_CONNECTION_REQUEST_1       =       0x05;

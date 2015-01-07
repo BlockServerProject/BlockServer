@@ -13,7 +13,7 @@ public class RaknetUnconnectedPong implements PeProtocolConst{
 		bb.put(RAKNET_BROADCAST_PONG_1);
 		bb.putLong(ping);
 		bb.putLong(server);
-		bb.put(magic);
+		bb.put(MAGIC);
 		bb.putShort((short) nameBytes.length);
 		bb.put(nameBytes);
 	}
