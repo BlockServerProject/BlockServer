@@ -11,6 +11,7 @@ import org.blockserver.utils.Utils;
 public class RaknetSentCustomPacket implements PeProtocolConst{
 	public ArrayList<SentEncapsulatedPacket> packets = new ArrayList<>(1);
 	public int seqNumber;
+	private int length = 4;
 	public RaknetSentCustomPacket(int seqNumber){
 		this.seqNumber = seqNumber;
 	}
@@ -18,7 +19,6 @@ public class RaknetSentCustomPacket implements PeProtocolConst{
 		
 	}
 	public void send(NetworkBridge bridge, SocketAddress addr){
-		int length = 4;
 		for(SentEncapsulatedPacket pk: packets){
 			length += pk.getLength();
 		}
@@ -29,6 +29,14 @@ public class RaknetSentCustomPacket implements PeProtocolConst{
 			pk.append(bb);
 		}
 		bridge.send(bb.array(), addr);
+	}
+	
+	public int getLength(){
+		int len = 4;
+		for(SentEncapsulatedPacket pk: packets){
+			len += pk.getLength();
+		}
+		return len;
 	}
 	public static class SentEncapsulatedPacket{
 		private byte[] buffer;

@@ -14,6 +14,7 @@ import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
 import org.blockserver.net.protocol.pe.login.ACKPacket;
 import org.blockserver.net.protocol.pe.login.AcknowledgePacket;
+import org.blockserver.net.protocol.pe.login.EncapsulatedLoginPacket;
 import org.blockserver.net.protocol.pe.login.McpeClientConnectPacket;
 import org.blockserver.net.protocol.pe.login.NACKPacket;
 import org.blockserver.net.protocol.pe.login.RaknetIncompatibleProtocolVersion;
@@ -25,6 +26,8 @@ import org.blockserver.net.protocol.pe.login.RaknetReceivedCustomPacket;
 import org.blockserver.net.protocol.pe.login.RaknetSentCustomPacket;
 import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPing;
 import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPong;
+import org.blockserver.net.protocol.pe.login.ServerHandshakePacket;
+import org.blockserver.net.protocol.pe.play.EncapsulatedPlayPacket;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 import org.blockserver.player.Player;
@@ -71,9 +74,28 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		return addr;
 	}
 	
-	public synchronized void addToQueue(RaknetSentCustomPacket.SentEncapsulatedPacket ep){ //Use this to send encapsulatedPackets
-		currentQueue.packets.add(ep);
+	public void addToQueue(EncapsulatedLoginPacket lp){
+		addToQueue(lp.getBuffer().array(), 2);
 	}
+	
+	public void addToQueue(byte[] buffer){
+		addToQueue(buffer, 2);
+	}
+	
+	public void addToQueue(EncapsulatedPlayPacket pp){
+		addToQueue(pp.getBuffer().array(), 2);
+	}
+	
+	public synchronized void addToQueue(byte[] buffer, int reliability){ //Use this to send encapsulatedPackets
+		if(currentQueue.getLength() > mtu){
+			currentQueue.seqNumber = currentSequenceNum++;
+			currentQueue.send(bridge, addr);
+			recoveryQueue.put(currentQueue.seqNumber, currentQueue);
+			currentQueue.packets.clear();
+		}
+		currentQueue.packets.add(new RaknetSentCustomPacket.SentEncapsulatedPacket(buffer, (byte) reliability));
+	}
+	
 	
 	public synchronized void update(){
 		synchronized(ACKQueue){
@@ -86,6 +108,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				ACKPacket ack = new ACKPacket(numbers);
 				ack.encode();
 				sendPacket(ack.getBuffer());
+				ACKQueue.clear();
 			}
 		}
 		synchronized(NACKQueue){
@@ -98,6 +121,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				NACKPacket nack = new NACKPacket(numbers);
 				nack.encode();
 				sendPacket(nack.getBuffer());
+				NACKQueue.clear();
 			}
 		}
 		synchronized(currentQueue){
@@ -145,6 +169,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		if(req1.raknetVersion != RAKNET_PROTOCOL_VERSION){
 			sendIncompatibility(req1.magic);
 		}
+		mtu = (short) bb.capacity();
 		RaknetOpenConnectionReply1 rep1 = new RaknetOpenConnectionReply1(req1.magic, req1.payloadLength + 18);
 		sendPacket(rep1.getBuffer());
 		getServer().getLogger().debug("Replied to request 1");
@@ -158,8 +183,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private void replyToRequest2(ByteBuffer bb){
 		debug("Replying to request 2.");
 		RaknetOpenConnectionRequest2 req2 = new RaknetOpenConnectionRequest2(bb);
-		clientId = req2.clientId;
-		mtu = req2.mtu;
+		debug("MTU is: "+mtu);
 		RaknetOpenConnectionReply2 rep2 = new RaknetOpenConnectionReply2(req2.magic, req2.serverPort, mtu);
 		sendPacket(rep2.getBuffer());
 		getServer().getLogger().debug("Replied to request 2");
@@ -236,7 +260,15 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			case MC_CLIENT_CONNECT:
 				McpeClientConnectPacket pk = new McpeClientConnectPacket(bb);
 				long session = pk.session;
-				// TODO
+				
+				ServerHandshakePacket shp = new ServerHandshakePacket(session, (short) bridge.getServer().getPort());
+				shp.encode();
+				addToQueue(shp);
+				System.out.println("ServerHandshake: OUT");
+				break;
+				
+			case MC_CLIENT_HANDSHAKE:
+				
 				break;
 			default:
 				getServer().getLogger().warning("Unknown/Unsupported Login Packet recieved. Dropped "+cp.buffer.length+" bytes.");
@@ -262,6 +294,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		ACKQueue.add(cp.seqNumber);
 		debug("Added Acknowledge packet #"+cp.seqNumber);
 	}
+	
 	public short getMtu(){
 		return mtu;
 	}
