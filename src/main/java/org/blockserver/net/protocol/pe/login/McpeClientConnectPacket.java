@@ -4,13 +4,39 @@ import java.nio.ByteBuffer;
 
 import org.blockserver.net.protocol.pe.PeProtocolConst;
 
-public class McpeClientConnectPacket implements PeProtocolConst{
+/**
+ * An implementation of a ClientConnectPacket(0x09).
+ * @author jython234
+ *
+ */
+public class McpeClientConnectPacket implements PeProtocolConst, EncapsulatedLoginPacket{
+	/**
+	 * The Mojang Client's Client ID.
+	 */
 	public long clientId;
+	/**
+	 * A 64 bit long to be returned in ServerHandshake(0x10).
+	 */
 	public long session;
-	public byte unknown;
+	
+	private ByteBuffer bb;
+	/**
+	 * Constructor for ClientConnectPacket.
+	 * @param bb The bytebuffer containing raw packet data.
+	 */
 	public McpeClientConnectPacket(ByteBuffer bb){
+		this.bb = bb;
+	}
+	
+	public void encode() { }
+	
+	public void decode(){
 		clientId = bb.getLong();
 		session = bb.getLong();
-		unknown = bb.get();
+		bb.get();
+	}
+	
+	public ByteBuffer getBuffer(){
+		return bb;
 	}
 }

@@ -14,8 +14,10 @@ import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
 import org.blockserver.net.protocol.pe.login.ACKPacket;
 import org.blockserver.net.protocol.pe.login.AcknowledgePacket;
+import org.blockserver.net.protocol.pe.login.ClientHandshakePacket;
 import org.blockserver.net.protocol.pe.login.EncapsulatedLoginPacket;
 import org.blockserver.net.protocol.pe.login.McpeClientConnectPacket;
+import org.blockserver.net.protocol.pe.login.McpeLoginPacket;
 import org.blockserver.net.protocol.pe.login.NACKPacket;
 import org.blockserver.net.protocol.pe.login.RaknetIncompatibleProtocolVersion;
 import org.blockserver.net.protocol.pe.login.RaknetOpenConnectionReply1;
@@ -227,7 +229,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 	}
 	private void handleDataPacket(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk){
-		if(pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09){ //MCPE Data Login packet range
+		if((pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09) || pk.buffer[0] == 0x82){ //MCPE Data Login packet range + Login Packet(0x82)
 			handleDataLogin(pk);
 		}
 //		if(pk.buffer[0] == MC_LOGIN_PACKET){
@@ -268,7 +270,14 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				break;
 				
 			case MC_CLIENT_HANDSHAKE:
+				ClientHandshakePacket chp = new ClientHandshakePacket(bb);
+				chp.decode();
+				break;
 				
+			case MC_LOGIN_PACKET:
+				McpeLoginPacket lp = new McpeLoginPacket(bb);
+				lp.decode();
+				login(lp);
 				break;
 			default:
 				getServer().getLogger().warning("Unknown/Unsupported Login Packet recieved. Dropped "+cp.buffer.length+" bytes.");
@@ -293,6 +302,10 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private synchronized void acknowledge(RaknetReceivedCustomPacket cp){
 		ACKQueue.add(cp.seqNumber);
 		debug("Added Acknowledge packet #"+cp.seqNumber);
+	}
+	
+	private void login(McpeLoginPacket lp){
+		//TODO
 	}
 	
 	public short getMtu(){
