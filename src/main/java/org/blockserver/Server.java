@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import javafx.geometry.Pos;
 import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;
@@ -19,6 +20,7 @@ import org.blockserver.ticker.ServerTicker;
 import org.blockserver.ticker.Task;
 import org.blockserver.ui.ConsoleOut;
 import org.blockserver.ui.Logger;
+import org.blockserver.utils.Position;
 
 public class Server{
 	private InetAddress address;
@@ -31,9 +33,13 @@ public class Server{
 	private ProtocolManager protocols;
 	private PlayerDatabase playerDb;
 	private HashMap<SocketAddress, Player> players = new HashMap<>();
+	private Position spawnPosition = new Position(0, 64, 0); //DUMMY
 
 	public String getServerName(){
 		return serverName;
+	}
+	public Position getSpawnPosition() {
+		return spawnPosition;
 	}
 	public ServerTicker getTicker(){
 		return ticker;

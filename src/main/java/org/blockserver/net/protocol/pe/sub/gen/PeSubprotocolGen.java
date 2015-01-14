@@ -19,7 +19,12 @@ public abstract class PeSubprotocolGen extends PeSubprotocol{
 	@Override
 	protected void handleDataPacket(PeDataPacket dp){
 		// TODO Auto-generated method stub
-		
+		getServer().getLogger().debug("Recieved Packet at org.blockserver.net.protocol.pe.sub.gen.PeSubprotocolGen.handleDataPacket()");
+		if(dp.getPid() == MC_DISCONNECT) {
+			//TODO
+		} else {
+
+		}
 	}
 	@Override
 	public PeDataPacket getDataPacketByBuffer(byte[] buffer){

@@ -2,10 +2,7 @@ package org.blockserver.net.protocol.pe;
 
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.blockserver.Server;
 import org.blockserver.net.bridge.NetworkBridge;
@@ -32,8 +29,12 @@ import org.blockserver.net.protocol.pe.login.ServerHandshakePacket;
 import org.blockserver.net.protocol.pe.play.EncapsulatedPlayPacket;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
+import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
+import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
 import org.blockserver.player.Player;
+import org.blockserver.player.PlayerLoginInfo;
 import org.blockserver.ticker.CallableTask;
+import org.blockserver.utils.Position;
 
 public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private ProtocolManager mgr;
@@ -52,6 +53,8 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private final List<Integer> ACKQueue;
 	private final List<Integer> NACKQueue;
 	private Map<Integer, RaknetSentCustomPacket> recoveryQueue;
+
+	private int nextEntityID = -1;
 	
 	public PeProtocolSession(ProtocolManager mgr, NetworkBridge bridge, SocketAddress addr, PeProtocol pocket){
 		this.mgr = mgr;
@@ -231,6 +234,8 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private void handleDataPacket(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk){
 		if((pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09) || pk.buffer[0] == 0x82){ //MCPE Data Login packet range + Login Packet(0x82)
 			handleDataLogin(pk);
+		} else if(pk.buffer[0] == MC_LOGIN_PACKET){
+			handleDataLogin(pk);
 		}
 //		if(pk.buffer[0] == MC_LOGIN_PACKET){
 //			McpeLoginPacket lp = new McpeLoginPacket(ByteBuffer.wrap(pk.buffer));
@@ -271,13 +276,31 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				
 			case MC_CLIENT_HANDSHAKE:
 				ClientHandshakePacket chp = new ClientHandshakePacket(bb);
-				chp.decode();
+				//chp.decode();
 				break;
 				
 			case MC_LOGIN_PACKET:
 				McpeLoginPacket lp = new McpeLoginPacket(bb);
 				lp.decode();
+				//System.out.println("Login.");
 				login(lp);
+				//TODO: Send set time, adventure settings, and spawn position
+				McpeStartGamePacket sgp = new McpeStartGamePacket();
+				sgp.eid = player.getEntityID();
+				sgp.gamemode = player.getGamemode();
+				sgp.generator = 1; //INFINITE
+				sgp.seed = new Random().nextInt(); //Dummy
+				sgp.spawnX = (int) getServer().getSpawnPosition().getX();
+				sgp.spawnY = (int) getServer().getSpawnPosition().getY();
+				sgp.spawnZ = (int) getServer().getSpawnPosition().getZ();
+
+				sgp.x = (int) player.getLocation().getX();
+				sgp.y = (int) player.getLocation().getY();
+				sgp.z = (int) player.getLocation().getZ();
+
+				addToQueue(sgp.encode());
+				System.out.println("Start Game out.");
+
 				break;
 			default:
 				getServer().getLogger().warning("Unknown/Unsupported Login Packet recieved. Dropped "+cp.buffer.length+" bytes.");
@@ -306,6 +329,24 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	
 	private void login(McpeLoginPacket lp){
 		//TODO
+		if(lp.protocol1 == lp.protocol2){
+			if(subprotocols.findProtocol(lp.protocol1) != null){ //Protocol is supported
+				subprot = subprotocols.findProtocol(lp.protocol1);
+
+				PlayerLoginInfo info = new PlayerLoginInfo();
+				info.username = lp.username;
+				info.entityID = nextEntityID++;
+
+				player = new Player(this, info);
+				Position loc = player.getLocation();
+				getServer().getLogger().info(player.getUsername()+" logged in at (x: "+loc.getX()+",y: "+loc.getY()+",z: "+loc.getZ()+") with entity ID: "+player.getEntityID());
+			} else {
+				closeSession("Outdated!");
+			}
+		} else {
+			//TODO
+			System.out.println("Protocol 1: "+lp.protocol1+", 2: "+lp.protocol2);
+		}
 	}
 	
 	public short getMtu(){
@@ -326,9 +367,11 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	public void closeSession(String reason){
 		mgr.closeSession(getAddress());
 		disconnect(reason);
+		getServer().getLogger().info(player.getUsername()+"["+getAddress().toString()+"]"+" was disconnected: "+reason);
 	}
 	public void disconnect(String reason){
-		// TODO
+		McpeDisconnectPacket disconnect = new McpeDisconnectPacket(reason);
+		addToQueue(disconnect.encode());
 	}
 	public PeProtocol getPeProtocol(){
 		return pocket;
