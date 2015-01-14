@@ -8,7 +8,7 @@
   <repositories>
 	<repository>
 		<id>snapshot-repo</id>
-		<url>http://repo.blockserver.org</url>
+		<url>http://repo.blockserver.org/snapshots</url>
 	</repository>
   </repositories>
   

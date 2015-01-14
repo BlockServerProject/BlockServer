@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-import javafx.geometry.Pos;
 import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;
