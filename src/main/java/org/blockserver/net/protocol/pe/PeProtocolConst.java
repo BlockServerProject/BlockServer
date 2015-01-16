@@ -39,6 +39,9 @@ public interface PeProtocolConst{
 	public final static byte MC_SERVER_HANDSHAKE = (byte) 0x10;
 	public final static byte MC_CLIENT_HANDSHAKE = (byte) 0x13;
 
+	public final static byte MC_PLAY_PING = (byte) 0x00;
+	public final static byte MC_PLAY_PONG = (byte) 0x03;
+
 	public final static byte MC_DISCONNECT = (byte) 0x15;
 	public final static byte MC_LOGIN_PACKET = (byte) 0x82;
 	public final static byte MC_LOGIN_STATUS_PACKET = (byte) 0x83;

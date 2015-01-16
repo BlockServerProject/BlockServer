@@ -32,6 +32,7 @@ public class Server{
 	private ProtocolManager protocols;
 	private PlayerDatabase playerDb;
 	private HashMap<SocketAddress, Player> players = new HashMap<>();
+	private int currentEntityID = -1;
 	private Position spawnPosition = new Position(0, 64, 0); //DUMMY
 
 	public String getServerName(){
@@ -137,5 +138,14 @@ public class Server{
 		Player player = new Player(session, new PlayerLoginInfo());
 		players.put(session.getAddress(), player);
 		return player;
+	}
+	public Player newSession(ProtocolSession session, PlayerLoginInfo info){
+		Player player = new Player(session, info);
+		players.put(session.getAddress(), player);
+		return player;
+	}
+
+	public int getNextEntityID(){
+		return currentEntityID++;
 	}
 }

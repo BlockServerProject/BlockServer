@@ -22,6 +22,7 @@ public class McpeDisconnectPacket extends PeDataPacket{
      * @param reason The reason for disconnect. Currently not supported.
      */
     public McpeDisconnectPacket(String reason){
+        super(new byte[] { MC_DISCONNECT });
         this.reason = reason;
     }
 
@@ -33,10 +34,6 @@ public class McpeDisconnectPacket extends PeDataPacket{
     @Override
     protected void _decode(BinaryReader reader) throws IOException{
         reader.readByte(); //PID
-    }
-
-    public byte getPid(){
-        return MC_DISCONNECT;
     }
 
     public int getLength(){

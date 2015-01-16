@@ -1,6 +1,9 @@
 package org.blockserver.net.protocol.pe.sub.v20;
 
 import org.blockserver.Server;
+import org.blockserver.net.protocol.ProtocolSession;
+import org.blockserver.net.protocol.pe.PeProtocolSession;
+import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
 import org.blockserver.net.protocol.pe.sub.gen.PeSubprotocolGen;
 import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
 

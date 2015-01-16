@@ -54,7 +54,6 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private final List<Integer> NACKQueue;
 	private Map<Integer, RaknetSentCustomPacket> recoveryQueue;
 
-	private int nextEntityID = -1;
 	
 	public PeProtocolSession(ProtocolManager mgr, NetworkBridge bridge, SocketAddress addr, PeProtocol pocket){
 		this.mgr = mgr;
@@ -335,9 +334,9 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 
 				PlayerLoginInfo info = new PlayerLoginInfo();
 				info.username = lp.username;
-				info.entityID = nextEntityID++;
+				info.entityID = getServer().getNextEntityID();
 
-				player = new Player(this, info);
+				this.player = getServer().newSession(this, info);
 				Position loc = player.getLocation();
 				getServer().getLogger().info(player.getUsername()+" logged in at (x: "+loc.getX()+",y: "+loc.getY()+",z: "+loc.getZ()+") with entity ID: "+player.getEntityID());
 			} else {

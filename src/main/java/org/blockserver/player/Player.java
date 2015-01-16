@@ -1,6 +1,7 @@
 package org.blockserver.player;
 
 import org.blockserver.Server;
+import org.blockserver.net.internal.request.InternalRequest;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.utils.Position;
 
@@ -23,6 +24,9 @@ public class Player{
 		location = new Position(0, 64, 0); //Dummy
 		gm = 1; //CREATIVE, Also DUMMY
 		// TODO read the data
+	}
+	public void handleRequest(InternalRequest request){
+
 	}
 	public ProtocolSession getProtocolSession(){
 		return protocol;

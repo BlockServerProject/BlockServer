@@ -1,5 +1,6 @@
 package org.blockserver.net.protocol.pe.sub;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
 import org.blockserver.Server;
@@ -13,9 +14,26 @@ public class PeDataPacketParser{
 	public void add(Byte pid, Class<? extends PeDataPacket> clazz){
 		packets.put(pid, clazz);
 	}
-	public PeDataPacket parsePacket(byte[] buffer){
+	public PeDataPacket parsePacket(final byte[] buffer) {
 		try{
-			PeDataPacket pk = packets.get(buffer[0]).newInstance();
+			//PeDataPacket pk = packets.get(buffer[0]).newInstance(buffer);
+			PeDataPacket pk = null;
+			try {
+				if(packets.containsKey(buffer[0])) {
+					pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(buffer);
+				} else {
+					pk = new PeDataPacket(buffer) {
+						@Override
+						protected int getLength() {
+							return buffer.length;
+						}
+					};
+				}
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			}
 			pk.decode(buffer);
 			return pk;
 		}

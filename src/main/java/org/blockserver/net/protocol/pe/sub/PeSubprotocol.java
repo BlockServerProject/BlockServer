@@ -2,6 +2,7 @@ package org.blockserver.net.protocol.pe.sub;
 
 import org.blockserver.Server;
 import org.blockserver.net.protocol.pe.PeProtocolConst;
+import org.blockserver.net.protocol.pe.PeProtocolSession;
 import org.blockserver.net.protocol.pe.login.RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket;
 
 public abstract class PeSubprotocol implements PeProtocolConst{

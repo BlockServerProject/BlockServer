@@ -31,6 +31,14 @@ public class ProtocolManager{
 			}
 		}
 	}
+	public Protocol getProtocol(Class<? extends Protocol> clazz){
+		for(Protocol protocol: protocols){
+			if(protocol.getClass().getSimpleName().equals(clazz.getSimpleName())){
+				return protocol;
+			}
+		}
+		return null;
+	}
 	/**
 	 * This is an internal function. Do <b>NOT</b> use this method from outside.
 	 * @param address the address that the session to be closed is connected from
