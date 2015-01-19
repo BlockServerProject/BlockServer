@@ -25,6 +25,7 @@ public class McpeStartGamePacket extends PeDataPacket{
 	}
 	@Override
 	protected void _encode(BinaryWriter writer) throws IOException{
+		writer.writeByte(MC_START_GAME_PACKET);
 		writer.writeInt(seed);
 		writer.writeInt(generator);
 		writer.writeInt(gamemode);

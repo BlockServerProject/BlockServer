@@ -6,6 +6,8 @@ import java.util.*;
 
 import org.blockserver.Server;
 import org.blockserver.net.bridge.NetworkBridge;
+import org.blockserver.net.internal.response.InternalResponse;
+import org.blockserver.net.internal.response.PingResponse;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
@@ -31,6 +33,7 @@ import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
 import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
+import org.blockserver.net.protocol.pe.sub.gen.ping.McpePongPacket;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerLoginInfo;
 import org.blockserver.ticker.CallableTask;
@@ -99,7 +102,17 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 		currentQueue.packets.add(new RaknetSentCustomPacket.SentEncapsulatedPacket(buffer, (byte) reliability));
 	}
-	
+
+	public void addResponseToQueue(InternalResponse response){
+		if(response instanceof PingResponse){
+			McpePongPacket pongPacket = new McpePongPacket(((PingResponse) response).pingId);
+			addToQueue(pongPacket.encode());
+			getServer().getLogger().debug("Ping response added to queue.");
+		}
+		else{
+			throw new UnsupportedOperationException("Unknown/Unsupported InternalResponse.");
+		}
+	}
 	
 	public synchronized void update(){
 		synchronized(ACKQueue){
@@ -255,7 +268,11 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			return; // TODO handle
 		}
 		else{
-			subprot.readDataPacket(pk);
+			if(player != null) {
+				subprot.readDataPacket(pk, player);
+			} else {
+				//TODO
+			}
 		}
 	}
 	private void handleDataLogin(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket cp){

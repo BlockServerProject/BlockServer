@@ -9,9 +9,11 @@ import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePingPacket;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePongPacket;
 
+@Deprecated
 public abstract class PeSubprotocolGen extends PeSubprotocol{
 	private Server server;
 	protected PeDataPacketParser parser;
+	@Deprecated
 	public PeSubprotocolGen(Server server){
 		this.server = server;
 		parser = new PeDataPacketParser(server);
@@ -19,10 +21,12 @@ public abstract class PeSubprotocolGen extends PeSubprotocol{
 		parser.add(MC_PLAY_PING, McpePingPacket.class);
 	}
 	@Override
+	@Deprecated
 	public Server getServer(){
 		return server;
 	}
 	@Override
+	@Deprecated
 	protected void handleDataPacket(PeDataPacket dp){
 		// TODO Auto-generated method stub
 		getServer().getLogger().debug("Recieved Packet at org.blockserver.net.protocol.pe.sub.gen.PeSubprotocolGen.handleDataPacket()");
@@ -35,6 +39,7 @@ public abstract class PeSubprotocolGen extends PeSubprotocol{
 		}
 	}
 	@Override
+	@Deprecated
 	public PeDataPacket getDataPacketByBuffer(byte[] buffer){
 		return parser.parsePacket(buffer);
 	}

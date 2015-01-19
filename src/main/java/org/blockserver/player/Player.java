@@ -2,7 +2,12 @@ package org.blockserver.player;
 
 import org.blockserver.Server;
 import org.blockserver.net.internal.request.InternalRequest;
+import org.blockserver.net.internal.request.PingRequest;
+import org.blockserver.net.internal.response.InternalResponse;
+import org.blockserver.net.internal.response.PingResponse;
 import org.blockserver.net.protocol.ProtocolSession;
+import org.blockserver.net.protocol.pe.PeProtocol;
+import org.blockserver.net.protocol.pe.PeProtocolSession;
 import org.blockserver.utils.Position;
 
 public class Player{
@@ -25,8 +30,20 @@ public class Player{
 		gm = 1; //CREATIVE, Also DUMMY
 		// TODO read the data
 	}
+	private void sendResponse(InternalResponse response){
+		if(protocol instanceof PeProtocolSession){
+			((PeProtocolSession) protocol).addResponseToQueue(response);
+		} else {
+			getServer().getLogger().warning("Could not send response.");
+		}
+		//TODO: More
+	}
 	public void handleRequest(InternalRequest request){
-
+		if(request instanceof PingRequest){
+			PingResponse pingResponse = new PingResponse();
+			pingResponse.pingId = ((PingRequest) request).pingId;
+			sendResponse(pingResponse);
+		}
 	}
 	public ProtocolSession getProtocolSession(){
 		return protocol;
