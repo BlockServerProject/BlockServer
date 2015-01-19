@@ -18,6 +18,8 @@ Unfortunately, no. Currently, BlockServer is still in early development stage th
 * If you download the source, you have to compile the source files at `/src/main/java` first. The following extra libraries are required to run BlockServer:
   * BlockServer-IO-Lib, which can be downloaded [here](https://github.com/BlockServerProject/BlockServer-IO-Lib).
   * log4j2 core and API, which are included inside the repo in the `/lib` directory.
+
+* You can also compile the source using Maven. Maven will handle all the dependencies for you, no extra downloads needed.
 Then run `java org.blockserver.run` in the root folder where the compiled classes are contained in.
 
 ## Can I contribute code?
