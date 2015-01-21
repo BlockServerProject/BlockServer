@@ -17,7 +17,9 @@ import org.blockserver.player.PlayerDatabase;
 import org.blockserver.player.PlayerLoginInfo;
 import org.blockserver.ticker.ServerTicker;
 import org.blockserver.ticker.Task;
+import org.blockserver.ui.ConsoleListener;
 import org.blockserver.ui.ConsoleOut;
+import org.blockserver.ui.InputStreamConsoleIn;
 import org.blockserver.ui.Logger;
 import org.blockserver.utils.Position;
 
@@ -27,6 +29,7 @@ public class Server{
 	private String serverName;
 	private ServerTicker ticker;
 	private Logger logger;
+	private ConsoleListener consoleListener;
 	private final ArrayList<Runnable> shutdownRuns = new ArrayList<>();
 	private NetworkBridgeManager bridges;
 	private ProtocolManager protocols;
@@ -103,6 +106,8 @@ public class Server{
 		this.port = port;
 		this.serverName = serverName;
 		logger = new Logger(out);
+		consoleListener = new ConsoleListener(new InputStreamConsoleIn(System.in, false));
+		consoleListener.tick();
 		ticker = new ServerTicker(this, 50);
 		protocols = new ProtocolManager(this);
 		bridges = new NetworkBridgeManager(this);
@@ -132,6 +137,7 @@ public class Server{
 		for(Runnable r: shutdownRuns){
 			r.run();
 		}
+		System.out.println("IS CALLED FROM SERVER!");
 	}
 
 	public Player newSession(ProtocolSession session){

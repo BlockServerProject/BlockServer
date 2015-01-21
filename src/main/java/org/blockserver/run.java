@@ -26,6 +26,7 @@ public class run{
 		String ip = config.getStringProperty(ServerConfig.PROPERTY_IP);
 		try{
 			builder.setAddress(InetAddress.getByName(ip));
+			builder.setServerName(config.getStringProperty("motd"));
 		}
 		catch(UnknownHostException e){
 			System.out.println("[CRITICAL] Cannot start server: " + ip + " is an invalid "

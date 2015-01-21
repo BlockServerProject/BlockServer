@@ -1,7 +1,11 @@
 package org.blockserver.ui;
 
+import org.blockserver.command.CommandType;
+
 public class ConsoleListener{
+	
 	private ConsoleIn in;
+	
 	public ConsoleListener(ConsoleIn in){
 		this.in = in;
 	}
@@ -11,7 +15,15 @@ public class ConsoleListener{
 			if(line.isEmpty()){
 				return;
 			}
-			// TODO dispatch command
+			else {
+				String[] args = line.split(" ");
+				
+				String commandLabel = args[0];
+				if(commandLabel.equals(CommandType.STOP)) {
+					// Code here
+				}
+				// TODO add all commands
+			}
 		}
 	}
 }
