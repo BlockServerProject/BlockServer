@@ -1,5 +1,7 @@
 package org.blockserver.ui;
 
+import org.blockserver.command.Command;
+import org.blockserver.command.CommandMessage;
 import org.blockserver.command.CommandType;
 
 public class ConsoleListener{
@@ -16,11 +18,13 @@ public class ConsoleListener{
 				return;
 			}
 			else {
-				String[] args = line.split(" ");
-				
-				String commandLabel = args[0];
-				if(commandLabel.equals(CommandType.STOP)) {
-					// Code here
+				String[] commandArgs = line.split(" ");
+				CommandType command = Command.getCommandType(commandArgs[0]);
+				if(command.equals(CommandType.HELP) || command.equals(CommandType.ALT_HELP)) {
+					System.out.println("This command is not yet finished!");
+				}
+				else {
+					System.out.println(CommandMessage.UnknownCommand);
 				}
 				// TODO add all commands
 			}
