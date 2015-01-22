@@ -7,7 +7,7 @@ import org.blockserver.command.Command;
 import org.blockserver.command.CommandMessage;
 import org.blockserver.command.CommandType;
 
-public class ConsoleListener{
+public class ConsoleListener {
 	
 	private ConsoleIn in;
 	
@@ -17,10 +17,7 @@ public class ConsoleListener{
 	public void tick(){
 		while(true){
 			String line = in.read();
-			if(line.isEmpty()){
-				return;
-			}
-			else {
+			if(!line.isEmpty()){
 				// Get raw command args
 				String[] rawCommandArgs = line.split(" ");
 				// Get command
@@ -37,10 +34,12 @@ public class ConsoleListener{
 					System.out.println("This command is not yet finished!");
 				}
 				else {
-					System.out.println(args[0]);
 					System.out.println(CommandMessage.UnknownCommand);
 				}
 				// TODO add all commands
+			}
+			else {
+				return;
 			}
 		}
 	}

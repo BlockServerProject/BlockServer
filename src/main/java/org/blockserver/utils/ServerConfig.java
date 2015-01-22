@@ -18,8 +18,8 @@ public class ServerConfig{
 
 	private Properties simple, advanced;
 	public ServerConfig(File dataDir){
-		File simpleFile = new File(dataDir, "config.txt");
-		File advancedFile = new File(dataDir, "advanced-config.properties");
+		File simpleFile = new File(dataDir, "server.properties");
+		File advancedFile = new File(dataDir, "advanced-server.properties");
 		try{
 			if(!simpleFile.isFile()){
 				generateSimpleConfig(simpleFile);
@@ -67,7 +67,7 @@ public class ServerConfig{
 	private void generateSimpleConfig(File file) throws IOException{
 		Properties properties = new Properties();
 		properties.setProperty(PROPERTY_PORT, "19132");
-		properties.setProperty(PROPERTY_SERVER_NAME, "A server made using BlockServer server software");
+		properties.setProperty(PROPERTY_SERVER_NAME, "A MCPE Server made with BlockServer!");
 		properties.setProperty(PROPERTY_MAX_PLAYERS, "10");
 		properties.setProperty(PROPERTY_MOTD, "Welcome to %n!");
 		properties.store(new FileOutputStream(file), SIMPLE_COMMENT);

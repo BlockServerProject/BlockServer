@@ -29,7 +29,6 @@ public class Server{
 	private String serverName;
 	private ServerTicker ticker;
 	private Logger logger;
-	private ConsoleListener consoleListener;
 	private final ArrayList<Runnable> shutdownRuns = new ArrayList<>();
 	private NetworkBridgeManager bridges;
 	private ProtocolManager protocols;
@@ -106,12 +105,12 @@ public class Server{
 		this.port = port;
 		this.serverName = serverName;
 		logger = new Logger(out);
-		consoleListener = new ConsoleListener(new InputStreamConsoleIn(System.in, false));
-		consoleListener.tick();
 		ticker = new ServerTicker(this, 50);
 		protocols = new ProtocolManager(this);
 		bridges = new NetworkBridgeManager(this);
 		this.playerDb = playerDb;
+		// Threads
+		new ServerConsoleHandler().start();
 		registerModules();
 	}
 	private void registerModules(){
@@ -137,7 +136,6 @@ public class Server{
 		for(Runnable r: shutdownRuns){
 			r.run();
 		}
-		System.out.println("IS CALLED FROM SERVER!");
 	}
 
 	public Player newSession(ProtocolSession session){
@@ -153,5 +151,12 @@ public class Server{
 
 	public int getNextEntityID(){
 		return currentEntityID++;
+	}
+}
+
+class ServerConsoleHandler extends Thread {
+	ConsoleListener consoleListener = new ConsoleListener(new InputStreamConsoleIn(System.in, false));
+	public void run() {
+		consoleListener.tick();
 	}
 }
