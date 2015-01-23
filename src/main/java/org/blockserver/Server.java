@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.blockserver.cmd.CommandManager;
 import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;
@@ -34,8 +35,10 @@ public class Server{
 	private ProtocolManager protocols;
 	private PlayerDatabase playerDb;
 	private HashMap<SocketAddress, Player> players = new HashMap<>();
-	private int currentEntityID = -1;
-	private Position spawnPosition = new Position(0, 64, 0); //DUMMY
+	private CommandManager cmdMgr;
+	private ConsoleListener consoleListener;
+	private int currentEntityID = 1; // TODO migrate this to somewhere more proper
+	private Position spawnPosition = new Position(0, 64, 0); // TODO DUMMY
 
 	public String getServerName(){
 		return serverName;
@@ -65,7 +68,7 @@ public class Server{
 	 * This method is thread-safe.
 	 * @param function the {@linkplain Runnable} to be run
 	 */
-	public void registerShutdownFunction(Runnable function){
+	public void addShutdownFunction(Runnable function){
 		synchronized(shutdownRuns){
 			shutdownRuns.add(function);
 		}
@@ -90,6 +93,12 @@ public class Server{
 	public Collection<Player> getPlayers(){
 		return players.values();
 	}
+	public CommandManager getCmdMgr(){
+		return cmdMgr;
+	}
+	public ConsoleListener getConsoleListener(){
+		return consoleListener;
+	}
 
 	/**
 	 * Package internal constructor used in {@linkplain ServerBuilder#build()} internally
@@ -109,8 +118,8 @@ public class Server{
 		protocols = new ProtocolManager(this);
 		bridges = new NetworkBridgeManager(this);
 		this.playerDb = playerDb;
-		// Threads
-		new ServerConsoleHandler().start();
+		cmdMgr = new CommandManager(this);
+		consoleListener = new ConsoleListener(this, InputStreamConsoleIn.fromConsole());
 		registerModules();
 	}
 	private void registerModules(){
@@ -132,6 +141,7 @@ public class Server{
 	 * {@linkplain Task}s in {@linkplain ServerTicker}.tasks
 	 */
 	public void stop(){
+		consoleListener.close(false);
 		ticker.stop();
 		for(Runnable r: shutdownRuns){
 			r.run();
@@ -151,12 +161,5 @@ public class Server{
 
 	public int getNextEntityID(){
 		return currentEntityID++;
-	}
-}
-
-class ServerConsoleHandler extends Thread {
-	ConsoleListener consoleListener = new ConsoleListener(new InputStreamConsoleIn(System.in, false));
-	public void run() {
-		consoleListener.tick();
 	}
 }

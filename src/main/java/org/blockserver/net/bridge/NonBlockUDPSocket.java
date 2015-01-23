@@ -39,7 +39,7 @@ public class NonBlockUDPSocket extends Thread{
 				throw new RuntimeException(e);
 			}
 			socket.setSoTimeout(0);
-			getServer().registerShutdownFunction(new Callable(this, "_stop"));
+			getServer().addShutdownFunction(new Callable(this, "_stop"));
 			while(running){
 				byte[] buffer = new byte[1024 * 1024];
 				DatagramPacket pk = new DatagramPacket(buffer, buffer.length);

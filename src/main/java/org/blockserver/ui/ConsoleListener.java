@@ -1,46 +1,32 @@
 package org.blockserver.ui;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import org.blockserver.Server;
+import org.blockserver.cmd.CommandIssuer;
 
-import org.blockserver.command.Command;
-import org.blockserver.command.CommandMessage;
-import org.blockserver.command.CommandType;
-
-public class ConsoleListener {
-	
+public class ConsoleListener{
+	private Server server;
 	private ConsoleIn in;
-	
-	public ConsoleListener(ConsoleIn in){
+	private CommandIssuer.ConsoleIssuer console;
+
+	public ConsoleListener(Server server, ConsoleIn in){
+		this.server = server;
 		this.in = in;
+		console = new CommandIssuer.ConsoleIssuer(server);
 	}
 	public void tick(){
 		while(true){
 			String line = in.read();
-			if(!line.isEmpty()){
-				// Get raw command args
-				String[] rawCommandArgs = line.split(" ");
-				// Get command
-				CommandType command = Command.getCommandType(rawCommandArgs[0]);
-				
-				// Remove command from arguments
-				ArrayList<String> argsArray = new ArrayList<String>(Arrays.asList(rawCommandArgs));
-				argsArray.remove(0);
-				
-				// Create arguments
-				String[] args = argsArray.toArray(new String[argsArray.size()]);
-				
-				if(command.equals(CommandType.HELP) || command.equals(CommandType.ALT_HELP)) {
-					System.out.println("This command is not yet finished!");
-				}
-				else {
-					System.out.println(CommandMessage.UnknownCommand);
-				}
-				// TODO add all commands
-			}
-			else {
+			if(line == null){
 				return;
 			}
+			line = line.trim();
+			if(line.isEmpty()){
+				return;
+			}
+			server.getCmdMgr().run(console, line);
 		}
+	}
+	public void close(boolean emergency){
+		in.close(emergency);
 	}
 }

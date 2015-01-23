@@ -1,5 +1,8 @@
 package org.blockserver.ui;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Logger{
 	private final ConsoleOut out;
 	public Logger(ConsoleOut out){
@@ -46,5 +49,12 @@ public class Logger{
 			out.append(',');
 		}
 		debug(prefix + "0x" + out.toString() + suffix);
+	}
+	public void trace(Throwable t){
+		StringWriter writer = new StringWriter();
+		t.printStackTrace(new PrintWriter(writer));
+		for(String str: writer.toString().split("[\r\n]+")){
+			trace(str);
+		}
 	}
 }

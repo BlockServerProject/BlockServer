@@ -1,4 +1,4 @@
-package org.blockserver.command;
+package org.blockserver.cmd;
 
 /**
  * 
