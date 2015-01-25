@@ -68,4 +68,8 @@ public interface PeProtocolConst{
 	public final static byte MC_PLAYER_EQUIPMENT_PACKET = (byte) 0xA0;
 	public final static byte MC_PLAYER_ARMOR_EQUIPMENT_PACKET = (byte) 0xA1;
 	public final static byte MC_INTERACT_PACKET = (byte) 0xA2;
+	public final static byte MC_SET_HEALTH_PACKET = (byte) 0xaa;
+	public final static byte MC_SET_DIFFICULTY_PACKET = (byte) 0xbc;
+	public final static byte MC_SPAWN_POSITION_PACKET = (byte) 0xab;
+	public final static byte MC_FULL_CHUNK_DATA = (byte) 0xba;
 }

@@ -1,6 +1,9 @@
 package org.blockserver.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.zip.DeflaterOutputStream;
 
 public abstract class Utils{
 	public static void writeLTriad(int triad, ByteBuffer bb){
@@ -41,5 +44,16 @@ public abstract class Utils{
 			}
 		}
 		return false;
+	}
+	public static byte[] compressBytes(byte[]... uncompressed) throws IOException {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DeflaterOutputStream dos = new DeflaterOutputStream(bos);
+		for(byte[] ba: uncompressed){
+			dos.write(ba);
+		}
+		dos.close();
+		byte[] buf = bos.toByteArray();
+		bos.close();
+		return buf;
 	}
 }

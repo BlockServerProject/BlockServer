@@ -29,10 +29,9 @@ import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPing;
 import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPong;
 import org.blockserver.net.protocol.pe.login.ServerHandshakePacket;
 import org.blockserver.net.protocol.pe.play.EncapsulatedPlayPacket;
+import org.blockserver.net.protocol.pe.sub.gen.*;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
-import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
-import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePongPacket;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerLoginInfo;
@@ -300,22 +299,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				lp.decode();
 				//System.out.println("Login.");
 				login(lp);
-				//TODO: Send set time, adventure settings, and spawn position
-				McpeStartGamePacket sgp = new McpeStartGamePacket();
-				sgp.eid = player.getEntityID();
-				sgp.gamemode = player.getGamemode();
-				sgp.generator = 1; //INFINITE
-				sgp.seed = new Random().nextInt(); //Dummy
-				sgp.spawnX = (int) getServer().getSpawnPosition().getX();
-				sgp.spawnY = (int) getServer().getSpawnPosition().getY();
-				sgp.spawnZ = (int) getServer().getSpawnPosition().getZ();
-
-				sgp.x = (int) player.getLocation().getX();
-				sgp.y = (int) player.getLocation().getY();
-				sgp.z = (int) player.getLocation().getZ();
-
-				addToQueue(sgp.encode());
-				System.out.println("Start Game out.");
+				sendInitalPackets();
 
 				break;
 			default:
@@ -341,6 +325,37 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private synchronized void acknowledge(RaknetReceivedCustomPacket cp){
 		ACKQueue.add(cp.seqNumber);
 		debug("Added Acknowledge packet #"+cp.seqNumber);
+	}
+
+	private void sendInitalPackets(){
+		//TODO: Send set time, adventure settings, and spawn position
+		McpeStartGamePacket sgp = new McpeStartGamePacket();
+		sgp.eid = player.getEntityID();
+		sgp.gamemode = player.getGamemode();
+		sgp.generator = 1; //INFINITE
+		sgp.seed = new Random().nextInt(); //Dummy
+		sgp.spawnX = (int) getServer().getSpawnPosition().getX();
+		sgp.spawnY = (int) getServer().getSpawnPosition().getY();
+		sgp.spawnZ = (int) getServer().getSpawnPosition().getZ();
+
+		sgp.x = (int) player.getLocation().getX();
+		sgp.y = (int) player.getLocation().getY();
+		sgp.z = (int) player.getLocation().getZ();
+
+		addToQueue(sgp.encode());
+		System.out.println("Start Game out.");
+
+		McpeSetTimePacket setTimePacket = new McpeSetTimePacket(0); //Dummy
+		addToQueue(setTimePacket.encode());
+
+		McpeSpawnPositionPacket spawnPositionPacket = new McpeSpawnPositionPacket(player.getLocation());
+		addToQueue(spawnPositionPacket.encode());
+
+		McpeSetDifficultyPacket difficultyPacket = new McpeSetDifficultyPacket(1); //Dummy
+		addToQueue(difficultyPacket.encode());
+
+		PeChunkSender sender = new PeChunkSender(this);
+		sender.start();
 	}
 	
 	private void login(McpeLoginPacket lp){
