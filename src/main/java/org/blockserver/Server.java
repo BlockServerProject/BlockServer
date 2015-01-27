@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.blockserver.api.API;
+import org.blockserver.api.impl.DummyAPI;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.LevelManager;
 import org.blockserver.level.impl.DummyLevel;
@@ -43,6 +45,7 @@ public class Server{
 	@Deprecated
 	private Position spawnPosition = new Position(0, 64, 0); // TODO DUMMY
 	private LevelManager lvlManager;
+	private API api = new DummyAPI();
 
 	public String getServerName(){
 		return serverName;
@@ -157,6 +160,14 @@ public class Server{
 		for(Runnable r: shutdownRuns){
 			r.run();
 		}
+	}
+
+	public void setAPI(API api){
+		this.api = api;
+	}
+
+	public API getAPI(){
+		return this.api;
 	}
 
 	public Player newSession(ProtocolSession session){

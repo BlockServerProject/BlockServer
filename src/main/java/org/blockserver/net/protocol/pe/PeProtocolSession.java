@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 import org.blockserver.Server;
+import org.blockserver.api.API;
 import org.blockserver.net.bridge.NetworkBridge;
 import org.blockserver.net.internal.response.InternalResponse;
 import org.blockserver.net.internal.response.PingResponse;
@@ -143,9 +144,17 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		synchronized(currentQueue){
 			if(currentQueue.packets.size() > 0){
 				currentQueue.seqNumber = currentSequenceNum++;
-				currentQueue.send(bridge, getAddress());
-				recoveryQueue.put(currentQueue.seqNumber, currentQueue);
-				currentQueue.packets.clear();
+				for(int i = 0; i < currentQueue.packets.size(); i++){
+					boolean approved = getServer().getAPI().onDataPacketSent(player, new API.Argument<RaknetSentCustomPacket.SentEncapsulatedPacket>(currentQueue.packets.get(i)));
+					if(!approved){
+						currentQueue.packets.remove(i);
+					}
+				}
+				if(currentQueue.packets.size() > 0) {
+					currentQueue.send(bridge, getAddress());
+					recoveryQueue.put(currentQueue.seqNumber, currentQueue);
+					currentQueue.packets.clear();
+				}
 			}
 		}
 	}
@@ -264,13 +273,18 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 //		}
 		else if(subprot == null){
 			//noinspection UnnecessaryReturnStatement
+			getServer().getAPI().onDataPacketReceived(player, new API.Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket>(pk), new API.Argument<Boolean>(false));
 			return; // TODO handle
 		}
 		else{
-			if(player != null) {
-				subprot.readDataPacket(pk, player);
-			} else {
-				//TODO
+			API.Argument<Boolean> handled = new API.Argument<>(false);
+			boolean handle = getServer().getAPI().onDataPacketReceived(player, new API.Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket>(pk), handled);
+			if((!handled.value) && handle == true) {
+				if (player != null) {
+					subprot.readDataPacket(pk, player);
+				} else {
+					//TODO
+				}
 			}
 		}
 	}
