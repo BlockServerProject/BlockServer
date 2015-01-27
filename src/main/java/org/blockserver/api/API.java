@@ -14,6 +14,8 @@ public interface API {
     boolean onDataPacketSent(Player player, Argument<RaknetSentCustomPacket.SentEncapsulatedPacket> packet);
     boolean onDataPacketReceived(Player player, Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket> packet, Argument<Boolean> handled);
 
+    PluginManager getPluginManager();
+
     public static class Argument<T>{
         public T value;
         public Argument(T value){

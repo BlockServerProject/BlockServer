@@ -11,4 +11,9 @@ public interface Plugin {
 
     void onEnable();
     void onDisable();
+
+    boolean isLoaded();
+    boolean isEnabled();
+
+    String getName();
 }

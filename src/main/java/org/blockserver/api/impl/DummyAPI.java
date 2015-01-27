@@ -1,6 +1,7 @@
 package org.blockserver.api.impl;
 
 import org.blockserver.api.API;
+import org.blockserver.api.PluginManager;
 import org.blockserver.net.protocol.pe.login.RaknetReceivedCustomPacket;
 import org.blockserver.net.protocol.pe.login.RaknetSentCustomPacket;
 import org.blockserver.player.Player;
@@ -28,5 +29,10 @@ public class DummyAPI implements API{
     @Override
     public boolean onDataPacketReceived(Player player, Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket> packet, Argument<Boolean> handled) {
         return true;
+    }
+
+    @Override
+    public PluginManager getPluginManager() {
+        return null;
     }
 }
