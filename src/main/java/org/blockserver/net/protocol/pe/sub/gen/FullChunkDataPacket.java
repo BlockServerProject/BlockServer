@@ -1,5 +1,6 @@
 package org.blockserver.net.protocol.pe.sub.gen;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.blockserver.io.BinaryUtils;
 import org.blockserver.io.BinaryWriter;
 import org.blockserver.level.IChunk;
@@ -57,10 +58,12 @@ public class FullChunkDataPacket implements PeProtocolConst{
      * @return The compressed byte array of this packet.
      */
     private byte[] toCompressed(byte[] uncompressed) throws IOException {
+        System.out.println("Uncompressed: "+uncompressed.length);
         ByteBuffer bb = ByteBuffer.allocate(1 + uncompressed.length);
         bb.put(MC_FULL_CHUNK_DATA);
         byte[] compressed = Utils.compressBytes(uncompressed);
         bb.put(compressed);
-        return Arrays.copyOf(bb.array(), (1 + compressed.length));
+        System.out.println("Compressed: "+compressed.length);
+        return ArrayUtils.subarray(bb.array(), 1, compressed.length);
     }
 }

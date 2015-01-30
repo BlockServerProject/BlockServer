@@ -10,7 +10,7 @@ import org.blockserver.api.API;
 import org.blockserver.api.impl.DummyAPI;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.LevelManager;
-import org.blockserver.level.impl.DummyLevel;
+import org.blockserver.level.impl.dummy.DummyLevel;
 import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;

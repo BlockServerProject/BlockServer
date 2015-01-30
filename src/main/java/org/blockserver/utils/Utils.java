@@ -1,8 +1,11 @@
 package org.blockserver.utils;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 public abstract class Utils{
@@ -45,15 +48,14 @@ public abstract class Utils{
 		}
 		return false;
 	}
-	public static byte[] compressBytes(byte[]... uncompressed) throws IOException {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DeflaterOutputStream dos = new DeflaterOutputStream(bos);
-		for(byte[] ba: uncompressed){
-			dos.write(ba);
-		}
-		dos.close();
-		byte[] buf = bos.toByteArray();
-		bos.close();
-		return buf;
+	public static byte[] compressBytes(byte[] uncompressed) throws IOException {
+		Deflater def = new Deflater(7);
+		byte[] buf = new byte[65536];
+		def.reset();
+		def.setInput(uncompressed);
+		def.finish();
+
+		int size = def.deflate(buf);
+		return ArrayUtils.subarray(buf, 0, size);
 	}
 }
