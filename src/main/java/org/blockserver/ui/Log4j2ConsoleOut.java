@@ -3,8 +3,16 @@ package org.blockserver.ui;
 import org.apache.logging.log4j.LogManager;
 
 public class Log4j2ConsoleOut implements ConsoleOut{
-	private org.apache.logging.log4j.Logger logger =
-			LogManager.getLogger("BlockServer");
+	private org.apache.logging.log4j.Logger logger;
+
+	public Log4j2ConsoleOut(String loggerName){
+		logger = LogManager.getLogger(loggerName);
+	}
+
+	public Log4j2ConsoleOut(){
+		logger = LogManager.getLogger("BlockServer");
+	}
+
 	@Override
 	public void trace(String msg){
 		logger.trace(msg);

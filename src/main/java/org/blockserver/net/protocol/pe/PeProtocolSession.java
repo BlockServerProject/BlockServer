@@ -93,7 +93,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		addToQueue(pp.getBuffer().array(), 2);
 	}
 	
-	public synchronized void addToQueue(byte[] buffer, int reliability){ //Use this to send encapsulatedPackets
+	public synchronized void addToQueue(byte[] buffer, int reliability){ //Use this to send encapsulatedPacket
 		if(currentQueue.getLength() > mtu){
 			currentQueue.seqNumber = currentSequenceNum++;
 			currentQueue.send(bridge, addr);
