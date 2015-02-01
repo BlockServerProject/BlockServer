@@ -14,5 +14,5 @@ public interface Event {
     /**
      * Set this event to be canceled.
      */
-    void cancel();
+    void setCancelled();
 }
