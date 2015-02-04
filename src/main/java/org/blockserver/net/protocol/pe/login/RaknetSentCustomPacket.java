@@ -19,6 +19,7 @@ public class RaknetSentCustomPacket implements PeProtocolConst{
 		
 	}
 	public void send(NetworkBridge bridge, SocketAddress addr){
+		length = 4;
 		for(SentEncapsulatedPacket pk: packets){
 			length += pk.getLength();
 		}

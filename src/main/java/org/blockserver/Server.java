@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.blockserver.api.API;
+import org.blockserver.api.impl.DummyAPI;
 import org.blockserver.cmd.CommandManager;
+import org.blockserver.level.LevelManager;
+import org.blockserver.level.impl.dummy.DummyLevel;
 import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;
@@ -38,13 +42,16 @@ public class Server{
 	private CommandManager cmdMgr;
 	private ConsoleListener consoleListener;
 	private int currentEntityID = 1; // TODO migrate this to somewhere more proper
+	@Deprecated
 	private Position spawnPosition = new Position(0, 64, 0); // TODO DUMMY
+	private LevelManager lvlManager;
+	private API api = new DummyAPI();
 
 	public String getServerName(){
 		return serverName;
 	}
 	public Position getSpawnPosition() {
-		return spawnPosition;
+		return lvlManager.getLevelImplemenation().getSpawnPosition();
 	}
 	public ServerTicker getTicker(){
 		return ticker;
@@ -121,6 +128,7 @@ public class Server{
 		cmdMgr = new CommandManager(this);
 		consoleListener = new ConsoleListener(this, InputStreamConsoleIn.fromConsole());
 		registerModules();
+		loadLevel();
 	}
 	private void registerModules(){
 		logger.info("Registering modules...");
@@ -129,6 +137,12 @@ public class Server{
 		bridges.addBridge(new UDPBridge(bridges));
 		pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(this));
 		logger.info("Modules registered!");
+	}
+	private void loadLevel(){
+		//TODO: Implement LevelDB worlds
+		lvlManager = new LevelManager(this);
+		lvlManager.setLevelImpl(new DummyLevel(new Position(0, 64, 0)));
+
 	}
 	/**
 	 * Start the server operation. This method blocks until the server is stopped.
@@ -148,6 +162,14 @@ public class Server{
 		}
 	}
 
+	public void setAPI(API api){
+		this.api = api;
+	}
+
+	public API getAPI(){
+		return this.api;
+	}
+
 	public Player newSession(ProtocolSession session){
 		Player player = new Player(session, new PlayerLoginInfo());
 		players.put(session.getAddress(), player);
@@ -157,6 +179,10 @@ public class Server{
 		Player player = new Player(session, info);
 		players.put(session.getAddress(), player);
 		return player;
+	}
+
+	public LevelManager getLevelManager(){
+		return lvlManager;
 	}
 
 	public int getNextEntityID(){

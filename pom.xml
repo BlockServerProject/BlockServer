@@ -2,8 +2,19 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.blockserver</groupId>
   <artifactId>BlockServer</artifactId>
-  <version>Beta 1.0.0 development snapshot</version>
+  <version>1.0.0-BETA-SNAPSHOT</version>
   <packaging>jar</packaging>
+
+	<distributionManagement>
+		<repository>
+			<id>repo</id>
+			<url>http://repo.blockserver.org/releases</url>
+		</repository>
+		<snapshotRepository>
+			<id>snapshot-repo</id>
+			<url>http://repo.blockserver.org/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
   
   <repositories>
 	<repository>
@@ -36,7 +47,13 @@
 		<artifactId>leveldb</artifactId>
 		<version>0.8-SNAPSHOT</version>
 	  </dependency>
-	  
+
+	  <dependency>
+		  <groupId>org.apache.commons</groupId>
+		  <artifactId>commons-lang3</artifactId>
+		  <version>3.3.2</version>
+	  </dependency>
+
 	  <!-- May be needed later.
 	  <dependency>
 	  	<groupId>com.googlecode.json-simple</groupId>

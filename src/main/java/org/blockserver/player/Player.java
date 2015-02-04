@@ -1,6 +1,7 @@
 package org.blockserver.player;
 
 import org.blockserver.Server;
+import org.blockserver.net.internal.request.DisconnectRequest;
 import org.blockserver.net.internal.request.InternalRequest;
 import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.internal.response.InternalResponse;
@@ -9,6 +10,8 @@ import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.pe.PeProtocol;
 import org.blockserver.net.protocol.pe.PeProtocolSession;
 import org.blockserver.utils.Position;
+
+import java.util.Dictionary;
 
 public class Player{
 	private Server server;
@@ -43,6 +46,10 @@ public class Player{
 			PingResponse pingResponse = new PingResponse();
 			pingResponse.pingId = ((PingRequest) request).pingId;
 			sendResponse(pingResponse);
+		} else if(request instanceof DisconnectRequest){
+			DisconnectRequest disconnectRequest = (DisconnectRequest) request;
+			getServer().getLogger().info(login.username + "(EID: "+entityID+") ["+getProtocolSession().getAddress().toString()+"] logged out due to: "+disconnectRequest.reason);
+			server.getProtocols().closeSession(getProtocolSession().getAddress());
 		}
 	}
 	public ProtocolSession getProtocolSession(){

@@ -26,6 +26,10 @@ public class McpeDisconnectPacket extends PeDataPacket{
         this.reason = reason;
     }
 
+    public McpeDisconnectPacket(byte[] buffer){
+        super(new byte[] {buffer[0]});
+    }
+
     @Override
     protected void _encode(BinaryWriter writer) throws IOException {
         writer.writeByte(MC_DISCONNECT);

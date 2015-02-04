@@ -1,6 +1,12 @@
 package org.blockserver.utils;
 
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 
 public abstract class Utils{
 	public static void writeLTriad(int triad, ByteBuffer bb){
@@ -41,5 +47,15 @@ public abstract class Utils{
 			}
 		}
 		return false;
+	}
+	public static byte[] compressBytes(byte[] uncompressed) throws IOException {
+		Deflater def = new Deflater(7);
+		byte[] buf = new byte[65536];
+		def.reset();
+		def.setInput(uncompressed);
+		def.finish();
+
+		int size = def.deflate(buf);
+		return ArrayUtils.subarray(buf, 0, size);
 	}
 }
