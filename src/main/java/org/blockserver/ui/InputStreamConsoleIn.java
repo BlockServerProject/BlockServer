@@ -46,6 +46,7 @@ public class InputStreamConsoleIn implements ConsoleIn{
 			return null;
 		}
 	}
+	@Override
 	public void close(boolean isEmergency){
 		if(threaded){
 			readerThread.end(!isEmergency);

@@ -27,6 +27,6 @@ public enum CommandType {
 	
 	// Other
 	LIST, HELP, ALT_HELP,
-	UNKNOWN;
+	UNKNOWN
 	
 }

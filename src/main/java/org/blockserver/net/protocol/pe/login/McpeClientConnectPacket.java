@@ -28,14 +28,17 @@ public class McpeClientConnectPacket implements PeProtocolConst, EncapsulatedLog
 		this.bb = bb;
 	}
 	
+	@Override
 	public void encode() { }
 	
+	@Override
 	public void decode(){
 		clientId = bb.getLong();
 		session = bb.getLong();
 		bb.get();
 	}
 	
+	@Override
 	public ByteBuffer getBuffer(){
 		return bb;
 	}

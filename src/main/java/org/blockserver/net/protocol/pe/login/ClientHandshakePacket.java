@@ -21,8 +21,10 @@ public class ClientHandshakePacket implements PeProtocolConst, EncapsulatedLogin
 		this.bb = bb;
 	}
 	
+	@Override
 	public void encode(){ }
 	
+	@Override
 	public void decode(){
 		bb.getInt(); //Cookie
 		bb.getShort(); //Server Port
@@ -33,6 +35,7 @@ public class ClientHandshakePacket implements PeProtocolConst, EncapsulatedLogin
 		bb.getLong(); //Session 2
 	}
 	
+	@Override
 	public ByteBuffer getBuffer(){
 		return bb;
 	}

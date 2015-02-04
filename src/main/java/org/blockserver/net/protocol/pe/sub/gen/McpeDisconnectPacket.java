@@ -36,6 +36,7 @@ public class McpeDisconnectPacket extends PeDataPacket{
         reader.readByte(); //PID
     }
 
+    @Override
     public int getLength(){
         return 1;
     }

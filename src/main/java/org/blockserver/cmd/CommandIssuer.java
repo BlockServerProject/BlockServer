@@ -13,6 +13,7 @@ public interface CommandIssuer{
 			this.server = server;
 			this.logger = server.getLogger();
 		}
+		@Override
 		public void tell(String msg, Object... args){
 			if(args.length > 0){
 				msg = String.format(msg, args);

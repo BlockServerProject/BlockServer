@@ -41,10 +41,12 @@ public class McpeLoginPacket implements PeProtocolConst, EncapsulatedLoginPacket
 		this.bb = bb;
 	}
 	
-	public void encode() { 
+	@Override
+	public void encode() {
 		throw new UnsupportedOperationException("This packet is only Client to Server.");
 	}
 	
+	@Override
 	public void decode(){
 		byte[] userBuffer = new byte[bb.getShort()];
 		bb.get(userBuffer);
@@ -57,6 +59,7 @@ public class McpeLoginPacket implements PeProtocolConst, EncapsulatedLoginPacket
 		loginData = new String(loginBuffer);
 	}
 	
+	@Override
 	public ByteBuffer getBuffer(){
 		return bb;
 	}

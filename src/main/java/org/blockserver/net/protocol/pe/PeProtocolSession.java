@@ -77,6 +77,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		
 		getServer().getLogger().debug("Started session from %s", addr.toString());
 	}
+	@Override
 	public SocketAddress getAddress(){
 		return addr;
 	}
@@ -244,7 +245,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 	}
 	private void handleDataPacket(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk){
-		if((pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09) || pk.buffer[0] == 0x82){ //MCPE Data Login packet range + Login Packet(0x82)
+		if((pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09) || pk.buffer[0] == (byte) 0x82){ //MCPE Data Login packet range + Login Packet(0x82)
 			handleDataLogin(pk);
 		} else if(pk.buffer[0] == MC_LOGIN_PACKET){
 			handleDataLogin(pk);
@@ -371,6 +372,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	public long getClientId(){
 		return clientId;
 	}
+	@Override
 	public Server getServer(){
 		return bridge.getServer();
 	}

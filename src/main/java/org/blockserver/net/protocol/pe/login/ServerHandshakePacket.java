@@ -31,6 +31,7 @@ public class ServerHandshakePacket implements PeProtocolConst, EncapsulatedLogin
 		this.serverPort = serverPort;
 	}
 	
+	@Override
 	public void encode(){
 		bb.put(MC_SERVER_HANDSHAKE);
 		bb.put(cookie);
@@ -42,8 +43,10 @@ public class ServerHandshakePacket implements PeProtocolConst, EncapsulatedLogin
 		bb.put(unknown2);
 	}
 	
+	@Override
 	public void decode() { }
 	
+	@Override
 	public ByteBuffer getBuffer(){
 		return bb;
 	}

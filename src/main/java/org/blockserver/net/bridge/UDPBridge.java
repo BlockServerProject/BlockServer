@@ -29,12 +29,14 @@ public class UDPBridge extends NetworkBridge{
 		}
 		return null;
 	}
+	@Override
 	public boolean send(byte[] buffer, SocketAddress addr){
 		return socket.send(buffer, addr);
 	}
 	public void stop(){
 		socket.stop(true);
 	}
+	@Override
 	public Server getServer(){
 		return mgr.getServer();
 	}
