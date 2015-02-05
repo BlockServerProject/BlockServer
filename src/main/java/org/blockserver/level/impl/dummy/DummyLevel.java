@@ -16,13 +16,25 @@ public class DummyLevel implements ILevel{
         this.spawnPosition = spawnPosition;
     }
 
+    @Override
+    public void loadLevel() {
+
+    }
+
+    @Override
     public IChunk getChunkAt(int x, int z){
         IChunk chunk = new DummyChunk(x, z);
         chunk.generate();
         return chunk;
     }
 
+    @Override
     public Position getSpawnPosition(){
         return spawnPosition;
+    }
+
+    @Override
+    public void setSpawnPosition(Position position) {
+        this.spawnPosition = position;
     }
 }
