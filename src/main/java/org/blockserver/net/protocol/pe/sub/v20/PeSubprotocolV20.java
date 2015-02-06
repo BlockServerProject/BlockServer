@@ -7,6 +7,7 @@ import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.net.protocol.pe.sub.PeDataPacketParser;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
+import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
 import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePingPacket;
 
