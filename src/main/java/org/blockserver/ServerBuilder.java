@@ -14,6 +14,7 @@ public class ServerBuilder{
 	private ConsoleOut out = null;
 	private File includePath = null;
 	private PlayerDatabase playerDb = null;
+	private File modulePath = null;
 	public ServerBuilder(){
 		try{
 			address = InetAddress.getByName("localhost");
@@ -48,6 +49,10 @@ public class ServerBuilder{
 		playerDb = db;
 		return this;
 	}
+	public ServerBuilder setModulePath(File path){
+		modulePath = path;
+		return this;
+	}
 
 	public Server build(){
 		validate(port != -1, "port");
@@ -55,6 +60,7 @@ public class ServerBuilder{
 		validate(out != null, "out");
 		validate(includePath != null, "includePath");
 		validate(playerDb != null, "playerDb");
+		validate(modulePath != null, "modulePath");
 		return new Server(address, port, serverName, out, playerDb);
 	}
 	private void validate(boolean bool, String field){

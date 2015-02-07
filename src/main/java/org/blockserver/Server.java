@@ -1,5 +1,6 @@
 package org.blockserver;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import org.blockserver.api.impl.DummyAPI;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.LevelManager;
 import org.blockserver.level.impl.dummy.DummyLevel;
+import org.blockserver.module.ModuleLoader;
 import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;
@@ -46,6 +48,7 @@ public class Server{
 	private Position spawnPosition = new Position(0, 64, 0); // TODO DUMMY
 	private LevelManager lvlManager;
 	private API api = new DummyAPI();
+	private File modulesLocation;
 
 	public String getServerName(){
 		return serverName;
@@ -115,10 +118,11 @@ public class Server{
 	 * @param out the console output, a.k.a. the logger, of the server
 	 * @param playerDb the database to use for players
 	 */
-	Server(InetAddress address, int port, String serverName, ConsoleOut out, PlayerDatabase playerDb){
+	Server(InetAddress address, int port, String serverName, ConsoleOut out, PlayerDatabase playerDb, File modulePath){
 		Thread.currentThread().setName("BlockServerPE");
 		this.address = address;
 		this.port = port;
+		this.modulesLocation = modulePath;
 		this.serverName = serverName;
 		logger = new Logger(out);
 		ticker = new ServerTicker(this, 50);
@@ -131,12 +135,8 @@ public class Server{
 		loadLevel();
 	}
 	private void registerModules(){
-		logger.info("Registering modules...");
-		PeProtocol pocket = new PeProtocol(this);
-		protocols.addProtocol(pocket);
-		bridges.addBridge(new UDPBridge(bridges));
-		pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(this));
-		logger.info("Modules registered!");
+		ModuleLoader loader = new ModuleLoader(this, modulesLocation);
+		loader.run();
 	}
 	private void loadLevel(){
 		//TODO: Implement LevelDB worlds
