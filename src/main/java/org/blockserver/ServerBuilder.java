@@ -61,7 +61,7 @@ public class ServerBuilder{
 		validate(includePath != null, "includePath");
 		validate(playerDb != null, "playerDb");
 		validate(modulePath != null, "modulePath");
-		return new Server(address, port, serverName, out, playerDb);
+		return new Server(address, port, serverName, out, playerDb, modulePath);
 	}
 	private void validate(boolean bool, String field){
 		if(!bool){

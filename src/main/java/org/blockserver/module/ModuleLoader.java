@@ -1,9 +1,12 @@
 package org.blockserver.module;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.blockserver.Server;
 import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.pe.PeProtocol;
 import org.blockserver.net.protocol.pe.sub.v20.PeSubprotocolV20;
+import org.blockserver.ui.Log4j2ConsoleOut;
+import org.blockserver.ui.Logger;
 
 import java.io.*;
 import java.net.URL;
@@ -71,14 +74,18 @@ public class ModuleLoader implements Runnable{
 
         URLClassLoader loader = new URLClassLoader(new URL[] {jar.toURI().toURL()}, getClass().getClassLoader());
         try {
-            Class clazz = Class.forName(mainClass);
-            Module mod = (Module) clazz.cast(Module.class);
+            Class clazz = Class.forName(mainClass, true, loader);
+            Class<? extends Module> modClass = clazz.asSubclass(Module.class);
+            Module mod = modClass.newInstance();
             mod.init(modData);
             mod.setServer(server);
+            mod.setLogger(new Logger(new Log4j2ConsoleOut(modData.getProperty("Name"))));
             server.getLogger().info("Registering Module: "+mod.getName()+" (Version: "+mod.getVersion()+")...");
             mod.register();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new ModuleLoadException("Could not find main class: "+mainClass);
+        } catch (Exception e){
+            throw new ModuleLoadException(e.getMessage());
         }
     }
 

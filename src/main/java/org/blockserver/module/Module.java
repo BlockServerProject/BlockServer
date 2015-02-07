@@ -11,11 +11,16 @@ import java.util.Properties;
  */
 public abstract class Module {
     private Server server;
+    private Logger logger;
     private String name;
     private String version;
 
     protected void setServer(Server server){
         this.server = server;
+    }
+
+    protected void setLogger(Logger logger){
+        this.logger = logger;
     }
 
     protected void init(Properties properties){
@@ -30,7 +35,7 @@ public abstract class Module {
     }
 
     public final Logger getLogger(){
-        return server.getLogger();
+        return logger;
     }
 
     public final String getName(){

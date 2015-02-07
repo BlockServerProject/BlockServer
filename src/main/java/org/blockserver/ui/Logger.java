@@ -8,6 +8,7 @@ public class Logger{
 	public Logger(ConsoleOut out){
 		this.out = out;
 	}
+
 	public void trace(String msg, Object... args){
 		synchronized(out){
 			out.trace(String.format(msg, args));
