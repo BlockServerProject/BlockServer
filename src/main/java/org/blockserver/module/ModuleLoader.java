@@ -7,11 +7,14 @@ import org.blockserver.net.protocol.pe.PeProtocol;
 import org.blockserver.net.protocol.pe.sub.v20.PeSubprotocolV20;
 import org.blockserver.ui.Log4j2ConsoleOut;
 import org.blockserver.ui.Logger;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -22,6 +25,9 @@ import java.util.jar.JarFile;
 public class ModuleLoader implements Runnable{
     private Server server;
     private File modulesLocation;
+    private File moduleConfig;
+    private Yaml modulesYaml;
+    private ArrayList<String> modulesAllowed;
 
     public ModuleLoader(Server server, File location){
         this.server = server;
@@ -29,13 +35,45 @@ public class ModuleLoader implements Runnable{
     }
 
     public void run(){
+        moduleConfig = new File("modules.yml");
         server.getLogger().info("Registering modules...");
 
+        if(!moduleConfig.exists() || !moduleConfig.isFile()){
+            server.getLogger().warning("Didn't find modules.yml. Creating file...");
+            try {
+                moduleConfig.createNewFile();
+                modulesYaml = new Yaml();
+                Map<String, Object> map = new HashMap<String, Object>();
+                ArrayList<String> mods = new ArrayList<String>();
+                mods.add("MCPE");
+                map.put("modules", mods);
+
+                BufferedWriter writer = new BufferedWriter(new FileWriter(moduleConfig));
+
+                writer.write(modulesYaml.dump(map));
+
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        modulesYaml = new Yaml();
+        modulesAllowed = null;
+        try {
+            Map<String, Object> map = (Map<String, Object>) modulesYaml.load(new FileInputStream(moduleConfig));
+            modulesAllowed = (ArrayList<String>) map.get("modules");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         //--------REGISTER MCPE----------------------
-        PeProtocol pocket = new PeProtocol(server);
-        server.getProtocols().addProtocol(pocket);
-        server.getBridges().addBridge(new UDPBridge(server.getBridges()));
-        pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(server));
+        if(modulesAllowed.contains("MCPE")) {
+            PeProtocol pocket = new PeProtocol(server);
+            server.getProtocols().addProtocol(pocket);
+            server.getBridges().addBridge(new UDPBridge(server.getBridges()));
+            pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(server));
+        }
         //--------REGISTER MCPE END------------------
         //--------REGISTER JARS----------------------
         try {
@@ -80,11 +118,16 @@ public class ModuleLoader implements Runnable{
             mod.init(modData);
             mod.setServer(server);
             mod.setLogger(new Logger(new Log4j2ConsoleOut(modData.getProperty("Name"))));
-            server.getLogger().info("Registering Module: "+mod.getName()+" (Version: "+mod.getVersion()+")...");
-            mod.register();
+            if(modulesAllowed.contains(mod.getName())) {
+                server.getLogger().info("Registering Module: " + mod.getName() + " (Version: " + mod.getVersion() + ")...");
+                mod.register();
+            } else {
+                server.getLogger().info("Denied Module "+mod.getName()+": Not found in modules.yml");
+            }
         } catch (ClassNotFoundException e) {
             throw new ModuleLoadException("Could not find main class: "+mainClass);
         } catch (Exception e){
+            e.printStackTrace();
             throw new ModuleLoadException(e.getMessage());
         }
     }
