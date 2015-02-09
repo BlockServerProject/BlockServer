@@ -11,7 +11,10 @@ import org.blockserver.api.API;
 import org.blockserver.api.impl.DummyAPI;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.LevelManager;
+import org.blockserver.level.LevelSaveException;
 import org.blockserver.level.impl.dummy.DummyLevel;
+import org.blockserver.level.impl.levelDB.DBLevel;
+import org.blockserver.module.ModuleLoadException;
 import org.blockserver.module.ModuleLoader;
 import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.bridge.UDPBridge;
@@ -136,13 +139,29 @@ public class Server{
 	}
 	private void registerModules(){
 		ModuleLoader loader = new ModuleLoader(this, modulesLocation);
-		loader.run();
+		try {
+			loader.run();
+		} catch(ModuleLoadException e){
+			logger.error("Failed to load modules: ModuleLoadException.");
+			logger.trace("ModuleLoadException: "+e.getMessage());
+			e.printStackTrace();
+		}
 	}
 	private void loadLevel(){
 		//TODO: Implement LevelDB worlds
 		lvlManager = new LevelManager(this);
-		lvlManager.setLevelImpl(new DummyLevel(new Position(0, 64, 0)));
-
+		//lvlManager.setLevelImpl(new DummyLevel(new Position(0, 64, 0)));
+		lvlManager.setLevelImpl(new DBLevel(new File("world"), this, new Position(0, 64, 0)));
+		addShutdownFunction(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					lvlManager.getLevelImplemenation().saveLevel();
+				} catch (LevelSaveException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 	/**
 	 * Start the server operation. This method blocks until the server is stopped.

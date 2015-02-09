@@ -4,6 +4,8 @@ import org.blockserver.Server;
 import org.blockserver.level.IChunk;
 import org.blockserver.level.ILevel;
 import org.blockserver.level.LevelLoadException;
+import org.blockserver.level.LevelSaveException;
+import org.blockserver.level.impl.Chunk;
 import org.blockserver.utils.Position;
 
 import org.iq80.leveldb.CompressionType;
@@ -14,6 +16,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * An implementation of a LevelDB level.
@@ -26,12 +29,15 @@ public class DBLevel implements ILevel{
 
     private DB database;
 
-    private IChunk spawnChunk;
+    private Chunk spawnChunk;
+    private ArrayList<Chunk> loadedChunks = new ArrayList<>();
 
     private boolean loaded = false;
 
-    public DBLevel(File lvlLocation, Server server){
+    public DBLevel(File lvlLocation, Server server, Position spawnPosition){
         this.lvlLocation = lvlLocation;
+        this.server = server;
+        this.spawnPosition = spawnPosition;
         this.dbLocation = new File(lvlLocation.getAbsolutePath() + File.separator + "db");
         if(!lvlLocation.exists() || !lvlLocation.isDirectory()){
             server.getLogger().warning("Could not find LevelDB location... Creating new world.");
@@ -68,23 +74,54 @@ public class DBLevel implements ILevel{
 
         try {
             database = factory.open(dbLocation, options);
-
+            server.getLogger().info("Loading spawn chunk...");
+            spawnChunk = new DBChunk(spawnPosition, database);
+            spawnChunk.load();
+            server.getLogger().info("Spawn chunk loaded!");
         } catch (IOException e) {
             throw new LevelLoadException(e.getMessage());
-        } finally {
-            try {
-                database.close();
-            } catch (IOException e) {
-                throw new LevelLoadException("Failed to Close Database: "+e.getMessage());
-            }
         }
 
         server.getLogger().info("Level loaded!");
     }
 
     @Override
-    public IChunk getChunkAt(int x, int z) {
-        return null;
+    public void saveLevel() throws LevelSaveException{
+        spawnChunk = null;
+        server.getLogger().info("Saving Level...");
+        for(Chunk chunk: loadedChunks){
+            chunk.save();
+        }
+
+        try {
+            database.close();
+            server.getLogger().info("Level Saved!");
+        } catch (IOException e) {
+            throw new LevelSaveException(e.getMessage());
+        }
+    }
+
+    @Override
+    public synchronized IChunk getChunkAt(int x, int z) {
+        for(Chunk chunk: loadedChunks){
+            if(chunk.getPosition().getX() == x && chunk.getPosition().getZ() == z){
+                return chunk;
+            }
+        }
+        DBChunk chunk = new DBChunk(new Position(x, 0, z), database);
+        chunk.load();
+        loadedChunks.add(chunk);
+        return chunk;
+    }
+
+    public synchronized boolean unloadChunk(int x, int z){
+        for(Chunk chunk: loadedChunks){
+            if(chunk.getPosition().getX() == x && chunk.getPosition().getZ() == z){
+                loadedChunks.remove(chunk);
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

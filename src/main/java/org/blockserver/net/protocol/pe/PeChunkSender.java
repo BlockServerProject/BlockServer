@@ -14,7 +14,7 @@ import java.util.HashMap;
  */
 public class PeChunkSender extends Thread{
     public final HashMap<Position, IChunk> useChunks = new HashMap<>();
-    private final HashMap<Integer, ArrayList<Position>> mapOrder = new HashMap<>();
+    private final HashMap<Integer, ArrayList<Position>> MapOrder = new HashMap<>();
     private final HashMap<Position, Boolean> requestChunks = new HashMap<>();
     private final ArrayList<Integer> orders = new ArrayList<>();
 
@@ -30,24 +30,74 @@ public class PeChunkSender extends Thread{
     public void run(){
         setName("PEChunkSender");
         session.getServer().getLogger().debug("ChunkSender start.");
-        int chunkX = (int) session.getPlayer().getLocation().getX();
-        int chunkZ = (int) session.getPlayer().getLocation().getZ();
-        for (int distance = 5; distance >= 0; distance--) {
-            for (int x = chunkX - distance; x < chunkX + distance; x++) {
-                for (int z = chunkZ - distance; z < chunkZ + distance; z++) {
-                    if (Math.sqrt((chunkX - x) * (chunkX - x) + (chunkZ - z) * (chunkZ - z)) < 5) {
-                        System.out.println("Chunk Sender chunk "+x+", "+z);
-                        FullChunkDataPacket dp = new FullChunkDataPacket(session.getServer().getLevelManager().getLevelImplemenation().getChunkAt(x, z));
-                        try {
-                            dp.encode();
-                            session.addToQueue(dp.getCompressed());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+        System.out.println( "In ChunkSender" );
+        while ( !isInterrupted() ) {
+            int centerX = (int) Math.floor(session.getPlayer().getLocation().getX())/16;
+            int centerZ = (int) Math.floor(session.getPlayer().getLocation().getZ())/16;
+
+            try {
+                if( centerX == lastCX && centerZ == lastCZ && !first ) {
+                    Thread.sleep(100);
+                    continue;
+                }
+            } catch (InterruptedException e) {
+                continue;
+            }
+            System.out.println( "Do ChunkSender " + centerX + ", " + centerZ );
+            first = false;
+            lastCX = centerX; lastCZ = centerZ;
+            int radius = 4;
+
+            MapOrder.clear(); requestChunks.clear(); orders.clear();
+
+            for (int x = -radius; x <= radius; ++x) {
+                for (int z = -radius; z <= radius; ++z) {
+                    int distance = (x*x) + (z*z);
+                    int chunkX = x + centerX;
+                    int chunkZ = z + centerZ;
+                    if( !MapOrder.containsKey( distance ) ) {
+                        MapOrder.put(distance, new ArrayList<Position>());
+                    }
+                    requestChunks.put(new Position(chunkX, 0, chunkZ), true);
+                    MapOrder.get(distance).add( new Position(chunkX, 0, chunkZ) );
+                    orders.add(distance);
+                }
+            }
+            Collections.sort(orders);
+
+            for( Integer i : orders ) {
+                for( Position v : MapOrder.get(i) ) {
+                    try {
+                        if( useChunks.containsKey(v) ) { continue; }
+                        useChunks.put(v, session.getServer().getLevelManager().getLevelImplemenation().getChunkAt((int) v.getX(), (int) v.getZ()) );
+                        FullChunkDataPacket dp = new FullChunkDataPacket( useChunks.get(v) );
+                        dp.encode();
+                        session.addToQueue(dp.getCompressed());
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }
+            //TODO Unload Unused Chunks
+				/*
+				ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
+				for( int i = 0; i < v2a.length; i++ ) {
+					ChunkPosition v = v2a[i];
+					if( !useChunks.containsKey( v2a ) ) {
+						level.releaseChunk(v);
+						useChunks.remove(v);
+					}
+				}
+				*/
+            System.out.println( "Do Finish" );
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+
+            }
         }
+        System.out.println( "Out ChunkSender" );
+
         /*
         int centerX = (int) session.getPlayer().getLocation().getX();
         int centerZ = (int) session.getPlayer().getLocation().getZ();
@@ -74,7 +124,7 @@ public class PeChunkSender extends Thread{
                     z = z - 16;
                 }
                 chunkNum++;
-                Thread.sleep(500);
+                Thread.sleep(100);
             }
         } catch(Exception e){
             e.printStackTrace();
