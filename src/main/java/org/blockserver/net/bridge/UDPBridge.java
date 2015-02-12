@@ -11,12 +11,18 @@ public class UDPBridge extends NetworkBridge{
 	private NetworkBridgeManager mgr;
 	private NonBlockUDPSocket socket;
 	private SocketAddress addr;
+
 	public UDPBridge(NetworkBridgeManager mgr){
 		this.mgr = mgr;
+		addr = new InetSocketAddress(getServer().getAddress(), getServer().getPort());
+		start();
+	}
+	public UDPBridge(NetworkBridgeManager mgr, SocketAddress addr){
+		this.mgr = mgr;
+		this.addr = addr;
 		start();
 	}
 	private void start(){
-		addr = new InetSocketAddress(getServer().getAddress(), getServer().getPort());
 		socket = new NonBlockUDPSocket(this, addr);
 	}
 	@Override
@@ -42,6 +48,6 @@ public class UDPBridge extends NetworkBridge{
 	}
 	@Override
 	public String getDescription(){
-		return "A network connection bridge in the UDP protocol to allow MCPE connection";
+		return "A network connection bridge for UDP.";
 	}
 }

@@ -125,7 +125,10 @@ public class ModuleLoader implements Runnable{
                 server.getLogger().info("Denied Module "+mod.getName()+": Not found in modules.yml");
             }
         } catch (ClassNotFoundException e) {
-            throw new ModuleLoadException("Could not find main class: "+mainClass);
+            throw new ModuleLoadException("Could not find main class: " + mainClass);
+        } catch(ClassCastException e){
+            e.printStackTrace();
+            throw new ModuleLoadException("Failed to cast class: "+e.getMessage());
         } catch (Exception e){
             e.printStackTrace();
             throw new ModuleLoadException(e.getMessage());
