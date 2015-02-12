@@ -46,7 +46,7 @@ public class PeChunkSender extends Thread{
             System.out.println( "Do ChunkSender " + centerX + ", " + centerZ );
             first = false;
             lastCX = centerX; lastCZ = centerZ;
-            int radius = 4;
+            int radius = 8;
 
             MapOrder.clear(); requestChunks.clear(); orders.clear();
 

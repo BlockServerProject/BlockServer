@@ -31,9 +31,26 @@ public class DBChunk extends Chunk{
             offset++;
         }
 
+        for(int i = 0; i < 16384; i++){
+            blockLight[i] = 0x02;
+        }
+
+        for(int i = 0; i < 16384; i++){
+            skylight[i] = 0x02;
+        }
+
         for(int i = 0; i < 256; i++){
             biomeIds[i] = (byte) 0xFF;
         }
+
+        ByteBuffer bb = ByteBuffer.allocate(1024);
+        for(int i =0; i < 256; i++){
+            bb.put((byte) 0x00);
+            bb.put((byte) 0x85);
+            bb.put((byte) 0xB2);
+            bb.put((byte) 0x4A);
+        }
+        biomeColors = bb.array();
     }
 
     @Override

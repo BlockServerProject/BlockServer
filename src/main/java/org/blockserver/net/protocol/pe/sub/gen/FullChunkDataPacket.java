@@ -11,6 +11,7 @@ import org.blockserver.utils.Utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Arrays;
 
 public class FullChunkDataPacket implements PeProtocolConst{
@@ -24,6 +25,7 @@ public class FullChunkDataPacket implements PeProtocolConst{
     }
 
     public void encode() throws IOException {
+        /*
         BinaryWriter writer = new BinaryWriter(new ByteArrayOutputStream(getLength()), BinaryUtils.LITTLE_ENDIAN);
 
         writer.writeInt((int) chunk.getPosition().getX());
@@ -42,6 +44,25 @@ public class FullChunkDataPacket implements PeProtocolConst{
         }
 
         compressed = toCompressed(((ByteArrayOutputStream) writer.getOutputStream()).toByteArray());
+        */
+        ByteBuffer bb = ByteBuffer.allocate(83208).order(ByteOrder.LITTLE_ENDIAN);
+        bb.putInt((int) chunk.getPosition().getX());
+        bb.putInt((int) chunk.getPosition().getZ());
+        bb.put(chunk.getBlockIds());
+        bb.put(chunk.getBlockData());
+        bb.put(chunk.getSkylight());
+        bb.put(chunk.getBlocklight());
+        bb.put(chunk.getBiomeIds());
+        /*
+        for(int i: chunk.getBiomeColors()){
+            bb.put((byte) (i & 0x0F));
+            bb.put((byte) ((i << 8) & 0x0F));
+            bb.put((byte) ((i << 16) & 0x0F));
+            bb.put((byte) ((i << 24) & 0x0F));
+        }*/
+        bb.put(chunk.getBiomeColors());
+        compressed = toCompressed(bb.array());
+        //16384
     }
 
     public int getLength(){
