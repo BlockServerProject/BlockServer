@@ -27,6 +27,12 @@ public class TCPBridge extends NetworkBridge{
         }
     }
 
+    public TCPBridge(NetworkBridgeManager mgr, TCPSocket sock){
+        this.mgr = mgr;
+        this.sock = sock;
+        start();
+    }
+
     private void start(){
         sock.setRunning(true);
         sock.start();
@@ -39,9 +45,9 @@ public class TCPBridge extends NetworkBridge{
 
     @Override
     public WrappedPacket receive() {
-        WrappedPacket wp = sock.receive();
-        if(wp != null){
-            return wp;
+        TCPPacket p = sock.receive();
+        if(p != null){
+            return new WrappedPacket(p.data, p.address, this);
         } else {
             return null;
         }

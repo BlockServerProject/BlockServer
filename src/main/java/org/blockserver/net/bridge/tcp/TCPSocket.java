@@ -18,7 +18,7 @@ public abstract class TCPSocket extends Thread{
         this.bindAddr = bindAddr;
     }
 
-    public abstract WrappedPacket receive();
+    public abstract TCPPacket receive();
     public abstract boolean send(byte[] buffer, SocketAddress sendTo);
 
     public boolean send(WrappedPacket wp){
