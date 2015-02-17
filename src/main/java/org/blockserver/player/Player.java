@@ -34,11 +34,7 @@ public class Player{
 		// TODO read the data
 	}
 	private void sendResponse(InternalResponse response){
-		if(protocol instanceof PeProtocolSession){
-			((PeProtocolSession) protocol).addResponseToQueue(response);
-		} else {
-			getServer().getLogger().warning("Could not send response.");
-		}
+		protocol.sendResponse(response);
 		//TODO: More
 	}
 	public void handleRequest(InternalRequest request){
@@ -49,6 +45,7 @@ public class Player{
 		} else if(request instanceof DisconnectRequest){
 			DisconnectRequest disconnectRequest = (DisconnectRequest) request;
 			getServer().getLogger().info(login.username + "(EID: "+entityID+") ["+getProtocolSession().getAddress().toString()+"] logged out due to: "+disconnectRequest.reason);
+			protocol.closeSession("");
 			server.getProtocols().closeSession(getProtocolSession().getAddress());
 		}
 	}

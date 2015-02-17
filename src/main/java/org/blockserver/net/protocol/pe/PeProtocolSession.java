@@ -91,7 +91,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		currentQueue.packets.add(pk);
 	}
 
-	public void addResponseToQueue(InternalResponse response){
+	public void sendResponse(InternalResponse response){
 		if(response instanceof PingResponse){
 			McpePongPacket pongPacket = new McpePongPacket(((PingResponse) response).pingId);
 			addToQueue(pongPacket.encode());
