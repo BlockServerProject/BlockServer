@@ -4,6 +4,7 @@ import org.blockserver.Server;
 import org.blockserver.net.internal.request.DisconnectRequest;
 import org.blockserver.net.internal.request.InternalRequest;
 import org.blockserver.net.internal.request.PingRequest;
+import org.blockserver.net.internal.response.ChatResponse;
 import org.blockserver.net.internal.response.InternalResponse;
 import org.blockserver.net.internal.response.PingResponse;
 import org.blockserver.net.protocol.ProtocolSession;
@@ -78,5 +79,10 @@ public class Player{
 		nickname = newNick;
 		// TODO change nametag when players spawn
 		return old;
+	}
+	public void sendMessage(String message){
+		ChatResponse chat = new ChatResponse();
+		chat.message = message;
+		sendResponse(chat);
 	}
 }
