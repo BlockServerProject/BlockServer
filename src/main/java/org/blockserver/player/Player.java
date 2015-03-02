@@ -7,11 +7,7 @@ import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.internal.response.InternalResponse;
 import org.blockserver.net.internal.response.PingResponse;
 import org.blockserver.net.protocol.ProtocolSession;
-import org.blockserver.net.protocol.pe.PeProtocol;
-import org.blockserver.net.protocol.pe.PeProtocolSession;
 import org.blockserver.utils.Position;
-
-import java.util.Dictionary;
 
 public class Player{
 	private Server server;
@@ -20,6 +16,7 @@ public class Player{
 	private Position location;
 	private int entityID;
 	private int gm;
+	private String nickname;
 	public Player(ProtocolSession protocol, PlayerLoginInfo login){
 		this.protocol = protocol;
 		this.login = login;
@@ -72,5 +69,14 @@ public class Player{
 	}
 	public Position getLocation(){
 		return location;
+	}
+	public String getNickname(){
+		return nickname;
+	}
+	public String setNickname(String newNick){
+		String old = nickname;
+		nickname = newNick;
+		// TODO change nametag when players spawn
+		return old;
 	}
 }
