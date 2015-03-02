@@ -14,34 +14,31 @@ public class PeDataPacketParser{
 	public void add(Byte pid, Class<? extends PeDataPacket> clazz){
 		packets.put(pid, clazz);
 	}
-	public PeDataPacket parsePacket(final byte[] buffer) {
+	public PeDataPacket parsePacket(final byte[] buffer){
 		try{
 			//PeDataPacket pk = packets.get(buffer[0]).newInstance(buffer);
-			PeDataPacket pk = null;
+			PeDataPacket pk;
 			try {
-				if(packets.containsKey(buffer[0])) {
-					pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(buffer);
+				if(packets.containsKey(buffer[0])){
+					pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(new Object[]{buffer});
 				} else {
-					pk = new PeDataPacket(buffer) {
+					pk = new PeDataPacket(buffer){
 						@Override
-						protected int getLength() {
+						protected int getLength(){
 							return buffer.length;
 						}
 					};
 				}
-			} catch (InvocationTargetException e) {
+			}catch(InvocationTargetException | NoSuchMethodException e){
 				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
+				return null;
 			}
 			pk.decode(buffer);
 			return pk;
-		}
-		catch(NullPointerException e){
+		}catch(NullPointerException e){
 			server.getLogger().warning("Unknown data packet ID %d", (int) buffer[0]);
 			return null;
-		}
-		catch(InstantiationException | IllegalAccessException e){
+		}catch(InstantiationException | IllegalAccessException e){
 			e.printStackTrace();
 			return null;
 		}

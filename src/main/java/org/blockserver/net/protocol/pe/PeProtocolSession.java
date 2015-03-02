@@ -51,8 +51,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		subprotocols = pocket.getSubprotocols();
 		try{
 			getServer().getTicker().addRepeatingTask(new CallableTask(this, "update"), 10);
-		}
-		catch(NoSuchMethodException e){
+		}catch(NoSuchMethodException e){
 			e.printStackTrace();
 		}
 		ACKQueue = new ArrayList<>();
@@ -138,7 +137,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 						currentQueue.packets.remove(i);
 					}
 				}
-				if(currentQueue.packets.size() > 0) {
+				if(currentQueue.packets.size() > 0){
 					currentQueue.send(bridge, getAddress());
 					recoveryQueue.put(currentQueue.seqNumber, currentQueue);
 					currentQueue.packets.clear();
@@ -229,7 +228,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		if(cp.seqNumber - lastSequenceNum == 1){
 			lastSequenceNum = cp.seqNumber;
 		} else {
-			synchronized (NACKQueue) {
+			synchronized (NACKQueue){
 				for(int i = lastSequenceNum; i < cp.seqNumber; ++i){
 					NACKQueue.add(i);
 				}
@@ -267,8 +266,8 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		else{
 			API.Argument<Boolean> handled = new API.Argument<>(false);
 			boolean handle = getServer().getAPI().onDataPacketReceived(player, new API.Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket>(pk), handled);
-			if((!handled.value) && handle == true) {
-				if (player != null) {
+			if((!handled.value) && handle == true){
+				if (player != null){
 					subprot.readDataPacket(pk, player);
 				} else {
 					//TODO

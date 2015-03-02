@@ -30,7 +30,7 @@ public abstract class PeSubprotocolGen extends PeSubprotocol{
 	protected void handleDataPacket(PeDataPacket dp){
 		// TODO Auto-generated method stub
 		getServer().getLogger().debug("Recieved Packet at org.blockserver.net.protocol.pe.sub.gen.PeSubprotocolGen.handleDataPacket()");
-		if(dp.getPid() == MC_DISCONNECT) {
+		if(dp.getPid() == MC_DISCONNECT){
 			getServer().getLogger().debug("Recieved Disconnect!");
 		} else if(dp.getPid() == MC_PLAY_PING){
 			McpePingPacket ping = (McpePingPacket) dp;

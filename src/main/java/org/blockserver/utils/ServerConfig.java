@@ -31,8 +31,7 @@ public class ServerConfig{
 			simple.load(new FileInputStream(simpleFile));
 			advanced = new Properties();
 			advanced.load(new FileInputStream(advancedFile));
-		}
-		catch(IOException e){
+		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
@@ -49,8 +48,7 @@ public class ServerConfig{
 	public int getIntProperty(String name, int defaultValue){
 		try{
 			return Integer.parseInt(getStringProperty(name));
-		}
-		catch(NullPointerException | NumberFormatException e){
+		}catch(NullPointerException | NumberFormatException e){
 			return defaultValue;
 		}
 	}

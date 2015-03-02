@@ -6,11 +6,12 @@ public class ChatResponse extends InternalResponse{
 	/**
 	 * Plain message. Accepts color codes.
 	 */
-	public String message;
+	public String message = "";
 	/**
-	 * JSON-encoded message
+	 * JSON-encoded message. Only for PC.
 	 * <br>
-	 * If {@code null}, should be automatically formatted using {@code message}
+	 * If {@code null}, it should be automatically formatted with {@code message} by a protocol
+	 * response adapter that uses it.
 	 */
 	public String formattedMessage = null;
 
@@ -31,10 +32,24 @@ public class ChatResponse extends InternalResponse{
 	 */
 	public byte position;
 
+	/**
+	 * Author field. Displays as {@code <author> message}
+	 * <br>
+	 * Response adapters for protocols that don't have the {@code author} field
+	 * should inject the field into {@code message} by calling {@code injectAuthor()}
+	 * (before calling {@code validate()}, if necessary).
+	 */
+	public String author = "";
+
 	public void validate(){
 		if(formattedMessage == null){
 			String quote = JSONParser.quote(message);
 			formattedMessage = "{\"text\": \"" + quote + "\"}";
+		}
+	}
+	public void injectAuthor(){
+		if(!author.isEmpty()){
+			message = "<" + author + ">" + message;
 		}
 	}
 }

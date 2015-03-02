@@ -1,4 +1,4 @@
-package org.blockserver.net.bridge;
+package org.blockserver.net.bridge.udp;
 
 import java.io.IOException;
 import java.net.BindException;
@@ -11,13 +11,14 @@ import java.util.Arrays;
 import org.blockserver.Server;
 import org.blockserver.utils.Callable;
 
-public class NonBlockUDPSocket extends Thread{
+@Deprecated // deprecate it soon
+public class NonBlockUDPSocket_old extends Thread{
 	private UDPBridge udp;
 	private SocketAddress addr;
 	private DatagramSocket socket;
 	private final ArrayList<DatagramPacket> receivedPacketQueue = new ArrayList<>();
 	private boolean running = true; // I forget to set this to default true every time and go into strange bugs!
-	public NonBlockUDPSocket(UDPBridge udp, SocketAddress address){
+	public NonBlockUDPSocket_old(UDPBridge udp, SocketAddress address){
 		this.udp = udp;
 		addr = address;
 		start();
@@ -33,8 +34,7 @@ public class NonBlockUDPSocket extends Thread{
 			socket.setReceiveBufferSize(1024 * 1024); // from PocketMine
 			try{
 				socket.bind(addr);
-			}
-			catch(BindException e){
+			}catch(BindException e){
 				getServer().getLogger().fatal("Unable to bind to %s!", addr.toString());
 				throw new RuntimeException(e);
 			}
@@ -50,8 +50,7 @@ public class NonBlockUDPSocket extends Thread{
 				}
 			}
 			socket.close();
-		}
-		catch(IOException | NoSuchMethodException e){
+		}catch(IOException | NoSuchMethodException e){
 			e.printStackTrace();
 		}
 	}
@@ -67,8 +66,7 @@ public class NonBlockUDPSocket extends Thread{
 		try{
 			socket.send(new DatagramPacket(buffer, buffer.length, addr));
 			return true;
-		}
-		catch(IOException e){
+		}catch(IOException e){
 			e.printStackTrace();
 			return false;
 		}
@@ -84,8 +82,7 @@ public class NonBlockUDPSocket extends Thread{
 		if(join){
 			try{
 				join();
-			}
-			catch(InterruptedException e){
+			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
 		}

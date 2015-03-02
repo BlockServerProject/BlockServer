@@ -59,8 +59,7 @@ public class HelpCommand extends Command{
 					}
 				}
 			}
-		}
-		catch(NumberFormatException e){
+		}catch(NumberFormatException e){
 			return "Usage: " + getUsage(issuer);
 		}
 		return null;

@@ -29,7 +29,7 @@ public class McpeClientConnectPacket implements PeProtocolConst, EncapsulatedLog
 	}
 	
 	@Override
-	public void encode() { }
+	public void encode(){ }
 	
 	@Override
 	public void decode(){

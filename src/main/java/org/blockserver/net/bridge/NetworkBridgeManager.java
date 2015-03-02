@@ -13,8 +13,7 @@ public class NetworkBridgeManager{
 		this.server = server;
 		try{
 			server.getTicker().addRepeatingTask(new CallableTask(this, "tick"), 1);
-		}
-		catch(NoSuchMethodException e){
+		}catch(NoSuchMethodException e){
 			e.printStackTrace();
 		}
 	}

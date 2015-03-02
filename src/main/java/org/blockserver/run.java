@@ -32,8 +32,7 @@ public class run{
 		try{
 			builder.setAddress(InetAddress.getByName(ip));
 			builder.setServerName(config.getStringProperty("motd"));
-		}
-		catch(UnknownHostException e){
+		}catch(UnknownHostException e){
 			System.out.println("[CRITICAL] Cannot start server: " + ip + " is an invalid "
 					+ "IP. If you don't know what it is, change it back to 'localhost' "
 					+ "and start the server again.");

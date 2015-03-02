@@ -12,12 +12,10 @@ public class Callable implements Runnable{
 		for(Class<?> exType: this.method.getExceptionTypes()){
 			try{
 				exType.asSubclass(RuntimeException.class);
-			}
-			catch(ClassCastException e){
+			}catch(ClassCastException e){
 				try{
 					exType.asSubclass(Error.class);
-				}
-				catch(ClassCastException e2){
+				}catch(ClassCastException e2){
 					throw new IllegalArgumentException("The method throws unsupported exceptions");
 				}
 			}
@@ -27,8 +25,7 @@ public class Callable implements Runnable{
 	public void run(){
 		try{
 			method.invoke(object);
-		}
-		catch(IllegalAccessException | InvocationTargetException e){
+		}catch(IllegalAccessException | InvocationTargetException e){
 			if(e instanceof InvocationTargetException){
 				Throwable t = e.getCause();
 				if(t instanceof Error){

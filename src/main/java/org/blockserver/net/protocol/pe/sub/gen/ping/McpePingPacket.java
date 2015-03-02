@@ -10,20 +10,20 @@ import java.io.IOException;
  */
 public class McpePingPacket extends PeDataPacket{
 
-    public long pingID;
+	public long pingID;
 
-    public McpePingPacket(byte[] buffer){
-        super(buffer);
-    }
+	public McpePingPacket(byte[] buffer){
+		super(buffer);
+	}
 
-    @Override
-    protected void _decode(BinaryReader reader) throws IOException {
-        reader.readByte(); //PID
-        pingID = reader.readLong();
-    }
+	@Override
+	protected void _decode(BinaryReader reader) throws IOException {
+		reader.readByte(); //PID
+		pingID = reader.readLong();
+	}
 
-    @Override
-    public int getLength(){
-        return 9;
-    }
+	@Override
+	public int getLength(){
+		return 9;
+	}
 }

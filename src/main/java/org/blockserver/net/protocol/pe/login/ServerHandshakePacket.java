@@ -44,7 +44,7 @@ public class ServerHandshakePacket implements PeProtocolConst, EncapsulatedLogin
 	}
 	
 	@Override
-	public void decode() { }
+	public void decode(){ }
 	
 	@Override
 	public ByteBuffer getBuffer(){
@@ -53,14 +53,14 @@ public class ServerHandshakePacket implements PeProtocolConst, EncapsulatedLogin
 	
 	private void dataArray(){
 		byte[] unknown1 = new byte[] { (byte) 0xf5, (byte) 0xff, (byte) 0xff, (byte) 0xf5 };
-        byte[] unknown2 = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
-        Utils.writeLTriad(unknown1.length, bb);
-       	bb.put(unknown1);
-        for (int i = 0; i < 9; i++)
-        {
-            Utils.writeLTriad(unknown2.length, bb);
-            bb.put(unknown2);
-        }
+		byte[] unknown2 = new byte[] { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff };
+		Utils.writeLTriad(unknown1.length, bb);
+	   	bb.put(unknown1);
+		for (int i = 0; i < 9; i++)
+		{
+			Utils.writeLTriad(unknown2.length, bb);
+			bb.put(unknown2);
+		}
 	}
 
 }

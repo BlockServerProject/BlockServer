@@ -19,8 +19,7 @@ public abstract class PeDataPacket implements PeProtocolConst{
 	public final void decode(byte[] buffer){
 		try{
 			_decode(new BinaryReader(new ByteArrayInputStream(buffer), BinaryUtils.LITTLE_ENDIAN));
-		}
-		catch(IOException e){
+		}catch(IOException e){
 			throw new RuntimeException(e);
 		}
 	}
@@ -33,8 +32,7 @@ public abstract class PeDataPacket implements PeProtocolConst{
 			_encode(writer);
 			ByteArrayOutputStream os = (ByteArrayOutputStream) writer.getOutputStream();
 			return os.toByteArray();
-		}
-		catch(IOException e){
+		}catch(IOException e){
 			throw new RuntimeException(e);
 		}
 	}

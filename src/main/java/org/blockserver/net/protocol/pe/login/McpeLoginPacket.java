@@ -42,7 +42,7 @@ public class McpeLoginPacket implements PeProtocolConst, EncapsulatedLoginPacket
 	}
 	
 	@Override
-	public void encode() {
+	public void encode(){
 		throw new UnsupportedOperationException("This packet is only Client to Server.");
 	}
 	

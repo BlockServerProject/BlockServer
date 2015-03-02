@@ -1,15 +1,17 @@
-package org.blockserver.net.bridge;
+package org.blockserver.net.bridge.udp;
 
 import java.net.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
 import org.blockserver.Server;
+import org.blockserver.net.bridge.NetworkBridge;
+import org.blockserver.net.bridge.NetworkBridgeManager;
 import org.blockserver.net.protocol.WrappedPacket;
 
 public class UDPBridge extends NetworkBridge{
 	private NetworkBridgeManager mgr;
-	private NonBlockUDPSocket socket;
+	private NonBlockUDPSocket_old socket;
 	private SocketAddress addr;
 
 	public UDPBridge(NetworkBridgeManager mgr){
@@ -23,7 +25,7 @@ public class UDPBridge extends NetworkBridge{
 		start();
 	}
 	private void start(){
-		socket = new NonBlockUDPSocket(this, addr);
+		socket = new NonBlockUDPSocket_old(this, addr);
 	}
 	@Override
 	public WrappedPacket receive(){

@@ -1,7 +1,7 @@
 package org.blockserver.net.protocol.pe;
 
 import org.blockserver.Server;
-import org.blockserver.net.bridge.UDPBridge;
+import org.blockserver.net.bridge.udp.UDPBridge;
 import org.blockserver.net.protocol.Protocol;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;

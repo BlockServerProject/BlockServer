@@ -8,8 +8,7 @@ public class TravisTest{
 			public void run(){
 				try{
 					Thread.sleep(5000);
-				}
-				catch(InterruptedException e){
+				}catch(InterruptedException e){
 					e.printStackTrace();
 					System.exit(1);
 				}

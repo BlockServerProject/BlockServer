@@ -18,8 +18,7 @@ public class ServerBuilder{
 	public ServerBuilder(){
 		try{
 			address = InetAddress.getByName("localhost");
-		}
-		catch(UnknownHostException e){
+		}catch(UnknownHostException e){
 			e.printStackTrace();
 		}
 	}

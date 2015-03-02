@@ -12,37 +12,37 @@ import java.io.IOException;
  */
 public class McpeDisconnectPacket extends PeDataPacket{
 
-    /**
-     * The reason for the disconnect.
-     */
-    public String reason;
+	/**
+	 * The reason for the disconnect.
+	 */
+	public String reason;
 
-    /**
-     * Constructor for DisconnectPacket(0x15).
-     * @param reason The reason for disconnect. Currently not supported.
-     */
-    public McpeDisconnectPacket(String reason){
-        super(new byte[] { MC_DISCONNECT });
-        this.reason = reason;
-    }
+	/**
+	 * Constructor for DisconnectPacket(0x15).
+	 * @param reason The reason for disconnect. Currently not supported.
+	 */
+	public McpeDisconnectPacket(String reason){
+		super(new byte[] { MC_DISCONNECT });
+		this.reason = reason;
+	}
 
-    public McpeDisconnectPacket(byte[] buffer){
-        super(new byte[] {buffer[0]});
-    }
+	public McpeDisconnectPacket(byte[] buffer){
+		super(new byte[] {buffer[0]});
+	}
 
-    @Override
-    protected void _encode(BinaryWriter writer) throws IOException {
-        writer.writeByte(MC_DISCONNECT);
-    }
+	@Override
+	protected void _encode(BinaryWriter writer) throws IOException {
+		writer.writeByte(MC_DISCONNECT);
+	}
 
-    @Override
-    protected void _decode(BinaryReader reader) throws IOException{
-        reader.readByte(); //PID
-    }
+	@Override
+	protected void _decode(BinaryReader reader) throws IOException{
+		reader.readByte(); //PID
+	}
 
-    @Override
-    public int getLength(){
-        return 1;
-    }
+	@Override
+	public int getLength(){
+		return 1;
+	}
 
 }

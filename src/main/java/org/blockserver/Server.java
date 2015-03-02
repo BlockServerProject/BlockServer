@@ -1,27 +1,15 @@
 package org.blockserver;
 
-import java.io.File;
-import java.net.InetAddress;
-import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-
 import org.blockserver.api.API;
-import org.blockserver.api.impl.DummyAPI;
 import org.blockserver.cmd.CommandManager;
 import org.blockserver.level.LevelManager;
 import org.blockserver.level.LevelSaveException;
-import org.blockserver.level.impl.dummy.DummyLevel;
 import org.blockserver.level.impl.levelDB.DBLevel;
 import org.blockserver.module.ModuleLoadException;
 import org.blockserver.module.ModuleLoader;
 import org.blockserver.net.bridge.NetworkBridgeManager;
-import org.blockserver.net.bridge.UDPBridge;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
-import org.blockserver.net.protocol.pe.PeProtocol;
-import org.blockserver.net.protocol.pe.sub.v20.PeSubprotocolV20;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerDatabase;
 import org.blockserver.player.PlayerLoginInfo;
@@ -32,6 +20,13 @@ import org.blockserver.ui.ConsoleOut;
 import org.blockserver.ui.InputStreamConsoleIn;
 import org.blockserver.ui.Logger;
 import org.blockserver.utils.Position;
+
+import java.io.File;
+import java.net.InetAddress;
+import java.net.SocketAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 public class Server{
 	private InetAddress address;
@@ -50,13 +45,13 @@ public class Server{
 	@Deprecated
 	private Position spawnPosition = new Position(0, 64, 0); // TODO DUMMY
 	private LevelManager lvlManager;
-	private API api = new DummyAPI();
+	private API api = new API.DummyAPI();
 	private File modulesLocation;
 
 	public String getServerName(){
 		return serverName;
 	}
-	public Position getSpawnPosition() {
+	public Position getSpawnPosition(){
 		return lvlManager.getLevelImplemenation().getSpawnPosition();
 	}
 	public ServerTicker getTicker(){
@@ -141,7 +136,7 @@ public class Server{
 		ModuleLoader loader = new ModuleLoader(this, modulesLocation);
 		try {
 			loader.run();
-		} catch(ModuleLoadException e){
+		}catch(ModuleLoadException e){
 			logger.error("Failed to load modules: ModuleLoadException.");
 			logger.trace("ModuleLoadException: "+e.getMessage());
 			e.printStackTrace();
@@ -152,14 +147,13 @@ public class Server{
 		lvlManager = new LevelManager(this);
 		//lvlManager.setLevelImpl(new DummyLevel(new Position(0, 64, 0)));
 		lvlManager.setLevelImpl(new DBLevel(new File("world"), this, new Position(0, 64, 0)));
-		addShutdownFunction(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					lvlManager.getLevelImplemenation().saveLevel();
-				} catch (LevelSaveException e) {
-					e.printStackTrace();
-				}
+		addShutdownFunction(() -> {
+			try{
+				lvlManager.getLevelImplemenation().saveLevel();
+				;
+			}
+			catch(LevelSaveException e){
+				e.printStackTrace();
 			}
 		});
 	}

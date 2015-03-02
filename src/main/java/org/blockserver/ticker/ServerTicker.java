@@ -49,8 +49,7 @@ public class ServerTicker{
 			long need = sleep - diff;
 			try{
 				Thread.sleep(need);
-			}
-			catch(InterruptedException e){
+			}catch(InterruptedException e){
 				e.printStackTrace();
 			}
 		}

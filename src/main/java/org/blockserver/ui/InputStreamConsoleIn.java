@@ -40,8 +40,7 @@ public class InputStreamConsoleIn implements ConsoleIn{
 	public String read(){
 		try{
 			return threaded ? readerThread.shift():br.readLine();
-		}
-		catch(IOException e){
+		}catch(IOException e){
 			e.printStackTrace();
 			return null;
 		}
@@ -55,8 +54,7 @@ public class InputStreamConsoleIn implements ConsoleIn{
 			if(close){
 				br.close();
 			}
-		}
-		catch(IOException e){
+		}catch(IOException e){
 			e.printStackTrace();
 		}
 	}
@@ -73,8 +71,7 @@ public class InputStreamConsoleIn implements ConsoleIn{
 							lines.add(line);
 						}
 					}
-				}
-				catch(IOException e){
+				}catch(IOException e){
 					e.printStackTrace();
 				}
 			}

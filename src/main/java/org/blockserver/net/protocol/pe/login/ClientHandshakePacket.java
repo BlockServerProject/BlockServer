@@ -10,7 +10,7 @@ import org.blockserver.utils.Utils;
  * @author jython234
  *
  */
-public class ClientHandshakePacket implements PeProtocolConst, EncapsulatedLoginPacket {
+public class ClientHandshakePacket implements PeProtocolConst, EncapsulatedLoginPacket{
 	private ByteBuffer bb;
 	
 	/**
@@ -22,7 +22,9 @@ public class ClientHandshakePacket implements PeProtocolConst, EncapsulatedLogin
 	}
 	
 	@Override
-	public void encode(){ }
+	public void encode(){
+
+	}
 	
 	@Override
 	public void decode(){

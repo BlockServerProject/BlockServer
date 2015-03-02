@@ -7,16 +7,16 @@ import org.blockserver.utils.Position;
  */
 public interface IChunk {
 
-    void generate();
-    Position getPosition();
+	void generate();
+	Position getPosition();
 
-    byte[] getBlockIds();
-    byte[] getBlockData();
-    byte[] getSkylight();
-    byte[] getBlocklight();
+	byte[] getBlockIds();
+	byte[] getBlockData();
+	byte[] getSkylight();
+	byte[] getBlocklight();
 
-    byte[] getBiomeIds();
-    byte[] getBiomeColors();
+	byte[] getBiomeIds();
+	byte[] getBiomeColors();
 
-    //TODO: Add tile entities
+	//TODO: Add tile entities
 }

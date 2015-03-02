@@ -11,41 +11,41 @@ import org.blockserver.utils.Position;
  */
 public class DummyLevel implements ILevel{
 
-    private Position spawnPosition;
+	private Position spawnPosition;
 
-    public DummyLevel(Position spawnPosition){
-        this.spawnPosition = spawnPosition;
-    }
+	public DummyLevel(Position spawnPosition){
+		this.spawnPosition = spawnPosition;
+	}
 
-    @Override
-    public void loadLevel() {
+	@Override
+	public void loadLevel(){
 
-    }
+	}
 
-    @Override
-    public void saveLevel() throws LevelSaveException {
+	@Override
+	public void saveLevel() throws LevelSaveException{
 
-    }
+	}
 
-    @Override
-    public IChunk getChunkAt(int x, int z){
-        IChunk chunk = new DummyChunk(x, z);
-        chunk.generate();
-        return chunk;
-    }
+	@Override
+	public IChunk getChunkAt(int x, int z){
+		IChunk chunk = new DummyChunk(x, z);
+		chunk.generate();
+		return chunk;
+	}
 
-    @Override
-    public boolean unloadChunk(int x, int z) {
-        return true;
-    }
+	@Override
+	public boolean unloadChunk(int x, int z){
+		return true;
+	}
 
-    @Override
-    public Position getSpawnPosition(){
-        return spawnPosition;
-    }
+	@Override
+	public Position getSpawnPosition(){
+		return spawnPosition;
+	}
 
-    @Override
-    public void setSpawnPosition(Position position) {
-        this.spawnPosition = position;
-    }
+	@Override
+	public void setSpawnPosition(Position position){
+		this.spawnPosition = position;
+	}
 }

@@ -80,8 +80,7 @@ public abstract class AcknowledgePacket implements PeProtocolConst{
 				for(int c = start; c <= end; ++c){
 					packets.add(c);
 				}
-			}
-			else{
+			}else{
 				bb.get(tmp, 0, 3);
 				packets.add(Utils.readLTriad(tmp, 0));
 			}
