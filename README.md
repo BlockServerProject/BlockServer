@@ -8,6 +8,8 @@ BlockServer
 
 [![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=beaconmine|?#blockserverproject,#beaconmine,#pocketbukkit)
 
+#### Visit our TeamCity Server: http://builds.blockserver.org
+
 ## What is BlockServer?
 BlockServer is a free, open-source Minecraft: PE server software.
 
