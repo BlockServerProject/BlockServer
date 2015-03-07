@@ -4,8 +4,7 @@ jdk:
   - oraclejdk8 
 
 script:
-  - chmod ugoa+x maven-test.sh
-  - ./maven-test.sh
+  - mvn test package
 
 before_script:
   - mvn -version
