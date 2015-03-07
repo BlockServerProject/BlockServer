@@ -27,8 +27,7 @@ public class PeProtocol extends Protocol implements PeProtocolConst{
 			if(pid == RAKNET_BROADCAST_PING_1 || pid == RAKNET_BROADCAST_PING_2){
 				advertize(pk);
 				return null;
-			}
-			else if(pid == RAKNET_OPEN_CONNECTION_REQUEST_1){
+			}else if(pid == RAKNET_OPEN_CONNECTION_REQUEST_1){
 				PeProtocolSession session = new PeProtocolSession(protocols, pk.getBridge(), pk.getAddress(), this);
 				session.handlePacket(pk);
 				return session;

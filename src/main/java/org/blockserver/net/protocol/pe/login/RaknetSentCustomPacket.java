@@ -26,7 +26,7 @@ public class RaknetSentCustomPacket implements PeProtocolConst{
 		ByteBuffer bb = ByteBuffer.allocate(length);
 		bb.put(RAKNET_CUSTOM_PACKET_DEFAULT);
 		Utils.writeLTriad(seqNumber, bb);
-		for(SentEncapsulatedPacket pk: packets){
+		for(SentEncapsulatedPacket pk : packets){
 			pk.append(bb);
 		}
 		bridge.send(bb.array(), addr);
@@ -34,7 +34,7 @@ public class RaknetSentCustomPacket implements PeProtocolConst{
 	
 	public int getLength(){
 		int len = 4;
-		for(SentEncapsulatedPacket pk: packets){
+		for(SentEncapsulatedPacket pk : packets){
 			len += pk.getLength();
 		}
 		return len;

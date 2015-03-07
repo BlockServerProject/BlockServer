@@ -66,7 +66,6 @@ public class ServerBuilder{
 		if(!bool){
 			throw new IllegalStateException("Field ServerBuilder." + field
 					+ " not initialized!");
-		
 		}
 	}
 }

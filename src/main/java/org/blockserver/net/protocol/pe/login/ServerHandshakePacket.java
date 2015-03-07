@@ -7,10 +7,8 @@ import org.blockserver.utils.Utils;
 
 /**
  * An implemenation of a ServerHandshakePacket(0x10).
- * @author jython234
- *
  */
-public class ServerHandshakePacket implements PeProtocolConst, EncapsulatedLoginPacket {
+public class ServerHandshakePacket implements PeProtocolConst, EncapsulatedLoginPacket{
 	private ByteBuffer bb;
 	private byte[] cookie = new byte[] {0x04, 0x3f, 0x56, (byte) 0xfe};
 	private byte securityFlags = (byte) 0xcd;

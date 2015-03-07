@@ -20,9 +20,8 @@ public class ProtocolManager{
 	public void handlePacket(WrappedPacket pk){
 		if(sessions.containsKey(pk.getAddress())){
 			sessions.get(pk.getAddress()).handlePacket(pk);
-		}
-		else{
-			for(Protocol ptc: protocols){
+		}else{
+			for(Protocol ptc : protocols){
 				ProtocolSession ps = ptc.openSession(pk);
 				if(ps != null){
 					sessions.put(pk.getAddress(), ps);
@@ -32,7 +31,7 @@ public class ProtocolManager{
 		}
 	}
 	public Protocol getProtocol(Class<? extends Protocol> clazz){
-		for(Protocol protocol: protocols){
+		for(Protocol protocol : protocols){
 			if(protocol.getClass().getSimpleName().equals(clazz.getSimpleName())){
 				return protocol;
 			}

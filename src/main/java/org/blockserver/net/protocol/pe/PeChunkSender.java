@@ -2,7 +2,7 @@ package org.blockserver.net.protocol.pe;
 
 import org.blockserver.level.IChunk;
 import org.blockserver.net.protocol.pe.sub.gen.FullChunkDataPacket;
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +12,9 @@ import java.util.HashMap;
  * A MCPE Chunk Sender.
  */
 public class PeChunkSender extends Thread{
-	public final HashMap<Position, IChunk> useChunks = new HashMap<>();
-	private final HashMap<Integer, ArrayList<Position>> MapOrder = new HashMap<>();
-	private final HashMap<Position, Boolean> requestChunks = new HashMap<>();
+	public final HashMap<PositionDoublePrecision, IChunk> useChunks = new HashMap<>();
+	private final HashMap<Integer, ArrayList<PositionDoublePrecision>> MapOrder = new HashMap<>();
+	private final HashMap<PositionDoublePrecision, Boolean> requestChunks = new HashMap<>();
 	private final ArrayList<Integer> orders = new ArrayList<>();
 
 	public boolean first = true;
@@ -26,6 +26,7 @@ public class PeChunkSender extends Thread{
 		this.session = session;
 	}
 
+	@Override
 	public void run(){
 		setName("PEChunkSender");
 		session.getServer().getLogger().debug("ChunkSender start.");
@@ -56,18 +57,18 @@ public class PeChunkSender extends Thread{
 					int distance = (x*x) + (z*z);
 					int chunkX = x + centerX;
 					int chunkZ = z + centerZ;
-					if( !MapOrder.containsKey( distance)){
+					if(!MapOrder.containsKey(distance)){
 						MapOrder.put(distance, new ArrayList<>());
 					}
-					requestChunks.put(new Position(chunkX, 0, chunkZ), true);
-					MapOrder.get(distance).add( new Position(chunkX, 0, chunkZ));
+					requestChunks.put(new PositionDoublePrecision(chunkX, 0, chunkZ), true);
+					MapOrder.get(distance).add( new PositionDoublePrecision(chunkX, 0, chunkZ));
 					orders.add(distance);
 				}
 			}
 			Collections.sort(orders);
 
 			for(Integer i : orders){
-				for(Position v : MapOrder.get(i)){
+				for(PositionDoublePrecision v : MapOrder.get(i)){
 					try{
 						if(useChunks.containsKey(v)){
 							continue;
@@ -82,16 +83,16 @@ public class PeChunkSender extends Thread{
 				}
 			}
 			//TODO Unload Unused Chunks
-				/*
-				ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
-				for( int i = 0; i < v2a.length; i++ ){
-					ChunkPosition v = v2a[i];
-					if( !useChunks.containsKey( v2a ) ){
-						level.releaseChunk(v);
-						useChunks.remove(v);
-					}
+			/*
+			ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
+			for( int i = 0; i < v2a.length; i++ ){
+				ChunkPosition v = v2a[i];
+				if( !useChunks.containsKey( v2a ) ){
+					level.releaseChunk(v);
+					useChunks.remove(v);
 				}
-				*/
+			}
+			*/
 			System.out.println("Do Finish");
 			try{
 				Thread.sleep(100);

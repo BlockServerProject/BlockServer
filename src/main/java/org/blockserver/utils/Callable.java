@@ -9,7 +9,7 @@ public class Callable implements Runnable{
 	public Callable(Object object, String method) throws NoSuchMethodException{
 		this.object = object;
 		this.method = object.getClass().getMethod(method);
-		for(Class<?> exType: this.method.getExceptionTypes()){
+		for(Class<?> exType : this.method.getExceptionTypes()){
 			try{
 				exType.asSubclass(RuntimeException.class);
 			}catch(ClassCastException e){

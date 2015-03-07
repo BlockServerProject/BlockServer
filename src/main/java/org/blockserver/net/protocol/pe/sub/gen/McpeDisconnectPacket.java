@@ -8,10 +8,8 @@ import java.io.IOException;
 
 /**
  * An Implemenation of a MCPE Disconnect Packet.
- * Created by jython234 on 1/13/2015.
  */
 public class McpeDisconnectPacket extends PeDataPacket{
-
 	/**
 	 * The reason for the disconnect.
 	 */
@@ -31,7 +29,7 @@ public class McpeDisconnectPacket extends PeDataPacket{
 	}
 
 	@Override
-	protected void _encode(BinaryWriter writer) throws IOException {
+	protected void _encode(BinaryWriter writer) throws IOException{
 		writer.writeByte(MC_DISCONNECT);
 	}
 
@@ -44,5 +42,4 @@ public class McpeDisconnectPacket extends PeDataPacket{
 	public int getLength(){
 		return 1;
 	}
-
 }

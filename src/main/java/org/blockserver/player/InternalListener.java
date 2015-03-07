@@ -7,7 +7,7 @@ public class InternalListener{
 			FORMAT_ITALIC = 0x00000002,
 			FORMAT_UNDERLINED = 0x00000004,
 			FORMAT_STRIKETHROUGH = 0x00000008,
-			FORMAT_OBFUSCATED = 0x00000010;
+			FORMAT_OBFUSCATED = 0x00000010; // TODO: migrate these to somewhere more proper?
 	public void onChatReceived(String text, int formatFlags, char color, Listener<Player> clickEvent, Listener<Player> hoverEvent){
 		// TODO
 	}

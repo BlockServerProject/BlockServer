@@ -13,6 +13,7 @@ import org.blockserver.utils.ServerConfig;
 public class run{
 	public static File DIR;
 	public static File modules;
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static void main(String[] arguments){
 		ArrayList<String> args = new ArrayList<>(Arrays.asList(arguments));
 		ServerBuilder builder = new ServerBuilder();

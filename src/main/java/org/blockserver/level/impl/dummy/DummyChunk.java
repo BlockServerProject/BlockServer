@@ -1,7 +1,7 @@
 package org.blockserver.level.impl.dummy;
 
 import org.blockserver.level.IChunk;
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 
 /**
  * A Dummy implementation of a Chunk.
@@ -16,12 +16,13 @@ public class DummyChunk implements IChunk{
 	private byte[] biomeIds = new byte[256];
 	private byte[] biomeColors = new byte[1024];
 
-	private Position pos;
+	private PositionDoublePrecision pos;
 
 	public DummyChunk(int x, int z){
-		pos = new Position(x, 0, z);
+		pos = new PositionDoublePrecision(x, 0, z);
 	}
 
+	@Override
 	public void generate(){
 		int offset = 0;
 		for(int x = 0; x < 16; x++){
@@ -39,31 +40,38 @@ public class DummyChunk implements IChunk{
 		}
 	}
 
+	@Override
 	public byte[] getBlockIds(){
 		return blockIds;
 	}
 
+	@Override
 	public byte[] getBlockData(){
 		return blockData;
 	}
 
+	@Override
 	public byte[] getSkylight(){
 		return skylight;
 	}
 
+	@Override
 	public byte[] getBlocklight(){
 		return blocklight;
 	}
 
+	@Override
 	public byte[] getBiomeIds(){
 		return biomeIds;
 	}
 
+	@Override
 	public byte[] getBiomeColors(){
 		return biomeColors;
 	}
 
-	public Position getPosition(){
+	@Override
+	public PositionDoublePrecision getPosition(){
 		return pos;
 	}
 }

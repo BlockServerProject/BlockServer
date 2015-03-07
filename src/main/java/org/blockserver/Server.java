@@ -19,7 +19,7 @@ import org.blockserver.ui.ConsoleListener;
 import org.blockserver.ui.ConsoleOut;
 import org.blockserver.ui.InputStreamConsoleIn;
 import org.blockserver.ui.Logger;
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -43,7 +43,7 @@ public class Server{
 	private ConsoleListener consoleListener;
 	private int currentEntityID = 1; // TODO migrate this to somewhere more proper
 	@Deprecated
-	private Position spawnPosition = new Position(0, 64, 0); // TODO DUMMY
+	private PositionDoublePrecision spawnPosition = new PositionDoublePrecision(0, 64, 0); // TODO DUMMY
 	private LevelManager lvlManager;
 	private API api = new API.DummyAPI();
 	private File modulesLocation;
@@ -51,7 +51,7 @@ public class Server{
 	public String getServerName(){
 		return serverName;
 	}
-	public Position getSpawnPosition(){
+	public PositionDoublePrecision getSpawnPosition(){
 		return lvlManager.getLevelImplemenation().getSpawnPosition();
 	}
 	public ServerTicker getTicker(){
@@ -146,11 +146,10 @@ public class Server{
 		//TODO: Implement LevelDB worlds
 		lvlManager = new LevelManager(this);
 		//lvlManager.setLevelImpl(new DummyLevel(new Position(0, 64, 0)));
-		lvlManager.setLevelImpl(new DBLevel(new File("world"), this, new Position(0, 64, 0)));
+		lvlManager.setLevelImpl(new DBLevel(new File("world"), this, new PositionDoublePrecision(0, 64, 0)));
 		addShutdownFunction(() -> {
 			try{
 				lvlManager.getLevelImplemenation().saveLevel();
-				;
 			}
 			catch(LevelSaveException e){
 				e.printStackTrace();
@@ -170,9 +169,7 @@ public class Server{
 	public void stop(){
 		consoleListener.close(false);
 		ticker.stop();
-		for(Runnable r: shutdownRuns){
-			r.run();
-		}
+		shutdownRuns.forEach(Runnable::run);
 	}
 
 	public void setAPI(API api){

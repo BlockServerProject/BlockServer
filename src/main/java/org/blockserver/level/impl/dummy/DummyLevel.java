@@ -3,17 +3,16 @@ package org.blockserver.level.impl.dummy;
 import org.blockserver.level.IChunk;
 import org.blockserver.level.ILevel;
 import org.blockserver.level.LevelSaveException;
-import org.blockserver.level.impl.dummy.DummyChunk;
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 
 /**
  * A Dummy implementation of a Level.
  */
 public class DummyLevel implements ILevel{
 
-	private Position spawnPosition;
+	private PositionDoublePrecision spawnPosition;
 
-	public DummyLevel(Position spawnPosition){
+	public DummyLevel(PositionDoublePrecision spawnPosition){
 		this.spawnPosition = spawnPosition;
 	}
 
@@ -40,12 +39,12 @@ public class DummyLevel implements ILevel{
 	}
 
 	@Override
-	public Position getSpawnPosition(){
+	public PositionDoublePrecision getSpawnPosition(){
 		return spawnPosition;
 	}
 
 	@Override
-	public void setSpawnPosition(Position position){
+	public void setSpawnPosition(PositionDoublePrecision position){
 		this.spawnPosition = position;
 	}
 }

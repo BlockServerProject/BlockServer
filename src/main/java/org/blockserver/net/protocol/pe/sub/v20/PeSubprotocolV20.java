@@ -11,7 +11,7 @@ import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
 import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePingPacket;
 
-public class PeSubprotocolV20 extends PeSubprotocol {
+public class PeSubprotocolV20 extends PeSubprotocol{
 	private Server server;
 	protected PeDataPacketParser parser;
 	public PeSubprotocolV20(Server server){
@@ -26,26 +26,23 @@ public class PeSubprotocolV20 extends PeSubprotocol {
 	@Override
 	public InternalRequest toInternalRequest(PeDataPacket dp){
 		byte pid = dp.getPid();
-		server.getLogger().debug("Adapting into request: "+dp.getPid());
+		server.getLogger().debug("Adapting into request: " + dp.getPid());
 		switch(pid){
 			case MC_PLAY_PING:
 				McpePingPacket pingPacket = (McpePingPacket) dp;
 				PingRequest pingRequest = new PingRequest();
 				pingRequest.pingId = pingPacket.pingID;
-
 				return pingRequest;
 
 			case MC_DISCONNECT:
-				McpeDisconnectPacket disconnectPacket = (McpeDisconnectPacket) dp;
 				DisconnectRequest disconnectRequest = new DisconnectRequest();
 				disconnectRequest.reason = "Disconnected by client.";
-
 				return disconnectRequest;
 			default:
 				//TODO
+				server.getLogger().debug("Unhandled data packet (PID: %x)", dp.getPid());
 				return null;
 		}
-
 	}
 
 	@Override
@@ -64,6 +61,7 @@ public class PeSubprotocolV20 extends PeSubprotocol {
 	}
 
 	@Override
-	public Server getServer(){ return server; }
-	
+	public Server getServer(){
+		return server;
+	}
 }

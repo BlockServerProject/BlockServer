@@ -1,10 +1,8 @@
 package org.blockserver.level.impl.levelDB;
 
-import org.blockserver.level.IChunk;
 import org.blockserver.level.impl.Chunk;
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 import org.iq80.leveldb.DB;
-import org.iq80.leveldb.ReadOptions;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -14,7 +12,7 @@ import java.nio.ByteOrder;
  */
 public class DBChunk extends Chunk{
 
-	public DBChunk(Position position, DB db){
+	public DBChunk(PositionDoublePrecision position, DB db){
 		super(position, db);
 	}
 
@@ -94,6 +92,7 @@ public class DBChunk extends Chunk{
 		}
 	}
 
+	@Override
 	public void save(){
 		ByteBuffer key = ByteBuffer.allocate(9);
 		key.order(ByteOrder.LITTLE_ENDIAN);

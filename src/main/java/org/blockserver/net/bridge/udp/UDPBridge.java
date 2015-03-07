@@ -32,8 +32,7 @@ public class UDPBridge extends NetworkBridge{
 		DatagramPacket dp = socket.receive();
 		if(dp != null){
 			byte[] data = dp.getData();
-			WrappedPacket wp = new WrappedPacket(data, dp.getSocketAddress(), this);
-			return wp;
+			return new WrappedPacket(data, dp.getSocketAddress(), this);
 		}
 		return null;
 	}

@@ -6,7 +6,7 @@ import org.blockserver.level.ILevel;
 import org.blockserver.level.LevelLoadException;
 import org.blockserver.level.LevelSaveException;
 import org.blockserver.level.impl.Chunk;
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
@@ -25,7 +25,7 @@ public class DBLevel implements ILevel{
 	private File lvlLocation;
 	private File dbLocation;
 	private Server server;
-	private Position spawnPosition;
+	private PositionDoublePrecision spawnPosition;
 
 	private DB database;
 
@@ -34,7 +34,7 @@ public class DBLevel implements ILevel{
 
 	private boolean loaded = false;
 
-	public DBLevel(File lvlLocation, Server server, Position spawnPosition){
+	public DBLevel(File lvlLocation, Server server, PositionDoublePrecision spawnPosition){
 		this.lvlLocation = lvlLocation;
 		this.server = server;
 		this.spawnPosition = spawnPosition;
@@ -89,9 +89,7 @@ public class DBLevel implements ILevel{
 	public void saveLevel() throws LevelSaveException{
 		spawnChunk = null;
 		server.getLogger().info("Saving Level...");
-		for(Chunk chunk: loadedChunks){
-			chunk.save();
-		}
+		loadedChunks.forEach(Chunk::save);
 
 		try {
 			database.close();
@@ -108,12 +106,13 @@ public class DBLevel implements ILevel{
 				return chunk;
 			}
 		}
-		DBChunk chunk = new DBChunk(new Position(x, 0, z), database);
+		DBChunk chunk = new DBChunk(new PositionDoublePrecision(x, 0, z), database);
 		chunk.load();
 		loadedChunks.add(chunk);
 		return chunk;
 	}
 
+	@Override
 	public synchronized boolean unloadChunk(int x, int z){
 		for(Chunk chunk: loadedChunks){
 			if(chunk.getPosition().getX() == x && chunk.getPosition().getZ() == z){
@@ -125,12 +124,12 @@ public class DBLevel implements ILevel{
 	}
 
 	@Override
-	public Position getSpawnPosition(){
+	public PositionDoublePrecision getSpawnPosition(){
 		return spawnPosition;
 	}
 
 	@Override
-	public void setSpawnPosition(Position position){
+	public void setSpawnPosition(PositionDoublePrecision position){
 		this.spawnPosition = position;
 	}
 

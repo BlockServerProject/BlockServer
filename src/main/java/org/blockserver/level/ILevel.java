@@ -1,6 +1,6 @@
 package org.blockserver.level;
 
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 
 /**
  * Represents a Level.
@@ -38,10 +38,10 @@ public interface ILevel {
 	 * Get this world's default spawn position.
 	 * @return The Position.
 	 */
-	public Position getSpawnPosition();
+	public PositionDoublePrecision getSpawnPosition();
 
 	/**
 	 * Set this world's default spawn position.
 	 */
-	public void setSpawnPosition(Position position);
+	public void setSpawnPosition(PositionDoublePrecision position);
 }

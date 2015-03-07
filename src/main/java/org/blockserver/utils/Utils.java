@@ -2,11 +2,8 @@ package org.blockserver.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
 
 public abstract class Utils{
 	public static void writeLTriad(int triad, ByteBuffer bb){
@@ -33,7 +30,7 @@ public abstract class Utils{
 		return (data[offset] & 0xff) | (data[offset+1] & 0xff) << 8 | (data[offset+2] & 0xff) << 16;
 	}
 	public static boolean inArray(byte needle, byte[] haystack){
-		for(byte item: haystack){
+		for(byte item : haystack){
 			if(item == needle){
 				return true;
 			}
@@ -41,14 +38,14 @@ public abstract class Utils{
 		return false;
 	}
 	public static <T> boolean inArray(T object, T[] array){
-		for(T item: array){
+		for(T item : array){
 			if(object.equals(item)){
 				return true;
 			}
 		}
 		return false;
 	}
-	public static byte[] compressBytes(byte[] uncompressed) throws IOException {
+	public static byte[] compressBytes(byte[] uncompressed){
 		Deflater def = new Deflater(7);
 		byte[] buf = new byte[65536];
 		def.reset();

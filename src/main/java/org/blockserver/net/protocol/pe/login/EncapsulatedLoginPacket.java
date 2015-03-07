@@ -4,10 +4,8 @@ import java.nio.ByteBuffer;
 
 /**
  * An interface to set the methods an implemenation of an Encapsulated Login Packet must have.
- * @author jython234
- *
  */
-public interface EncapsulatedLoginPacket {
+public interface EncapsulatedLoginPacket{
 	
 	/**
 	 * Encodes the packet by using all the values given, and putting them into packet form.

@@ -26,7 +26,7 @@ public class NetworkBridgeManager{
 	}
 
 	public void tick(){
-		for(NetworkBridge bridge: bridges){
+		for(NetworkBridge bridge : bridges){
 			WrappedPacket pk;
 			while((pk = bridge.receive()) != null){
 				server.getProtocols().handlePacket(pk);

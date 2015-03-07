@@ -34,12 +34,7 @@ public class RaknetReceivedCustomPacket implements PeProtocolConst{
 			hasSplit = (flag & 0x10) == 0x10;
 			final short _length = bb.getShort();
 			final int length = (_length & 0x0000FFF8) >> 3;
-			AntiSpam.act(new Runnable(){
-				@Override
-				public void run(){
-					System.out.println(_length + ", " + length);
-				}
-			}, "raknet custom packet length", 2000);
+			AntiSpam.act(() -> System.out.println(_length + ", " + length), "raknet custom packet length", 2000);
 			if(Utils.inArray(reliability, RAKNET_HAS_MESSAGE_RELIABILITIES)){
 				messageIndex = Utils.readLTriad(bb);
 			}

@@ -1,21 +1,15 @@
 package org.blockserver.net.protocol.pe.sub.gen;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.blockserver.io.BinaryUtils;
-import org.blockserver.io.BinaryWriter;
 import org.blockserver.level.IChunk;
 import org.blockserver.net.protocol.pe.PeProtocolConst;
-import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.utils.Utils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.Arrays;
 
 public class FullChunkDataPacket implements PeProtocolConst{
-
 	private IChunk chunk;
 	private byte[] compressed;
 
@@ -24,7 +18,7 @@ public class FullChunkDataPacket implements PeProtocolConst{
 		this.chunk = chunk;
 	}
 
-	public void encode() throws IOException {
+	public void encode() throws IOException{
 		/*
 		BinaryWriter writer = new BinaryWriter(new ByteArrayOutputStream(getLength()), BinaryUtils.LITTLE_ENDIAN);
 
@@ -78,7 +72,7 @@ public class FullChunkDataPacket implements PeProtocolConst{
 	 * @param uncompressed The Uncompressed data from encode()
 	 * @return The compressed byte array of this packet.
 	 */
-	private byte[] toCompressed(byte[] uncompressed) throws IOException {
+	private byte[] toCompressed(byte[] uncompressed){
 		//System.out.println("Uncompressed: "+uncompressed.length);
 		ByteBuffer bb = ByteBuffer.allocate(1 + uncompressed.length);
 		bb.put(MC_FULL_CHUNK_DATA);

@@ -38,12 +38,7 @@ public class ServerTicker{
 			long diff = now - lastTickMilli;
 			loadMeasure = diff * 100D /  sleep;
 			if(loadMeasure > 80D){
-				AntiSpam.act(new Runnable(){
-					@Override
-					public void run(){
-						server.getLogger().warning("The server load is too high! (%f / 100)", loadMeasure);
-					}
-				}, ANTISPAM_LOAD_MEASURE_TOO_HIGH, 5000);
+				AntiSpam.act(() -> server.getLogger().warning("The server load is too high! (%f / 100)", loadMeasure), ANTISPAM_LOAD_MEASURE_TOO_HIGH, 5000);
 				continue;
 			}
 			long need = sleep - diff;
@@ -66,7 +61,7 @@ public class ServerTicker{
 			taskArray = new RegisteredTask[tasks.size()];
 			tasks.toArray(taskArray);
 		}
-		for(RegisteredTask task: taskArray){
+		for(RegisteredTask task : taskArray){
 			task.check(tick);
 		}
 	}
@@ -96,7 +91,7 @@ public class ServerTicker{
 	public boolean cancelTask(Task task){
 		RegisteredTask corr = null;
 		synchronized(tasks){
-			for(RegisteredTask rt: tasks){
+			for(RegisteredTask rt : tasks){
 				if(rt.getTask().equals(task)){
 					corr = rt;
 					break;

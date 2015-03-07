@@ -6,8 +6,6 @@ import org.blockserver.net.protocol.pe.PeProtocolConst;
 
 /**
  * An implementation of a ClientConnectPacket(0x09).
- * @author jython234
- *
  */
 public class McpeClientConnectPacket implements PeProtocolConst, EncapsulatedLoginPacket{
 	/**

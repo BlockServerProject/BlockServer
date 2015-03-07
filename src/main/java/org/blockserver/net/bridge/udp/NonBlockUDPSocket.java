@@ -50,7 +50,12 @@ public class NonBlockUDPSocket extends NonBlockSocket{
 	}
 	@Override
 	public void send(WrappedPacket pk){
-
+		try{
+			byte[] buffer = pk.bb().array();
+			socket.send(new DatagramPacket(buffer, buffer.length, pk.getAddress()));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
 	}
 	@Override
 	public WrappedPacket receive_(){

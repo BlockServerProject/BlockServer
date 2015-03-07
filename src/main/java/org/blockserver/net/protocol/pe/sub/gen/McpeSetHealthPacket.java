@@ -6,7 +6,6 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import java.io.IOException;
 
 public class McpeSetHealthPacket extends PeDataPacket{
-
 	public byte health;
 
 	public McpeSetHealthPacket(int health){
@@ -15,11 +14,12 @@ public class McpeSetHealthPacket extends PeDataPacket{
 	}
 
 	@Override
-	protected void _encode(BinaryWriter writer) throws IOException {
+	protected void _encode(BinaryWriter writer) throws IOException{
 		writer.writeByte(MC_SET_HEALTH_PACKET);
 		writer.writeByte(health);
 	}
 
+	@Override
 	public int getLength(){
 		return 2;
 	}

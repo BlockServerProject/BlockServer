@@ -5,8 +5,7 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 
 import java.io.IOException;
 
-public class McpeSetTimePacket extends PeDataPacket {
-
+public class McpeSetTimePacket extends PeDataPacket{
 	public int time;
 
 	public McpeSetTimePacket(int time){
@@ -15,12 +14,13 @@ public class McpeSetTimePacket extends PeDataPacket {
 	}
 
 	@Override
-	protected void _encode(BinaryWriter writer) throws IOException {
+	protected void _encode(BinaryWriter writer) throws IOException{
 		writer.writeByte(MC_SET_TIME_PACKET);
 		writer.writeInt(time);
 		writer.writeByte((byte) 0x80);
 	}
 
+	@Override
 	public int getLength(){
 		return 5;
 	}

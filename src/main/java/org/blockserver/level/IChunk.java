@@ -1,6 +1,6 @@
 package org.blockserver.level;
 
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
 
 /**
  * Represents a 16x16x128 Chunk.
@@ -8,7 +8,7 @@ import org.blockserver.utils.Position;
 public interface IChunk {
 
 	void generate();
-	Position getPosition();
+	PositionDoublePrecision getPosition();
 
 	byte[] getBlockIds();
 	byte[] getBlockData();

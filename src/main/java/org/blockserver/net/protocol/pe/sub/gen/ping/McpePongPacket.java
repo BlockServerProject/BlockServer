@@ -5,11 +5,7 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 
 import java.io.IOException;
 
-/**
- * Created by jython234 on 1/15/2015.
- */
 public class McpePongPacket extends PeDataPacket{
-
 	public long pingID;
 
 	public McpePongPacket(long pingId){

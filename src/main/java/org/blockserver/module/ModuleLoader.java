@@ -37,6 +37,7 @@ public class ModuleLoader implements Runnable{
 		modulesLocation = location;
 	}
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public void run(){
 		moduleConfig = new File("modules.yml");

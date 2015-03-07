@@ -6,7 +6,6 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import java.io.IOException;
 
 public class McpeSetDifficultyPacket extends PeDataPacket{
-
 	public int difficulty;
 
 	public McpeSetDifficultyPacket(int difficulty){
@@ -20,6 +19,7 @@ public class McpeSetDifficultyPacket extends PeDataPacket{
 		writer.writeInt(difficulty);
 	}
 
+	@Override
 	public int getLength(){
 		return 5;
 	}

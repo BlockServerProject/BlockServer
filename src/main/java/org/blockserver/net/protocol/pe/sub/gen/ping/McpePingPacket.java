@@ -17,7 +17,7 @@ public class McpePingPacket extends PeDataPacket{
 	}
 
 	@Override
-	protected void _decode(BinaryReader reader) throws IOException {
+	protected void _decode(BinaryReader reader) throws IOException{
 		reader.readByte(); //PID
 		pingID = reader.readLong();
 	}

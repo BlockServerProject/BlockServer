@@ -38,18 +38,16 @@ public class HelpCommand extends Command{
 			int lines = Integer.parseInt(args.remove(0));
 			TreeMap<String, Command> fullMap = server.getCmdMgr().getAll();
 			TreeMap<String, Command> map = new TreeMap<>();
-			for(Map.Entry<String, Command> entry: fullMap.entrySet()){
-				if(entry.getValue().canUse(issuer)){
-					map.put(entry.getKey(), entry.getValue());
-				}
-			}
+			fullMap.entrySet().stream()
+					.filter(entry -> entry.getValue().canUse(issuer))
+					.forEach(entry -> map.put(entry.getKey(), entry.getValue()));
 			int size = map.size();
 			int max = (size - 1) / lines + 1;
 			page = Math.max(1, Math.min(max, page));
 			int start = (page - 1) * lines;
 			int cur = -1;
 			issuer.tell("Showing help page %d of %d", page, max);
-			for(Map.Entry<String, Command> entry: map.entrySet()){
+			for(Map.Entry<String, Command> entry : map.entrySet()){
 				if(++cur >= start){
 					if(cur - start < lines){
 						issuer.tell("/%s: %s", entry.getKey(), entry.getValue().getDescription(issuer));

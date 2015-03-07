@@ -2,7 +2,7 @@ package org.blockserver.net.protocol.pe.login;
 
 import org.blockserver.net.protocol.pe.PeProtocolConst;
 
-public class NACKPacket extends AcknowledgePacket implements PeProtocolConst {
+public class NACKPacket extends AcknowledgePacket implements PeProtocolConst{
 	
 	public NACKPacket(int[] packetNumbers){
 		sequenceNumbers = packetNumbers;

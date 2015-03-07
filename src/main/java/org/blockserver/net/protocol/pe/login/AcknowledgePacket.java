@@ -30,14 +30,12 @@ public abstract class AcknowledgePacket implements PeProtocolConst{
 				int diff = current - last;
 				if(diff == 1){
 					last = current;
-				}
-				else if(diff > 1){ //Forget about duplicated packets (bad queues?)
+				}else if(diff > 1){ //Forget about duplicated packets (bad queues?)
 					if(start == last){
 						bb.put((byte) 0x01);
 						bb.put(Utils.writeLTriad(start));
 						start = last = current;
-					}
-					else{
+					}else{
 						bb.put((byte) 0x00);
 						bb.put(Utils.writeLTriad(start));
 						bb.put(Utils.writeLTriad(last));
@@ -49,8 +47,7 @@ public abstract class AcknowledgePacket implements PeProtocolConst{
 			if(start == last){
 				bb.put((byte) 0x01);
 				bb.put(Utils.writeLTriad(start));
-			}
-			else{
+			}else{
 				bb.put((byte) 0x00);
 				bb.put(Utils.writeLTriad(start));
 				bb.put(Utils.writeLTriad(last));

@@ -1,9 +1,5 @@
 package org.blockserver.net.protocol.pe;
 
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.util.*;
-
 import org.blockserver.Server;
 import org.blockserver.api.API;
 import org.blockserver.net.bridge.NetworkBridge;
@@ -12,16 +8,44 @@ import org.blockserver.net.internal.response.PingResponse;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
-import org.blockserver.net.protocol.pe.login.*;
+import org.blockserver.net.protocol.pe.login.ACKPacket;
+import org.blockserver.net.protocol.pe.login.AcknowledgePacket;
+import org.blockserver.net.protocol.pe.login.ClientHandshakePacket;
+import org.blockserver.net.protocol.pe.login.EncapsulatedLoginPacket;
+import org.blockserver.net.protocol.pe.login.LoginStatusPacket;
+import org.blockserver.net.protocol.pe.login.McpeClientConnectPacket;
+import org.blockserver.net.protocol.pe.login.McpeLoginPacket;
+import org.blockserver.net.protocol.pe.login.NACKPacket;
+import org.blockserver.net.protocol.pe.login.RaknetIncompatibleProtocolVersion;
+import org.blockserver.net.protocol.pe.login.RaknetOpenConnectionReply1;
+import org.blockserver.net.protocol.pe.login.RaknetOpenConnectionReply2;
+import org.blockserver.net.protocol.pe.login.RaknetOpenConnectionRequest1;
+import org.blockserver.net.protocol.pe.login.RaknetOpenConnectionRequest2;
+import org.blockserver.net.protocol.pe.login.RaknetReceivedCustomPacket;
+import org.blockserver.net.protocol.pe.login.RaknetSentCustomPacket;
+import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPing;
+import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPong;
+import org.blockserver.net.protocol.pe.login.ServerHandshakePacket;
 import org.blockserver.net.protocol.pe.play.EncapsulatedPlayPacket;
-import org.blockserver.net.protocol.pe.sub.gen.*;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
+import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
+import org.blockserver.net.protocol.pe.sub.gen.McpeSetHealthPacket;
+import org.blockserver.net.protocol.pe.sub.gen.McpeSetTimePacket;
+import org.blockserver.net.protocol.pe.sub.gen.McpeSpawnPositionPacket;
+import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePongPacket;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerLoginInfo;
 import org.blockserver.ticker.CallableTask;
-import org.blockserver.utils.Position;
+import org.blockserver.utils.PositionDoublePrecision;
+
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	private ProtocolManager mgr;
@@ -90,6 +114,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		currentQueue.packets.add(pk);
 	}
 
+	@Override
 	public void sendResponse(InternalResponse response){
 		if(response instanceof PingResponse){
 			McpePongPacket pongPacket = new McpePongPacket(((PingResponse) response).pingId);
@@ -100,7 +125,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			throw new UnsupportedOperationException("Unknown/Unsupported InternalResponse.");
 		}
 	}
-	
+
 	public synchronized void update(){
 		synchronized(ACKQueue){
 			if(ACKQueue.size() > 0){
@@ -132,7 +157,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			if(currentQueue.packets.size() > 0){
 				currentQueue.seqNumber = currentSequenceNum++;
 				for(int i = 0; i < currentQueue.packets.size(); i++){
-					boolean approved = getServer().getAPI().onDataPacketSent(player, new API.Argument<RaknetSentCustomPacket.SentEncapsulatedPacket>(currentQueue.packets.get(i)));
+					boolean approved = getServer().getAPI().onDataPacketSent(player, new API.Argument<>(currentQueue.packets.get(i)));
 					if(!approved){
 						currentQueue.packets.remove(i);
 					}
@@ -203,26 +228,6 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 
 	@SuppressWarnings("UnusedParameters")
 	private void handleCustomPacket(final byte pid, final ByteBuffer bb){
-//		AntiSpam.act(new Runnable(){
-//			@Override
-//			public void run(){
-//				byte[] buffer = new byte[bb.remaining()];
-//				int start = bb.position();
-//				int end = start + bb.remaining();
-//				for(int i = start; i < end; i++){
-//					buffer[i - start] = bb.get(i);
-//				}
-//				StringBuilder sb = new StringBuilder(Integer.toHexString(pid));
-//				for(byte b: buffer){
-//					String s = Integer.toHexString(b);
-//					while(s.length() < 2){
-//						s = "0" + s;
-//					}
-//					sb.append(s);
-//				}
-//				System.out.println("Full encapsulated packet buffer: " + sb.toString());
-//			}
-//		}, "PocketProtocolSession custom", 2000);
 		RaknetReceivedCustomPacket cp = new RaknetReceivedCustomPacket(bb);
 		acknowledge(cp);
 		if(cp.seqNumber - lastSequenceNum == 1){
@@ -234,42 +239,22 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				}
 			}
 		}
-		for(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk: cp.packets){
-			handleDataPacket(pk);
-		}
+		cp.packets.forEach(this::handleDataPacket);
 	}
 	private void handleDataPacket(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk){
 		if((pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09) || pk.buffer[0] == (byte) 0x82){ //MCPE Data Login packet range + Login Packet(0x82)
 			handleDataLogin(pk);
-		} else if(pk.buffer[0] == MC_LOGIN_PACKET){
+		}else if(pk.buffer[0] == MC_LOGIN_PACKET){
 			handleDataLogin(pk);
-		}
-//		if(pk.buffer[0] == MC_LOGIN_PACKET){
-//			McpeLoginPacket lp = new McpeLoginPacket(ByteBuffer.wrap(pk.buffer));
-//			subprot = subprotocols.findProtocol(lp.protocol1, lp.protocol2);
-//			if(subprot == null){
-//				String version = Integer.toString(lp.protocol1);
-//				if(lp.protocol2 != lp.protocol1){
-//					version += ", #" + Integer.toString(lp.protocol2);
-//				}
-//				disconnect("Unsupported protocol version(s) #" + version);
-//			}
-//			else{
-//				player = getServer().newSession(this);
-//			}
-//		}
-		else if(subprot == null){
-			//noinspection UnnecessaryReturnStatement
-			getServer().getAPI().onDataPacketReceived(player, new API.Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket>(pk), new API.Argument<Boolean>(false));
-			return; // TODO handle
-		}
-		else{
+		}else if(subprot == null){
+			getServer().getAPI().onDataPacketReceived(player, new API.Argument<>(pk), new API.Argument<>(false));
+		}else{
 			API.Argument<Boolean> handled = new API.Argument<>(false);
-			boolean handle = getServer().getAPI().onDataPacketReceived(player, new API.Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket>(pk), handled);
-			if((!handled.value) && handle == true){
-				if (player != null){
+			boolean handle = getServer().getAPI().onDataPacketReceived(player, new API.Argument<>(pk), handled);
+			if((!handled.value) && handle){
+				if(player != null){
 					subprot.readDataPacket(pk, player);
-				} else {
+				}else{
 					//TODO
 				}
 			}
@@ -289,19 +274,16 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				addToQueue(shp);
 				System.out.println("ServerHandshake: OUT");
 				break;
-				
+
 			case MC_CLIENT_HANDSHAKE:
 				ClientHandshakePacket chp = new ClientHandshakePacket(bb);
-				//chp.decode();
+				chp.decode();
 				break;
-				
 			case MC_LOGIN_PACKET:
 				McpeLoginPacket lp = new McpeLoginPacket(bb);
 				lp.decode();
-				//System.out.println("Login.");
 				login(lp);
 				sendInitalPackets();
-
 				break;
 			default:
 				getServer().getLogger().warning("Unknown/Unsupported Login Packet recieved. Dropped "+cp.buffer.length+" bytes.");
@@ -311,13 +293,12 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	public void handleAcknowledgePackets(AcknowledgePacket ap){
 		ap.decode();
 		if(ap instanceof ACKPacket){
-			for(int i: ap.sequenceNumbers){
+			for(int i : ap.sequenceNumbers){
 				getServer().getLogger().info("ACK packet recieved #"+i);
 				recoveryQueue.remove(i);
 			}
-		}
-		else if(ap instanceof NACKPacket){
-			for(int i: ap.sequenceNumbers){
+		}else if(ap instanceof NACKPacket){
+			for(int i : ap.sequenceNumbers){
 				getServer().getLogger().warning("NACK packet recieved #"+i);
 				recoveryQueue.get(i).send(bridge, getAddress());
 			}
@@ -338,11 +319,9 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		sgp.spawnX = (int) getServer().getSpawnPosition().getX();
 		sgp.spawnY = (int) getServer().getSpawnPosition().getY();
 		sgp.spawnZ = (int) getServer().getSpawnPosition().getZ();
-
 		sgp.x = (int) player.getLocation().getX();
 		sgp.y = (int) player.getLocation().getY();
 		sgp.z = (int) player.getLocation().getZ();
-
 		addToQueue(sgp.encode());
 		System.out.println("Start Game out.");
 
@@ -370,29 +349,26 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			LoginStatusPacket lsp = new LoginStatusPacket();
 			if(subprotocols.findProtocol(lp.protocol1) != null){ //Protocol is supported
 				subprot = subprotocols.findProtocol(lp.protocol1);
-
 				PlayerLoginInfo info = new PlayerLoginInfo();
 				info.username = lp.username;
 				info.entityID = getServer().getNextEntityID();
 
 				this.player = getServer().newSession(this, info);
-				Position loc = player.getLocation();
+				PositionDoublePrecision loc = player.getLocation();
 
 				lsp.status = 0;
 				lsp.encode();
 				addToQueue(lsp);
-
-				getServer().getLogger().info(player.getUsername()+" logged in at (x: "+loc.getX()+",y: "+loc.getY()+",z: "+loc.getZ()+") with entity ID: "+player.getEntityID());
-			} else {
+				getServer().getLogger().info("%s logged in at (%f, %f, %f) with entity ID %d", player.getUsername(), loc.getX(), loc.getY(), loc.getZ(), player.getEntityID());
+			}else{
 				lsp.status = 2;
 				lsp.encode();
 				addToQueue(lsp);
-
-				closeSession("Outdated!");
+				closeSession("outdated MCPE subprotocol");
 			}
-		} else {
+		}else{
 			//TODO
-			System.out.println("Protocol 1: "+lp.protocol1+", 2: "+lp.protocol2);
+			System.out.println("Protocol 1: " + lp.protocol1 + ", 2: " + lp.protocol2);
 		}
 	}
 	
@@ -431,8 +407,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		getServer().getLogger().debug("[PocketProtocolSession %s] %s", getAddress().toString(),
 				msg);
 	}
-	private void buffer(String front, byte[] buffer, String end){
-		getServer().getLogger().buffer("[PocketProtocolSession " + getAddress().toString()
-				+ "] " + front, buffer, end);
+	public void buffer(String front, byte[] buffer, String end){
+		getServer().getLogger().buffer("[PocketProtocolSession " + getAddress().toString() + "] " + front, buffer, end);
 	}
 }

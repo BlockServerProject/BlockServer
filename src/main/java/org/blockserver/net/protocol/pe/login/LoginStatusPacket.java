@@ -4,9 +4,6 @@ import org.blockserver.net.protocol.pe.PeProtocolConst;
 
 import java.nio.ByteBuffer;
 
-/**
- * Created by jython234 on 2/8/2015.
- */
 public class LoginStatusPacket implements EncapsulatedLoginPacket, PeProtocolConst{
 	public int status;
 	private ByteBuffer bb;
