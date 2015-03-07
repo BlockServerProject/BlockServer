@@ -12,14 +12,14 @@
 		</repository>
 		<snapshotRepository>
 			<id>snapshot-repo</id>
-			<url>http://repo.blockserver.org/snapshots</url>
+			<url>https://raw.githubusercontent.com/BlockServerProject/MavenRepository/master/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
 
 	<repositories>
 		<repository>
 			<id>snapshot-repo</id>
-			<url>http://repo.blockserver.org/snapshots</url>
+			<url>https://raw.githubusercontent.com/BlockServerProject/MavenRepository/master/snapshots</url>
 		</repository>
 	</repositories>
 
