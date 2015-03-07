@@ -6,10 +6,12 @@
 	<packaging>jar</packaging>
 
 	<distributionManagement>
+		<!--
 		<repository>
 			<id>repo</id>
 			<url>http://repo.blockserver.org/releases</url>
 		</repository>
+		-->
 		<snapshotRepository>
 			<id>snapshot-repo</id>
 			<url>https://raw.githubusercontent.com/BlockServerProject/MavenRepository/master/snapshots</url>
