@@ -45,7 +45,7 @@ public class Server{
 	@Deprecated
 	private PositionDoublePrecision spawnPosition = new PositionDoublePrecision(0, 64, 0); // TODO DUMMY
 	private LevelManager lvlManager;
-	private API api = new API.DummyAPI();
+	private API api = new API.DummyAPI(this);
 	private File modulesLocation;
 
 	public String getServerName(){

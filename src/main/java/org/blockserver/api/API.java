@@ -1,5 +1,6 @@
 package org.blockserver.api;
 
+import org.blockserver.Server;
 import org.blockserver.net.protocol.pe.login.RaknetReceivedCustomPacket;
 import org.blockserver.net.protocol.pe.login.RaknetSentCustomPacket;
 import org.blockserver.player.Player;
@@ -8,11 +9,31 @@ import org.blockserver.player.Player;
  * Represents an API. Must be implemented by ALL api extensions.
  * Return true for boolean functions unless you wanna refuse the event
  */
-public interface API{
-	public boolean onPlayerJoin(Player player, Argument<String> joinMessage);
-	public boolean onPlayerQuit(Player player, Argument<String> leaveMessage);
-	public boolean onDataPacketSent(Player player, Argument<RaknetSentCustomPacket.SentEncapsulatedPacket> packet);
-	public boolean onDataPacketReceived(Player player, Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket> packet, Argument<Boolean> handled);
+public abstract class API{
+    private Server server;
+
+    /**
+     * Construct a new API.
+     * @param server The server this API belongs to.
+     */
+    public API(Server server){
+        this.server = server;
+    }
+
+    protected abstract boolean handleEvent(Event evt);
+
+    /**
+     * Fire an event.
+     * @param evt The Event to fire.
+     * @return The outcome of the event.
+     */
+    public boolean fireEvent(Event evt){
+        return handleEvent(evt);
+    }
+
+    public Server getServer(){
+        return server;
+    }
 
 	public static class Argument<T>{
 		public T value;
@@ -21,24 +42,15 @@ public interface API{
 		}
 	}
 
-	public static class DummyAPI implements API{
-		@Override
-		public boolean onPlayerJoin(Player player,
-				Argument<String> joinMessage){
-			return true;
-		}
-		@Override
-		public boolean onPlayerQuit(Player player, Argument<String> leaveMessage){
-			return true;
-		}
+    public static class DummyAPI extends API{
 
-		@Override
-		public boolean onDataPacketSent(Player player, Argument<RaknetSentCustomPacket.SentEncapsulatedPacket> packet){
-			return true;
-		}
-		@Override
-		public boolean onDataPacketReceived(Player player, Argument<RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket> packet, Argument<Boolean> handled){
-			return true;
-		}
-	}
+        public DummyAPI(Server server) {
+            super(server);
+        }
+
+        @Override
+        protected boolean handleEvent(Event evt) {
+            return evt.isCanceled();
+        }
+    }
 }

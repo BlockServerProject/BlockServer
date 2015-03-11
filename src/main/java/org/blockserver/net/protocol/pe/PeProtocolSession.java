@@ -2,6 +2,8 @@ package org.blockserver.net.protocol.pe;
 
 import org.blockserver.Server;
 import org.blockserver.api.API;
+import org.blockserver.api.impl.PEDataPacketRecieveEvent;
+import org.blockserver.api.impl.PEDataPacketSendEvent;
 import org.blockserver.net.bridge.NetworkBridge;
 import org.blockserver.net.internal.response.InternalResponse;
 import org.blockserver.net.internal.response.PingResponse;
@@ -157,7 +159,13 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			if(currentQueue.packets.size() > 0){
 				currentQueue.seqNumber = currentSequenceNum++;
 				for(int i = 0; i < currentQueue.packets.size(); i++){
-					boolean approved = getServer().getAPI().onDataPacketSent(player, new API.Argument<>(currentQueue.packets.get(i)));
+					boolean approved;
+
+                    PEDataPacketSendEvent sendEvent = new PEDataPacketSendEvent();
+                    sendEvent.addArgument(new API.Argument<PeProtocolSession>(this), 0);
+                    sendEvent.addArgument(new API.Argument<RaknetSentCustomPacket>(currentQueue), 1);
+
+                    approved = getServer().getAPI().fireEvent(sendEvent);
 					if(!approved){
 						currentQueue.packets.remove(i);
 					}
@@ -239,7 +247,13 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				}
 			}
 		}
-		cp.packets.forEach(this::handleDataPacket);
+        PEDataPacketRecieveEvent recieveEvent = new PEDataPacketRecieveEvent();
+        recieveEvent.addArgument(new API.Argument<PeProtocolSession>(this), 0);
+        recieveEvent.addArgument(new API.Argument<RaknetReceivedCustomPacket>(cp), 1);
+
+        if(!getServer().getAPI().fireEvent(recieveEvent)) {
+            cp.packets.forEach(this::handleDataPacket);
+        }
 	}
 	private void handleDataPacket(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk){
 		if((pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09) || pk.buffer[0] == (byte) 0x82){ //MCPE Data Login packet range + Login Packet(0x82)
@@ -247,17 +261,13 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		}else if(pk.buffer[0] == MC_LOGIN_PACKET){
 			handleDataLogin(pk);
 		}else if(subprot == null){
-			getServer().getAPI().onDataPacketReceived(player, new API.Argument<>(pk), new API.Argument<>(false));
+            //TODO
 		}else{
-			API.Argument<Boolean> handled = new API.Argument<>(false);
-			boolean handle = getServer().getAPI().onDataPacketReceived(player, new API.Argument<>(pk), handled);
-			if((!handled.value) && handle){
-				if(player != null){
-					subprot.readDataPacket(pk, player);
-				}else{
-					//TODO
-				}
-			}
+            if(player != null){
+                subprot.readDataPacket(pk, player);
+            }else{
+                //TODO
+            }
 		}
 	}
 	private void handleDataLogin(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket cp){
