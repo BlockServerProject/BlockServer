@@ -4,7 +4,7 @@ Syntax of BlockServer (Java)
 * Open braces for block expressions (e.g. methods, classes, if-blocks, for-blocks, etc.) should not occupy an independent line.
 * There can be an empty line between methods and/or fields.
 * There can be an empty line between two different sections of code.
-* Packages must be of or of subpackages of `net.blockserver`.
+* Packages must be of or of subpackages of `org.blockserver`.
 * The three main code sections in a file (package, import, class/interface/enum declaration) should be separated with empty lines.
 * Imports of Java classes and custom classes can have an empty line between.
 * Do not make redundant imports like `java.lang.*` imports and unused imports.
@@ -19,7 +19,7 @@ Syntax of BlockServer (Java)
 Example code:
 
 ```java
-package net.blockserver.examples;
+package org.blockserver.examples;
 
 import java.io.File;
 import java.io.FilenameFilter;
