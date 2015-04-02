@@ -50,7 +50,7 @@ public abstract class API{
 
         @Override
         protected boolean handleEvent(Event evt) {
-            return evt.isCanceled();
+            return evt.isCanceled() != true;
         }
     }
 }

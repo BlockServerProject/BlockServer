@@ -251,7 +251,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
         recieveEvent.addArgument(new API.Argument<PeProtocolSession>(this), 0);
         recieveEvent.addArgument(new API.Argument<RaknetReceivedCustomPacket>(cp), 1);
 
-        if(!getServer().getAPI().fireEvent(recieveEvent)) {
+        if(getServer().getAPI().fireEvent(recieveEvent)) {
             cp.packets.forEach(this::handleDataPacket);
         }
 	}
@@ -286,8 +286,9 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				break;
 
 			case MC_CLIENT_HANDSHAKE:
-				ClientHandshakePacket chp = new ClientHandshakePacket(bb);
-				chp.decode();
+				//Useless
+				//ClientHandshakePacket chp = new ClientHandshakePacket(bb);
+				//chp.decode();
 				break;
 			case MC_LOGIN_PACKET:
 				McpeLoginPacket lp = new McpeLoginPacket(bb);

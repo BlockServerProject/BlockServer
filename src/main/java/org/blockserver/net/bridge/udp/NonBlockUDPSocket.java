@@ -52,6 +52,9 @@ public class NonBlockUDPSocket extends NonBlockSocket{
 	public void send(WrappedPacket pk){
 		try{
 			byte[] buffer = pk.bb().array();
+			if(buffer.length > 1400){
+				System.out.println(buffer.length);
+			}
 			socket.send(new DatagramPacket(buffer, buffer.length, pk.getAddress()));
 		}catch(IOException e){
 			e.printStackTrace();
