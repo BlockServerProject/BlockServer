@@ -7,47 +7,36 @@ import org.blockserver.Server;
  * Return true for boolean functions unless you wanna refuse the event
  */
 public abstract class API{
-    private Server server;
+	private Server server;
 
-    /**
-     * Construct a new API.
-     * @param server The server this API belongs to.
-     */
-    public API(Server server){
-        this.server = server;
-    }
-
-    protected abstract boolean handleEvent(Event evt);
-
-    /**
-     * Fire an event.
-     * @param evt The Event to fire.
-     * @return The outcome of the event.
-     */
-    public boolean fireEvent(Event evt){
-        return handleEvent(evt);
-    }
-
-    public Server getServer(){
-        return server;
-    }
-
-	public static class Argument<T>{
-		public T value;
-		public Argument(T value){
-			this.value = value;
-		}
+	/**
+	 * Construct a new API.
+	 * @param server The server this API belongs to.
+	 */
+	public API(Server server){
+		this.server = server;
 	}
 
-    public static class DummyAPI extends API{
+	/**
+	 * Fire an event.
+	 * @param evt The Event to fire.
+	 * @return {@code true} if the event should continue, {@code false} otherwise.
+	 */
+	public abstract boolean handleEvent(NativeEvent evt);
 
-        public DummyAPI(Server server) {
-            super(server);
-        }
+	public Server getServer(){
+		return server;
+	}
 
-        @Override
-        protected boolean handleEvent(Event evt) {
-            return !evt.isCanceled();
-        }
-    }
+	public static class DummyAPI extends API{
+
+		public DummyAPI(Server server) {
+			super(server);
+		}
+
+		@Override
+		public boolean handleEvent(NativeEvent evt) {
+			return !evt.isCancelled();
+		}
+	}
 }

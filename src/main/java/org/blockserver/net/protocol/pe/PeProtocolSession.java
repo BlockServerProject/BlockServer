@@ -1,9 +1,8 @@
 package org.blockserver.net.protocol.pe;
 
 import org.blockserver.Server;
-import org.blockserver.api.API;
-import org.blockserver.api.impl.PEDataPacketRecieveEvent;
-import org.blockserver.api.impl.PEDataPacketSendEvent;
+import org.blockserver.api.event.net.protocol.pe.PEDataPacketRecieveNativeEvent;
+import org.blockserver.api.event.net.protocol.pe.PEDataPacketSendNativeEvent;
 import org.blockserver.net.bridge.NetworkBridge;
 import org.blockserver.net.internal.response.InternalResponse;
 import org.blockserver.net.internal.response.PingResponse;
@@ -111,6 +110,11 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			currentQueue.packets.clear();
 		}
 		RaknetSentCustomPacket.SentEncapsulatedPacket pk = new RaknetSentCustomPacket.SentEncapsulatedPacket(buffer, (byte) reliability);
+		PEDataPacketSendNativeEvent event = new PEDataPacketSendNativeEvent(pk, this);
+		if(!getServer().getAPI().handleEvent(event)){
+			return;
+		}
+		pk = event.getPacket();
 		pk.messsageIndex = currentMessageIndex++;
 		currentQueue.packets.add(pk);
 	}
@@ -157,18 +161,6 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		synchronized(currentQueue){
 			if(currentQueue.packets.size() > 0){
 				currentQueue.seqNumber = currentSequenceNum++;
-				for(int i = 0; i < currentQueue.packets.size(); i++){
-					boolean approved;
-
-                    PEDataPacketSendEvent sendEvent = new PEDataPacketSendEvent();
-                    sendEvent.addArgument(new API.Argument<>(this), 0);
-                    sendEvent.addArgument(new API.Argument<>(currentQueue), 1);
-
-                    approved = getServer().getAPI().fireEvent(sendEvent);
-					if(!approved){
-						currentQueue.packets.remove(i);
-					}
-				}
 				if(currentQueue.packets.size() > 0){
 					currentQueue.send(bridge, getAddress());
 					recoveryQueue.put(currentQueue.seqNumber, currentQueue);
@@ -239,34 +231,33 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		acknowledge(cp);
 		if(cp.seqNumber - lastSequenceNum == 1){
 			lastSequenceNum = cp.seqNumber;
-		} else {
-			synchronized (NACKQueue){
+		}else{
+			synchronized(NACKQueue){
 				for(int i = lastSequenceNum; i < cp.seqNumber; ++i){
 					NACKQueue.add(i);
 				}
 			}
 		}
-        PEDataPacketRecieveEvent recieveEvent = new PEDataPacketRecieveEvent();
-        recieveEvent.addArgument(new API.Argument<>(this), 0);
-        recieveEvent.addArgument(new API.Argument<>(cp), 1);
-
-        if(getServer().getAPI().fireEvent(recieveEvent)) {
-            cp.packets.forEach(this::handleDataPacket);
-        }
+		cp.packets.forEach(this::handleDataPacket);
 	}
 	private void handleDataPacket(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket pk){
+		PEDataPacketRecieveNativeEvent event = new PEDataPacketRecieveNativeEvent(pk, this);
+		if(!getServer().getAPI().handleEvent(event)){
+			return;
+		}
+		pk = event.getPacket();
 		if((pk.buffer[0] <= 0x13 && pk.buffer[0] >= 0x09) || pk.buffer[0] == (byte) 0x82){ //MCPE Data Login packet range + Login Packet(0x82)
 			handleDataLogin(pk);
 		}else if(pk.buffer[0] == MC_LOGIN_PACKET){
 			handleDataLogin(pk);
 		}else if(subprot == null){
-            //TODO
+			//TODO
 		}else{
-            if(player != null){
-                subprot.readDataPacket(pk, player);
-            }else{
-                //TODO
-            }
+			if(player != null){
+				subprot.readDataPacket(pk, player);
+			}else{
+				//TODO
+			}
 		}
 	}
 	private void handleDataLogin(RaknetReceivedCustomPacket.ReceivedEncapsulatedPacket cp){

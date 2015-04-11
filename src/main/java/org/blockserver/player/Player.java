@@ -1,6 +1,8 @@
 package org.blockserver.player;
 
 import org.blockserver.Server;
+import org.blockserver.api.event.net.ResponseReceiveNativeEvent;
+import org.blockserver.api.event.net.ResponseSendNativeEvent;
 import org.blockserver.net.internal.request.DisconnectRequest;
 import org.blockserver.net.internal.request.InternalRequest;
 import org.blockserver.net.internal.request.PingRequest;
@@ -32,10 +34,16 @@ public class Player{
 		// TODO read the data
 	}
 	private void sendResponse(InternalResponse response){
-		protocol.sendResponse(response);
-		//TODO: More
+		ResponseSendNativeEvent event = new ResponseSendNativeEvent(this, response);
+		if(!getServer().getAPI().handleEvent(event)){
+			return;
+		}
+		protocol.sendResponse(event.getResponse());
 	}
 	public void handleRequest(InternalRequest request){
+		ResponseReceiveNativeEvent event = new ResponseReceiveNativeEvent(this, request);
+		getServer().getAPI().handleEvent(event);
+		request = event.getRequest();
 		if(request instanceof PingRequest){
 			PingResponse pingResponse = new PingResponse();
 			pingResponse.pingId = ((PingRequest) request).pingId;
