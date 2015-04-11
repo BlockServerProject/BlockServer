@@ -34,6 +34,7 @@ public abstract class NonBlockSocket extends Thread{
 	}
 	public abstract void send(WrappedPacket pk);
 	public abstract WrappedPacket receive_();
+	@SuppressWarnings("RedundantThrows")
 	public abstract void finalizeStuffs() throws IOException;
 	public final WrappedPacket receive(){
 		synchronized(receiveQueue){

@@ -30,8 +30,8 @@ public class InputStreamConsoleIn implements ConsoleIn{
 			br = new BufferedReader(reader);
 		}
 		this.br = br;
-		this.close = (flags & FLAG_CLOSE_ONLY) == FLAG_CLOSE_ONLY;
-		if(this.threaded = (flags & FLAG_THREADED_ONLY) == FLAG_THREADED_ONLY){
+		close = (flags & FLAG_CLOSE_ONLY) == FLAG_CLOSE_ONLY;
+		if(threaded = (flags & FLAG_THREADED_ONLY) == FLAG_THREADED_ONLY){
 			readerThread = new ReaderThread();
 		}
 	}

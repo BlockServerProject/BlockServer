@@ -1,9 +1,6 @@
 package org.blockserver.api;
 
 import org.blockserver.Server;
-import org.blockserver.net.protocol.pe.login.RaknetReceivedCustomPacket;
-import org.blockserver.net.protocol.pe.login.RaknetSentCustomPacket;
-import org.blockserver.player.Player;
 
 /**
  * Represents an API. Must be implemented by ALL api extensions.
@@ -50,7 +47,7 @@ public abstract class API{
 
         @Override
         protected boolean handleEvent(Event evt) {
-            return evt.isCanceled() != true;
+            return !evt.isCanceled();
         }
     }
 }

@@ -1,22 +1,17 @@
 package org.blockserver.level;
 
-import org.blockserver.utils.PositionDoublePrecision;
-
 /**
  * Represents a 16x16x128 Chunk.
  */
-public interface IChunk {
+public interface IChunk{
+	public void generate();
+	public ChunkPosition getPosition();
 
-	void generate();
-	PositionDoublePrecision getPosition();
-
-	byte[] getBlockIds();
-	byte[] getBlockData();
-	byte[] getSkylight();
-	byte[] getBlocklight();
-
-	byte[] getBiomeIds();
-	byte[] getBiomeColors();
-
+	public byte[] getBlockIds();
+	public byte[] getBlockData();
+	public byte[] getSkylight();
+	public byte[] getBlocklight();
+	public byte[] getBiomeIds();
+	public byte[] getBiomeColors();
 	//TODO: Add tile entities
 }

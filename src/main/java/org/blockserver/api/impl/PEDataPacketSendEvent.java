@@ -2,9 +2,7 @@ package org.blockserver.api.impl;
 
 import org.blockserver.api.Event;
 import org.blockserver.net.protocol.pe.PeProtocolSession;
-import org.blockserver.net.protocol.pe.login.RaknetReceivedCustomPacket;
 import org.blockserver.net.protocol.pe.login.RaknetSentCustomPacket;
-import org.blockserver.utils.Listener;
 
 /**
  * Fired whenever a RakNet Custom packet is to be sent.

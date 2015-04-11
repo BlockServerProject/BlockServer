@@ -1,19 +1,12 @@
 package org.blockserver.utils;
 
+import org.blockserver.level.ChunkPosition;
+
 public class PositionDoublePrecision{
 	private double x;
 	private double y;
 	private double z;
 
-	/**
-	 * TODO: Migrate integral usages of this class to {@link org.blockserver.utils.PositionInteger}
-	 */
-	@Deprecated
-	public PositionDoublePrecision(int x, int y, int z){
-		this.x = x;
-		this.y = y;
-		this.z = z;
-	}
 	public PositionDoublePrecision(double x, double y, double z){
 		this.x = x;
 		this.y = y;
@@ -38,5 +31,9 @@ public class PositionDoublePrecision{
 	}
 	public void setZ(double z){
 		this.z = z;
+	}
+
+	public ChunkPosition getChunkPos(){
+		return new ChunkPosition(((int) x) >> 4, ((int) z) >> 4);
 	}
 }

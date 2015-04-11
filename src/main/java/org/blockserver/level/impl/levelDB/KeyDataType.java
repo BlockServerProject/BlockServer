@@ -6,7 +6,7 @@ public enum KeyDataType {
 	private byte keyType;
 
 	private KeyDataType(byte type){
-		this.keyType = type;
+		keyType = type;
 	}
 
 	public byte getByte(){

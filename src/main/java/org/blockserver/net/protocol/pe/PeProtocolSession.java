@@ -12,7 +12,6 @@ import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
 import org.blockserver.net.protocol.pe.login.ACKPacket;
 import org.blockserver.net.protocol.pe.login.AcknowledgePacket;
-import org.blockserver.net.protocol.pe.login.ClientHandshakePacket;
 import org.blockserver.net.protocol.pe.login.EncapsulatedLoginPacket;
 import org.blockserver.net.protocol.pe.login.LoginStatusPacket;
 import org.blockserver.net.protocol.pe.login.McpeClientConnectPacket;
@@ -162,8 +161,8 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 					boolean approved;
 
                     PEDataPacketSendEvent sendEvent = new PEDataPacketSendEvent();
-                    sendEvent.addArgument(new API.Argument<PeProtocolSession>(this), 0);
-                    sendEvent.addArgument(new API.Argument<RaknetSentCustomPacket>(currentQueue), 1);
+                    sendEvent.addArgument(new API.Argument<>(this), 0);
+                    sendEvent.addArgument(new API.Argument<>(currentQueue), 1);
 
                     approved = getServer().getAPI().fireEvent(sendEvent);
 					if(!approved){
@@ -248,8 +247,8 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 			}
 		}
         PEDataPacketRecieveEvent recieveEvent = new PEDataPacketRecieveEvent();
-        recieveEvent.addArgument(new API.Argument<PeProtocolSession>(this), 0);
-        recieveEvent.addArgument(new API.Argument<RaknetReceivedCustomPacket>(cp), 1);
+        recieveEvent.addArgument(new API.Argument<>(this), 0);
+        recieveEvent.addArgument(new API.Argument<>(cp), 1);
 
         if(getServer().getAPI().fireEvent(recieveEvent)) {
             cp.packets.forEach(this::handleDataPacket);
@@ -363,8 +362,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 				PlayerLoginInfo info = new PlayerLoginInfo();
 				info.username = lp.username;
 				info.entityID = getServer().getNextEntityID();
-
-				this.player = getServer().newSession(this, info);
+				player = getServer().newSession(this, info);
 				PositionDoublePrecision loc = player.getLocation();
 
 				lsp.status = 0;

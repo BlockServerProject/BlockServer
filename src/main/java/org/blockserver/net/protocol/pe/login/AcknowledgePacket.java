@@ -26,7 +26,7 @@ public abstract class AcknowledgePacket implements PeProtocolConst{
 			int start = sequenceNumbers[0];
 			int last = sequenceNumbers[0];
 			while(pointer < count){
-				int current = this.sequenceNumbers[pointer++];
+				int current = sequenceNumbers[pointer++];
 				int diff = current - last;
 				if(diff == 1){
 					last = current;
@@ -84,7 +84,7 @@ public abstract class AcknowledgePacket implements PeProtocolConst{
 		}
 
 		sequenceNumbers = new int[packets.size()];
-		for(int i = 0; i < this.sequenceNumbers.length; i++){
+		for(int i = 0; i < sequenceNumbers.length; i++){
 			sequenceNumbers[i] = packets.get(i);
 		}
 	}

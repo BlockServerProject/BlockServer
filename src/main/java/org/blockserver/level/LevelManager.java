@@ -13,7 +13,7 @@ public class LevelManager{
 		return levelImpl;
 	}
 	public void setLevelImpl(ILevel level){
-		this.levelImpl = level;
+		levelImpl = level;
 	}
 
 	public Server getServer(){

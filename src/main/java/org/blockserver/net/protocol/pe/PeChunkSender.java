@@ -1,8 +1,8 @@
 package org.blockserver.net.protocol.pe;
 
+import org.blockserver.level.ChunkPosition;
 import org.blockserver.level.IChunk;
 import org.blockserver.net.protocol.pe.sub.gen.FullChunkDataPacket;
-import org.blockserver.utils.PositionDoublePrecision;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +12,9 @@ import java.util.HashMap;
  * A MCPE Chunk Sender.
  */
 public class PeChunkSender extends Thread{
-	public final HashMap<PositionDoublePrecision, IChunk> useChunks = new HashMap<>();
-	private final HashMap<Integer, ArrayList<PositionDoublePrecision>> MapOrder = new HashMap<>();
-	private final HashMap<PositionDoublePrecision, Boolean> requestChunks = new HashMap<>();
+	public final HashMap<ChunkPosition, IChunk> useChunks = new HashMap<>();
+	private final HashMap<Integer, ArrayList<ChunkPosition>> mapOrder = new HashMap<>();
+	private final HashMap<ChunkPosition, Boolean> requestChunks = new HashMap<>();
 	private final ArrayList<Integer> orders = new ArrayList<>();
 
 	public boolean first = true;
@@ -30,8 +30,8 @@ public class PeChunkSender extends Thread{
 	public void run(){
 		setName("PEChunkSender");
 		session.getServer().getLogger().debug("ChunkSender start.");
-		System.out.println( "In ChunkSender");
-		while (!isInterrupted()){
+		System.out.println("In ChunkSender");
+		while(!isInterrupted()){
 			int centerX = (int) Math.floor(session.getPlayer().getLocation().getX()) >> 4; // otherwise -1 will become 0 too
 			int centerZ = (int) Math.floor(session.getPlayer().getLocation().getZ()) >> 4;
 
@@ -48,7 +48,7 @@ public class PeChunkSender extends Thread{
 			lastCX = centerX; lastCZ = centerZ;
 			int radius = 8;
 
-			MapOrder.clear();
+			mapOrder.clear();
 			requestChunks.clear();
 			orders.clear();
 
@@ -57,23 +57,23 @@ public class PeChunkSender extends Thread{
 					int distance = (x*x) + (z*z);
 					int chunkX = x + centerX;
 					int chunkZ = z + centerZ;
-					if(!MapOrder.containsKey(distance)){
-						MapOrder.put(distance, new ArrayList<>());
+					if(!mapOrder.containsKey(distance)){
+						mapOrder.put(distance, new ArrayList<>());
 					}
-					requestChunks.put(new PositionDoublePrecision(chunkX, 0, chunkZ), true);
-					MapOrder.get(distance).add( new PositionDoublePrecision(chunkX, 0, chunkZ));
+					requestChunks.put(new ChunkPosition(chunkX, chunkZ), true);
+					mapOrder.get(distance).add(new ChunkPosition(chunkX, chunkZ));
 					orders.add(distance);
 				}
 			}
 			Collections.sort(orders);
 
 			for(Integer i : orders){
-				for(PositionDoublePrecision v : MapOrder.get(i)){
+				for(ChunkPosition v : mapOrder.get(i)){
 					try{
 						if(useChunks.containsKey(v)){
 							continue;
 						}
-						useChunks.put(v, session.getServer().getLevelManager().getLevelImplemenation().getChunkAt((int) v.getX(), (int) v.getZ()));
+						useChunks.put(v, session.getServer().getLevelManager().getLevelImplemenation().getChunkAt(v));
 						FullChunkDataPacket dp = new FullChunkDataPacket(useChunks.get(v));
 						dp.encode();
 						session.addToQueue(dp.getCompressed());

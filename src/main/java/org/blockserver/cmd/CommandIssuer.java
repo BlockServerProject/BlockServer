@@ -11,7 +11,7 @@ public interface CommandIssuer{
 		private Logger logger;
 		public ConsoleIssuer(Server server){
 			this.server = server;
-			this.logger = server.getLogger();
+			logger = server.getLogger();
 		}
 		@Override
 		public void tell(String msg, Object... args){

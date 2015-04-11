@@ -18,6 +18,7 @@ public class FullChunkDataPacket implements PeProtocolConst{
 		this.chunk = chunk;
 	}
 
+	@SuppressWarnings("RedundantThrows")
 	public void encode() throws IOException{
 		/*
 		BinaryWriter writer = new BinaryWriter(new ByteArrayOutputStream(getLength()), BinaryUtils.LITTLE_ENDIAN);
@@ -40,8 +41,8 @@ public class FullChunkDataPacket implements PeProtocolConst{
 		compressed = toCompressed(((ByteArrayOutputStream) writer.getOutputStream()).toByteArray());
 		*/
 		ByteBuffer bb = ByteBuffer.allocate(83208).order(ByteOrder.LITTLE_ENDIAN);
-		bb.putInt((int) chunk.getPosition().getX());
-		bb.putInt((int) chunk.getPosition().getZ());
+		bb.putInt(chunk.getPosition().getX());
+		bb.putInt(chunk.getPosition().getZ());
 		bb.put(chunk.getBlockIds());
 		bb.put(chunk.getBlockData());
 		bb.put(chunk.getSkylight());

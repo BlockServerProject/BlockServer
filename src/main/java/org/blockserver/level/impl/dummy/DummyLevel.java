@@ -1,5 +1,6 @@
 package org.blockserver.level.impl.dummy;
 
+import org.blockserver.level.ChunkPosition;
 import org.blockserver.level.IChunk;
 import org.blockserver.level.ILevel;
 import org.blockserver.level.LevelSaveException;
@@ -8,7 +9,7 @@ import org.blockserver.utils.PositionDoublePrecision;
 /**
  * A Dummy implementation of a Level.
  */
-public class DummyLevel implements ILevel{
+public class DummyLevel extends ILevel{
 
 	private PositionDoublePrecision spawnPosition;
 
@@ -17,24 +18,25 @@ public class DummyLevel implements ILevel{
 	}
 
 	@Override
-	public void loadLevel(){
-
-	}
+	public void loadLevel(){}
 
 	@Override
-	public void saveLevel() throws LevelSaveException{
-
-	}
+	public void saveLevel() throws LevelSaveException{}
 
 	@Override
-	public IChunk getChunkAt(int x, int z){
-		IChunk chunk = new DummyChunk(x, z);
+	public IChunk getChunkAt(ChunkPosition pos){
+		IChunk chunk = new DummyChunk(pos);
 		chunk.generate();
 		return chunk;
 	}
 
 	@Override
-	public boolean unloadChunk(int x, int z){
+	public boolean unloadChunk(ChunkPosition pos){
+		return true;
+	}
+
+	@Override
+	public boolean isChunkLoaded(ChunkPosition pos){
 		return true;
 	}
 
@@ -45,6 +47,6 @@ public class DummyLevel implements ILevel{
 
 	@Override
 	public void setSpawnPosition(PositionDoublePrecision position){
-		this.spawnPosition = position;
+		spawnPosition = position;
 	}
 }

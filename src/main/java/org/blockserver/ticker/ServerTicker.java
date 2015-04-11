@@ -20,7 +20,7 @@ public class ServerTicker{
 
 	public ServerTicker(Server server, int sleepNanos){
 		this.server = server;
-		this.sleep = sleepNanos;
+		sleep = sleepNanos;
 	}
 	public void start(){
 		if(running){

@@ -1,13 +1,13 @@
 package org.blockserver.level.impl.levelDB;
 
 import org.blockserver.Server;
+import org.blockserver.level.ChunkPosition;
 import org.blockserver.level.IChunk;
 import org.blockserver.level.ILevel;
 import org.blockserver.level.LevelLoadException;
 import org.blockserver.level.LevelSaveException;
 import org.blockserver.level.impl.Chunk;
 import org.blockserver.utils.PositionDoublePrecision;
-
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.DBFactory;
@@ -16,12 +16,13 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * An implementation of a LevelDB level.
  */
-public class DBLevel implements ILevel{
+public class DBLevel extends ILevel{
 	private File lvlLocation;
 	private File dbLocation;
 	private Server server;
@@ -30,7 +31,7 @@ public class DBLevel implements ILevel{
 	private DB database;
 
 	private Chunk spawnChunk;
-	private ArrayList<Chunk> loadedChunks = new ArrayList<>();
+	private final HashMap<ChunkPosition, Chunk> loadedChunks = new HashMap<>();
 
 	private boolean loaded = false;
 
@@ -38,13 +39,13 @@ public class DBLevel implements ILevel{
 		this.lvlLocation = lvlLocation;
 		this.server = server;
 		this.spawnPosition = spawnPosition;
-		this.dbLocation = new File(lvlLocation.getAbsolutePath() + File.separator + "db");
+		dbLocation = new File(lvlLocation.getAbsolutePath() + File.separator + "db");
 		if(!lvlLocation.exists() || !lvlLocation.isDirectory()){
 			server.getLogger().warning("Could not find LevelDB location... Creating new world.");
 			try {
 				newWorld();
 			}catch(IOException e){
-				server.getLogger().fatal("FAILED TO CREATE NEW LEVEL!");
+				server.getLogger().fatal("Failed to create new level!");
 				server.getLogger().trace("IOException: " + e.getMessage());
 				e.printStackTrace();
 
@@ -72,10 +73,10 @@ public class DBLevel implements ILevel{
 		options.compressionType(CompressionType.SNAPPY);
 		options.createIfMissing(true);
 
-		try {
+		try{
 			database = factory.open(dbLocation, options);
 			server.getLogger().info("Loading spawn chunk...");
-			spawnChunk = new DBChunk(spawnPosition, database);
+			spawnChunk = new DBChunk(spawnPosition.getChunkPos(), database);
 			spawnChunk.load();
 			server.getLogger().info("Spawn chunk loaded!");
 		}catch(IOException e){
@@ -89,9 +90,13 @@ public class DBLevel implements ILevel{
 	public void saveLevel() throws LevelSaveException{
 		spawnChunk = null;
 		server.getLogger().info("Saving Level...");
-		loadedChunks.forEach(Chunk::save);
+		Collection<Chunk> values;
+		synchronized(loadedChunks){
+			values = loadedChunks.values();
+		}
+		values.forEach(Chunk::save);
 
-		try {
+		try{
 			database.close();
 			server.getLogger().info("Level Saved!");
 		}catch(IOException e){
@@ -100,27 +105,33 @@ public class DBLevel implements ILevel{
 	}
 
 	@Override
-	public synchronized IChunk getChunkAt(int x, int z){
-		for(Chunk chunk: loadedChunks){
-			if(chunk.getPosition().getX() == x && chunk.getPosition().getZ() == z){
-				return chunk;
-			}
+	public synchronized IChunk getChunkAt(ChunkPosition pos){
+		Chunk get = loadedChunks.get(pos);
+		if(get != null){
+			return get;
 		}
-		DBChunk chunk = new DBChunk(new PositionDoublePrecision(x, 0, z), database);
+		DBChunk chunk = new DBChunk(pos, database);
 		chunk.load();
-		loadedChunks.add(chunk);
+		synchronized(loadedChunks){
+			loadedChunks.put(pos, chunk);
+		}
 		return chunk;
 	}
 
 	@Override
-	public synchronized boolean unloadChunk(int x, int z){
-		for(Chunk chunk: loadedChunks){
-			if(chunk.getPosition().getX() == x && chunk.getPosition().getZ() == z){
-				loadedChunks.remove(chunk);
-				return true;
+	public synchronized boolean unloadChunk(ChunkPosition pos){
+		synchronized(loadedChunks){
+			Chunk chunk = loadedChunks.remove(pos);
+			if(chunk == null){
+				return false;
 			}
+			chunk.save();
+			return true;
 		}
-		return false;
+	}
+
+	public boolean isChunkLoaded(ChunkPosition pos){
+		return loadedChunks.containsKey(pos);
 	}
 
 	@Override
@@ -130,7 +141,8 @@ public class DBLevel implements ILevel{
 
 	@Override
 	public void setSpawnPosition(PositionDoublePrecision position){
-		this.spawnPosition = position;
+		spawnPosition = position;
+
 	}
 
 	private void newWorld() throws IOException {

@@ -1,18 +1,17 @@
 package org.blockserver.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Base class for all events, Module events must extend this too.
  */
 public abstract class Event {
-    private ArrayList<API.Argument> args = new ArrayList<API.Argument>();
+    private ArrayList<API.Argument> args = new ArrayList<>();
     private boolean isCanceled = false;
 
     public Event(API.Argument... args){
-        for(API.Argument arg: args){
-            this.args.add(arg);
-        }
+        Collections.addAll(this.args, args);
     }
 
     public Event() { }
@@ -30,7 +29,7 @@ public abstract class Event {
     }
 
     public void setCanceled(boolean canceled){
-        this.isCanceled = canceled;
+        isCanceled = canceled;
     }
 
     public boolean isCanceled(){

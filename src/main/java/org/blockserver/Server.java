@@ -120,7 +120,7 @@ public class Server{
 		Thread.currentThread().setName("BlockServerPE");
 		this.address = address;
 		this.port = port;
-		this.modulesLocation = modulePath;
+		modulesLocation = modulePath;
 		this.serverName = serverName;
 		logger = new Logger(out);
 		ticker = new ServerTicker(this, 50);
@@ -150,8 +150,7 @@ public class Server{
 		addShutdownFunction(() -> {
 			try{
 				lvlManager.getLevelImplemenation().saveLevel();
-			}
-			catch(LevelSaveException e){
+			}catch(LevelSaveException e){
 				e.printStackTrace();
 			}
 		});
@@ -177,7 +176,7 @@ public class Server{
 	}
 
 	public API getAPI(){
-		return this.api;
+		return api;
 	}
 
 	public Player newSession(ProtocolSession session){

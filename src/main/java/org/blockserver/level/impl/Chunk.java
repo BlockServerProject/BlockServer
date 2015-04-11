@@ -1,11 +1,11 @@
 package org.blockserver.level.impl;
 
+import org.blockserver.level.ChunkPosition;
 import org.blockserver.level.IChunk;
-import org.blockserver.utils.PositionDoublePrecision;
 import org.iq80.leveldb.DB;
 
 public abstract class Chunk implements IChunk{
-	protected PositionDoublePrecision chunkPosition;
+	protected ChunkPosition chunkPosition;
 	protected byte[] blockIds;
 	protected byte[] blockData;
 	protected byte[] blockLight;
@@ -16,7 +16,7 @@ public abstract class Chunk implements IChunk{
 
 	protected DB database;
 
-	public Chunk(PositionDoublePrecision position, DB db){
+	public Chunk(ChunkPosition position, DB db){
 		chunkPosition = position;
 		database = db;
 	}
@@ -25,7 +25,7 @@ public abstract class Chunk implements IChunk{
 	public abstract void save();
 
 	@Override
-	public PositionDoublePrecision getPosition(){
+	public ChunkPosition getPosition(){
 		return chunkPosition;
 	}
 

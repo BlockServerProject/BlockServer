@@ -5,6 +5,7 @@ import java.io.StringWriter;
 
 public class Logger{
 	private final ConsoleOut out;
+
 	public Logger(ConsoleOut out){
 		this.out = out;
 	}

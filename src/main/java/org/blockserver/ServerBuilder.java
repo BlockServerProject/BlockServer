@@ -40,7 +40,7 @@ public class ServerBuilder{
 		return this;
 	}
 	public ServerBuilder setIncludePath(File dir){
-		this.includePath = dir;
+		includePath = dir;
 		dir.mkdirs();
 		return this;
 	}
