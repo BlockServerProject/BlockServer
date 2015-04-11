@@ -9,7 +9,7 @@ public class McpeSetHealthPacket extends PeDataPacket{
 	public byte health;
 
 	public McpeSetHealthPacket(int health){
-		super(new byte[] {MC_SET_HEALTH_PACKET});
+		super(new byte[]{MC_SET_HEALTH_PACKET});
 		this.health = (byte) health;
 	}
 

@@ -42,7 +42,7 @@ public class DBLevel extends ILevel{
 		dbLocation = new File(lvlLocation.getAbsolutePath() + File.separator + "db");
 		if(!lvlLocation.exists() || !lvlLocation.isDirectory()){
 			server.getLogger().warning("Could not find LevelDB location... Creating new world.");
-			try {
+			try{
 				newWorld();
 			}catch(IOException e){
 				server.getLogger().fatal("Failed to create new level!");
@@ -52,7 +52,7 @@ public class DBLevel extends ILevel{
 				server.stop();
 			}
 		}
-		try {
+		try{
 			loadLevel();
 		}catch(LevelLoadException e){
 			server.getLogger().fatal("FAILED TO LOAD LEVEL!");
@@ -145,7 +145,7 @@ public class DBLevel extends ILevel{
 
 	}
 
-	private void newWorld() throws IOException {
+	private void newWorld() throws IOException{
 		lvlLocation.mkdirs();
 		dbLocation.mkdirs();
 

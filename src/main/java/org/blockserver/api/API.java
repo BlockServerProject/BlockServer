@@ -30,12 +30,12 @@ public abstract class API{
 
 	public static class DummyAPI extends API{
 
-		public DummyAPI(Server server) {
+		public DummyAPI(Server server){
 			super(server);
 		}
 
 		@Override
-		public boolean handleEvent(NativeEvent evt) {
+		public boolean handleEvent(NativeEvent evt){
 			return !evt.isCancelled();
 		}
 	}

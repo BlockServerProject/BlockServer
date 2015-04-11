@@ -13,23 +13,28 @@ public interface PeProtocolConst{
 	 * Since there is so far only one RakNet protocol version used, we will not handle dynamic RakNet versions;
 	 */
 	public final static byte RAKNET_PROTOCOL_VERSION = 5;
-	public final static byte[] MAGIC = new byte[] {0x00, (byte) 0xff, (byte) 0xff, 0x00, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd, 0x12, 0x34, 0x56, 0x78};
-	public final static byte RAKNET_BROADCAST_PING_1				=	   0x01;
-	public final static byte RAKNET_BROADCAST_PING_2				=	   0x02;
-	public final static byte RAKNET_OPEN_CONNECTION_REQUEST_1	   =	   0x05;
-	public final static byte RAKNET_OPEN_CONNECTION_REPLY_1		 =	   0x06;
-	public final static byte RAKNET_OPEN_CONNECTION_REQUEST_2	   =	   0x07;
-	public final static byte RAKNET_OPEN_CONNECTION_REPLY_2		 =	   0x08;
-	public final static byte RAKNET_INCOMPATIBLE_PROTOCOL_VERSION   =	   0x1A;
-	public final static byte RAKNET_BROADCAST_PONG_1				=	   0x1C;
-	public final static byte RAKNET_BROADCAST_PONG_2				=	   0x1D;
-	public final static byte RAKNET_CUSTOM_PACKET_MIN			   = (byte)0x80;
-	public final static byte RAKNET_CUSTOM_PACKET_MAX			   = (byte)0x8F;
-	public final static byte RAKNET_CUSTOM_PACKET_DEFAULT		   = (byte)0x84;
-	public final static byte RAKNET_NACK							= (byte)0xA0;
-	public final static byte RAKNET_ACK							 = (byte)0xC0;
+	public final static byte[] MAGIC = new byte[]{
+			0x00, (byte) 0xff, (byte) 0xff, 0x00,
+			(byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe,
+			(byte) 0xfd, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd,
+			0x12, 0x34, 0x56, 0x78
+	};
+	public final static byte RAKNET_BROADCAST_PING_1              =       0x01;
+	public final static byte RAKNET_BROADCAST_PING_2              =       0x02;
+	public final static byte RAKNET_OPEN_CONNECTION_REQUEST_1     =       0x05;
+	public final static byte RAKNET_OPEN_CONNECTION_REPLY_1       =       0x06;
+	public final static byte RAKNET_OPEN_CONNECTION_REQUEST_2     =       0x07;
+	public final static byte RAKNET_OPEN_CONNECTION_REPLY_2       =       0x08;
+	public final static byte RAKNET_INCOMPATIBLE_PROTOCOL_VERSION =       0x1A;
+	public final static byte RAKNET_BROADCAST_PONG_1              =       0x1C;
+	public final static byte RAKNET_BROADCAST_PONG_2              =       0x1D;
+	public final static byte RAKNET_CUSTOM_PACKET_MIN             = (byte)0x80;
+	public final static byte RAKNET_CUSTOM_PACKET_MAX             = (byte)0x8F;
+	public final static byte RAKNET_CUSTOM_PACKET_DEFAULT         = (byte)0x84;
+	public final static byte RAKNET_NACK                          = (byte)0xA0;
+	public final static byte RAKNET_ACK                           = (byte)0xC0;
 	public final static byte[] RAKNET_HAS_MESSAGE_RELIABILITIES = {
-		0x02, 0x03, 0x04, 0x06, 0x07
+	    0x02, 0x03, 0x04, 0x06, 0x07
 	};
 	public final static byte[] RAKNET_HAS_ORDER_RELIABILITIES = {
 		0x01, 0x03, 0x04, 0x07

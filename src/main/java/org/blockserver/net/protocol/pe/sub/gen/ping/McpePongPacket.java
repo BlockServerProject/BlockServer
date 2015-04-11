@@ -9,12 +9,12 @@ public class McpePongPacket extends PeDataPacket{
 	public long pingID;
 
 	public McpePongPacket(long pingId){
-		super(new byte[] {MC_PLAY_PONG});
+		super(new byte[]{MC_PLAY_PONG});
 		pingID = pingId;
 	}
 
 	@Override
-	protected void _encode(BinaryWriter writer) throws IOException {
+	protected void _encode(BinaryWriter writer) throws IOException{
 		writer.writeByte(MC_PLAY_PONG);
 		writer.writeLong(pingID);
 	}

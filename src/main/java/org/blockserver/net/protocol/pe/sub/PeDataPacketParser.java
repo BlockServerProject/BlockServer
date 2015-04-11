@@ -18,10 +18,10 @@ public class PeDataPacketParser{
 		try{
 			//PeDataPacket pk = packets.get(buffer[0]).newInstance(buffer);
 			PeDataPacket pk;
-			try {
+			try{
 				if(packets.containsKey(buffer[0])){
 					pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(new Object[]{buffer});
-				} else {
+				}else{
 					pk = new PeDataPacket(buffer){
 						@Override
 						protected int getLength(){

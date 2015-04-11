@@ -10,10 +10,10 @@ import org.blockserver.utils.Utils;
  */
 public class ServerHandshakePacket implements PeProtocolConst, EncapsulatedLoginPacket{
 	private ByteBuffer bb;
-	private byte[] cookie = new byte[] {0x04, 0x3f, 0x56, (byte) 0xfe};
+	private byte[] cookie = new byte[]{0x04, 0x3f, 0x56, (byte) 0xfe};
 	private byte securityFlags = (byte) 0xcd;
-	private byte[] unknown1 = new byte[] {0x00, 0x00};
-	private byte[] unknown2 = new byte[] {0x00, 0x00, 0x00, 0x00, 0x04, 0x44, 0x0b, (byte) 0xa9};
+	private byte[] unknown1 = new byte[]{0x00, 0x00};
+	private byte[] unknown2 = new byte[]{0x00, 0x00, 0x00, 0x00, 0x04, 0x44, 0x0b, (byte) 0xa9};
 	
 	private long session;
 	private short serverPort;

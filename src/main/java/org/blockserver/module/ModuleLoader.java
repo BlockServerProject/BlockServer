@@ -91,7 +91,7 @@ public class ModuleLoader implements Runnable{
 		server.getLogger().info("Modules registered!");
 	}
 
-	private void registerJars() throws IOException {
+	private void registerJars() throws IOException{
 		server.getLogger().info("Searching for module JARs...");
 		File[] files = modulesLocation.listFiles();
 		if(files == null){
@@ -110,7 +110,7 @@ public class ModuleLoader implements Runnable{
 	}
 
 	@SuppressWarnings("unchecked")
-	private void loadAndRegister(File jar) throws IOException {
+	private void loadAndRegister(File jar) throws IOException{
 		Properties modData =  loadModuleData(jar);
 		String mainClass = modData.getProperty("mainClass");
 		if(mainClass == null){
@@ -118,7 +118,7 @@ public class ModuleLoader implements Runnable{
 		}
 
 		URLClassLoader loader = new URLClassLoader(new URL[]{jar.toURI().toURL()}, getClass().getClassLoader());
-		try {
+		try{
 			Class clazz = Class.forName(mainClass, true, loader);
 			Class<? extends Module> modClass;
 			try{

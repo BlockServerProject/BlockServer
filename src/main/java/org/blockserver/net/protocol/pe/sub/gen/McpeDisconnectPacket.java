@@ -20,12 +20,12 @@ public class McpeDisconnectPacket extends PeDataPacket{
 	 * @param reason The reason for disconnect. Currently not supported.
 	 */
 	public McpeDisconnectPacket(String reason){
-		super(new byte[] { MC_DISCONNECT });
+		super(new byte[]{ MC_DISCONNECT });
 		this.reason = reason;
 	}
 
 	public McpeDisconnectPacket(byte[] buffer){
-		super(new byte[] {buffer[0]});
+		super(new byte[]{buffer[0]});
 	}
 
 	@Override

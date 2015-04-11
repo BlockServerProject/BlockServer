@@ -12,7 +12,7 @@ public class McpeSpawnPositionPacket extends PeDataPacket{
 	public byte y;
 
 	public McpeSpawnPositionPacket(PositionDoublePrecision spawnPosition){
-		super(new byte[] { MC_SPAWN_POSITION_PACKET});
+		super(new byte[]{ MC_SPAWN_POSITION_PACKET});
 		x = (int) spawnPosition.getX();
 		z = (int) spawnPosition.getZ();
 		y = (byte) spawnPosition.getY();

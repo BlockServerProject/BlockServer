@@ -17,7 +17,7 @@ public class McpeStartGamePacket extends PeDataPacket{
 	public float y;
 	public float z;
 	public McpeStartGamePacket(){
-		super(new byte[] { MC_START_GAME_PACKET});
+		super(new byte[]{ MC_START_GAME_PACKET});
 	}
 	@Override
 	protected int getLength(){

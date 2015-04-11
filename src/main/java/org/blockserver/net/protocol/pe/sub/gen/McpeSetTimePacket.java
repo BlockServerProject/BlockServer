@@ -9,7 +9,7 @@ public class McpeSetTimePacket extends PeDataPacket{
 	public int time;
 
 	public McpeSetTimePacket(int time){
-		super(new byte[] {MC_SET_TIME_PACKET});
+		super(new byte[]{MC_SET_TIME_PACKET});
 		this.time = time;
 	}
 

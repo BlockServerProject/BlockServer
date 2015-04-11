@@ -134,7 +134,7 @@ public class Server{
 	}
 	private void registerModules(){
 		ModuleLoader loader = new ModuleLoader(this, modulesLocation);
-		try {
+		try{
 			loader.run();
 		}catch(ModuleLoadException e){
 			logger.error("Failed to load modules: ModuleLoadException.");
