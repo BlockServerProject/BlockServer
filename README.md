@@ -4,7 +4,8 @@ BlockServer
 ### REMEMBER: YOU DON'T HANDLE PACKETS, PACKETS HANDLE YOU.
 
 Team motto: ^
- *Team motto by Trent Summerlin (SuperstarGamer)
+
+*Team motto by Trent Summerlin (SuperstarGamer)
 
 ## BUILD STATUS:
 
