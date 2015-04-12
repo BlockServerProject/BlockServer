@@ -1,5 +1,10 @@
 BlockServer
 ===========
+
+### REMEMBER: YOU DON'T HANDLE PACKETS, PACKETS HANDLE YOU.
+
+Team motto: ^
+
 ## BUILD STATUS:
 
 #### BlockServer branch `new`: [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=new)](https://travis-ci.org/BlockServerProject/BlockServer)
