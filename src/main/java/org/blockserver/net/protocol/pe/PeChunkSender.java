@@ -31,6 +31,43 @@ public class PeChunkSender extends Thread{
 		setName("PEChunkSender");
 		session.getServer().getLogger().debug("ChunkSender start.");
 		System.out.println("In ChunkSender");
+
+		int x = (int) session.getPlayer().getLocation().getX();
+		int z = (int) session.getPlayer().getLocation().getZ();
+
+		int centerX = session.getPlayer().getLocation().getChunkPos().getX();
+		int centerZ = session.getPlayer().getLocation().getChunkPos().getZ();
+
+		//FullChunkDataPacket dp = new FullChunkDataPacket(server.world.getChunkAt((int) x, (int) z), server.world);
+		//player.addToQueue(dp);
+		int cornerX = centerX - 64;
+		int cornerZ = centerZ + 64;
+
+		x = cornerX;
+		z = cornerZ;
+
+		int chunkNum = 0;
+		try{
+			while(chunkNum < 96){
+				System.out.println("ChunkSender chunk "+x+", "+z);
+				FullChunkDataPacket dp = new FullChunkDataPacket(session.getServer().getLevelManager().getLevelImplemenation().getChunkAt(x, z));
+				dp.encode();
+				session.addToQueue(dp.getCompressed());
+
+				if(x < cornerX + 144){
+					x = x + 16;
+				} else {
+					x = cornerX;
+					z = z - 16;
+				}
+				chunkNum++;
+				Thread.sleep(100);
+			}
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+
+		/*
 		while(!isInterrupted()){
 			int centerX = (int) Math.floor(session.getPlayer().getLocation().getX()) >> 4; // otherwise -1 will become 0 too
 			int centerZ = (int) Math.floor(session.getPlayer().getLocation().getZ()) >> 4;
@@ -83,7 +120,7 @@ public class PeChunkSender extends Thread{
 				}
 			}
 			//TODO Unload Unused Chunks
-			/*
+			/
 			ChunkPosition[] v2a = requestChunks.keySet().toArray(new Vector2[useChunks.keySet().size()] );
 			for( int i = 0; i < v2a.length; i++ ){
 				ChunkPosition v = v2a[i];
@@ -92,7 +129,7 @@ public class PeChunkSender extends Thread{
 					useChunks.remove(v);
 				}
 			}
-			*/
+			/
 			System.out.println("Do Finish");
 			try{
 				Thread.sleep(100);
@@ -100,6 +137,7 @@ public class PeChunkSender extends Thread{
 				e.printStackTrace();
 			}
 		}
+		*/
 		System.out.println("Out ChunkSender");
 
 		/*

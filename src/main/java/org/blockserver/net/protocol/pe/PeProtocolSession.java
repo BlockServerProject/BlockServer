@@ -29,12 +29,9 @@ import org.blockserver.net.protocol.pe.login.ServerHandshakePacket;
 import org.blockserver.net.protocol.pe.play.EncapsulatedPlayPacket;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
-import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
-import org.blockserver.net.protocol.pe.sub.gen.McpeSetHealthPacket;
-import org.blockserver.net.protocol.pe.sub.gen.McpeSetTimePacket;
-import org.blockserver.net.protocol.pe.sub.gen.McpeSpawnPositionPacket;
-import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
+import org.blockserver.net.protocol.pe.sub.gen.*;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePongPacket;
+import org.blockserver.net.protocol.pe.sub.v20.AdventureSettingsPacket;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerLoginInfo;
 import org.blockserver.ticker.CallableTask;
@@ -103,20 +100,22 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 	}
 	
 	public synchronized void addToQueue(byte[] buffer, int reliability){ //Use this to send encapsulatedPacket
-		if((currentQueue.getLength() + buffer.length) >= mtu){
-			currentQueue.seqNumber = currentSequenceNum++;
-			currentQueue.send(bridge, addr);
-			recoveryQueue.put(currentQueue.seqNumber, currentQueue);
-			currentQueue.packets.clear();
+		synchronized (currentQueue) {
+			if ((currentQueue.getLength() + buffer.length) >= mtu) {
+				currentQueue.seqNumber = currentSequenceNum++;
+				currentQueue.send(bridge, addr);
+				recoveryQueue.put(currentQueue.seqNumber, currentQueue);
+				currentQueue.packets.clear();
+			}
+			RaknetSentCustomPacket.SentEncapsulatedPacket pk = new RaknetSentCustomPacket.SentEncapsulatedPacket(buffer, (byte) reliability);
+			PEDataPacketSendNativeEvent event = new PEDataPacketSendNativeEvent(pk, this);
+			if (!getServer().getAPI().handleEvent(event)) {
+				return;
+			}
+			pk = event.getPacket();
+			pk.messsageIndex = currentMessageIndex++;
+			currentQueue.packets.add(pk);
 		}
-		RaknetSentCustomPacket.SentEncapsulatedPacket pk = new RaknetSentCustomPacket.SentEncapsulatedPacket(buffer, (byte) reliability);
-		PEDataPacketSendNativeEvent event = new PEDataPacketSendNativeEvent(pk, this);
-		if(!getServer().getAPI().handleEvent(event)){
-			return;
-		}
-		pk = event.getPacket();
-		pk.messsageIndex = currentMessageIndex++;
-		currentQueue.packets.add(pk);
 	}
 
 	@Override
@@ -315,7 +314,7 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		McpeStartGamePacket sgp = new McpeStartGamePacket();
 		sgp.eid = player.getEntityID();
 		sgp.gamemode = player.getGamemode();
-		sgp.generator = 0; //INFINITE
+		sgp.generator = 1; //INFINITE
 		sgp.seed = 0; //Dummy
 		sgp.spawnX = (int) getServer().getSpawnPosition().getX();
 		sgp.spawnY = (int) getServer().getSpawnPosition().getY();
@@ -332,16 +331,32 @@ public class PeProtocolSession implements ProtocolSession, PeProtocolConst{
 		McpeSpawnPositionPacket spawnPositionPacket = new McpeSpawnPositionPacket(player.getLocation());
 		addToQueue(spawnPositionPacket.encode());
 
-		/*
 		McpeSetDifficultyPacket difficultyPacket = new McpeSetDifficultyPacket(1); //Dummy
 		addToQueue(difficultyPacket.encode());
-		*/
 
 		McpeSetHealthPacket setHealthPacket = new McpeSetHealthPacket(20);
 		addToQueue(setHealthPacket.encode());
 
 		PeChunkSender sender = new PeChunkSender(this);
 		sender.start();
+
+		McpeSetTimePacket stp2 = new McpeSetTimePacket(0); //Dummy
+		addToQueue(stp2.encode());
+
+		McpeMovePlayerPacket mpp = new McpeMovePlayerPacket();
+		mpp.teleport = (byte) 0x80;
+		mpp.x = (float) player.getLocation().getX();
+		mpp.y = (float) player.getLocation().getY();
+		mpp.z = (float) player.getLocation().getZ();
+		mpp.yaw = 0;
+		mpp.pitch = 0;
+		mpp.bodyYaw = mpp.yaw;
+		addToQueue(mpp.encode());
+
+		AdventureSettingsPacket asp = new AdventureSettingsPacket();
+		asp.flags = new byte[] {0x20};
+		addToQueue(asp.encode());
+
 	}
 	
 	private void login(McpeLoginPacket lp){

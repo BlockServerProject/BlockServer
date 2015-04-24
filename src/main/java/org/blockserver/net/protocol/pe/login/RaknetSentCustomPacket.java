@@ -61,7 +61,8 @@ public class RaknetSentCustomPacket implements PeProtocolConst{
 		}
 		public void append(ByteBuffer bb){
 			bb.put((byte) (reliability << 5));
-			bb.putShort((short) (buffer.length << 3));
+			//bb.putShort((short) (buffer.length << 3));
+			writeUnsignedShort(bb, buffer.length * 8);
 			if(Utils.inArray(reliability, RAKNET_HAS_MESSAGE_RELIABILITIES)){
 				Utils.writeLTriad(messsageIndex, bb);
 			}
@@ -76,6 +77,11 @@ public class RaknetSentCustomPacket implements PeProtocolConst{
 			}
 			bb.put(buffer);
 		}
+
+		private void writeUnsignedShort(ByteBuffer bb, int i) {
+			bb.putShort ((short)(i & 0xffff));
+		}
+
 		public int getLength(){
 			return 3 + buffer.length +
 					(Utils.inArray(reliability,

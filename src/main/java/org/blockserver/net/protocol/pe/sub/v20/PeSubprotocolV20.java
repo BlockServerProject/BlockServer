@@ -8,6 +8,7 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.net.protocol.pe.sub.PeDataPacketParser;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
+import org.blockserver.net.protocol.pe.sub.gen.McpeMovePlayerPacket;
 import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
 import org.blockserver.net.protocol.pe.sub.gen.ping.McpePingPacket;
 
@@ -20,6 +21,7 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 		parser.add(MC_START_GAME_PACKET, McpeStartGamePacket.class);
 		parser.add(MC_PLAY_PING, McpePingPacket.class);
 		parser.add(MC_DISCONNECT, McpeDisconnectPacket.class);
+		parser.add(MC_MOVE_PLAYER_PACKET, McpeMovePlayerPacket.class);
 		// TODO more
 	}
 
