@@ -21,7 +21,7 @@ public class PeProtocol extends Protocol implements PeProtocolConst{
 	}
 	@Override
 	public ProtocolSession openSession(WrappedPacket pk){
-		System.out.println("Handling packet from " + pk.getAddress().toString());
+		server.getLogger().debug("Handling packet from " + pk.getAddress().toString());
 		if(pk.getBridge() instanceof UDPBridge){
 			byte pid = pk.bb().get(0);
 			if(pid == RAKNET_BROADCAST_PING_1 || pid == RAKNET_BROADCAST_PING_2){
