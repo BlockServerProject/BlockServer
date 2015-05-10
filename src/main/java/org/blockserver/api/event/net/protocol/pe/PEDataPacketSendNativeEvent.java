@@ -2,13 +2,12 @@ package org.blockserver.api.event.net.protocol.pe;
 
 import org.blockserver.api.NativeEvent;
 import org.blockserver.net.protocol.pe.RakNetProtocolSession;
-import org.blockserver.net.protocol.pe.RakNetProtocolSession;
-import org.blockserver.net.protocol.pe.login.RaknetSentCustomPacket;
 
 /**
  * Fired whenever a RakNet Custom packet is to be sent.
  */
 public class PEDataPacketSendNativeEvent extends NativeEvent{
+	/*
 	private RaknetSentCustomPacket.SentEncapsulatedPacket packet;
 	private RakNetProtocolSession session;
 
@@ -27,4 +26,5 @@ public class PEDataPacketSendNativeEvent extends NativeEvent{
 	public RakNetProtocolSession getSession(){
 		return session;
 	}
+	*/
 }
