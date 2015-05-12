@@ -70,7 +70,7 @@ public class DBLevel extends ILevel{
 		DBFactory factory = new Iq80DBFactory();
 
 		Options options = new Options();
-		options.compressionType(CompressionType.SNAPPY);
+		options.compressionType(CompressionType.ZLIB);
 		options.createIfMissing(true);
 
 		try{
