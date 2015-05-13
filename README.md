@@ -11,7 +11,7 @@ Team motto: ^
 
 #### BlockServer branch `new`: [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=new)](https://travis-ci.org/BlockServerProject/BlockServer)
 
-### BlockServer-IO-Lib branch `master`: [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer-IO-Lib.svg?branch=master)](https://travis-ci.org/BlockServerProject/BlockServer-IO-Lib)
+### TeamCity CI: [![Build Status](http://teamcity.beaconpe.net/app/rest/builds/buildType:BlockServer_Build/statusIcon)]
 
 [![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=beaconmine|?#blockserverproject,#beaconmine,#pocketbukkit)
 
