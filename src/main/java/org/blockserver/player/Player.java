@@ -88,6 +88,13 @@ public class Player{
 		// TODO change nametag when players spawn
 		return old;
 	}
+	
+	public Player getPlayer(){
+
+        	return this;
+
+    	}
+	
 	public void sendMessage(String message){
 		ChatResponse chat = new ChatResponse();
 		chat.message = message;
