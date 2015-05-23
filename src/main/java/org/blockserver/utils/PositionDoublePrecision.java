@@ -32,6 +32,26 @@ public class PositionDoublePrecision{
 	public void setZ(double z){
 		this.z = z;
 	}
+	
+	//Some Useful Tools for Plugin Devs
+	
+	public void increaseX(Integer count){
+		this.x = x + count;
+	}
+	public void increaseY(Integer count){
+		this.y = y + count;
+	}
+	public void increaseZ(Integer count){
+		this.z = z + count;
+	}
+
+	public double[] getArray(){
+		return new double[]{
+			this.x,
+			this.y,
+			this.z
+		};
+	}
 
 	public ChunkPosition getChunkPos(){
 		return new ChunkPosition(((int) x) >> 4, ((int) z) >> 4);
