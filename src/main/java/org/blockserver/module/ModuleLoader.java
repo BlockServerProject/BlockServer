@@ -76,6 +76,7 @@ public class ModuleLoader implements Runnable{
 			server.getProtocols().addProtocol(pocket);
 			server.getBridges().addBridge(new UDPBridge(server.getBridges()));
 			pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(server));
+			pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV27(server));
 		}
 		//--------REGISTER MCPE END------------------
 		//--------REGISTER JARS----------------------
