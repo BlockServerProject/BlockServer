@@ -22,6 +22,25 @@ public class PacketAssembler {
         return false;
     }
 
+    public static boolean checkIfSplitNeeded(CustomPacket packet, RakNetProtocolSession session){
+        int len = packet.getLength();
+        if(len >= session.getMTU()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean checkIfSplitNeeded(CustomPacket packet, CustomPacket.InternalPacket addedPacket, RakNetProtocolSession session){
+        int len = packet.getLength();
+        len = len + addedPacket.getLength();
+        if(len >= session.getMTU()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static List<CustomPacket.InternalPacket> getSplitPackets(CustomPacket cp){
         List<CustomPacket.InternalPacket> packets = new ArrayList<>();
         for(CustomPacket.InternalPacket ip : cp.packets){

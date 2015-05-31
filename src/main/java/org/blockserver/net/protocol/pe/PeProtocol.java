@@ -41,7 +41,8 @@ public class PeProtocol extends Protocol implements PeProtocolConst{
 
 		UnconnectedPingPacket upp = new UnconnectedPingPacket();
 		upp.pingID = cpp.pingID;
-		upp.identifier = server.getServerName();
+		upp.mcpeIdentifier = "MCPE;";
+		upp.identifier = server.getServerName() + ";27;0.11.0;0;10"; //TODO: Get MAX players and current.
 
 		pk.getBridge().send(upp.encode(), pk.getAddress());
 	}

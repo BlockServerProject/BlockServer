@@ -2,6 +2,7 @@ package org.blockserver.net.protocol.pe.sub.v20;
 
 import org.blockserver.Server;
 import org.blockserver.net.internal.request.InternalRequest;
+import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.net.protocol.pe.sub.PeDataPacketParser;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
@@ -11,7 +12,8 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 	protected PeDataPacketParser parser;
 	public PeSubprotocolV20(Server server){
 		this.server = server;
-		// TODO more
+		parser = new PeDataPacketParser(server);
+		//parser.add(MC_PLAY_PING, );
 	}
 
 	@Override
@@ -19,6 +21,11 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 		byte pid = dp.getPid();
 		server.getLogger().debug("Adapting into request: " + dp.getPid());
 		switch(pid){
+
+			case MC_PLAY_PING:
+				PingRequest pingRequest = new PingRequest();
+				//pingRequest.pingId = (())
+				return pingRequest;
 			default:
 				//TODO
 				server.getLogger().debug("Unhandled data packet (PID: %x)", dp.getPid());

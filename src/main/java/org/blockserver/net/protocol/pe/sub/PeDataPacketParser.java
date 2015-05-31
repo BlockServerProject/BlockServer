@@ -16,15 +16,14 @@ public class PeDataPacketParser{
 	}
 	public PeDataPacket parsePacket(final byte[] buffer){
 		try{
-			//PeDataPacket pk = packets.get(buffer[0]).newInstance(buffer);
 			PeDataPacket pk;
 			try{
 				if(packets.containsKey(buffer[0])){
 					pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(new Object[]{buffer});
 				}else{
-					pk = new PeDataPacket(buffer){
+					pk = new PeDataPacket() {
 						@Override
-						protected int getLength(){
+						protected int getLength() {
 							return buffer.length;
 						}
 					};

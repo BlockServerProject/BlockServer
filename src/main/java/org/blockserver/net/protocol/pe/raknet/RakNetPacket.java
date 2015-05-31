@@ -4,6 +4,7 @@ package org.blockserver.net.protocol.pe.raknet;
 import org.apache.commons.lang3.NotImplementedException;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * Base class for all RakNet packets.
@@ -11,9 +12,15 @@ import java.nio.ByteBuffer;
 public abstract class RakNetPacket {
 
     public final byte[] encode(){
-        ByteBuffer bb = ByteBuffer.allocate(getLength());
-        _encode(bb);
-        return bb.array();
+        if(getLength() == -1){
+            ByteBuffer bb = ByteBuffer.allocate(512);
+            _encode(bb);
+            return Arrays.copyOf(bb.array(), bb.position());
+        } else {
+            ByteBuffer bb = ByteBuffer.allocate(getLength());
+            _encode(bb);
+            return bb.array();
+        }
     }
 
     public final void decode(byte[] buffer){

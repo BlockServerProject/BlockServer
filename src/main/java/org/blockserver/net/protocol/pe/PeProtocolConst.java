@@ -78,4 +78,5 @@ public interface PeProtocolConst{
 	public final static byte MC_SPAWN_POSITION_PACKET = (byte) 0xab;
 	public final static byte MC_FULL_CHUNK_DATA = (byte) 0xba;
 	public final static byte MC_ADVENTURE_SETTINGS = (byte) 0xb7;
+	public final static byte MC_BATCH = (byte) 0xb1;
 }

@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 public class UnconnectedPingPacket extends RakNetPacket{
     public long pingID;
     public long serverID = PeProtocolConst.SERVER_ID;
-    public final String mcpeIdentifier = "MCCPP;Demo;";
+    public String mcpeIdentifier = "MCCPP;Demo;";
     public String identifier;
 
     @Override
@@ -20,7 +20,7 @@ public class UnconnectedPingPacket extends RakNetPacket{
         bb.putLong(serverID);
         bb.put(PeProtocolConst.MAGIC);
 
-        String total = "MCCPP;Demo;" + identifier;
+        String total = mcpeIdentifier + identifier;
         bb.putShort((short) total.getBytes().length);
         bb.put(total.getBytes());
     }

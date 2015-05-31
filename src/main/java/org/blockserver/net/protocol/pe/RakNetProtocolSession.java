@@ -2,20 +2,27 @@ package org.blockserver.net.protocol.pe;
 
 
 import org.blockserver.Server;
+import org.blockserver.api.event.net.ResponseSendNativeEvent;
+import org.blockserver.api.event.net.protocol.pe.PEDataPacketSendNativeEvent;
 import org.blockserver.net.bridge.NetworkBridge;
 import org.blockserver.net.internal.response.InternalResponse;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
 import org.blockserver.net.protocol.pe.raknet.*;
+import org.blockserver.net.protocol.pe.sub.PeDataPacket;
+import org.blockserver.net.protocol.pe.sub.login.ClientConnect;
+import org.blockserver.net.protocol.pe.sub.login.ServerHandshake;
+import org.blockserver.net.protocol.pe.sub.v27.BatchPacket;
+import org.blockserver.player.Player;
+import org.blockserver.ticker.CallableTask;
 import org.blockserver.utils.Utils;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
 
 /**
  * Protocol Session implementation for MCPE RakNet.
@@ -26,16 +33,19 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	private SocketAddress clientAddress;
 	private PeProtocol protocol;
 	private Server server;
+	private Player player;
 
 	private int lastSeqNum = -1;
-	private int currentSeqNum = 0;
-	private int nextMessageIndex = -1;
+	private int nextSeqNum = 0;
+	private int nextMessageIndex = 0;
+	private int MTU;
 
 	private List<Integer> ACKQueue = new ArrayList<>();
 	private List<Integer> NACKQueue = new ArrayList<>();
 	private Map<Integer, CustomPacket> recoveryQueue = new HashMap<>();
+	private CustomPacket currentQueue = new CustomPacket();
 
-	public RakNetProtocolSession(ProtocolManager protocols, NetworkBridge bridge, SocketAddress address, PeProtocol peProtocol) {
+	public RakNetProtocolSession(ProtocolManager protocols, NetworkBridge bridge, SocketAddress address, PeProtocol peProtocol){
 		protoMgr = protocols;
 		this.bridge = bridge;
 		clientAddress = address;
@@ -43,8 +53,96 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 
 		server = bridge.getServer();
 
+		try {
+			server.getTicker().addRepeatingTask(new CallableTask(this, "updateQueues"), 10);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+
 		server.getLogger().debug("Accepted new RakNet session from "+address.toString());
 
+	}
+
+	/**
+	 * INTERNAL METHOD! Do not call!
+	 */
+	public void updateQueues(){
+		synchronized (ACKQueue){
+			if(!ACKQueue.isEmpty()){
+				int[] numbers = new int[ACKQueue.size()];
+				for(int i = 0; i < numbers.length; i++){
+					numbers[i] = ACKQueue.get(i);
+				}
+				ACKPacket ack = new ACKPacket();
+				ack.sequenceNumbers = numbers;
+				sendPacket(ack.encode());
+
+				ACKQueue.clear();
+			}
+		}
+		synchronized (NACKQueue){
+			if(!NACKQueue.isEmpty()){
+				int[] numbers = new int[NACKQueue.size()];
+				for(int i = 0; i < numbers.length; i++){
+					numbers[i] = NACKQueue.get(i);
+				}
+				NACKPacket nack = new NACKPacket();
+				nack.sequenceNumbers = numbers;
+				sendPacket(nack.encode());
+
+				NACKQueue.clear();
+			}
+		}
+		synchronized (currentQueue){
+			if(!currentQueue.packets.isEmpty()){
+				currentQueue.sequenceNumber = nextSeqNum++;
+				PEDataPacketSendNativeEvent evt = new PEDataPacketSendNativeEvent(currentQueue, this);
+				if(server.getAPI().handleEvent(evt)){
+					sendPacket(evt.getPacket().encode());
+					recoveryQueue.put(evt.getPacket().sequenceNumber, evt.getPacket());
+				}
+				currentQueue.packets.clear();
+			}
+		}
+	}
+
+	public synchronized void addToQueue(PeDataPacket dp){
+		CustomPacket.InternalPacket ip = new CustomPacket.InternalPacket();
+		if(dp.getChannel() != NetworkChannel.CHANNEL_NONE){
+			ip.reliability = 3;
+			ip.orderChannel = dp.getChannel().getAsByte();
+			ip.orderIndex = 0;
+		} else {
+			ip.reliability = 2;
+		}
+		ip.buffer = dp.encode();
+		ip.messageIndex = nextMessageIndex++;
+
+		synchronized (currentQueue) {
+			if (PacketAssembler.checkIfSplitNeeded(currentQueue, ip, this)) {
+				//TODO
+			} else {
+				currentQueue.packets.add(ip);
+			}
+		}
+	}
+
+	public synchronized void addToQueue(byte[] buffer, NetworkChannel channel, int reliability){
+		CustomPacket.InternalPacket ip = new CustomPacket.InternalPacket();
+		ip.reliability = (byte) reliability;
+		ip.buffer = buffer;
+		ip.orderChannel = channel.getAsByte();
+		ip.orderIndex = 0;
+		if(reliability == 0x02 || reliability == 0x03 || reliability == 0x04 || reliability == 0x06 || reliability == 0x07){
+			ip.messageIndex = nextMessageIndex++;
+		}
+		synchronized (currentQueue) {
+			if (PacketAssembler.checkIfSplitNeeded(currentQueue, ip, this)) {
+				//TODO
+			} else {
+				currentQueue.packets.add(ip);
+			}
+		}
 	}
 
 	@Override
@@ -54,6 +152,8 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 			case RAKNET_OPEN_CONNECTION_REQUEST_1:
 				ConnectionRequest1Packet request1 = new ConnectionRequest1Packet();
 				request1.decode(pk.bb());
+
+				MTU = pk.bb().capacity();
 
 				ConnectionReply1Packet reply1 = new ConnectionReply1Packet();
 				reply1.mtuSize = (short) pk.bb().capacity();
@@ -70,6 +170,29 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 				sendPacket(reply2.encode());
 				break;
 
+			case RAKNET_ACK:
+				ACKPacket ack = new ACKPacket();
+				ack.decode(pk.bb().array());
+				for(int num : ack.sequenceNumbers){
+					if(recoveryQueue.containsKey(num)){
+						recoveryQueue.remove(num);
+					}
+				}
+				break;
+
+			case RAKNET_NACK:
+				NACKPacket nack = new NACKPacket();
+				nack.decode(pk.bb().array());
+				for(int num: nack.sequenceNumbers){
+					if(recoveryQueue.containsKey(num)){
+						//TODO: Fire send packet event?
+						sendPacket(recoveryQueue.get(num).encode());
+					} else {
+						server.getLogger().warning("Received NACK for sequence "+num+" but not found in recoveryQueue.");
+					}
+				}
+				break;
+
 			default:
 				if(pid >= RAKNET_CUSTOM_PACKET_MIN && pid <= RAKNET_CUSTOM_PACKET_MAX){
 					handleCustomPacket(pk.bb().array());
@@ -83,9 +206,13 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	private void handleCustomPacket(byte[] buffer) {
 		CustomPacket cp = new CustomPacket();
 		cp.decode(buffer);
+		synchronized (ACKQueue) {
+			ACKQueue.add(cp.sequenceNumber);
+		}
 		synchronized ((Integer) lastSeqNum) {
 			if (cp.sequenceNumber - lastSeqNum == 1) {
 				lastSeqNum = cp.sequenceNumber;
+				nextSeqNum = lastSeqNum + 1;
 			} else {
 				int diff = cp.sequenceNumber - lastSeqNum;
 				if(diff < 1){ //They must of had not received one of our packets.
@@ -129,11 +256,47 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	private void handleDataPacket(byte[] buffer) {
 		byte pid = buffer[0];
 		switch (pid){
+			case MC_CLIENT_CONNECT:
+				ClientConnect cc = new ClientConnect();
+				cc.decode(buffer);
+
+				ServerHandshake sh = new ServerHandshake();
+				sh.serverPort = (short) server.getPort();
+				sh.sessionID = cc.sessionID;
+				addToQueue(sh);
+
+				break;
+
+			case MC_BATCH:
+				BatchPacket batch = new BatchPacket();
+				batch.decode(buffer);
+				try {
+					processBatch(batch);
+				} catch (DataFormatException e) {
+					server.getLogger().error("DataFormatException while processing batch packet: "+e.getMessage());
+					e.printStackTrace();
+				}
+				break;
+
+			case MC_LOGIN_PACKET:
+				server.getLogger().debug("Got LOGINPACKET! Length is: "+buffer.length);
+				break;
 
 			default:
-				server.getLogger().buffer("Got Unkown Packet: ", buffer, " END.");
+				server.getLogger().buffer("Got Unknown Packet: ", buffer, " END.");
 				break;
 		}
+	}
+
+	private void processBatch(BatchPacket batch) throws DataFormatException {
+		Inflater decompress = new Inflater();
+		decompress.setInput(batch.payload, 0, batch.payload.length);
+		byte[] decompressed = new byte[1024 * 1024]; //From PocketMine
+		int len = decompress.inflate(decompressed);
+		decompress.end();
+
+		byte[] buffer = Arrays.copyOf(decompressed, len);
+		handleDataPacket(buffer);
 	}
 
 	@Override
@@ -148,7 +311,10 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 
 	@Override
 	public void sendResponse(InternalResponse response) {
-
+		ResponseSendNativeEvent evt = new ResponseSendNativeEvent(player, response);
+		if(server.getAPI().handleEvent(evt)){
+			//TODO
+		}
 	}
 
 	@Override
@@ -159,5 +325,9 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	@Override
 	public Server getServer() {
 		return null;
+	}
+
+	public int getMTU() {
+		return MTU;
 	}
 }
