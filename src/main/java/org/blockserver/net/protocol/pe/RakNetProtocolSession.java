@@ -11,10 +11,17 @@ import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
 import org.blockserver.net.protocol.pe.raknet.*;
 import org.blockserver.net.protocol.pe.sub.PeDataPacket;
+import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.login.ClientConnect;
 import org.blockserver.net.protocol.pe.sub.login.ServerHandshake;
+import org.blockserver.net.protocol.pe.sub.v20.LoginPacketV20;
+import org.blockserver.net.protocol.pe.sub.v20.LoginStatusPacket;
 import org.blockserver.net.protocol.pe.sub.v27.BatchPacket;
+import org.blockserver.net.protocol.pe.sub.v27.DisconnectPacket;
+import org.blockserver.net.protocol.pe.sub.v27.LoginPacketV27;
+import org.blockserver.net.protocol.pe.sub.v27.PlayStatusPacket;
 import org.blockserver.player.Player;
+import org.blockserver.player.PlayerLoginInfo;
 import org.blockserver.ticker.CallableTask;
 import org.blockserver.utils.Utils;
 
@@ -39,6 +46,8 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	private int nextSeqNum = 0;
 	private int nextMessageIndex = 0;
 	private int MTU;
+
+	private boolean loggedIn = false;
 
 	private List<Integer> ACKQueue = new ArrayList<>();
 	private List<Integer> NACKQueue = new ArrayList<>();
@@ -95,7 +104,8 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 		synchronized (currentQueue){
 			if(!currentQueue.packets.isEmpty()){
-				currentQueue.sequenceNumber = nextSeqNum++;
+				currentQueue.sequenceNumber = nextSeqNum;
+				nextSeqNum = nextSeqNum + 1;
 				PEDataPacketSendNativeEvent evt = new PEDataPacketSendNativeEvent(currentQueue, this);
 				if(server.getAPI().handleEvent(evt)){
 					sendPacket(evt.getPacket().encode());
@@ -279,13 +289,74 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 				break;
 
 			case MC_LOGIN_PACKET:
-				server.getLogger().debug("Got LOGINPACKET! Length is: "+buffer.length);
+				if(loggedIn){
+					break;
+				}
+				if(buffer.length > 150){ //Looks like we have ourselves a 0.11.0+ client (skin)
+					LoginPacketV27 lp = new LoginPacketV27();
+					lp.decode(buffer);
+					PeSubprotocol sub = protocol.getSubprotocols().findProtocol(lp.protocol); //Search for a handler for their protocol
+					if(sub != null){
+						PlayerLoginInfo info = new PlayerLoginInfo();
+						info.entityID = server.getNextEntityID();
+						info.username = lp.username;
+						info.skin = lp.skin;
+
+						player = server.newSession(this, info);
+
+						PlayStatusPacket psp = new PlayStatusPacket();
+						psp.status = PlayStatusPacket.LOGIN_SUCCESS;
+						psp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+						addToQueue(psp);
+						sendInitalPackets();
+
+					} else { //Sadly, we don't support this protocol.
+						PlayStatusPacket psp = new PlayStatusPacket();
+						psp.status = PlayStatusPacket.LOGIN_FAILED_SERVER;
+						psp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+						addToQueue(psp);
+
+						closeSession("login-fail-27-"+Integer.toString(lp.protocol));
+						protoMgr.closeSession(getAddress());
+					}
+				} else { //Under protocol 21
+					LoginPacketV20 lp = new LoginPacketV20();
+					lp.decode(buffer);
+
+					PeSubprotocol sub = protocol.getSubprotocols().findProtocol(lp.protocol); //Search for a handler for their protocol
+					if(sub != null){
+						PlayerLoginInfo info = new PlayerLoginInfo();
+						info.entityID = server.getNextEntityID();
+						info.username = lp.username;
+
+						player = server.newSession(this, info);
+
+						LoginStatusPacket lsp = new LoginStatusPacket();
+						lsp.status = 0;
+						lsp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+						addToQueue(lsp);
+
+						sendInitalPackets();
+					} else {
+						LoginStatusPacket lsp = new LoginStatusPacket();
+						lsp.status = 1;
+						lsp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+						addToQueue(lsp);
+
+						closeSession("login-fail-21-"+Integer.toString(lp.protocol));
+						protoMgr.closeSession(getAddress());
+					}
+				}
 				break;
 
 			default:
 				server.getLogger().buffer("Got Unknown Packet: ", buffer, " END.");
 				break;
 		}
+	}
+
+	private void sendInitalPackets() {
+		//TODO
 	}
 
 	private void processBatch(BatchPacket batch) throws DataFormatException {
@@ -319,7 +390,29 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 
 	@Override
 	public void closeSession(String reason) {
+		if(reason.startsWith("login-fail-27")) {
+			DisconnectPacket dp = new DisconnectPacket();
+			dp.reason = "";
+			dp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+			addToQueue(dp);
+			String[] broken = reason.split("-");
+			String protocol = broken[3];
+			server.getLogger().info("[" + getAddress().toString() + "] was disconnected: invalid protocol " + protocol);
+		} else if(reason.startsWith("login-fail-21")) {
+			addToQueue(new byte[] {MC_DISCONNECT}, NetworkChannel.CHANNEL_PRIORITY, 3);
 
+			String[] broken = reason.split("-");
+			String protocol = broken[3];
+			server.getLogger().info("[" + getAddress().toString() + "] was disconnected: invalid protocol " + protocol);
+		} else {
+			DisconnectPacket dp = new DisconnectPacket();
+			dp.reason = reason;
+			dp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+			addToQueue(dp);
+			if(player != null) {
+				server.getLogger().info(player.getUsername() + "[" + getAddress().toString() + "] was disconnected: " + reason);
+			}
+		}
 	}
 
 	@Override
