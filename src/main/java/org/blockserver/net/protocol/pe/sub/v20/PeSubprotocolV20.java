@@ -13,7 +13,9 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 	public PeSubprotocolV20(Server server){
 		this.server = server;
 		parser = new PeDataPacketParser(server);
-		//parser.add(MC_PLAY_PING, );
+
+		parser.add(MC_PLAY_PING, PingPacket.class);
+		parser.add(MC_PLAY_PONG, PongPacket.class);
 	}
 
 	@Override
@@ -24,8 +26,16 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 
 			case MC_PLAY_PING:
 				PingRequest pingRequest = new PingRequest();
-				//pingRequest.pingId = (())
+				pingRequest.pingId = ((PingPacket) dp).pingID;
 				return pingRequest;
+
+			case MC_PLAY_PONG:
+				//TODO
+				return null;
+
+			case MC_DISCONNECT:
+				server.getLogger().debug("Got disconnect!");
+				return null;
 			default:
 				//TODO
 				server.getLogger().debug("Unhandled data packet (PID: %x)", dp.getPid());

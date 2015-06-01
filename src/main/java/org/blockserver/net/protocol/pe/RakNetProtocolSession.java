@@ -5,7 +5,10 @@ import org.blockserver.Server;
 import org.blockserver.api.event.net.ResponseSendNativeEvent;
 import org.blockserver.api.event.net.protocol.pe.PEDataPacketSendNativeEvent;
 import org.blockserver.net.bridge.NetworkBridge;
+import org.blockserver.net.internal.request.InternalRequest;
+import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.internal.response.InternalResponse;
+import org.blockserver.net.internal.response.PingResponse;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
@@ -16,6 +19,7 @@ import org.blockserver.net.protocol.pe.sub.login.ClientConnect;
 import org.blockserver.net.protocol.pe.sub.login.ServerHandshake;
 import org.blockserver.net.protocol.pe.sub.v20.LoginPacketV20;
 import org.blockserver.net.protocol.pe.sub.v20.LoginStatusPacket;
+import org.blockserver.net.protocol.pe.sub.v20.PongPacket;
 import org.blockserver.net.protocol.pe.sub.v27.BatchPacket;
 import org.blockserver.net.protocol.pe.sub.v27.DisconnectPacket;
 import org.blockserver.net.protocol.pe.sub.v27.LoginPacketV27;
@@ -39,11 +43,12 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	private NetworkBridge bridge;
 	private SocketAddress clientAddress;
 	private PeProtocol protocol;
+	private PeSubprotocol subprotocol = null;
 	private Server server;
 	private Player player;
 
 	private int lastSeqNum = -1;
-	private int nextSeqNum = 0;
+	private int nextSeqNum = -1;
 	private int nextMessageIndex = 0;
 	private int MTU;
 
@@ -104,8 +109,13 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 		synchronized (currentQueue){
 			if(!currentQueue.packets.isEmpty()){
-				currentQueue.sequenceNumber = nextSeqNum;
-				nextSeqNum = nextSeqNum + 1;
+				if(nextSeqNum == 1){
+					currentQueue.sequenceNumber = 0;
+					nextSeqNum = 1;
+				} else {
+					currentQueue.sequenceNumber = nextSeqNum;
+					nextSeqNum = nextSeqNum + 1;
+				}
 				PEDataPacketSendNativeEvent evt = new PEDataPacketSendNativeEvent(currentQueue, this);
 				if(server.getAPI().handleEvent(evt)){
 					sendPacket(evt.getPacket().encode());
@@ -297,6 +307,7 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 					lp.decode(buffer);
 					PeSubprotocol sub = protocol.getSubprotocols().findProtocol(lp.protocol); //Search for a handler for their protocol
 					if(sub != null){
+						subprotocol = sub;
 						PlayerLoginInfo info = new PlayerLoginInfo();
 						info.entityID = server.getNextEntityID();
 						info.username = lp.username;
@@ -325,6 +336,8 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 
 					PeSubprotocol sub = protocol.getSubprotocols().findProtocol(lp.protocol); //Search for a handler for their protocol
 					if(sub != null){
+						subprotocol = sub;
+
 						PlayerLoginInfo info = new PlayerLoginInfo();
 						info.entityID = server.getNextEntityID();
 						info.username = lp.username;
@@ -350,6 +363,9 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 				break;
 
 			default:
+				if(subprotocol != null) {
+					subprotocol.readDataPacket(buffer, player);
+				}
 				server.getLogger().buffer("Got Unknown Packet: ", buffer, " END.");
 				break;
 		}
@@ -357,6 +373,10 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 
 	private void sendInitalPackets() {
 		//TODO
+		PlayStatusPacket psp = new PlayStatusPacket();
+		psp.status = PlayStatusPacket.PLAYER_SPAWN;
+		psp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+		addToQueue(psp);
 	}
 
 	private void processBatch(BatchPacket batch) throws DataFormatException {
@@ -384,7 +404,11 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	public void sendResponse(InternalResponse response) {
 		ResponseSendNativeEvent evt = new ResponseSendNativeEvent(player, response);
 		if(server.getAPI().handleEvent(evt)){
-			//TODO
+			if(evt.getResponse() instanceof PingResponse){
+				PongPacket pong = new PongPacket();
+				pong.pingID = ((PingResponse) evt.getResponse()).pingId;
+				addToQueue(pong);
+			}
 		}
 	}
 
@@ -417,7 +441,7 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 
 	@Override
 	public Server getServer() {
-		return null;
+		return server;
 	}
 
 	public int getMTU() {
