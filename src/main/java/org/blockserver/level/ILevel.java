@@ -6,6 +6,7 @@ import org.blockserver.utils.PositionDoublePrecision;
  * Represents a Level.
  */
 public abstract class ILevel{
+	public static final int TIME_FULL = 24000;
 	/**
 	 * Load this level. May not load if already loaded.
 	 * @throws LevelLoadException If there is an error while loading the level.

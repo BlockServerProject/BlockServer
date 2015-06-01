@@ -5,8 +5,6 @@ import org.blockserver.Server;
 import org.blockserver.api.event.net.ResponseSendNativeEvent;
 import org.blockserver.api.event.net.protocol.pe.PEDataPacketSendNativeEvent;
 import org.blockserver.net.bridge.NetworkBridge;
-import org.blockserver.net.internal.request.InternalRequest;
-import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.internal.response.InternalResponse;
 import org.blockserver.net.internal.response.PingResponse;
 import org.blockserver.net.protocol.ProtocolManager;
@@ -17,21 +15,14 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.login.ClientConnect;
 import org.blockserver.net.protocol.pe.sub.login.ServerHandshake;
-import org.blockserver.net.protocol.pe.sub.login.StartGamePacket;
-import org.blockserver.net.protocol.pe.sub.v20.LoginPacketV20;
-import org.blockserver.net.protocol.pe.sub.v20.LoginStatusPacket;
-import org.blockserver.net.protocol.pe.sub.v20.PingPacket;
-import org.blockserver.net.protocol.pe.sub.v20.PongPacket;
-import org.blockserver.net.protocol.pe.sub.v27.BatchPacket;
-import org.blockserver.net.protocol.pe.sub.v27.DisconnectPacket;
-import org.blockserver.net.protocol.pe.sub.v27.LoginPacketV27;
-import org.blockserver.net.protocol.pe.sub.v27.PlayStatusPacket;
+import org.blockserver.net.protocol.pe.sub.v20.StartGamePacket;
+import org.blockserver.net.protocol.pe.sub.v20.*;
+import org.blockserver.net.protocol.pe.sub.v27.*;
 import org.blockserver.player.Player;
 import org.blockserver.player.PlayerLoginInfo;
 import org.blockserver.ticker.CallableTask;
 import org.blockserver.utils.Utils;
 
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.*;
 import java.util.zip.DataFormatException;
@@ -55,6 +46,7 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	private int MTU;
 
 	private boolean loggedIn = false;
+	private CallableTask queueTask;
 
 	private List<Integer> ACKQueue = new ArrayList<>();
 	private List<Integer> NACKQueue = new ArrayList<>();
@@ -70,7 +62,8 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		server = bridge.getServer();
 
 		try {
-			server.getTicker().addRepeatingTask(new CallableTask(this, "updateQueues"), 10);
+			queueTask = new CallableTask(this, "updateQueues");
+			server.getTicker().addRepeatingTask(queueTask, 10);
 		} catch (NoSuchMethodException e) {
 			e.printStackTrace();
 		}
@@ -124,6 +117,27 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	}
 
 	public synchronized void addToQueue(PeDataPacket dp){
+		byte[] buffer = dp.encode();
+		if(buffer.length + currentQueue.getLength() + 34 >= MTU){
+			synchronized (currentQueue){
+				if(!currentQueue.packets.isEmpty()){
+					currentQueue.sequenceNumber = nextSeqNum;
+					nextSeqNum++;
+					PEDataPacketSendNativeEvent evt = new PEDataPacketSendNativeEvent(currentQueue, this);
+					if(server.getAPI().handleEvent(evt)){
+						sendPacket(evt.getPacket().encode());
+						recoveryQueue.put(evt.getPacket().sequenceNumber, evt.getPacket());
+					}
+					currentQueue.packets.clear();
+				}
+			}
+		}
+		if(buffer.length + currentQueue.getLength() + 34 >= MTU && subprotocol != null && subprotocol.getSubprotocolVersionId() >= 21){
+			//Need to be compressed
+			BatchPacket bp = BatchPacket.fromBuffer(buffer);
+			buffer = bp.payload;
+		}
+
 		CustomPacket.InternalPacket ip = new CustomPacket.InternalPacket();
 		if(dp.getChannel() != NetworkChannel.CHANNEL_NONE){
 			ip.reliability = 3;
@@ -132,7 +146,7 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		} else {
 			ip.reliability = 2;
 		}
-		ip.buffer = dp.encode();
+		ip.buffer = buffer;
 		ip.messageIndex = nextMessageIndex++;
 
 		synchronized (currentQueue) {
@@ -393,11 +407,37 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		sgp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
 		addToQueue(sgp);
 
+		SetTimePacket stp = new SetTimePacket();
+		stp.time = 0;
+		stp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+		addToQueue(stp);
 
-		PlayStatusPacket psp = new PlayStatusPacket();
-		psp.status = PlayStatusPacket.PLAYER_SPAWN;
-		psp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
-		addToQueue(psp);
+		SetSpawnPositionPacket sppp = new SetSpawnPositionPacket();
+		sppp.x = (int) server.getSpawnPosition().getX();
+		sppp.y = (byte) server.getSpawnPosition().getY();
+		sppp.z = (int) server.getSpawnPosition().getZ();
+		sppp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+		addToQueue(sppp);
+
+		if(subprotocol.getSubprotocolVersionId() >= 21){
+			SetHealthPacketV27 shp = new SetHealthPacketV27();
+			shp.health = 20; //Dummy
+			shp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+			addToQueue(shp);
+		} else {
+			SetHealthPacketV20 shp = new SetHealthPacketV20();
+			shp.health = 20; //Dummy
+			shp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+			addToQueue(shp);
+		}
+
+		SetDifficultyPacket sdp = new SetDifficultyPacket();
+		sdp.difficulty = 1;
+		sdp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+		addToQueue(sdp);
+
+		DummyChunkSender sender = new DummyChunkSender(this);
+		sender.start();
 	}
 
 	private void processBatch(BatchPacket batch) throws DataFormatException {
@@ -435,7 +475,9 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 
 	@Override
 	public void closeSession(String reason) {
-		if(reason.startsWith("login-fail-27")) {
+		if(reason == ""){
+			//Assume that the player class took care of it.
+		} else if(reason.startsWith("login-fail-27")) {
 			DisconnectPacket dp = new DisconnectPacket();
 			dp.reason = "";
 			dp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
@@ -444,7 +486,7 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 			String protocol = broken[3];
 			server.getLogger().info("[" + getAddress().toString() + "] was disconnected: invalid protocol " + protocol);
 		} else if(reason.startsWith("login-fail-21")) {
-			addToQueue(new byte[] {MC_DISCONNECT}, NetworkChannel.CHANNEL_PRIORITY, 3);
+			addToQueue(new byte[] {MC_CANCEL_CONNECT}, NetworkChannel.CHANNEL_PRIORITY, 3);
 
 			String[] broken = reason.split("-");
 			String protocol = broken[3];
@@ -458,6 +500,11 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 				server.getLogger().info(player.getUsername() + "[" + getAddress().toString() + "] was disconnected: " + reason);
 			}
 		}
+		shutdown();
+	}
+
+	private void shutdown() {
+		server.getTicker().cancelTask(queueTask);
 	}
 
 	@Override
@@ -465,7 +512,15 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		return server;
 	}
 
+	public Player getPlayer(){
+		return player;
+	}
+
 	public int getMTU() {
 		return MTU;
+	}
+
+	public int getProtocolId() {
+		return subprotocol.getSubprotocolVersionId();
 	}
 }

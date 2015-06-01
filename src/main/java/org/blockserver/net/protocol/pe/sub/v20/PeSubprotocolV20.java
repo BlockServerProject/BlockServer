@@ -35,7 +35,7 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 				//TODO
 				return null;
 
-			case MC_DISCONNECT:
+			case MC_CANCEL_CONNECT:
 				DisconnectRequest disconnectRequest = new DisconnectRequest();
 				disconnectRequest.reason = "Client Disconnected.";
 				return disconnectRequest;
