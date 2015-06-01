@@ -38,7 +38,7 @@ public class CustomPacket extends RakNetPacket{
     public int getLength() {
         int len = 4;
         for(InternalPacket packet : packets){
-            len = len + packet.getLength();
+            len += packet.getLength();
         }
         return len;
     }
