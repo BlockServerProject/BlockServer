@@ -17,8 +17,10 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
 import org.blockserver.net.protocol.pe.sub.login.ClientConnect;
 import org.blockserver.net.protocol.pe.sub.login.ServerHandshake;
+import org.blockserver.net.protocol.pe.sub.login.StartGamePacket;
 import org.blockserver.net.protocol.pe.sub.v20.LoginPacketV20;
 import org.blockserver.net.protocol.pe.sub.v20.LoginStatusPacket;
+import org.blockserver.net.protocol.pe.sub.v20.PingPacket;
 import org.blockserver.net.protocol.pe.sub.v20.PongPacket;
 import org.blockserver.net.protocol.pe.sub.v27.BatchPacket;
 import org.blockserver.net.protocol.pe.sub.v27.DisconnectPacket;
@@ -109,13 +111,8 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		}
 		synchronized (currentQueue){
 			if(!currentQueue.packets.isEmpty()){
-				if(nextSeqNum == 1){
-					currentQueue.sequenceNumber = 0;
-					nextSeqNum = 1;
-				} else {
-					currentQueue.sequenceNumber = nextSeqNum;
-					nextSeqNum = nextSeqNum + 1;
-				}
+				currentQueue.sequenceNumber = nextSeqNum;
+				nextSeqNum++;
 				PEDataPacketSendNativeEvent evt = new PEDataPacketSendNativeEvent(currentQueue, this);
 				if(server.getAPI().handleEvent(evt)){
 					sendPacket(evt.getPacket().encode());
@@ -232,7 +229,6 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		synchronized ((Integer) lastSeqNum) {
 			if (cp.sequenceNumber - lastSeqNum == 1) {
 				lastSeqNum = cp.sequenceNumber;
-				nextSeqNum = lastSeqNum + 1;
 			} else {
 				int diff = cp.sequenceNumber - lastSeqNum;
 				if(diff < 1){ //They must of had not received one of our packets.
@@ -362,6 +358,17 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 				}
 				break;
 
+			case MC_PLAY_PING:
+				if(subprotocol == null){
+					PingPacket ping = new PingPacket();
+					ping.decode(buffer);
+
+					PongPacket pong = new PongPacket();
+					pong.pingID = ping.pingID;
+					addToQueue(pong);
+					break;
+				}
+
 			default:
 				if(subprotocol != null) {
 					subprotocol.readDataPacket(buffer, player);
@@ -372,7 +379,21 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 	}
 
 	private void sendInitalPackets() {
-		//TODO
+		StartGamePacket sgp = new StartGamePacket();
+		sgp.seed = -1;
+		sgp.x = (float) player.getLocation().getX();
+		sgp.y = (float) player.getLocation().getY();
+		sgp.z = (float) player.getLocation().getZ();
+		sgp.spawnX = (int) server.getSpawnPosition().getX();
+		sgp.spawnY = (int) server.getSpawnPosition().getY();
+		sgp.spawnZ = (int) server.getSpawnPosition().getZ();
+		sgp.generator = 1;
+		sgp.gamemode = player.getGamemode() & 0x01;
+		sgp.entityID = player.getEntityID();
+		sgp.setChannel(NetworkChannel.CHANNEL_PRIORITY);
+		addToQueue(sgp);
+
+
 		PlayStatusPacket psp = new PlayStatusPacket();
 		psp.status = PlayStatusPacket.PLAYER_SPAWN;
 		psp.setChannel(NetworkChannel.CHANNEL_PRIORITY);

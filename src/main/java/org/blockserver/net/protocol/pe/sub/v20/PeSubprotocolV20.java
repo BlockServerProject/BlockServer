@@ -1,11 +1,13 @@
 package org.blockserver.net.protocol.pe.sub.v20;
 
 import org.blockserver.Server;
+import org.blockserver.net.internal.request.DisconnectRequest;
 import org.blockserver.net.internal.request.InternalRequest;
 import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.net.protocol.pe.sub.PeDataPacketParser;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
+import org.blockserver.net.protocol.pe.sub.v27.DisconnectPacket;
 
 public class PeSubprotocolV20 extends PeSubprotocol{
 	private Server server;
@@ -34,8 +36,10 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 				return null;
 
 			case MC_DISCONNECT:
-				server.getLogger().debug("Got disconnect!");
-				return null;
+				DisconnectRequest disconnectRequest = new DisconnectRequest();
+				disconnectRequest.reason = "Client Disconnected.";
+				return disconnectRequest;
+
 			default:
 				//TODO
 				server.getLogger().debug("Unhandled data packet (PID: %x)", dp.getPid());
