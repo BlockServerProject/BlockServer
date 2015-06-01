@@ -6,8 +6,8 @@ import org.blockserver.net.protocol.Protocol;
 import org.blockserver.net.protocol.ProtocolManager;
 import org.blockserver.net.protocol.ProtocolSession;
 import org.blockserver.net.protocol.WrappedPacket;
-import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPing;
-import org.blockserver.net.protocol.pe.login.RaknetUnconnectedPong;
+import org.blockserver.net.protocol.pe.raknet.ConnectedPingPacket;
+import org.blockserver.net.protocol.pe.raknet.UnconnectedPingPacket;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocolMgr;
 
 public class PeProtocol extends Protocol implements PeProtocolConst{
@@ -21,14 +21,14 @@ public class PeProtocol extends Protocol implements PeProtocolConst{
 	}
 	@Override
 	public ProtocolSession openSession(WrappedPacket pk){
-		System.out.println("Handling packet from " + pk.getAddress().toString());
+		server.getLogger().debug("Handling packet from " + pk.getAddress().toString());
 		if(pk.getBridge() instanceof UDPBridge){
 			byte pid = pk.bb().get(0);
 			if(pid == RAKNET_BROADCAST_PING_1 || pid == RAKNET_BROADCAST_PING_2){
 				advertize(pk);
 				return null;
 			}else if(pid == RAKNET_OPEN_CONNECTION_REQUEST_1){
-				PeProtocolSession session = new PeProtocolSession(protocols, pk.getBridge(), pk.getAddress(), this);
+				RakNetProtocolSession session = new RakNetProtocolSession(protocols, pk.getBridge(), pk.getAddress(), this);
 				session.handlePacket(pk);
 				return session;
 			}
@@ -36,11 +36,15 @@ public class PeProtocol extends Protocol implements PeProtocolConst{
 		return null;
 	}
 	private void advertize(WrappedPacket pk){
-		RaknetUnconnectedPing ping = new RaknetUnconnectedPing(pk.bb());
-		RaknetUnconnectedPong pong = new RaknetUnconnectedPong(ping.pingId, SERVER_ID, ping.magic, server.getServerName());
-		byte[] out;
-		pk.getBridge().send(out = pong.getBuffer(), pk.getAddress());
-		getServer().getLogger().buffer("Advertizement outgoing buffer ", out, "");
+		ConnectedPingPacket cpp = new ConnectedPingPacket();
+		cpp.decode(pk.bb());
+
+		UnconnectedPingPacket upp = new UnconnectedPingPacket();
+		upp.pingID = cpp.pingID;
+		upp.mcpeIdentifier = "MCPE;";
+		upp.identifier = server.getServerName() + ";27;0.11.0;0;10"; //TODO: Get MAX players and current.
+
+		pk.getBridge().send(upp.encode(), pk.getAddress());
 	}
 	public Server getServer(){
 		return server;

@@ -2,6 +2,7 @@ package org.blockserver.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.util.zip.Deflater;
 
@@ -54,5 +55,9 @@ public abstract class Utils{
 
 		int size = def.deflate(buf);
 		return ArrayUtils.subarray(buf, 0, size);
+	}
+	public static int getPortFromSocketAddress(SocketAddress address){
+		String str = address.toString();
+		return Integer.parseInt(str.split(":")[1]);
 	}
 }

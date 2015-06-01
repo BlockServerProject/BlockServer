@@ -9,16 +9,15 @@ import org.blockserver.io.BinaryReader;
 import org.blockserver.io.BinaryUtils;
 import org.blockserver.io.BinaryWriter;
 import org.blockserver.net.protocol.pe.PeProtocolConst;
+import org.blockserver.net.protocol.pe.raknet.NetworkChannel;
 
 public abstract class PeDataPacket implements PeProtocolConst{
-	private ByteBuffer bb;
-
-	public PeDataPacket(byte[] buffer){
-		bb = ByteBuffer.wrap(buffer);
-	}
+	private byte pid;
+	private NetworkChannel channel = NetworkChannel.CHANNEL_NONE;
 	public final void decode(byte[] buffer){
+		pid = buffer[0];
 		try{
-			_decode(new BinaryReader(new ByteArrayInputStream(buffer), BinaryUtils.LITTLE_ENDIAN));
+			_decode(new BinaryReader(new ByteArrayInputStream(buffer), BinaryUtils.BIG_ENDIAN));
 		}catch(IOException e){
 			throw new RuntimeException(e);
 		}
@@ -40,9 +39,15 @@ public abstract class PeDataPacket implements PeProtocolConst{
 		throw new RuntimeException(getClass().getSimpleName() + " cannot be encoded");
 	}
 	protected abstract int getLength();
-	public final byte getPid(){
-		byte pid = bb.get();
-		bb.position(0);
+	public byte getPid(){
 		return pid;
+	}
+
+	public NetworkChannel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(NetworkChannel channel) {
+		this.channel = channel;
 	}
 }

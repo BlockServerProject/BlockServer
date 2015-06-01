@@ -14,25 +14,20 @@ public class PeDataPacketParser{
 	public void add(Byte pid, Class<? extends PeDataPacket> clazz){
 		packets.put(pid, clazz);
 	}
+	public void remove(Byte pid){
+		packets.remove(pid);
+	}
 	public PeDataPacket parsePacket(final byte[] buffer){
 		try{
-			//PeDataPacket pk = packets.get(buffer[0]).newInstance(buffer);
 			PeDataPacket pk;
-			try{
-				if(packets.containsKey(buffer[0])){
-					pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(new Object[]{buffer});
-				}else{
-					pk = new PeDataPacket(buffer){
-						@Override
-						protected int getLength(){
-							return buffer.length;
-						}
-					};
-				}
-			}catch(InvocationTargetException | NoSuchMethodException e){
-				e.printStackTrace();
-				return null;
-			}
+			if(packets.containsKey(buffer[0])){
+                //pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(new Object[]{buffer});
+                pk = packets.get(buffer[0]).newInstance();
+            }else{
+                UnknownPacket up = new UnknownPacket();
+				up.buffer = buffer;
+				pk = up;
+            }
 			pk.decode(buffer);
 			return pk;
 		}catch(NullPointerException e){

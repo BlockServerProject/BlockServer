@@ -29,7 +29,7 @@ public class Player{
 	}
 	private void openDatabase(){
 		//PlayerData data = server.getPlayerDatabase().readPlayer(this);
-		location = server.getSpawnPosition(); //Dummy
+		location = new PositionDoublePrecision(0, 64, 0);
 		gm = 1; //CREATIVE, Also DUMMY
 		// TODO read the data
 	}

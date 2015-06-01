@@ -7,10 +7,7 @@ import org.blockserver.net.internal.request.PingRequest;
 import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 import org.blockserver.net.protocol.pe.sub.PeDataPacketParser;
 import org.blockserver.net.protocol.pe.sub.PeSubprotocol;
-import org.blockserver.net.protocol.pe.sub.gen.McpeDisconnectPacket;
-import org.blockserver.net.protocol.pe.sub.gen.McpeMovePlayerPacket;
-import org.blockserver.net.protocol.pe.sub.gen.McpeStartGamePacket;
-import org.blockserver.net.protocol.pe.sub.gen.ping.McpePingPacket;
+import org.blockserver.net.protocol.pe.sub.v27.DisconnectPacket;
 
 public class PeSubprotocolV20 extends PeSubprotocol{
 	private Server server;
@@ -18,11 +15,9 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 	public PeSubprotocolV20(Server server){
 		this.server = server;
 		parser = new PeDataPacketParser(server);
-		parser.add(MC_START_GAME_PACKET, McpeStartGamePacket.class);
-		parser.add(MC_PLAY_PING, McpePingPacket.class);
-		parser.add(MC_DISCONNECT, McpeDisconnectPacket.class);
-		parser.add(MC_MOVE_PLAYER_PACKET, McpeMovePlayerPacket.class);
-		// TODO more
+
+		parser.add(MC_PLAY_PING, PingPacket.class);
+		parser.add(MC_PLAY_PONG, PongPacket.class);
 	}
 
 	@Override
@@ -30,16 +25,21 @@ public class PeSubprotocolV20 extends PeSubprotocol{
 		byte pid = dp.getPid();
 		server.getLogger().debug("Adapting into request: " + dp.getPid());
 		switch(pid){
+
 			case MC_PLAY_PING:
-				McpePingPacket pingPacket = (McpePingPacket) dp;
 				PingRequest pingRequest = new PingRequest();
-				pingRequest.pingId = pingPacket.pingID;
+				pingRequest.pingId = ((PingPacket) dp).pingID;
 				return pingRequest;
 
-			case MC_DISCONNECT:
+			case MC_PLAY_PONG:
+				//TODO
+				return null;
+
+			case MC_CANCEL_CONNECT:
 				DisconnectRequest disconnectRequest = new DisconnectRequest();
-				disconnectRequest.reason = "Disconnected by client.";
+				disconnectRequest.reason = "Client Disconnected.";
 				return disconnectRequest;
+
 			default:
 				//TODO
 				server.getLogger().debug("Unhandled data packet (PID: %x)", dp.getPid());
