@@ -1,21 +1,11 @@
-BlockServer
+BlockServer [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=master)](https://travis-ci.org/BlockServerProject/BlockServer) [![Build Status](http://teamcity.beaconpe.net/app/rest/builds/buildType:BlockServer_Build/statusIcon)]
 ===========
-
-### REMEMBER: YOU DON'T HANDLE PACKETS, PACKETS HANDLE YOU.
-
-Team motto: ^
-
-*Team motto by Trent Summerlin (SuperstarGamer)
-
-## BUILD STATUS:
-
-#### BlockServer branch `new`: [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=new)](https://travis-ci.org/BlockServerProject/BlockServer)
-
-### TeamCity CI: [![Build Status](http://teamcity.beaconpe.net/app/rest/builds/buildType:BlockServer_Build/statusIcon)]
 
 [![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=beaconmine|?#blockserverproject,#beaconmine,#pocketbukkit)
 
 #### Visit our TeamCity Server: http://builds.blockserver.org
+
+# FAQ
 
 ## What is BlockServer?
 BlockServer is a free, open-source Minecraft: PE server software.
