@@ -94,7 +94,7 @@ public class CustomPacket extends RakNetPacket{
                 splitID = bb.getShort();
                 splitIndex = bb.getInt();
             }
-            buffer = new byte[length];
+            buffer = new byte[length/8];
             bb.get(buffer);
         }
 
