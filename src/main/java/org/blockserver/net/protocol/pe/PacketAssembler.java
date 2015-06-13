@@ -2,6 +2,7 @@ package org.blockserver.net.protocol.pe;
 
 import org.blockserver.io.BinaryWriter;
 import org.blockserver.net.protocol.pe.raknet.CustomPacket;
+import org.blockserver.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
@@ -41,11 +42,48 @@ public class PacketAssembler {
         }
     }
 
+    public static boolean checkIfSplitNeeded(CustomPacket packet, CustomPacket.InternalPacket addedPacket, int MTU){
+        int len = packet.getLength();
+        len = len + addedPacket.getLength();
+        if(len >= MTU){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static List<CustomPacket.InternalPacket> getSplitPackets(CustomPacket cp){
         List<CustomPacket.InternalPacket> packets = new ArrayList<>();
         for(CustomPacket.InternalPacket ip : cp.packets){
             if(ip.hasSplit){
                 packets.add(ip);
+            }
+        }
+        return packets;
+    }
+
+    public static List<AssembledPacket> splitPacket(CustomPacket.InternalPacket ip, int MTU, int nextSplitID){
+        byte[][] splitData = Utils.splitArray(ip.buffer, MTU - 34);
+        List<AssembledPacket> packets = new ArrayList<>();
+
+        int currentSplitID = nextSplitID;
+        int currentSplitCount = splitData.length;
+        for(byte[] sliceData : splitData){
+            if(sliceData.length >= 1){
+                currentSplitCount = currentSplitCount - 1;
+            }
+        }
+
+        int slice = 0;
+        for(byte[] sliceData : splitData){
+            if(sliceData.length >= 1) {
+                AssembledPacket assembledPacket = new AssembledPacket();
+                assembledPacket.setBuffer(sliceData);
+                assembledPacket.setSplitID(currentSplitID);
+                assembledPacket.setSplitIndex(slice);
+                assembledPacket.setSplitCount(currentSplitCount);
+                packets.add(assembledPacket);
+                slice++;
             }
         }
         return packets;
@@ -99,10 +137,12 @@ public class PacketAssembler {
 
     private static List<CustomPacket.InternalPacket> groupPackets(List<CustomPacket.InternalPacket> splitPackets){
         List<CustomPacket.InternalPacket> grouped = new ArrayList<>();
+        grouped.add(splitPackets.get(0));
         while(splitPackets.iterator().hasNext()){
             CustomPacket.InternalPacket ip = splitPackets.iterator().next();
             if(grouped.get(0).splitID == ip.splitID){
                 grouped.add(ip);
+                splitPackets.remove(ip);
             }
         }
         return grouped;
@@ -110,6 +150,7 @@ public class PacketAssembler {
 
     public static class AssembledPacket{
         private int splitID;
+        private int splitIndex;
         private int splitCount;
         private byte[] buffer;
 
@@ -135,6 +176,14 @@ public class PacketAssembler {
 
         public void setSplitID(int splitID) {
             this.splitID = splitID;
+        }
+
+        public int getSplitIndex() {
+            return splitIndex;
+        }
+
+        public void setSplitIndex(int splitIndex) {
+            this.splitIndex = splitIndex;
         }
     }
 }

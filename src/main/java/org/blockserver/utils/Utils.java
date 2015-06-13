@@ -11,11 +11,11 @@ public abstract class Utils{
 		bb.put(writeLTriad(triad));
 	}
 	public static byte[] writeLTriad(int triad){
-		return new byte[]{
-				(byte) (triad & 0x0000FF),
-				(byte) ((triad & 0x00FF00) >> 8),
-				(byte) ((triad & 0xFF0000) >> 16)
-		};
+		byte b1,b2,b3;
+		b3 = (byte)(triad & 0xFF);
+		b2 = (byte)((triad >> 8) & 0xFF);
+		b1 = (byte)((triad >> 16) & 0xFF);
+		return new byte[] {b3, b2, b1};
 	}
 	public static int readLTriad(ByteBuffer bb){
 		byte[] triad = new byte[3];
@@ -23,9 +23,7 @@ public abstract class Utils{
 		return readLTriad(triad);
 	}
 	public static int readLTriad(byte[] triad){
-		return triad[0]
-				+ (triad[1] << 8)
-				+ (triad[2] << 16);
+		return (triad[0] & 0xFF) | ((triad[1] & 0xFF) << 8) | ((triad[2] & 0x0F) << 16);
 	}
 	public static int readLTriad(byte[] data, int offset){
 		return (data[offset] & 0xff) | (data[offset+1] & 0xff) << 8 | (data[offset+2] & 0xff) << 16;
@@ -59,5 +57,27 @@ public abstract class Utils{
 	public static int getPortFromSocketAddress(SocketAddress address){
 		String str = address.toString();
 		return Integer.parseInt(str.split(":")[1]);
+	}
+	public static byte[][] splitArray(byte[] array, int singleSlice){
+		if (array.length <= singleSlice) {
+			byte[][] singleRet = new byte[1][];
+			singleRet[0] = array;
+			return singleRet;
+		}
+		byte[][] ret = new byte[(array.length / singleSlice + (array.length % singleSlice == 0 ? 0 : 1))][];
+		int pos = 0;
+		int slice = 0;
+		while (slice < ret.length) {
+			if (pos + singleSlice < array.length) {
+				ret[slice] = ArrayUtils.subarray(array, pos, singleSlice);
+				pos += singleSlice;
+				slice++;
+			} else {
+				ret[slice] = ArrayUtils.subarray(array, pos, array.length);
+				pos += array.length - pos;
+				slice++;
+			}
+		}
+		return ret;
 	}
 }

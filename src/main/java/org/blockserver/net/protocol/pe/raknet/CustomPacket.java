@@ -59,7 +59,7 @@ public class CustomPacket extends RakNetPacket{
 
         @Override
         protected void _encode(ByteBuffer bb){
-            bb.put((byte) ((reliability << 5) ^ (hasSplit ? 0b0001 : 0x00)));
+            bb.put((byte) ((reliability << 5) | (hasSplit ? 0b00010000 : 0)));
             bb.putShort((short) (buffer.length << 3)); //Length is in bits
             if(reliability == 0x02 || reliability == 0x03 || reliability == 0x04 || reliability == 0x06 || reliability == 0x07){
                 bb.put(Utils.writeLTriad(this.messageIndex));

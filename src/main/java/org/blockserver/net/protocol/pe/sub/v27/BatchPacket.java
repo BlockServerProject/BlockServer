@@ -6,7 +6,9 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 /**
  * MC_BATCH_PACKET (0xb1)
@@ -25,7 +27,11 @@ public class BatchPacket extends PeDataPacket{
     protected void _decode(BinaryReader reader) throws IOException {
         reader.readByte();
         int size = reader.readInt();
-        payload = reader.read(size);
+        if(size < 1 || size > reader.getInputStream().available()){
+            payload = reader.read(reader.getInputStream().available());
+        } else {
+            payload = reader.read(size);
+        }
     }
 
     /**
@@ -44,6 +50,26 @@ public class BatchPacket extends PeDataPacket{
         compresser.end();
 
         bp.payload = Arrays.copyOf(bp.payload, dataLen);
+        return bp;
+    }
+
+    /**
+     * Create a new BatchPacket instance based on an existing BatchPacket recieved. The data will be decompressed.
+     * @param buffer BatchPacket buffer.
+     * @return BatchPacket instance.
+     */
+    public static BatchPacket decodeExisting(byte[] buffer) throws DataFormatException {
+        BatchPacket bp = new BatchPacket();
+        bp.decode(buffer);
+
+        Inflater decompresser = new Inflater();
+        decompresser.setInput(bp.payload);
+        byte[] result = new byte[bp.payload.length];
+        int len = decompresser.inflate(result);
+        decompresser.end();
+
+        bp.payload = Arrays.copyOf(result, len);
+
         return bp;
     }
 

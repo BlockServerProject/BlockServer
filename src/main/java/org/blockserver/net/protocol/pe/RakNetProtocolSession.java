@@ -135,7 +135,7 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 		if(buffer.length + currentQueue.getLength() + 34 >= MTU && subprotocol != null && subprotocol.getSubprotocolVersionId() >= 21){
 			//Need to be compressed
 			BatchPacket bp = BatchPacket.fromBuffer(buffer);
-			buffer = bp.payload;
+			buffer = bp.encode();
 		}
 
 		CustomPacket.InternalPacket ip = new CustomPacket.InternalPacket();
@@ -322,6 +322,8 @@ public class RakNetProtocolSession implements ProtocolSession, PeProtocolConst{
 						info.entityID = server.getNextEntityID();
 						info.username = lp.username;
 						info.skin = lp.skin;
+						server.getLogger().debug("Slim is: "+lp.slim+", skin length is: "+lp.skin.length());
+						server.getLogger().debug("Some bytes: " + lp.skin.getBytes()[0] + lp.skin.getBytes()[1] + lp.skin.getBytes()[2] + lp.skin.getBytes()[3]);
 
 						player = server.newSession(this, info);
 
