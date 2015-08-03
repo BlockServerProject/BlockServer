@@ -17,6 +17,8 @@
 package org.blockserver.module;
 
 import org.blockserver.Server;
+import org.blockserver.net.bridge.raknet.RakNetBridge;
+import org.blockserver.net.protocol.pe.PeProtocol;
 import org.blockserver.ui.Log4j2ConsoleOut;
 import org.blockserver.ui.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -85,12 +87,9 @@ public class ModuleLoader implements Runnable{
 
 		//--------REGISTER MCPE----------------------
 		if(modulesAllowed.contains("MCPE")){
-			/*
 			PeProtocol pocket = new PeProtocol(server);
 			server.getProtocols().addProtocol(pocket);
-			server.getBridges().addBridge(new UDPBridge(server.getBridges()));
-			pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(server));
-			*/
+			server.getBridges().addBridge(new RakNetBridge(server.getBridges()));
 		}
 		//--------REGISTER MCPE END------------------
 		//--------REGISTER JARS----------------------

@@ -40,6 +40,10 @@ public class RakNetBridge extends NetworkBridge implements ServerInstance {
 
         server = new JRakLibServer(new JRakLibLogger(getServer().getLogger()), address.getPort(), address.getHostString());
         handler = new ServerHandler(server, this);
+
+        handler.sendOption("name", "MCPE;Testing;27;0.11.1;0;5");
+
+        new NonBlockRakLibHandler(this).start();
     }
 
     /**
@@ -91,10 +95,6 @@ public class RakNetBridge extends NetworkBridge implements ServerInstance {
 
     @Override
     public WrappedPacket receive() {
-        if(handler.handlePacket()){
-            while(handler.handlePacket()) {
-            }
-        }
         if(server.getState() == Thread.State.TERMINATED){
             getServer().getLogger().fatal("[RakNetBridge]: JRakLib crashed!");
         }
@@ -154,12 +154,20 @@ public class RakNetBridge extends NetworkBridge implements ServerInstance {
     @Override
     public void handleOption(String option, String value) {
         //TODO: Bandwith data update
+        System.out.println(option+", "+value);
     }
 
     public static InetSocketAddress identifierToSocketAddress(String identifier){
         String address = identifier.split(":")[0];
         int port = Integer.parseInt(identifier.split(":")[1]);
         return new InetSocketAddress(address, port);
+    }
+
+    public void process() {
+        if(handler.handlePacket()){
+            while(handler.handlePacket()) {
+            }
+        }
     }
 
     public static class JRakLibLogger implements Logger {

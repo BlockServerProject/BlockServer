@@ -38,12 +38,7 @@ public class PeDataPacketParser{
 				if(packets.containsKey(buffer[0])){
 					pk = packets.get(buffer[0]).getConstructor(byte[].class).newInstance(new Object[]{buffer});
 				}else{
-					pk = new PeDataPacket(buffer){
-						@Override
-						protected int getLength(){
-							return buffer.length;
-						}
-					};
+					pk = new UnknownDataPacket(buffer);
 				}
 			}catch(InvocationTargetException | NoSuchMethodException e){
 				e.printStackTrace();
