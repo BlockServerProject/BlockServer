@@ -3,9 +3,9 @@ package org.blockserver.net.protocol.pe.sub;
 import java.util.HashMap;
 
 import org.blockserver.Server;
-import org.blockserver.net.protocol.pe.PeProtocol;
 
 public class PeSubprotocolMgr{
+	/*
 	private PeProtocol protocol;
 	private HashMap<Integer, PeSubprotocol> subs = new HashMap<>();
 	public PeSubprotocolMgr(PeProtocol protocol){
@@ -27,4 +27,5 @@ public class PeSubprotocolMgr{
 		}
 		return null;
 	}
+	*/
 }
