@@ -29,12 +29,12 @@ public class WrappedPacket{
 	private NetworkBridge bridge;
 	public Socket socket = null;
 	public WrappedPacket(byte[] buffer, SocketAddress addr, NetworkBridge bridge){
-		bb = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
+		bb = ByteBuffer.wrap(buffer).order(ByteOrder.BIG_ENDIAN);
 		this.addr = addr;
 		this.bridge = bridge;
 	}
 	public WrappedPacket(byte[] buffer, Socket socket, NetworkBridge bridge){
-		bb = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
+		bb = ByteBuffer.wrap(buffer).order(ByteOrder.BIG_ENDIAN);
 		this.socket = socket;
 		this.bridge = bridge;
 	}

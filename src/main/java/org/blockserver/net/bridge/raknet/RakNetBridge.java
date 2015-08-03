@@ -14,19 +14,25 @@ import org.blockserver.net.protocol.pe.sub.PeDataPacket;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 /**
  * A Network Bridge for the MCPE RakNet protocol.
  */
 public class RakNetBridge extends NetworkBridge implements ServerInstance {
+    public final static byte PACKET_OPEN_SESSION = 0x01;
+    public final static byte PACKET_CLOSE_SESSION = 0x02;
+    public final static byte PACKET_DATA_PACKET = 0x03;
+
     private NetworkBridgeManager mgr;
     private InetSocketAddress address;
 
     private JRakLibServer server;
     private ServerHandler handler;
 
-    private Deque<WrappedPacket> recieveQueue = new ArrayDeque<>();
+    private Deque<WrappedPacket> recieveQueue = new ConcurrentLinkedDeque<>();
 
     public RakNetBridge(NetworkBridgeManager mgr){
         this.mgr = mgr;
@@ -111,19 +117,26 @@ public class RakNetBridge extends NetworkBridge implements ServerInstance {
     @Override
     public void openSession(String identifier, String address, int port, long clientID) {
         getServer().getLogger().debug("("+identifier+"): Session opened with clientID: "+clientID);
+        byte[] buffer = ByteBuffer.allocate(9).put(PACKET_OPEN_SESSION).putLong(clientID).array();
+        recieveQueue.add(new WrappedPacket(buffer, identifierToSocketAddress(identifier), this));
     }
 
     @Override
     public void closeSession(String identifier, String reason) {
         getServer().getLogger().debug("("+identifier+"): Session closed.");
+        recieveQueue.addLast(new WrappedPacket(new byte[] {PACKET_CLOSE_SESSION}, identifierToSocketAddress(identifier), this));
     }
 
     @Override
     public void handleEncapsulated(String identifier, EncapsulatedPacket encapsulatedPacket, int flags) {
         getServer().getLogger().buffer("("+identifier+") Packet IN: ", encapsulatedPacket.buffer, "");
         if(encapsulatedPacket.buffer != null || encapsulatedPacket.length > 0){
-            WrappedPacket wp = new WrappedPacket(encapsulatedPacket.buffer, identifierToSocketAddress(identifier), this);
+            ByteBuffer bb = ByteBuffer.allocate(encapsulatedPacket.buffer.length + 1);
+            bb.put(PACKET_DATA_PACKET);
+            bb.put(encapsulatedPacket.buffer);
+            WrappedPacket wp = new WrappedPacket(bb.array(), identifierToSocketAddress(identifier), this);
             recieveQueue.addLast(wp);
+            bb = null;
         }
     }
 
