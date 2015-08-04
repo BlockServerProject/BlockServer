@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This is the default log4j2 XML configuration for BlockServer.
+You can edit this file only if you know what you are doing.
+If you are looking for the debug options, look at the comments below in the file.
+-->
+<Configuration status="WARN">
+    <Properties>
+        <Property name="log-path">logs</Property>
+    </Properties>
+    <Appenders>
+        <Console name="console-log" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%level] [%logger]: %msg%n"/>
+        </Console>
+        <RollingFile name="file-log" fileName="${log-path}/latest.log"
+                     filePattern="${log-path}/blockserver-info-%d{yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>[%d{HH:mm:ss}] [%level] [%logger]: %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!-- TO ACTIVATE DEBUG LOGGING:
+            Change every "info" to "debug" between this comment and the next.
+        -->
+        <Logger name="BlockServer" level="info" additivity="false">
+            <appender-ref ref="file-log" level="info"/>
+            <appender-ref ref="console-log" level="info"/>
+        </Logger>
+        <Root level="info" additivity="false">
+            <appender-ref ref="file-log" level="info"/>
+            <appender-ref ref="console-log" level="info"/>
+        </Root>
+        <!-- END DEBUG LOGGING -->
+    </Loggers>
+</Configuration>

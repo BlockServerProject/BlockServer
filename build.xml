@@ -54,7 +54,7 @@
 	</target>
 	<target name="compile" depends="clean,prepare">
 		<mkdir dir="${classes.dir}"/>
-		<copy file="${res.dir}/log4j2.xml" tofile="${classes.dir}/log4j2.xml"/>
+		<copy file="src/main/resources/log4j2-file-old.xml" tofile="${classes.dir}/log4j2.xml"/>
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
 	</target>
 	<target name="jar" depends="compile">

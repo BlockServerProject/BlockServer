@@ -18,6 +18,7 @@ package org.blockserver.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.zip.Deflater;
 
@@ -70,5 +71,15 @@ public abstract class Utils{
 
 		int size = def.deflate(buf);
 		return ArrayUtils.subarray(buf, 0, size);
+	}
+	public static void copyResource(String resource, String dest) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream(resource)));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(dest));
+		String line;
+		while((line = reader.readLine()) != null){
+			writer.write(line+"\n");
+		}
+		reader.close();
+		writer.close();
 	}
 }

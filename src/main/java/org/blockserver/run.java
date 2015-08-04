@@ -17,20 +17,28 @@
 package org.blockserver;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
 import org.blockserver.player.DummyPlayerDatabase;
 import org.blockserver.ui.Log4j2ConsoleOut;
 import org.blockserver.utils.ServerConfig;
+import org.blockserver.utils.Utils;
 
 public class run{
 	public static File DIR;
 	public static File modules;
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static void main(String[] arguments){
+		try {
+			loggingInit();
+		} catch (IOException e) {
+			LogManager.getRootLogger().fatal("Failed to init logging!");
+		}
 		ArrayList<String> args = new ArrayList<>(Arrays.asList(arguments));
 		ServerBuilder builder = new ServerBuilder();
 		String includePath = "data";
@@ -63,5 +71,13 @@ public class run{
 				.setModulePath(modules);
 		Server server = builder.build();
 		server.start();
+	}
+
+	private static void loggingInit() throws IOException {
+		File configFile = new File("log4j2.xml");
+		if(!configFile.exists()){
+			Utils.copyResource("log4j2-file.xml", "log4j2.xml");
+		}
+		System.setProperty("log4j.configurationFile", "log4j2.xml");
 	}
 }
