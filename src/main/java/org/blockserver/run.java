@@ -1,20 +1,44 @@
+/**
+ * This file is part of BlockServer.
+ *
+ * BlockServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlockServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.blockserver;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
 import org.blockserver.player.DummyPlayerDatabase;
 import org.blockserver.ui.Log4j2ConsoleOut;
 import org.blockserver.utils.ServerConfig;
+import org.blockserver.utils.Utils;
 
 public class run{
 	public static File DIR;
 	public static File modules;
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static void main(String[] arguments){
+		try {
+			loggingInit();
+		} catch (IOException e) {
+			LogManager.getRootLogger().fatal("Failed to init logging!");
+		}
 		ArrayList<String> args = new ArrayList<>(Arrays.asList(arguments));
 		ServerBuilder builder = new ServerBuilder();
 		String includePath = "data";
@@ -47,5 +71,13 @@ public class run{
 				.setModulePath(modules);
 		Server server = builder.build();
 		server.start();
+	}
+
+	private static void loggingInit() throws IOException {
+		File configFile = new File("log4j2.xml");
+		if(!configFile.exists()){
+			Utils.copyResource("log4j2-file.xml", "log4j2.xml");
+		}
+		System.setProperty("log4j.configurationFile", "log4j2.xml");
 	}
 }

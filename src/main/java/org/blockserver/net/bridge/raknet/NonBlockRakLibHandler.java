@@ -14,10 +14,22 @@
  * You should have received a copy of the GNU General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.net.protocol;
+package org.blockserver.net.bridge.raknet;
 
+/**
+ * Created by jython234 on 8/3/2015.
+ */
+public class NonBlockRakLibHandler extends Thread{
+    private RakNetBridge bridge;
 
-public abstract class Protocol{
-	public abstract ProtocolSession openSession(WrappedPacket pk);
-	public abstract String getDescription();
+    public NonBlockRakLibHandler(RakNetBridge bridge){
+        this.bridge = bridge;
+    }
+
+    @Override
+    public void run() {
+        while(!isInterrupted()){
+            bridge.process();
+        }
+    }
 }

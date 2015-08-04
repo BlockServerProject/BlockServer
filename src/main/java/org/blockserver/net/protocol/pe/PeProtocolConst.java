@@ -1,81 +1,80 @@
+/**
+ * This file is part of BlockServer.
+ *
+ * BlockServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlockServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.blockserver.net.protocol.pe;
 
-import java.util.Random;
 
 public interface PeProtocolConst{
 	/**
-	 * Server ID sent to clients.
-	 * This ID is the same in every runtime, but also random.
+	 * Current MCPE protocol version.
 	 */
-	public static long SERVER_ID = new Random().nextLong();
-	/**
-	 * Current RakNet protocol version used by MCPE.<br>
-	 * Since there is so far only one RakNet protocol version used, we will not handle dynamic RakNet versions;
-	 */
-	public final static byte RAKNET_PROTOCOL_VERSION = 5;
-	public final static byte[] MAGIC = new byte[]{
-			0x00, (byte) 0xff, (byte) 0xff, 0x00,
-			(byte) 0xfe, (byte) 0xfe, (byte) 0xfe, (byte) 0xfe,
-			(byte) 0xfd, (byte) 0xfd, (byte) 0xfd, (byte) 0xfd,
-			0x12, 0x34, 0x56, 0x78
-	};
-	public final static byte RAKNET_BROADCAST_PING_1              =       0x01;
-	public final static byte RAKNET_BROADCAST_PING_2              =       0x02;
-	public final static byte RAKNET_OPEN_CONNECTION_REQUEST_1     =       0x05;
-	public final static byte RAKNET_OPEN_CONNECTION_REPLY_1       =       0x06;
-	public final static byte RAKNET_OPEN_CONNECTION_REQUEST_2     =       0x07;
-	public final static byte RAKNET_OPEN_CONNECTION_REPLY_2       =       0x08;
-	public final static byte RAKNET_INCOMPATIBLE_PROTOCOL_VERSION =       0x1A;
-	public final static byte RAKNET_BROADCAST_PONG_1              =       0x1C;
-	public final static byte RAKNET_BROADCAST_PONG_2              =       0x1D;
-	public final static byte RAKNET_CUSTOM_PACKET_MIN             = (byte)0x80;
-	public final static byte RAKNET_CUSTOM_PACKET_MAX             = (byte)0x8F;
-	public final static byte RAKNET_CUSTOM_PACKET_DEFAULT         = (byte)0x84;
-	public final static byte RAKNET_NACK                          = (byte)0xA0;
-	public final static byte RAKNET_ACK                           = (byte)0xC0;
-	public final static byte[] RAKNET_HAS_MESSAGE_RELIABILITIES = {
-	    0x02, 0x03, 0x04, 0x06, 0x07
-	};
-	public final static byte[] RAKNET_HAS_ORDER_RELIABILITIES = {
-		0x01, 0x03, 0x04, 0x07
-	};
-	
-	public final static byte MC_CLIENT_CONNECT = (byte) 0x09;
-	public final static byte MC_SERVER_HANDSHAKE = (byte) 0x10;
-	public final static byte MC_CLIENT_HANDSHAKE = (byte) 0x13;
+	public final static byte CURRENT_PROTOCOL = 31;
 
-	public final static byte MC_PLAY_PING = (byte) 0x00;
-	public final static byte MC_PLAY_PONG = (byte) 0x03;
-
-	public final static byte MC_DISCONNECT = (byte) 0x15;
-	public final static byte MC_LOGIN_PACKET = (byte) 0x82;
-	public final static byte MC_LOGIN_STATUS_PACKET = (byte) 0x83;
-	public final static byte MC_MESSAGE_PACKET = (byte) 0x85;
-	public final static byte MC_SET_TIME_PACKET = (byte) 0x86;
-	public final static byte MC_START_GAME_PACKET = (byte) 0x87;
-	public final static byte MC_ADD_MOB_PACKET = (byte) 0x88;
-	public final static byte MC_ADD_PLAYER_PACKET = (byte) 0x89;
-	public final static byte MC_REMOVE_PLAYER_PACKET = (byte) 0x8a;
-	public final static byte MC_ADD_ENTITY_PACKET = (byte) 0x8c;
-	public final static byte MC_REMOVE_ENTITY_PACKET = (byte) 0x8d;
-	public final static byte MC_ADD_ITEM_ENTITY_PACKET = (byte) 0x8e;
-	public final static byte MC_TAKE_ITEM_ENTITY_PACKET = (byte) 0x8f;
-	public final static byte MC_MOVE_ENTITY_PACKET = (byte) 0x90;
-	public final static byte MC_ROTATE_HEAD_PACKET = (byte) 0x94;
-	public final static byte MC_MOVE_PLAYER_PACKET = (byte) 0x95;
-	public final static byte MC_REMOVE_BLOCK_PACKET = (byte) 0x97;
-	public final static byte MC_UPDATE_BLOCK_PACKET = (byte) 0x98;
-	public final static byte MC_ADD_PAINTING_PACKET = (byte) 0x99;
-	public final static byte MC_EXPLODE_PACKET = (byte) 0x9A;
-	public final static byte MC_LEVEL_EVENT_PACKET = (byte) 0x9B;
-	public final static byte MC_TILE_EVENT_PACKET = (byte) 0x9C;
-	public final static byte MC_ENTITY_EVENT_PACKET = (byte) 0x9D;
-	public final static byte MC_PLAYER_EQUIPMENT_PACKET = (byte) 0xA0;
-	public final static byte MC_PLAYER_ARMOR_EQUIPMENT_PACKET = (byte) 0xA1;
-	public final static byte MC_INTERACT_PACKET = (byte) 0xA2;
-	public final static byte MC_SET_HEALTH_PACKET = (byte) 0xaa;
-	public final static byte MC_SET_DIFFICULTY_PACKET = (byte) 0xbc;
-	public final static byte MC_SPAWN_POSITION_PACKET = (byte) 0xab;
-	public final static byte MC_FULL_CHUNK_DATA = (byte) 0xba;
-	public final static byte MC_ADVENTURE_SETTINGS = (byte) 0xb7;
+	public final static byte LOGIN_PACKET = (byte) 0x87;
+	public final static byte PLAY_STATUS_PACKET = (byte) 0x88;
+	public final static byte DISCONNECT_PACKET = (byte) 0x89;
+	public final static byte BATCH_PACKET = (byte) 0x8a;
+	public final static byte TEXT_PACKET = (byte) 0x8b;
+	public final static byte SET_TIME_PACKET = (byte) 0x8c;
+	public final static byte START_GAME_PACKET = (byte) 0x8d;
+	public final static byte ADD_PLAYER_PACKET = (byte) 0x8e;
+	public final static byte REMOVE_PLAYER_PACKET = (byte) 0x8f;
+	public final static byte ADD_ENTITY_PACKET = (byte) 0x90;
+	public final static byte REMOVE_ENTITY_PACKET = (byte) 0x91;
+	public final static byte ADD_ITEM_ENTITY_PACKET = (byte) 0x92;
+	public final static byte TAKE_ITEM_ENTITY_PACKET = (byte) 0x93;
+	public final static byte MOVE_ENTITY_PACKET = (byte) 0x94;
+	public final static byte MOVE_PLAYER_PACKET = (byte) 0x95;
+	public final static byte REMOVE_BLOCK_PACKET = (byte) 0x96;
+	public final static byte UPDATE_BLOCK_PACKET = (byte) 0x97;
+	public final static byte ADD_PAINTING_PACKET = (byte) 0x98;
+	public final static byte EXPLODE_PACKET = (byte) 0x99;
+	public final static byte LEVEL_EVENT_PACKET = (byte) 0x9a;
+	public final static byte TILE_EVENT_PACKET = (byte) 0x9b;
+	public final static byte ENTITY_EVENT_PACKET = (byte) 0x9c;
+	public final static byte MOB_EFFECT_PACKET = (byte) 0x9d;
+	public final static byte UPDATE_ATTRIBUTES_PACKET = (byte) 0x9e;
+	public final static byte MOB_EQUIPMENT_PACKET = (byte) 0x9f;
+	public final static byte MOB_ARMOR_EQUIPMENT_PACKET = (byte) 0xa0;
+	public final static byte INTERACT_PACKET = (byte) 0xa1;
+	public final static byte USE_ITEM_PACKET = (byte) 0xa2;
+	public final static byte PLAYER_ACTION_PACKET = (byte) 0xa3;
+	public final static byte HURT_ARMOR_PACKET = (byte) 0xa4;
+	public final static byte SET_ENTITY_DATA_PACKET = (byte) 0xa5;
+	public final static byte SET_ENTITY_MOTION_PACKET = (byte) 0xa6;
+	public final static byte SET_ENTITY_LINK_PACKET = (byte) 0xa7;
+	public final static byte SET_HEALTH_PACKET = (byte) 0xa8;
+	public final static byte SET_SPAWN_POSITION_PACKET = (byte) 0xa9;
+	public final static byte ANIMATE_PACKET = (byte) 0xaa;
+	public final static byte RESPAWN_PACKET = (byte) 0xab;
+	public final static byte DROP_ITEM_PACKET = (byte) 0xac;
+	public final static byte CONTAINER_OPEN_PACKET = (byte) 0xad;
+	public final static byte CONTAINER_CLOSE_PACKET = (byte) 0xae;
+	public final static byte CONTAINER_SET_SLOT_PACKET = (byte) 0xaf;
+	public final static byte CONTAINER_SET_DATA_PACKET = (byte) 0xb0;
+	public final static byte CONTAINER_SET_CONTENT_PACKET = (byte) 0xb1;
+	public final static byte CRAFTING_DATA_PACKET = (byte) 0xb2;
+	public final static byte CRAFTING_EVENT_PACKET = (byte) 0xb3;
+	public final static byte ADVENTURE_SETTINGS_PACKET = (byte) 0xb4;
+	public final static byte TILE_ENTITY_DATA_PACKET = (byte) 0xb5;
+	//public final static byte PLAYER_INPUT_PACKET = (byte) 0xb6;
+	public final static byte FULL_CHUNK_DATA_PACKET = (byte) 0xb7;
+	public final static byte SET_DIFFICULTY_PACKET = (byte) 0xb8;
+	//public final static byte CHANGE_DIMENSION_PACKET = (byte) 0xb9;
+	//public final static byte SET_PLAYER_GAMETYPE_PACKET = (byte) 0xba;
+	public final static byte PLAYER_LIST_PACKET = (byte) 0xbb;
+	//public final static byte TELEMETRY_EVENT_PACKET = (byte) 0xbc;
 }

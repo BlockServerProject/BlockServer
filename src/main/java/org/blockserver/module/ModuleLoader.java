@@ -1,9 +1,24 @@
+/**
+ * This file is part of BlockServer.
+ *
+ * BlockServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlockServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.blockserver.module;
 
 import org.blockserver.Server;
-import org.blockserver.net.bridge.udp.UDPBridge;
+import org.blockserver.net.bridge.raknet.RakNetBridge;
 import org.blockserver.net.protocol.pe.PeProtocol;
-import org.blockserver.net.protocol.pe.sub.v20.PeSubprotocolV20;
 import org.blockserver.ui.Log4j2ConsoleOut;
 import org.blockserver.ui.Logger;
 import org.yaml.snakeyaml.Yaml;
@@ -74,8 +89,7 @@ public class ModuleLoader implements Runnable{
 		if(modulesAllowed.contains("MCPE")){
 			PeProtocol pocket = new PeProtocol(server);
 			server.getProtocols().addProtocol(pocket);
-			server.getBridges().addBridge(new UDPBridge(server.getBridges()));
-			pocket.getSubprotocols().registerSubprotocol(new PeSubprotocolV20(server));
+			server.getBridges().addBridge(new RakNetBridge(server.getBridges()));
 		}
 		//--------REGISTER MCPE END------------------
 		//--------REGISTER JARS----------------------

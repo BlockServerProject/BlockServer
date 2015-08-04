@@ -1,3 +1,21 @@
+<!--
+
+    This file is part of BlockServer.
+
+    BlockServer is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    BlockServer is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
 <!--suppress ALL -->
 <project name="BlockServer" basedir="." default="run">
 	<property name="main.dir"    value="src/main"/>
@@ -36,7 +54,7 @@
 	</target>
 	<target name="compile" depends="clean,prepare">
 		<mkdir dir="${classes.dir}"/>
-		<copy file="${res.dir}/log4j2.xml" tofile="${classes.dir}/log4j2.xml"/>
+		<copy file="src/main/resources/log4j2-file-old.xml" tofile="${classes.dir}/log4j2.xml"/>
 		<javac srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" includeAntRuntime="false"/>
 	</target>
 	<target name="jar" depends="compile">

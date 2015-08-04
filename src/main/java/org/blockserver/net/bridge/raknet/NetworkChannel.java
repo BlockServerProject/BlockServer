@@ -14,10 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.net.protocol;
+package org.blockserver.net.bridge.raknet;
 
+/**
+ * Represents a NetworkChannel.
+ */
+public enum NetworkChannel {
+    CHANNEL_NONE((byte) 0),
+    CHANNEL_PRIORITY((byte) 1),
+    CHANNEL_WORLD_CHUNKS((byte) 2),
+    CHANNEL_MOVEMENT((byte) 3),
+    CHANNEL_BLOCKS((byte) 4),
+    CHANNEL_WORLD_EVENTS((byte) 5),
+    CHANNEL_ENTITY_SPAWNING((byte) 6),
+    CHANNEL_TEXT((byte) 7),
+    CHANNEL_END((byte) 31);
 
-public abstract class Protocol{
-	public abstract ProtocolSession openSession(WrappedPacket pk);
-	public abstract String getDescription();
+    private byte channel;
+
+    NetworkChannel(byte channel){
+        this.channel = channel;
+    }
+
+    public byte getAsByte(){
+        return channel;
+    }
 }

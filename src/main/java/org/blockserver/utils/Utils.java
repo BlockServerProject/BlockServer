@@ -1,7 +1,24 @@
+/**
+ * This file is part of BlockServer.
+ *
+ * BlockServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlockServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.blockserver.utils;
 
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.zip.Deflater;
 
@@ -54,5 +71,15 @@ public abstract class Utils{
 
 		int size = def.deflate(buf);
 		return ArrayUtils.subarray(buf, 0, size);
+	}
+	public static void copyResource(String resource, String dest) throws IOException {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(ClassLoader.getSystemResourceAsStream(resource)));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(dest));
+		String line;
+		while((line = reader.readLine()) != null){
+			writer.write(line+"\n");
+		}
+		reader.close();
+		writer.close();
 	}
 }

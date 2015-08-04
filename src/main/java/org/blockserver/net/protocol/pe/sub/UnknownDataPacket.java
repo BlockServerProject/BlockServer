@@ -14,10 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.net.protocol;
+package org.blockserver.net.protocol.pe.sub;
 
+/**
+ * Created by jython234 on 8/3/2015.
+ */
+public class UnknownDataPacket extends PeDataPacket{
+    private byte[] buffer;
 
-public abstract class Protocol{
-	public abstract ProtocolSession openSession(WrappedPacket pk);
-	public abstract String getDescription();
+    public UnknownDataPacket(byte[] buffer){
+        this.buffer = buffer;
+    }
+
+    @Override
+    protected int getLength() {
+        return buffer.length;
+    }
+
+    @Override
+    public byte getPID() {
+        return buffer[0];
+    }
 }
