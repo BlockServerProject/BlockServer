@@ -1,9 +1,7 @@
 BlockServer [![Build Status](https://travis-ci.org/BlockServerProject/BlockServer.svg?branch=master)](https://travis-ci.org/BlockServerProject/BlockServer) [![Build Status](http://teamcity.beaconpe.net/app/rest/builds/buildType:BlockServer_Build/statusIcon)]
 ===========
 
-[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=beaconmine|?#blockserverproject,#beaconmine,#pocketbukkit)
-
-#### Visit our TeamCity Server: http://builds.blockserver.org
+[![Visit our IRC channel](https://kiwiirc.com/buttons/irc.freenode.net/blockserverproject.png)](https://kiwiirc.com/client/irc.freenode.net/?nick=blockserver|?#blockserverproject)
 
 # FAQ
 
@@ -18,10 +16,6 @@ Unfortunately, no. Currently, BlockServer is still in early development stage th
 
 ## How do I run BlockServer when it is ready?
 * If you download an archived `.jar` file, you can run the jar directly with the `java -jar <jar file>` command.
-* If you download the source, you have to compile the source files at `/src/main/java` first. The following extra libraries are required to run BlockServer:
-  * BlockServer-IO-Lib, which can be downloaded [here](https://github.com/BlockServerProject/BlockServer-IO-Lib).
-  * log4j2 core and API, which are included inside the repo in the `/lib` directory.
-
 * You can also compile the source using Maven. Maven will handle all the dependencies for you, no extra downloads needed.
 Then run `java org.blockserver.run` in the root folder where the compiled classes are contained in.
 

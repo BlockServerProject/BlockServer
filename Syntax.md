@@ -8,6 +8,7 @@ Syntax of BlockServer (Java)
 * The three main code sections in a file (package, import, class/interface/enum declaration) should be separated with empty lines.
 * Imports of Java classes and custom classes can have an empty line between.
 * Do not make redundant imports like `java.lang.*` imports and unused imports.
+* Use Lombok for Getters and Setters
 * Use the Apache Logger library to print out text to console, with the following exceptions:
   * It is for debug purposes and will not affect user interface.
   * The server or the logger is not initialized.
