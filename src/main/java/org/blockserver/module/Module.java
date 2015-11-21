@@ -18,13 +18,6 @@ public abstract class Module {
         this.server = server;
     }
 
-    /**
-     * Handles a message
-     */
-    public void handleMessage() {
-
-    }
-
     public void onEnable() {
 
     }

@@ -8,7 +8,9 @@ package org.blockserver;
 public class  run {
 
     public static void main(String[] args) {
-
+        Server server = new Server();
+        server.setRunning(true);
+        server.run();
     }
 
 }
