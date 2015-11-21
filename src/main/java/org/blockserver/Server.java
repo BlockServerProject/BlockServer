@@ -3,9 +3,13 @@ package org.blockserver;
 import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.event.EventManager;
-import org.blockserver.logging.LoggingModule;
+import org.blockserver.event.events.modules.ModuleDisableEvent;
+import org.blockserver.event.events.modules.ModuleEnableEvent;
+import org.blockserver.module.Enableable;
 import org.blockserver.module.Module;
+import org.blockserver.module.loader.ModuleLoader;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,30 +18,60 @@ import java.util.Map;
  *
  * @author BlockServer Team
  */
-public class Server implements Runnable {
+public class Server implements Enableable {
     @Getter @Setter private EventManager eventManager = new EventManager();
-    @Getter @Setter private boolean running = false;
+    private boolean enabled;
 
     //Modules
     private Map<Class<? extends Module>, Module> modules = new HashMap<>();
-    @Getter private LoggingModule logger;
 
-    public Server() {
-        loadModules();
-    }
+    public Server(ModuleLoader... moduleLoaders) {
+        Collection<Module> modules = this.modules.values();
 
-    private void loadModules() {
-        logger = new LoggingModule(this);
-        logger.onEnable();
-    }
+        for (ModuleLoader moduleLoader : moduleLoaders) {
+            modules = moduleLoader.setModules(modules, this);
+        }
 
-    @Override
-    public void run() {
-        logger.info("Testing module system.");
+        this.modules.clear();
+        for (Module module : modules) {
+            this.modules.put(module.getClass(), module);
+        }
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Module> T getModule(Class<T> moduleClass) {
         return (T) modules.get(moduleClass);
+    }
+
+    @Override
+    public void onEnable() {
+        enabled = true;
+        modules.values().forEach((module) -> {
+            if (module.isEnabled())
+                return;
+            eventManager.fire(new ModuleEnableEvent(this, module), event -> {
+                if(!event.isCancelled())
+                    module.onEnable();
+            });
+
+        });
+    }
+
+    @Override
+    public void onDisable() {
+        enabled = false;
+        modules.values().forEach((module) -> {
+            if (!module.isEnabled())
+                return;
+            eventManager.fire(new ModuleDisableEvent(this, module), event -> {
+                if(!event.isCancelled())
+                    module.onDisable();
+            });
+        });
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
     }
 }

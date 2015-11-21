@@ -13,8 +13,7 @@ import org.blockserver.Server;
 public abstract class Module implements Enableable {
     @Getter
     private final Server server;
-    @Getter
-    @Setter(AccessLevel.PROTECTED)
+    @Getter @Setter(AccessLevel.PROTECTED)
     private String name = "unknown";
     private boolean enabled;
 
