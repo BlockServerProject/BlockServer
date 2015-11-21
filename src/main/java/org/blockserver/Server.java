@@ -28,6 +28,7 @@ public class Server implements Runnable {
 
     private void loadModules() {
         logger = new LoggingModule(this);
+        logger.onEnable();
         modulesLoaded.add(logger);
     }
 
