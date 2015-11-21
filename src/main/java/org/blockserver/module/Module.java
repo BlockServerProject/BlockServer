@@ -8,26 +8,20 @@ import org.blockserver.Server;
  *
  * @author BlockServer Team
  */
-public abstract class Module implements Enableable {
+public abstract class Module {
     @Getter private final Server server;
+    @Getter @Setter(AccessLevel.PROTECTED) private String name = "unknown";
     private boolean enabled;
 
     public Module(Server server) {
         this.server = server;
     }
 
-    @Override
-    public void onEnable() {
-        enabled = true;
+    /**
+     * Handles a message
+     */
+    public void handleMessage() {
+
     }
 
-    @Override
-    public void onDisable() {
-        enabled = false;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
 }
