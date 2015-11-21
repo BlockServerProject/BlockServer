@@ -1,10 +1,14 @@
 package org.blockserver;
 
 /**
- * Created by jython234 on 11/14/2015.
+ * Main class for the core.
  *
  * @author BlockServer team
  */
 public class run {
+
+    public static void main(String[] args) {
+
+    }
 
 }
