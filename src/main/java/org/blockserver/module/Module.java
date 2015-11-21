@@ -1,6 +1,8 @@
 package org.blockserver.module;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import org.blockserver.Server;
 
 /**
@@ -10,6 +12,7 @@ import org.blockserver.Server;
  */
 public abstract class Module {
     @Getter private final Server server;
+    @Getter @Setter(AccessLevel.PROTECTED) private String name = "unknown";
 
     public Module(Server server) {
         this.server = server;
