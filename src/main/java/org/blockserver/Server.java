@@ -2,6 +2,7 @@ package org.blockserver;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.blockserver.event.EventManager;
 import org.blockserver.logging.LoggingModule;
 
 /**
@@ -10,7 +11,7 @@ import org.blockserver.logging.LoggingModule;
  * @author BlockServer Team
  */
 public class Server implements Runnable {
-
+    @Getter @Setter private EventManager eventManager = new EventManager();
     @Getter @Setter private boolean running = false;
 
     //Modules
