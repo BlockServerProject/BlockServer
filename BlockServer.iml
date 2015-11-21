@@ -36,13 +36,6 @@
       </library>
     </orderEntry>
     <orderEntry type="inheritedJdk" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.0-rc1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-core:2.0-rc1" level="project" />
-    <orderEntry type="library" name="Maven: com.tinfoiled.mcpe.leveldb:leveldb:0.8-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.tinfoiled.mcpe.leveldb:leveldb-api:0.8-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.google.guava:guava:16.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.3.2" level="project" />
-    <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.14" level="project" />
-    <orderEntry type="library" name="Maven: net.beaconpe.jraklib:JRakLib:1.1.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.16.6" level="project" />
   </component>
 </module>
