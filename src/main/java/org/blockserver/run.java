@@ -5,6 +5,6 @@ package org.blockserver;
  *
  * @author BlockServer team
  */
-public class run {
+public class  run {
 
 }
