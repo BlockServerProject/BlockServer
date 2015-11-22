@@ -1,13 +1,13 @@
-package org.blockserver;
+package org.blockserver.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.blockserver.event.EventManager;
-import org.blockserver.event.events.modules.ModuleDisableEvent;
-import org.blockserver.event.events.modules.ModuleEnableEvent;
-import org.blockserver.module.Enableable;
-import org.blockserver.module.Module;
-import org.blockserver.module.loader.ModuleLoader;
+import org.blockserver.core.event.EventManager;
+import org.blockserver.core.event.events.modules.ModuleDisableEvent;
+import org.blockserver.core.event.events.modules.ModuleEnableEvent;
+import org.blockserver.core.module.Enableable;
+import org.blockserver.core.module.Module;
+import org.blockserver.core.module.loader.ModuleLoader;
 
 import java.util.Collection;
 import java.util.HashMap;

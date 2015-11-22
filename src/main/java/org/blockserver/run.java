@@ -1,6 +1,7 @@
 package org.blockserver;
 
-import org.blockserver.module.loader.CoreModuleLoader;
+import org.blockserver.core.Server;
+import org.blockserver.core.module.loader.CoreModuleLoader;
 
 /**
  * Main class for the core.

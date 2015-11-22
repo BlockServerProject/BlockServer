@@ -1,7 +1,7 @@
-package org.blockserver.module.loader;
+package org.blockserver.core.module.loader;
 
-import org.blockserver.Server;
-import org.blockserver.module.Module;
+import org.blockserver.core.Server;
+import org.blockserver.core.module.Module;
 
 import java.util.Collection;
 

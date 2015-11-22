@@ -1,4 +1,4 @@
-package org.blockserver.module;
+package org.blockserver.core.module;
 
 public interface Enableable {
     void onEnable();

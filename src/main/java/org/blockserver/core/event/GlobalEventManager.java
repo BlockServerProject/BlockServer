@@ -1,4 +1,4 @@
-package org.blockserver.event;
+package org.blockserver.core.event;
 
 import java.util.Set;
 import java.util.TreeSet;

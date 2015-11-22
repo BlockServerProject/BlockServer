@@ -1,9 +1,9 @@
-package org.blockserver.module;
+package org.blockserver.core.module;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.blockserver.Server;
+import org.blockserver.core.Server;
 
 /**
  * Base class for all modules.
