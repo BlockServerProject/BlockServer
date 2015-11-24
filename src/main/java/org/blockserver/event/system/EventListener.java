@@ -31,9 +31,10 @@ public class EventListener<A, B> {
         return this;
     }
 
-    public void register(Class<A> listenerType, EventManager eventManager) {
+    public EventListener<A, B> register(Class<A> listenerType, EventManager eventManager) {
         _listenerType = listenerType;
         eventManager.registerListener(this);
+        return this;
     }
 
     public void unregister(EventManager eventManager) {

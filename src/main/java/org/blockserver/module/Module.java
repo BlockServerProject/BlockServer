@@ -1,8 +1,6 @@
 package org.blockserver.module;
 
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import org.blockserver.Server;
 
 /**
@@ -11,10 +9,7 @@ import org.blockserver.Server;
  * @author BlockServer Team
  */
 public abstract class Module implements Enableable {
-    @Getter
-    private final Server server;
-    @Getter @Setter(AccessLevel.PROTECTED)
-    private String name = "unknown";
+    @Getter private final Server server;
     private boolean enabled;
 
     public Module(Server server) {
@@ -34,5 +29,10 @@ public abstract class Module implements Enableable {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
     }
 }

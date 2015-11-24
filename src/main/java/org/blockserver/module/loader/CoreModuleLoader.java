@@ -1,7 +1,7 @@
 package org.blockserver.module.loader;
 
 import org.blockserver.Server;
-import org.blockserver.logging.LoggingModule;
+import org.blockserver.module.modules.logging.LoggingModule;
 import org.blockserver.module.Module;
 
 import java.util.Collection;

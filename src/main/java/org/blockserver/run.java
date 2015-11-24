@@ -10,14 +10,17 @@ import org.blockserver.module.loader.CoreModuleLoader;
  * @author BlockServer team
  */
 public class run {
+
     public static void main(String[] args) {
         Server server = new Server(new CoreModuleLoader());
-        server.onEnable();
+
         new EventListener<ModuleEnableEvent, ModuleEnableEvent>(){
             @Override
             public void onEvent(ModuleEnableEvent event) {
-                System.out.print("EventFIRED");
+                System.out.print(event.getModule());
             }
         }.register(ModuleEnableEvent.class, server.getEventManager());
+
+        server.onEnable();
     }
 }

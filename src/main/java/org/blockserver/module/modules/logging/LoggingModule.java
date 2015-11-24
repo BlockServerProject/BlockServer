@@ -1,4 +1,4 @@
-package org.blockserver.logging;
+package org.blockserver.module.modules.logging;
 
 import org.blockserver.Server;
 import org.blockserver.module.Module;
@@ -12,7 +12,6 @@ public class LoggingModule extends Module{
 
     public LoggingModule(Server server) {
         super(server);
-        setName("Logging");
     }
 
     public void info(String message) {

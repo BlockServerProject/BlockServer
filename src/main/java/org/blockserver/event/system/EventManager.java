@@ -25,7 +25,8 @@ public class EventManager {
             if (listener.isPost())
                 listener.onEvent(event);
             else {
-                executor.execute(event);
+                if (executor != null)
+                    executor.execute(event);
                 listener.onEvent(event);
             }
         });
