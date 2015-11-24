@@ -1,0 +1,12 @@
+language: java
+sudo: false
+
+jdk:
+  - oraclejdk8 
+
+script:
+  - mvn test package
+
+before_script:
+  - mvn -version
+  - cd $TRAVIS_BUILD_DIR
