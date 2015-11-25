@@ -1,9 +1,9 @@
-package org.blockserver.module.modules.network;
+package org.blockserver.modules.network;
 
 import org.blockserver.Server;
 import org.blockserver.module.Module;
-import org.blockserver.module.modules.network.message.InboundMessage;
-import org.blockserver.module.modules.network.message.OutboundMessage;
+import org.blockserver.modules.network.message.InboundMessage;
+import org.blockserver.modules.network.message.OutboundMessage;
 
 public abstract class NetworkAdapter extends Module {
     public NetworkAdapter(Server server) {

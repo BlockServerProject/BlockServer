@@ -1,4 +1,4 @@
-package org.blockserver.module.modules.network.message;
+package org.blockserver.modules.network.message;
 
 import org.blockserver.event.system.Cancellable;
 

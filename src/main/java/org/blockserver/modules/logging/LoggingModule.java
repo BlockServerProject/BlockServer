@@ -1,4 +1,4 @@
-package org.blockserver.module.modules.logging;
+package org.blockserver.modules.logging;
 
 import org.blockserver.Server;
 import org.blockserver.module.Module;
