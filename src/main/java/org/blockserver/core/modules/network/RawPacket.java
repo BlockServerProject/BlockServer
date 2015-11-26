@@ -1,8 +1,8 @@
-package org.blockserver.modules.network;
+package org.blockserver.core.modules.network;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.blockserver.core.event.Cancellable;
+import org.blockserver.core.event.system.Cancellable;
 
 import java.net.InetAddress;
 

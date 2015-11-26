@@ -1,7 +1,7 @@
-package org.blockserver.modules.logging;
+package org.blockserver.core.modules.logging;
 
-import org.blockserver.Server;
-import org.blockserver.module.Module;
+import org.blockserver.core.Server;
+import org.blockserver.core.module.Module;
 
 /**
  * Created by jython234 on 11/21/2015.

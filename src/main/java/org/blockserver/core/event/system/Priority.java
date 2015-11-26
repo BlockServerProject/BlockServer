@@ -1,4 +1,4 @@
-package org.blockserver.event.system;
+package org.blockserver.core.event.system;
 
 public enum Priority {
 

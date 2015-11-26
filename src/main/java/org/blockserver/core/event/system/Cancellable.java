@@ -1,4 +1,4 @@
-package org.blockserver.event.system;
+package org.blockserver.core.event.system;
 
 import java.util.Map;
 import java.util.WeakHashMap;

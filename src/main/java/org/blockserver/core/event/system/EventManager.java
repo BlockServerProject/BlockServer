@@ -1,46 +1,47 @@
-package org.blockserver.core.event;
+package org.blockserver.core.event.system;
+
 
 import java.util.Set;
 import java.util.TreeSet;
 
+public class EventManager {
+    private Set<EventListener<?, ?>> instances = new TreeSet<>((o1, o2) -> Integer.compare(o2.getPriority().ordinal(), o1.getPriority().ordinal()));
 
-public class GlobalEventManager {
-    private static Set<EventListener<?, ?>> instances = new TreeSet<>((o1, o2) -> Integer.compare(o2.getPriority().ordinal(), o1.getPriority().ordinal()));
-
-    private GlobalEventManager() {
+    public EventManager() {
     }
 
-    public static void registerListener(EventListener<?, ?> listener) {
+    public void registerListener(EventListener<?, ?> listener) {
         instances.add(listener);
     }
 
-    public static void unregisterListener(EventListener listener) {
+    public void unregisterListener(EventListener listener) {
         instances.remove(listener);
     }
 
     @SuppressWarnings("unchecked")
-    public static <A, B> B fire(Class<A> listenerType, B event, EventExecutor<B> executor) {
+    public <A, B> B fire(Class<A> listenerType, B event, EventExecutor<B> executor) {
         instances.stream().filter(l -> l.getListenerType().isAssignableFrom(listenerType)).forEach(l -> {
             EventListener<A, B> listener = (EventListener<A, B>) l;
             if (listener.isPost())
                 listener.onEvent(event);
             else {
-                executor.execute(event);
+                if (executor != null)
+                    executor.execute(event);
                 listener.onEvent(event);
             }
         });
         return event;
     }
 
-    public static <B> B fire(B event, EventExecutor<B> executor) {
+    public <B> B fire(B event, EventExecutor<B> executor) {
         return fire(event.getClass(), event, executor);
     }
 
-    public static <A, B> B fire(Class<A> listenerType, B event) {
+    public <A, B> B fire(Class<A> listenerType, B event) {
         return fire(listenerType, event, null);
     }
 
-    public static <B> B fire(B event) {
+    public <B> B fire(B event) {
         return fire(event.getClass(), event, null);
     }
 }

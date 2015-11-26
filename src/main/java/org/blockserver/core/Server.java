@@ -2,16 +2,14 @@ package org.blockserver.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.blockserver.core.event.EventManager;
 import org.blockserver.core.event.events.modules.ModuleDisableEvent;
 import org.blockserver.core.event.events.modules.ModuleEnableEvent;
+import org.blockserver.core.event.system.EventManager;
 import org.blockserver.core.module.Enableable;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.module.loader.ModuleLoader;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Represents the core server implementation.
@@ -26,13 +24,13 @@ public class Server implements Enableable {
     private Map<Class<? extends Module>, Module> modules = new HashMap<>();
 
     public Server(ModuleLoader... moduleLoaders) {
-        Collection<Module> modules = this.modules.values();
+        Collection<Module> modules = new ArrayList<>(this.modules.values());
+        this.modules.clear();
 
         for (ModuleLoader moduleLoader : moduleLoaders) {
             modules = moduleLoader.setModules(modules, this);
         }
 
-        this.modules.clear();
         for (Module module : modules) {
             this.modules.put(module.getClass(), module);
         }
@@ -50,10 +48,9 @@ public class Server implements Enableable {
             if (module.isEnabled())
                 return;
             eventManager.fire(new ModuleEnableEvent(this, module), event -> {
-                if(!event.isCancelled())
+                if (!event.isCancelled())
                     module.onEnable();
             });
-
         });
     }
 
@@ -64,7 +61,7 @@ public class Server implements Enableable {
             if (!module.isEnabled())
                 return;
             eventManager.fire(new ModuleDisableEvent(this, module), event -> {
-                if(!event.isCancelled())
+                if (!event.isCancelled())
                     module.onDisable();
             });
         });
