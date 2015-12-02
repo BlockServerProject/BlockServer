@@ -1,21 +1,12 @@
 package org.blockserver.core.modules.network;
 
-import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
-import org.blockserver.core.modules.network.message.InboundMessage;
-import org.blockserver.core.modules.network.message.OutboundMessage;
+import lombok.Getter;
+import org.blockserver.core.modules.network.message.Message;
 
-public abstract class NetworkAdapter extends Module {
-    public NetworkAdapter(Server server) {
-        super(server);
-    }
+public abstract class NetworkAdapter {
+    @Getter private NetworkProvider provider; //Set in constructor
 
-    public abstract void sendPacket(OutboundMessage packet);
+    protected abstract Message packetToMessage(RawPacket packet);
 
-    public InboundMessage receivePacket(InboundMessage packet) {
-        return getServer().getEventManager().fire(packet, event -> {
-            if (event.isCancelled())
-                event = null;
-        });
-    }
+    protected abstract RawPacket messageToPacket(Message message);
 }
