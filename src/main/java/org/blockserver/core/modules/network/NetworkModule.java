@@ -3,9 +3,12 @@ package org.blockserver.core.modules.network;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.network.message.Message;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Manager for the network.
@@ -13,11 +16,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author BlockServer Team
  */
 public class NetworkModule extends Module {
+    private ExecutorService nio = Executors.newFixedThreadPool(4); //TODO: set in config
     private List<NetworkAdapter> adapters = new CopyOnWriteArrayList<>();
     private LoggingModule logger;
 
     public NetworkModule(Server server) {
         super(server);
+    }
+
+    public void onTick() {
+        adapters.forEach(adapter -> {
+            RawPacket packet = adapter.getProvider().getNextPacket();
+            if(packet != null) {
+                nio.execute(() -> {
+                    Message message = adapter.packetToMessage(packet);
+
+                });
+            }
+        });
     }
 
     @Override

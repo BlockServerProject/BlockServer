@@ -2,10 +2,10 @@ package org.blockserver.core.modules.logging;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
- * Created by jython234 on 11/21/2015.
- *
+ * TODO: Implement SLF4j and/or log4j2
  * @author BlockServer Team
  */
 public class LoggingModule extends Module{
@@ -16,5 +16,13 @@ public class LoggingModule extends Module{
 
     public void info(String message) {
         System.out.println("[INFO]: "+message);
+    }
+
+    public void warn(String message) {
+        System.out.println("[WARN]: "+message);
+    }
+
+    public void error(String message) {
+        System.err.println("[ERROR]: "+message);
     }
 }
