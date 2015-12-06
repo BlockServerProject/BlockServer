@@ -31,4 +31,11 @@ public class NetworkModule extends Module {
         //TODO: close adapters and providers
         logger.info("Network Module disabled.");
     }
+
+    @SuppressWarnings("unused")
+    public void registerAdapter(NetworkAdapter adapter) {
+        if(!adapters.contains(adapter)) {
+            adapters.add(adapter);
+        }
+    }
 }
