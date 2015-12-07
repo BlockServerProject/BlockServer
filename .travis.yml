@@ -2,11 +2,12 @@ language: java
 sudo: false
 
 jdk:
-  - oraclejdk8 
+  - oraclejdk8
+
+install: mvn -version
 
 script:
-  - mvn test package
+  - mvn license:check package
 
 before_script:
-  - mvn -version
   - cd $TRAVIS_BUILD_DIR
