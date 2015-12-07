@@ -21,6 +21,7 @@ public class run {
             }
         }.register(ModuleEnableEvent.class, server.getEventManager());
 
+        Runtime.getRuntime().addShutdownHook(new Thread(server::onDisable));
         server.onEnable();
     }
 }
