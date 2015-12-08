@@ -17,9 +17,8 @@
 package org.blockserver.core.module.loader;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.modules.logging.LoggingModule;
 import org.blockserver.core.module.Module;
-import org.blockserver.core.modules.network.NetworkModule;
+import org.blockserver.core.modules.logging.LoggingModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.util.Collection;
@@ -28,24 +27,23 @@ public class CoreModuleLoader implements ModuleLoader {
 
     @Override
     public Collection<Module> setModules(Collection<Module> currentModules, Server server) {
-        LoggingModule loggingModule = new LoggingModule(server); //Logging is always the first module enabled
-
+        LoggingModule loggingModule = new LoggingModule(server);
         SchedulerModule schedulerModule = new SchedulerModule(server);
 
         schedulerModule.registerTask(new Runnable() {
             @Override
             public void run() {
-                loggingModule.warn("y");
+                loggingModule.warn("test");
                 if(schedulerModule.getTaskRepeatTimes(this) == 6)
                     schedulerModule.setTaskDelay(this, 400);
             }
         }, 800,12);
 
-        NetworkModule networkModule = new NetworkModule(server, loggingModule);
+//        NetworkModule networkModule = new NetworkModule(server, schedulerModule, loggingModule);
 
         currentModules.add(schedulerModule);
         currentModules.add(loggingModule);
-        currentModules.add(networkModule);
+//        currentModules.add(networkModule);
         return currentModules;
     }
 }
