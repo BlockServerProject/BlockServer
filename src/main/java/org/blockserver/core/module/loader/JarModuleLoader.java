@@ -12,20 +12,21 @@ import java.util.jar.JarFile;
 /**
  * Module Loader that can load modules from JARs
  */
-public class JarModuleLoader implements ModuleLoader{
+public class JarModuleLoader implements ModuleLoader {
     @Override
     public Collection<Module> setModules(Collection<Module> currentModules, Server server) {
         File moduleFolder = new File("modules");
-        if(!moduleFolder.isDirectory()) {
+        if (!moduleFolder.isDirectory()) {
             moduleFolder.mkdirs();
             return currentModules;
         }
         File[] files = moduleFolder.listFiles();
-        if(files == null && files.length <= 0) {
+
+        if (files == null || files.length <= 0)
             return currentModules;
-        }
-        for(File file : files) {
-            if(file.getName().endsWith(".jar")) {
+
+        for (File file : files) {
+            if (file.getName().endsWith(".jar")) {
                 try {
                     JarFile jar = new JarFile(file);
 
@@ -34,5 +35,6 @@ public class JarModuleLoader implements ModuleLoader{
                 }
             }
         }
+        return currentModules;
     }
 }
