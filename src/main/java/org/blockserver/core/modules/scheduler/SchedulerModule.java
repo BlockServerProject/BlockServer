@@ -29,12 +29,9 @@ public class SchedulerModule extends Module {
                     if (taskData.getNextTickTime() > System.currentTimeMillis())
                         continue;
                     taskData.repeatTimes--;
-                    if (taskData.isAsync())
-                        getServer().getExecutorService().execute(() -> entry.getKey().run());
-                    else
-                        entry.getKey().run();
+                    entry.getKey().run();
 
-                    if(taskData.getRepeatTimes() <= 0)
+                    if (taskData.getRepeatTimes() <= 0)
                         tasks.remove(entry.getKey());
                     taskData.setLastTickTime(System.currentTimeMillis());
                 }
@@ -53,29 +50,16 @@ public class SchedulerModule extends Module {
         tasks.clear();
     }
 
-
     public void registerTask(Runnable task, double delay) {
-        registerTask(task, delay, 1, false);
-    }
-
-    public void registerTask(Runnable task, double delay, boolean async) {
-        registerTask(task, delay, 1, async);
+        registerTask(task, delay, 1);
     }
 
     public void registerTask(Runnable task, int repeatTimes) {
-        registerTask(task, 1, repeatTimes, false);
-    }
-
-    public void registerTask(Runnable task, int repeatTimes, boolean async) {
-        registerTask(task, 1, repeatTimes, async);
+        registerTask(task, 1, repeatTimes);
     }
 
     public void registerTask(Runnable task, double delay, int repeatTimes) {
-        registerTask(task, delay, repeatTimes, false);
-    }
-
-    public void registerTask(Runnable task, double delay, int repeatTimes, boolean async) {
-        registerTask(task, new TaskData(delay, repeatTimes, async));
+        registerTask(task, new TaskData(delay, repeatTimes));
     }
 
     public void registerTask(Runnable task, TaskData taskData) {
@@ -104,20 +88,12 @@ public class SchedulerModule extends Module {
         getTaskData(task).setRepeatTimes(repeatTimes);
     }
 
-    public void setTaskAsync(Runnable task, boolean async) {
-        getTaskData(task).setAsync(async);
-    }
-
     public double getTaskDelay(Runnable task) {
         return getTaskData(task).getDelay();
     }
 
     public int getTaskRepeatTimes(Runnable task) {
         return getTaskData(task).getRepeatTimes();
-    }
-
-    public boolean isTaskAsync(Runnable task) {
-        return getTaskData(task).isAsync();
     }
 
     public void cancelTask(Runnable task) {
