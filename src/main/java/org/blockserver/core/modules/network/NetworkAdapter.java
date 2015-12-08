@@ -14,36 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.player;
+package org.blockserver.core.modules.network;
 
 import lombok.Getter;
-import org.blockserver.core.Server;
-import org.blockserver.core.modules.network.NetworkAdapter;
 import org.blockserver.core.modules.network.message.Message;
 
 import java.net.SocketAddress;
 
-/**
- * Represents a Player on the server.
- *
- * @author BlockServer Team
- */
-public class Player {
-    @Getter private Server server;
-    @Getter private NetworkAdapter adapter;
-    @Getter private SocketAddress address;
+public abstract class NetworkAdapter {
+    @Getter private NetworkProvider provider; //Set in constructor
 
-    public Player(Server server, NetworkAdapter adapter, SocketAddress address) {
-        this.server = server;
-        this.adapter = adapter;
-        this.address = address;
+    public void sendMessage(Message message, SocketAddress sendTo) {
+        RawPacket packet = messageToPacket(message);
+        packet.setAddress(sendTo);
+        provider.sendPacket(packet);
     }
 
-    public void sendMessage(Message message) {
-        adapter.sendMessage(message);
-    }
+    protected abstract Message packetToMessage(RawPacket packet);
 
-    public void handleMessage(Message message) {
-
-    }
+    protected abstract RawPacket messageToPacket(Message message);
 }

@@ -1,41 +1,73 @@
+/*
+ * This file is part of BlockServer.
+ *
+ * BlockServer is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * BlockServer is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.blockserver.core.modules.network;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
-import org.blockserver.core.modules.scheduler.SchedulerModule;
+import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.network.message.Message;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- * Written by Exerosis!
+ * Manager for the network.
+ *
+ * @author BlockServer Team
  */
 public class NetworkModule extends Module {
-    private final SchedulerModule scheduler;
-    private final NetworkConverter converter;
-    private final NetworkProvider[] providers;
-    private Runnable task;
+    private final LoggingModule loggingModule;
+    private ExecutorService nio = Executors.newFixedThreadPool(2); //TODO: set in config
+    private List<NetworkAdapter> adapters = new CopyOnWriteArrayList<>();
 
-    public NetworkModule(Server server, SchedulerModule scheduler, NetworkConverter converter, NetworkProvider... providers) {
+    public NetworkModule(Server server, LoggingModule loggingModule) {
         super(server);
-        this.scheduler = scheduler;
-        this.converter = converter;
-        this.providers = providers;
+        this.loggingModule = loggingModule;
+    }
+
+    public void onTick() {
+        adapters.forEach(adapter -> {
+            RawPacket packet = adapter.getProvider().getNextPacket();
+            if(packet != null) {
+                nio.execute(() -> {
+                    Message message = adapter.packetToMessage(packet);
+
+                });
+            }
+        });
     }
 
     @Override
     public void onEnable() {
-        super.onEnable();
-        task = () -> {
-            for (NetworkProvider provider : providers) {
-                converter.toMessage(provider.receivePackets()).forEach(m -> getServer().getEventManager().fire(m));
-            }
-        };
-        scheduler.registerTask(task, 1.0, Integer.MAX_VALUE);
+        loggingModule.info("Network Module enabled.");
     }
 
     @Override
     public void onDisable() {
-        super.onDisable();
-        scheduler.cancelTask(task);
+        //TODO: close adapters and providers
+        loggingModule.info("Network Module disabled.");
     }
 
-
+    @SuppressWarnings("unused")
+    public void registerAdapter(NetworkAdapter adapter) {
+        if(!adapters.contains(adapter)) {
+            adapters.add(adapter);
+        }
+    }
 }

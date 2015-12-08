@@ -18,6 +18,7 @@ package org.blockserver.core.modules.network;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.blockserver.core.event.system.Cancellable;
 
 import java.net.SocketAddress;
 
@@ -26,7 +27,7 @@ import java.net.SocketAddress;
  *
  * @author BlockServer Team
  */
-public class RawPacket {
+public class RawPacket implements Cancellable {
     @Getter @Setter private byte[] buffer;
     @Getter @Setter private SocketAddress address;
 
