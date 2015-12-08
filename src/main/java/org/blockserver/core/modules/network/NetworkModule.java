@@ -32,12 +32,13 @@ import java.util.concurrent.Executors;
  * @author BlockServer Team
  */
 public class NetworkModule extends Module {
+    private final LoggingModule loggingModule;
     private ExecutorService nio = Executors.newFixedThreadPool(4); //TODO: set in config
     private List<NetworkAdapter> adapters = new CopyOnWriteArrayList<>();
-    private LoggingModule logger;
 
-    public NetworkModule(Server server) {
+    public NetworkModule(Server server, LoggingModule loggingModule) {
         super(server);
+        this.loggingModule = loggingModule;
     }
 
     public void onTick() {
@@ -46,7 +47,6 @@ public class NetworkModule extends Module {
             if(packet != null) {
                 nio.execute(() -> {
                     Message message = adapter.packetToMessage(packet);
-
                 });
             }
         });
@@ -54,14 +54,13 @@ public class NetworkModule extends Module {
 
     @Override
     public void onEnable() {
-        logger = getServer().getModule(LoggingModule.class);
-        logger.info("Network Module enabled.");
+        loggingModule.info("Network Module enabled.");
     }
 
     @Override
     public void onDisable() {
         //TODO: close adapters and providers
-        logger.info("Network Module disabled.");
+        loggingModule.info("Network Module disabled.");
     }
 
     @SuppressWarnings("unused")

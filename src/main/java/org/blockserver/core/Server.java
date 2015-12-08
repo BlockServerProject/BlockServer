@@ -24,9 +24,10 @@ import org.blockserver.core.event.system.EventManager;
 import org.blockserver.core.module.Enableable;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.module.loader.ModuleLoader;
-import org.blockserver.core.ticker.ServerTicker;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Represents the core server implementation.
@@ -34,8 +35,8 @@ import java.util.*;
  * @author BlockServer Team
  */
 public class Server implements Enableable {
+    @Getter @Setter private ExecutorService executorService = Executors.newFixedThreadPool(4);
     @Getter @Setter private EventManager eventManager = new EventManager();
-    @Getter private ServerTicker ticker;
     private boolean enabled;
 
     //Modules
@@ -53,7 +54,6 @@ public class Server implements Enableable {
             this.modules.put(module.getClass(), module);
         }
 
-        ticker = new ServerTicker(this);
     }
 
     @SuppressWarnings("unchecked")
@@ -72,8 +72,6 @@ public class Server implements Enableable {
                     module.onEnable();
             });
         });
-        ticker.setRunning(true);
-        ticker.run();
     }
 
     @Override
@@ -87,7 +85,6 @@ public class Server implements Enableable {
                     module.onDisable();
             });
         });
-        ticker.setRunning(false);
     }
 
     @Override

@@ -16,6 +16,8 @@
  */
 package org.blockserver.core.modules.network.message;
 
-public interface Message {
+import org.blockserver.core.event.system.Cancellable;
+
+public interface Message extends Cancellable {
     String getName();
 }
