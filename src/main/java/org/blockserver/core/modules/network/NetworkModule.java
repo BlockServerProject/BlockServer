@@ -33,7 +33,7 @@ import java.util.concurrent.Executors;
  */
 public class NetworkModule extends Module {
     private final LoggingModule loggingModule;
-    private ExecutorService nio = Executors.newFixedThreadPool(4); //TODO: set in config
+    private ExecutorService nio = Executors.newFixedThreadPool(2); //TODO: set in config
     private List<NetworkAdapter> adapters = new CopyOnWriteArrayList<>();
 
     public NetworkModule(Server server, LoggingModule loggingModule) {
@@ -47,6 +47,7 @@ public class NetworkModule extends Module {
             if(packet != null) {
                 nio.execute(() -> {
                     Message message = adapter.packetToMessage(packet);
+
                 });
             }
         });

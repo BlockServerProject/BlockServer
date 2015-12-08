@@ -14,9 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core;
+package org.blockserver.core.modules.player;
 
 import lombok.Getter;
+import org.blockserver.core.Server;
+import org.blockserver.core.modules.network.NetworkAdapter;
 import org.blockserver.core.modules.network.message.Message;
 
 import java.net.SocketAddress;
@@ -28,11 +30,17 @@ import java.net.SocketAddress;
  */
 public class Player {
     @Getter private Server server;
+    @Getter private NetworkAdapter adapter;
     @Getter private SocketAddress address;
 
-    public Player(Server server, SocketAddress address) {
+    public Player(Server server, NetworkAdapter adapter, SocketAddress address) {
         this.server = server;
+        this.adapter = adapter;
         this.address = address;
+    }
+
+    public void sendMessage(Message message) {
+        adapter.sendMessage(message, address);
     }
 
     public void handleMessage(Message message) {

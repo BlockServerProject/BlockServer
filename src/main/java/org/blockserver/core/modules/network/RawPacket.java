@@ -20,7 +20,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.core.event.system.Cancellable;
 
-import java.net.InetAddress;
+import java.net.SocketAddress;
 
 /**
  * Represents a packet recieved or ready to be sent in byte form.
@@ -29,9 +29,9 @@ import java.net.InetAddress;
  */
 public class RawPacket implements Cancellable {
     @Getter @Setter private byte[] buffer;
-    @Getter @Setter private InetAddress address;
+    @Getter @Setter private SocketAddress address;
 
-    public RawPacket(byte[] buffer, InetAddress address) {
+    public RawPacket(byte[] buffer, SocketAddress address) {
         this.buffer = buffer;
         this.address = address;
     }

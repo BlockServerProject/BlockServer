@@ -53,4 +53,11 @@ public abstract class NetworkProvider {
     protected final void addPacketToQueue(RawPacket packet) {
         packetQueue.add(packet);
     }
+
+    /**
+     * Sends a packet to the specified address in the packet.
+     * @param packet The RawPacket instance with the buffer and address.
+     * @return If the packet was sent successfully.
+     */
+    public abstract boolean sendPacket(RawPacket packet);
 }

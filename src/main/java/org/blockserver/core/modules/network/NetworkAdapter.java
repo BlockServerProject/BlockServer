@@ -19,8 +19,16 @@ package org.blockserver.core.modules.network;
 import lombok.Getter;
 import org.blockserver.core.modules.network.message.Message;
 
+import java.net.SocketAddress;
+
 public abstract class NetworkAdapter {
     @Getter private NetworkProvider provider; //Set in constructor
+
+    public void sendMessage(Message message, SocketAddress sendTo) {
+        RawPacket packet = messageToPacket(message);
+        packet.setAddress(sendTo);
+        provider.sendPacket(packet);
+    }
 
     protected abstract Message packetToMessage(RawPacket packet);
 
