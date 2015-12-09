@@ -7,34 +7,40 @@ import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.net.SocketAddress;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Written by Exerosis!
  */
 public class NetworkModule extends Module {
     private final SchedulerModule scheduler;
-    private final NetworkConverter converter;
-    private final NetworkProvider[] providers;
+    private final Map<NetworkConverter, NetworkProvider> converterMap = new ConcurrentHashMap<>();
     private Runnable task;
 
-    public NetworkModule(Server server, SchedulerModule scheduler, NetworkConverter converter, NetworkProvider... providers) {
+    public NetworkModule(Server server, SchedulerModule scheduler) {
         super(server);
         this.scheduler = scheduler;
-        this.converter = converter;
-        this.providers = providers;
     }
 
     public void sendMessage(SocketAddress socketAddress, Message... messages){
-        for (NetworkProvider provider : providers)
-            provider.sendPackets(converter.toPacket(Arrays.asList(messages)));
+        for (NetworkConverter converter : converterMap.keySet())
+            converterMap.get(converter).sendPackets(converter.toPacket(Arrays.asList(messages)));
+    }
+
+    public void registerProvider(NetworkProvider provider, NetworkConverter converter) {
+        if(converterMap.containsKey(provider)) {
+            throw new IllegalArgumentException("Provider already registered!");
+        }
+        converterMap.put(converter, provider);
     }
 
     @Override
     public void onEnable() {
         super.onEnable();
         task = () -> {
-            for (NetworkProvider provider : providers)
-                converter.toMessage(provider.receivePackets()).forEach(m -> getServer().getEventManager().fire(m));
+            for (NetworkConverter converter : converterMap.keySet())
+                converter.toMessage(converterMap.get(converter).receivePackets()).forEach(m -> getServer().getEventManager().fire(m));
         };
         scheduler.registerTask(task, 1.0, Integer.MAX_VALUE);
     }
@@ -44,6 +50,4 @@ public class NetworkModule extends Module {
         super.onDisable();
         scheduler.cancelTask(task);
     }
-
-
 }
