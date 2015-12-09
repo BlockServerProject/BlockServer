@@ -40,7 +40,7 @@ public class Player {
     }
 
     public void sendMessage(Message message) {
-        adapter.sendMessage(message);
+        adapter.sendMessage(message, address);
     }
 
     public void handleMessage(Message message) {
