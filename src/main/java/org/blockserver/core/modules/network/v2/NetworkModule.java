@@ -2,7 +2,11 @@ package org.blockserver.core.modules.network.v2;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
+import org.blockserver.core.modules.network.message.Message;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
+
+import java.net.SocketAddress;
+import java.util.Arrays;
 
 /**
  * Written by Exerosis!
@@ -20,13 +24,17 @@ public class NetworkModule extends Module {
         this.providers = providers;
     }
 
+    public void sendMessage(SocketAddress socketAddress, Message... messages){
+        for (NetworkProvider provider : providers)
+            provider.sendPackets(converter.toPacket(Arrays.asList(messages)));
+    }
+
     @Override
     public void onEnable() {
         super.onEnable();
         task = () -> {
-            for (NetworkProvider provider : providers) {
+            for (NetworkProvider provider : providers)
                 converter.toMessage(provider.receivePackets()).forEach(m -> getServer().getEventManager().fire(m));
-            }
         };
         scheduler.registerTask(task, 1.0, Integer.MAX_VALUE);
     }
