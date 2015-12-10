@@ -14,14 +14,14 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.implementation.module.loaders;
+package org.blockserver.core.module.loaders;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
-import org.blockserver.implementation.module.modules.logging.LoggingModule;
-import org.blockserver.implementation.module.modules.network.NetworkModule;
-import org.blockserver.implementation.module.modules.scheduler.SchedulerModule;
+import org.blockserver.core.module.modules.logging.LoggingModule;
+import org.blockserver.core.module.modules.network.NetworkModule;
+import org.blockserver.core.module.modules.scheduler.SchedulerModule;
 
 import java.util.Collection;
 

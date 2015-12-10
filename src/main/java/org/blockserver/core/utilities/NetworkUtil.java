@@ -14,15 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event;
+package org.blockserver.core.utilities;
 
-import org.blockserver.core.Server;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
-/**
- * Written by Exerosis!
- */
-public class ServerEventListener<T> extends EventListener<T, T> {
-    public ServerEventListener<T> register(Class<T> listenerType, Server server) {
-        return (ServerEventListener<T>) register(listenerType, server.getEventManager());
+public final class NetworkUtil {
+    private NetworkUtil() {
+
+    }
+
+    public static InetAddress getLocalHost() {
+        try {
+            return InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

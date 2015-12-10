@@ -14,15 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event;
+package org.blockserver.core.module.modules.network.message;
 
-import org.blockserver.core.Server;
+import org.blockserver.core.event.CancellableImplementation;
 
-/**
- * Written by Exerosis!
- */
-public class ServerEventListener<T> extends EventListener<T, T> {
-    public ServerEventListener<T> register(Class<T> listenerType, Server server) {
-        return (ServerEventListener<T>) register(listenerType, server.getEventManager());
-    }
+public interface Message extends CancellableImplementation {
+    String getName();
+
 }

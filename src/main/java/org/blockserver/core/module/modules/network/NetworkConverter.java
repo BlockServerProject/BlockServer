@@ -14,30 +14,22 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.implementation.module.modules.logging;
+package org.blockserver.core.module.modules.network;
 
-import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
+
+import org.blockserver.core.module.modules.network.message.Message;
+
+import java.util.Collection;
 
 /**
- * TODO: Implement SLF4j and/or log4j2
- * @author BlockServer Team
+ * Written by Exerosis!
  */
-public class LoggingModule extends Module{
+public interface NetworkConverter {
+    Collection<RawPacket> toPackets(Collection<Message> messages);
 
-    public LoggingModule(Server server) {
-        super(server);
-    }
+    RawPacket toPacket(Message message);
 
-    public void info(String message) {
-        System.out.println("[INFO]: "+message);
-    }
+    Collection<Message> toMessages(Collection<RawPacket> packets);
 
-    public void warn(String message) {
-        System.out.println("[WARN]: "+message);
-    }
-
-    public void error(String message) {
-        System.err.println("[ERROR]: "+message);
-    }
+    Message toMessage(RawPacket packet);
 }

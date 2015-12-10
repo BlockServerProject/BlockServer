@@ -14,11 +14,16 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.implementation.module.modules.network.message;
+package org.blockserver.core.module.modules.player;
 
-import org.blockserver.core.event.CancellableImplementation;
+import org.blockserver.core.Server;
+import org.blockserver.core.module.Module;
 
-public interface Message extends CancellableImplementation {
-    String getName();
-
+/**
+ * Module that handles players.
+ */
+public class PlayerModule extends Module {
+    public PlayerModule(Server server) {
+        super(server);
+    }
 }

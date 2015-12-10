@@ -14,15 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event;
+package org.blockserver.core.module.modules.scheduler;
 
-import org.blockserver.core.Server;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Written by Exerosis!
  */
-public class ServerEventListener<T> extends EventListener<T, T> {
-    public ServerEventListener<T> register(Class<T> listenerType, Server server) {
-        return (ServerEventListener<T>) register(listenerType, server.getEventManager());
+public class TaskData {
+    @Getter @Setter protected long lastTickTime;
+    @Getter @Setter protected double delay;
+    @Getter @Setter protected int repeatTimes;
+
+    public TaskData(double delay, int repeatTimes) {
+        this.delay = delay;
+        this.repeatTimes = repeatTimes;
+    }
+
+    public long getNextTickTime(){
+        return lastTickTime + (long) delay;
     }
 }

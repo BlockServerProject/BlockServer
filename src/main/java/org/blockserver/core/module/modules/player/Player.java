@@ -14,15 +14,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event;
+package org.blockserver.core.module.modules.player;
 
+import lombok.Getter;
 import org.blockserver.core.Server;
 
+import java.net.SocketAddress;
+
 /**
- * Written by Exerosis!
+ * Represents a Player on the server.
+ *
+ * @author BlockServer Team
  */
-public class ServerEventListener<T> extends EventListener<T, T> {
-    public ServerEventListener<T> register(Class<T> listenerType, Server server) {
-        return (ServerEventListener<T>) register(listenerType, server.getEventManager());
+public class Player {
+    @Getter private Server server;
+    @Getter private SocketAddress address;
+
+    public Player(Server server, SocketAddress address) {
+        this.server = server;
+        this.address = address;
     }
 }
