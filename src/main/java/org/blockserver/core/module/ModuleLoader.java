@@ -16,23 +16,10 @@
  */
 package org.blockserver.core.module;
 
-import lombok.Getter;
 import org.blockserver.core.Server;
 
-/**
- * Base class for all modules.
- *
- * @author BlockServer Team
- */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
+import java.util.Collection;
 
-    public Module(Server server) {
-        this.server = server;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
-    }
+public interface ModuleLoader {
+    Collection<Module> setModules(Collection<Module> currentModules, Server server);
 }

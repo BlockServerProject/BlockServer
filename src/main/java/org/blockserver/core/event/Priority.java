@@ -14,25 +14,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module;
+package org.blockserver.core.event;
 
-import lombok.Getter;
-import org.blockserver.core.Server;
+public enum Priority {
 
-/**
- * Base class for all modules.
- *
- * @author BlockServer Team
- */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
+    LOWEST(0), LOW(1), NORMAL(2), HIGH(3), HIGHEST(4), MONITOR(5);
 
-    public Module(Server server) {
-        this.server = server;
+    private final int slot;
+
+    Priority(int slot) {
+        this.slot = slot;
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
+    public int getSlot() {
+        return this.slot;
     }
 }

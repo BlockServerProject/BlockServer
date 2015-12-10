@@ -16,9 +16,9 @@
  */
 package org.blockserver.core;
 
-import org.blockserver.core.event.events.modules.ModuleEnableEvent;
-import org.blockserver.core.event.system.EventListener;
-import org.blockserver.core.module.loader.CoreModuleLoader;
+import org.blockserver.core.event.EventListener;
+import org.blockserver.core.event.events.ModuleEnableEvent;
+import org.blockserver.implementation.module.loaders.CoreModuleLoader;
 
 /**
  * Main class for the core.

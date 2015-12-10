@@ -14,25 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module;
+package org.blockserver.core.event;
 
-import lombok.Getter;
-import org.blockserver.core.Server;
+import java.util.Map;
+import java.util.WeakHashMap;
 
-/**
- * Base class for all modules.
- *
- * @author BlockServer Team
- */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
+public interface CancellableImplementation extends Cancellable {
+    Map<CancellableImplementation, Boolean> instances = new WeakHashMap<>();
 
-    public Module(Server server) {
-        this.server = server;
+    @Override
+    default boolean isCancelled() {
+        return instances.getOrDefault(this, false);
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName();
+    default void setCancelled(boolean cancelled) {
+        instances.put(this, cancelled);
     }
 }

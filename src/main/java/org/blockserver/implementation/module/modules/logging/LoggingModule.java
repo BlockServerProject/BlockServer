@@ -14,25 +14,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module;
+package org.blockserver.implementation.module.modules.logging;
 
-import lombok.Getter;
 import org.blockserver.core.Server;
+import org.blockserver.core.module.Module;
 
 /**
- * Base class for all modules.
- *
+ * TODO: Implement SLF4j and/or log4j2
  * @author BlockServer Team
  */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
+public class LoggingModule extends Module{
 
-    public Module(Server server) {
-        this.server = server;
+    public LoggingModule(Server server) {
+        super(server);
     }
 
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
+    public void info(String message) {
+        System.out.println("[INFO]: "+message);
+    }
+
+    public void warn(String message) {
+        System.out.println("[WARN]: "+message);
+    }
+
+    public void error(String message) {
+        System.err.println("[ERROR]: "+message);
     }
 }

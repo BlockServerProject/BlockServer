@@ -14,25 +14,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module;
+package org.blockserver.implementation.module.modules.player;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
 
+import java.net.SocketAddress;
+
 /**
- * Base class for all modules.
+ * Represents a Player on the server.
  *
  * @author BlockServer Team
  */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
+public class Player {
+    @Getter private Server server;
+    @Getter private SocketAddress address;
 
-    public Module(Server server) {
+    public Player(Server server, SocketAddress address) {
         this.server = server;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
+        this.address = address;
     }
 }

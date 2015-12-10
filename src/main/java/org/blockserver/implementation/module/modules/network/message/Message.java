@@ -14,25 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module;
+package org.blockserver.implementation.module.modules.network.message;
 
-import lombok.Getter;
-import org.blockserver.core.Server;
+import org.blockserver.core.event.CancellableImplementation;
 
-/**
- * Base class for all modules.
- *
- * @author BlockServer Team
- */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
+public interface Message extends CancellableImplementation {
+    String getName();
 
-    public Module(Server server) {
-        this.server = server;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
-    }
 }

@@ -16,23 +16,24 @@
  */
 package org.blockserver.core.module;
 
-import lombok.Getter;
-import org.blockserver.core.Server;
+import java.util.Map;
+import java.util.WeakHashMap;
 
-/**
- * Base class for all modules.
- *
- * @author BlockServer Team
- */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
+public interface EnableableImplementation extends Enableable {
+    Map<EnableableImplementation, Boolean> instances = new WeakHashMap<>();
 
-    public Module(Server server) {
-        this.server = server;
+    @Override
+    default void onEnable() {
+        instances.put(this, true);
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName();
+    default boolean isEnabled() {
+        return instances.getOrDefault(this, false);
+    }
+
+    @Override
+    default void onDisable() {
+        instances.put(this, false);
     }
 }

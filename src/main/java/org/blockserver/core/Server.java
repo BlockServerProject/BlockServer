@@ -18,14 +18,17 @@ package org.blockserver.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.blockserver.core.event.events.modules.ModuleDisableEvent;
-import org.blockserver.core.event.events.modules.ModuleEnableEvent;
-import org.blockserver.core.event.system.EventManager;
-import org.blockserver.core.module.Enableable;
+import org.blockserver.core.event.EventManager;
+import org.blockserver.core.event.events.ModuleDisableEvent;
+import org.blockserver.core.event.events.ModuleEnableEvent;
+import org.blockserver.core.module.EnableableImplementation;
 import org.blockserver.core.module.Module;
-import org.blockserver.core.module.loader.ModuleLoader;
+import org.blockserver.core.module.ModuleLoader;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,7 +37,7 @@ import java.util.concurrent.Executors;
  *
  * @author BlockServer Team
  */
-public class Server implements Enableable {
+public class Server implements EnableableImplementation {
     @Getter @Setter private ExecutorService executorService = Executors.newFixedThreadPool(4);
     @Getter @Setter private EventManager eventManager = new EventManager();
     private boolean enabled;

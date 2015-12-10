@@ -14,25 +14,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module;
+package org.blockserver.core.event;
 
-import lombok.Getter;
-import org.blockserver.core.Server;
-
-/**
- * Base class for all modules.
- *
- * @author BlockServer Team
- */
-public class Module implements EnableableImplementation {
-    @Getter private final Server server;
-
-    public Module(Server server) {
-        this.server = server;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getSimpleName();
-    }
+public interface EventExecutor<T> {
+    void execute(T event);
 }
