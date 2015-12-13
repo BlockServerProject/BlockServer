@@ -17,7 +17,7 @@
 package org.blockserver.core.module.modules.player;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.event.ServerEventListener;
+import org.blockserver.core.event.MessageEventListener;
 import org.blockserver.core.module.Module;
 
 /**
@@ -33,7 +33,7 @@ public class PlayerModule extends Module {
     public void onEnable() {
         super.onEnable();
 
-        new ServerEventListener<>()
+        new MessageEventListener<>()
     }
 
     @Override

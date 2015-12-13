@@ -1,4 +1,4 @@
-package org.blockserver.core.message.messages.in.player;
+package org.blockserver.core.message.player;
 
 import lombok.Getter;
 import org.blockserver.core.message.Message;
