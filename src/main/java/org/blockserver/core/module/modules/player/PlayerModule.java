@@ -17,6 +17,7 @@
 package org.blockserver.core.module.modules.player;
 
 import org.blockserver.core.Server;
+import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.module.Module;
 
 /**
@@ -25,5 +26,18 @@ import org.blockserver.core.module.Module;
 public class PlayerModule extends Module {
     public PlayerModule(Server server) {
         super(server);
+    }
+
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+
+        new ServerEventListener<>()
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
     }
 }
