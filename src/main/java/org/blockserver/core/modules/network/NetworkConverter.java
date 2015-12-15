@@ -17,7 +17,8 @@
 package org.blockserver.core.modules.network;
 
 
-import org.blockserver.core.modules.network.message.Message;
+
+import org.blockserver.core.message.Message;
 
 import java.util.Collection;
 

@@ -17,8 +17,9 @@
 package org.blockserver.core.modules.network;
 
 import org.blockserver.core.Server;
+import org.blockserver.core.events.MessageHandleEvent;
+import org.blockserver.core.message.Message;
 import org.blockserver.core.module.Module;
-import org.blockserver.core.modules.network.message.Message;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.util.HashMap;
@@ -56,7 +57,7 @@ public class NetworkModule extends Module {
         super.onEnable();
         task = () -> {
             for (Map.Entry<NetworkProvider, NetworkConverter> entry : providers.entrySet()) {
-                entry.getValue().toMessages(entry.getKey().receivePackets()).forEach(m -> getServer().getEventManager().fire(m));
+                entry.getValue().toMessages(entry.getKey().receivePackets()).forEach(m -> getServer().getEventManager().fire(new MessageHandleEvent<>(m)));
             }
         };
         scheduler.registerTask(task, 1.0, Integer.MAX_VALUE);
