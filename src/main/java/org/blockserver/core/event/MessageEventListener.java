@@ -17,7 +17,7 @@
 package org.blockserver.core.event;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.event.events.MessageEvent;
+import org.blockserver.core.events.MessageEvent;
 import org.blockserver.core.message.Message;
 
 /**

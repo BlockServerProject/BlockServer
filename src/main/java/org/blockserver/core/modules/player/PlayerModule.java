@@ -14,25 +14,30 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module.modules.network;
+package org.blockserver.core.modules.player;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.blockserver.core.event.CancellableImplementation;
-
-import java.net.SocketAddress;
+import org.blockserver.core.Server;
+import org.blockserver.core.event.MessageEventListener;
+import org.blockserver.core.module.Module;
 
 /**
- * Represents a packet recieved or ready to be sent in byte form.
- *
- * @author BlockServer Team
+ * Module that handles players.
  */
-public class RawPacket implements CancellableImplementation {
-    @Getter @Setter private byte[] buffer;
-    @Getter @Setter private SocketAddress address;
+public class PlayerModule extends Module {
+    public PlayerModule(Server server) {
+        super(server);
+    }
 
-    public RawPacket(byte[] buffer, SocketAddress address) {
-        this.buffer = buffer;
-        this.address = address;
+
+    @Override
+    public void onEnable() {
+        super.onEnable();
+
+        new MessageEventListener<>();
+    }
+
+    @Override
+    public void onDisable() {
+        super.onDisable();
     }
 }

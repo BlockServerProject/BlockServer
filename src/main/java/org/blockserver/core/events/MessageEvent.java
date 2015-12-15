@@ -1,4 +1,4 @@
-package org.blockserver.core.event.events;
+package org.blockserver.core.events;
 
 import lombok.Getter;
 import lombok.Setter;

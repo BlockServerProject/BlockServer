@@ -19,9 +19,9 @@ package org.blockserver.core.module.loaders;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
-import org.blockserver.core.module.modules.logging.LoggingModule;
-import org.blockserver.core.module.modules.network.NetworkModule;
-import org.blockserver.core.module.modules.scheduler.SchedulerModule;
+import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.network.NetworkModule;
+import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.util.Collection;
 

@@ -14,35 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module.modules.network;
+package org.blockserver.core.modules.network;
 
 import lombok.Getter;
-import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
+import lombok.Setter;
+import org.blockserver.core.event.CancellableImplementation;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.net.SocketAddress;
 
 /**
- * Written by Exerosis!
+ * Represents a packet recieved or ready to be sent in byte form.
+ *
+ * @author BlockServer Team
  */
-public abstract class NetworkProvider extends Module {
-    @Getter private final Set<RawPacket> packetQueue = new HashSet<>();
+public class RawPacket implements CancellableImplementation {
+    @Getter @Setter private byte[] buffer;
+    @Getter @Setter private SocketAddress address;
 
-    public NetworkProvider(Server server) {
-        super(server);
+    public RawPacket(byte[] buffer, SocketAddress address) {
+        this.buffer = buffer;
+        this.address = address;
     }
-
-    protected void queuePacket(RawPacket packet) {
-        packetQueue.add(packet);
-    }
-
-    public Collection<RawPacket> receivePackets() {
-        Set<RawPacket> messages = new HashSet<>(packetQueue);
-        packetQueue.clear();
-        return messages;
-    }
-
-    public abstract void sendPacket(RawPacket packet);
 }

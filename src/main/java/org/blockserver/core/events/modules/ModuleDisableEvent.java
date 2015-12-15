@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event.events.modules;
+package org.blockserver.core.events.modules;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 
-public class ModuleEnableEvent extends ModuleEvent {
-    public ModuleEnableEvent(Server server, Module module) {
+public class ModuleDisableEvent extends ModuleEvent {
+    public ModuleDisableEvent(Server server, Module module) {
         super(server, module);
     }
 }

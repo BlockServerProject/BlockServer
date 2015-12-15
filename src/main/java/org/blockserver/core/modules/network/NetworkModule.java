@@ -14,12 +14,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module.modules.network;
+package org.blockserver.core.modules.network;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
-import org.blockserver.core.module.modules.network.message.Message;
-import org.blockserver.core.module.modules.scheduler.SchedulerModule;
+import org.blockserver.core.modules.network.message.Message;
+import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.util.HashMap;
 import java.util.Map;

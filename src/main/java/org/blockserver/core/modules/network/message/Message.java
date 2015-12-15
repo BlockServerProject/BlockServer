@@ -14,16 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event.events;
+package org.blockserver.core.modules.network.message;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.blockserver.core.Server;
+import org.blockserver.core.event.CancellableImplementation;
 
-public class ServerEvent {
-    @Getter @Setter private Server server;
+public interface Message extends CancellableImplementation {
+    String getName();
 
-    public ServerEvent(Server server) {
-        this.server = server;
-    }
 }

@@ -2,7 +2,7 @@ package org.blockserver.core.message.player;
 
 import lombok.Getter;
 import org.blockserver.core.message.Message;
-import org.blockserver.core.module.modules.player.Player;
+import org.blockserver.core.modules.player.Player;
 
 /**
  * Written by Exerosis!

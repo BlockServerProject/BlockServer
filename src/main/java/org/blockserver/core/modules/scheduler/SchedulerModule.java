@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module.modules.scheduler;
+package org.blockserver.core.modules.scheduler;
 
 import lombok.Getter;
 import org.blockserver.core.Server;

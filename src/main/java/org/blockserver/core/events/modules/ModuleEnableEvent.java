@@ -14,30 +14,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.module.modules.player;
+package org.blockserver.core.events.modules;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.event.MessageEventListener;
 import org.blockserver.core.module.Module;
 
-/**
- * Module that handles players.
- */
-public class PlayerModule extends Module {
-    public PlayerModule(Server server) {
-        super(server);
-    }
-
-
-    @Override
-    public void onEnable() {
-        super.onEnable();
-
-        new MessageEventListener<>()
-    }
-
-    @Override
-    public void onDisable() {
-        super.onDisable();
+public class ModuleEnableEvent extends ModuleEvent {
+    public ModuleEnableEvent(Server server, Module module) {
+        super(server, module);
     }
 }

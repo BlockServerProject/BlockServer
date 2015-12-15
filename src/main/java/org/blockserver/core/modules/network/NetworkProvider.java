@@ -14,20 +14,35 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event.events.modules;
+package org.blockserver.core.modules.network;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.blockserver.core.Server;
-import org.blockserver.core.event.CancellableImplementation;
-import org.blockserver.core.event.events.ServerEvent;
 import org.blockserver.core.module.Module;
 
-public class ModuleEvent extends ServerEvent implements CancellableImplementation {
-    @Getter @Setter private Module module;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-    public ModuleEvent(Server server, Module module) {
+/**
+ * Written by Exerosis!
+ */
+public abstract class NetworkProvider extends Module {
+    @Getter private final Set<RawPacket> packetQueue = new HashSet<>();
+
+    public NetworkProvider(Server server) {
         super(server);
-        this.module = module;
     }
+
+    protected void queuePacket(RawPacket packet) {
+        packetQueue.add(packet);
+    }
+
+    public Collection<RawPacket> receivePackets() {
+        Set<RawPacket> messages = new HashSet<>(packetQueue);
+        packetQueue.clear();
+        return messages;
+    }
+
+    public abstract void sendPacket(RawPacket packet);
 }
