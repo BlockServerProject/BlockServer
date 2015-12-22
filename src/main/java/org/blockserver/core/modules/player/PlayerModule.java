@@ -50,6 +50,10 @@ public class PlayerModule extends Module {
     protected void onMessage(MessageHandleEvent event) {
         if(players.containsKey(event.getMessage().getAddress().toString())) {
             players.get(event.getMessage().getAddress().toString()).handleMessage(event.getMessage());
+            return;
         }
+        Player player = new Player(getServer(), event.getMessage().getAddress()); //TODO: Fire PlayerCreatedEvent
+        players.put(player.getAddress().toString(), player);
+        player.handleMessage(event.getMessage());
     }
 }

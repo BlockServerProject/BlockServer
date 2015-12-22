@@ -19,6 +19,7 @@ package org.blockserver.core.modules.player;
 import lombok.Getter;
 import org.blockserver.core.Server;
 import org.blockserver.core.message.Message;
+import org.blockserver.core.modules.logging.LoggingModule;
 
 import java.net.SocketAddress;
 
@@ -37,6 +38,6 @@ public class Player {
     }
 
     public void handleMessage(Message message) {
-
+        getServer().getModule(LoggingModule.class).info("Got Message: "+message.getClass().getName());
     }
 }
