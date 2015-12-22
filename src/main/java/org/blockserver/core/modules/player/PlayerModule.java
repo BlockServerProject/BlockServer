@@ -18,16 +18,22 @@ package org.blockserver.core.modules.player;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.event.MessageEventListener;
+import org.blockserver.core.events.MessageHandleEvent;
 import org.blockserver.core.module.Module;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Module that handles players.
  */
 public class PlayerModule extends Module {
+
+    private Map<String, Player> players = new ConcurrentHashMap<>();
+
     public PlayerModule(Server server) {
         super(server);
     }
-
 
     @Override
     public void onEnable() {
@@ -39,5 +45,11 @@ public class PlayerModule extends Module {
     @Override
     public void onDisable() {
         super.onDisable();
+    }
+
+    protected void onMessage(MessageHandleEvent event) {
+        if(players.containsKey(event.getMessage().getAddress().toString())) {
+            players.get(event.getMessage().getAddress().toString()).handleMessage(event.getMessage());
+        }
     }
 }
