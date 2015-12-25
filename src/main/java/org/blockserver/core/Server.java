@@ -16,6 +16,7 @@
  */
 package org.blockserver.core;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.core.event.EventManager;
@@ -62,6 +63,10 @@ public class Server implements EnableableImplementation {
     @SuppressWarnings("unchecked")
     public <T extends Module> T getModule(Class<T> moduleClass) {
         return (T) modules.get(moduleClass);
+    }
+
+    public void addModuleToEnable(Module module) {
+        modules.put(module.getClass(), module);
     }
 
     @Override
