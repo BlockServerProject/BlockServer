@@ -19,6 +19,7 @@ package org.blockserver.core;
 import org.blockserver.core.event.EventListener;
 import org.blockserver.core.events.modules.ModuleEnableEvent;
 import org.blockserver.core.module.loaders.CoreModuleLoader;
+import org.blockserver.core.module.loaders.JarModuleLoader;
 import org.blockserver.core.modules.logging.LoggingModule;
 
 /**
@@ -29,12 +30,11 @@ import org.blockserver.core.modules.logging.LoggingModule;
 public class run {
 
     public static void main(String[] args) {
-        Server server = new Server(new CoreModuleLoader());
+        Server server = new Server(new CoreModuleLoader(), new JarModuleLoader());
 
         new EventListener<ModuleEnableEvent, ModuleEnableEvent>(){
             @Override
             public void onEvent(ModuleEnableEvent event) {
-                System.out.print(event.getModule());
             }
         }.register(ModuleEnableEvent.class, server.getEventManager());
 

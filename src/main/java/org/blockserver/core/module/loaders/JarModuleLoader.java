@@ -17,13 +17,21 @@
 package org.blockserver.core.module.loaders;
 
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
+import org.blockserver.core.modules.logging.LoggingModule;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
+import java.util.Properties;
 import java.util.jar.JarFile;
 
 /**
@@ -46,12 +54,40 @@ public class JarModuleLoader implements ModuleLoader {
             if (file.getName().endsWith(".jar")) {
                 try {
                     JarFile jar = new JarFile(file);
-
+                    Properties jarProp = getJarProperties(jar);
+                    URLClassLoader loader = new URLClassLoader(new URL[] {file.toURL()});
+                    String className = jarProp.getProperty("mainClass", "default");
+                    try {
+                        Class clazz = loader.loadClass(className);
+                        try {
+                            Module module = (Module) clazz.getConstructor(Server.class).newInstance(server);
+                            currentModules.add(module);
+                            System.out.println("[Module Loader]: Loaded "+file.getName());
+                        } catch (ClassCastException e) {
+                            System.err.println("[Module Loader]: Failed to load main class for "+file.getName()+": main class does not extend Module.");
+                        } catch (NoSuchMethodException | InvocationTargetException e) {
+                            System.err.println("[Module Loader]: Failed to load main class for "+file.getName()+": "+e.getClass().getSimpleName()+" -> "+e.getMessage());
+                        }
+                    } catch (ClassNotFoundException e) {
+                        if(className.equals("default")) {
+                            System.err.println("[Module Loader]: Failed to load main class for "+file.getName()+": main class not specified.");
+                        }
+                        System.err.println("[Module Loader]: Failed to load main class for "+file.getName()+": ClassNotFoundException -> "+e.getMessage());
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        System.err.println("[Module Loader]: Failed to load main class for "+file.getName()+": "+e.getClass().getSimpleName()+" -> "+e.getMessage());
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
         return currentModules;
+    }
+
+    private Properties getJarProperties(JarFile jar) throws IOException {
+        InputStream stream = jar.getInputStream(jar.getJarEntry("module.properties"));
+        Properties p = new Properties();
+        p.load(stream);
+        return p;
     }
 }
