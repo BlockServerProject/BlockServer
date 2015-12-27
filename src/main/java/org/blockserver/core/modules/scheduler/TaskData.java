@@ -32,7 +32,7 @@ public class TaskData {
         this.repeatTimes = repeatTimes;
     }
 
-    public long getNextTickTime() {
+    public long getNextTickTime(){
         return lastTickTime + (long) delay;
     }
 }

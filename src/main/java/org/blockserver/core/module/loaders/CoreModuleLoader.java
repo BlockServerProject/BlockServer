@@ -40,7 +40,7 @@ public class CoreModuleLoader implements ModuleLoader {
         currentModules.add(schedulerModule);
         currentModules.add(networkModule);
 
-        System.out.println("[Module Loader]: Loaded " + currentModules.size() + " core modules.");
+        System.out.println("[Module Loader]: Loaded "+currentModules.size()+" core modules.");
 
         return currentModules;
     }

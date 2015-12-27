@@ -16,73 +16,72 @@
     along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.blockserver</groupId>
-    <artifactId>BlockServer</artifactId>
-    <version>1.0.0-BETA-SNAPSHOT</version>
-    <packaging>jar</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.blockserver</groupId>
+	<artifactId>BlockServer</artifactId>
+	<version>1.0.0-BETA-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-    <distributionManagement>
-        <snapshotRepository>
-            <id>snapshot-repo</id>
-            <url>https://raw.githubusercontent.com/BlockServerProject/MavenRepository/master/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>snapshot-repo</id>
+			<url>https://raw.githubusercontent.com/BlockServerProject/MavenRepository/master/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
-    <repositories>
-        <repository>
-            <id>snapshot-repo</id>
-            <url>https://raw.githubusercontent.com/BlockServerProject/MavenRepository/master/snapshots</url>
-        </repository>
-    </repositories>
+	<repositories>
+		<repository>
+			<id>snapshot-repo</id>
+			<url>https://raw.githubusercontent.com/BlockServerProject/MavenRepository/master/snapshots</url>
+		</repository>
+	</repositories>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.16.6</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.16.6</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.mycila</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>2.11</version>
-                <configuration>
-                    <header>com/mycila/maven/plugin/license/templates/LGPL-3.txt</header>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.11</version>
+				<configuration>
+					<header>com/mycila/maven/plugin/license/templates/LGPL-3.txt</header>
 
-                    <headerDefinitions>
-                        <headerDefinition>license-definitions.xml</headerDefinition>
-                    </headerDefinitions>
+					<headerDefinitions>
+						<headerDefinition>license-definitions.xml</headerDefinition>
+					</headerDefinitions>
 
-                    <includes>
-                        <include>src/main/java/**</include>
-                        <include>src/test/java/**</include>
-                        <include>pom.xml</include>
-                    </includes>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+					<includes>
+						<include>src/main/java/**</include>
+						<include>src/test/java/**</include>
+						<include>pom.xml</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -97,8 +96,7 @@
                         <configuration>
                             <transformers>
                                 <!-- add Main-Class to manifest file -->
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>org.blockserver.core.run</mainClass>
                                 </transformer>
                             </transformers>
@@ -106,6 +104,6 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
+		</plugins>
+	</build>
 </project>

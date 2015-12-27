@@ -23,7 +23,7 @@ import org.blockserver.core.message.Message;
 /**
  * Created by atzei on 12/21/2015.
  */
-public class PlayerMessageEventListener<T extends Message> extends EventListener<T, MessageHandleEvent> {
+public class PlayerMessageEventListener<T extends Message> extends EventListener<T, MessageHandleEvent>{
     private PlayerModule module;
 
     public PlayerMessageEventListener(PlayerModule module) {

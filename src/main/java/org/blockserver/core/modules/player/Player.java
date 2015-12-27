@@ -38,6 +38,6 @@ public class Player {
     }
 
     public void handleMessage(Message message) {
-        getServer().getModule(LoggingModule.class).info("Got Message: " + message.getClass().getName());
+        getServer().getModule(LoggingModule.class).info("Got Message: "+message.getClass().getName());
     }
 }

@@ -48,7 +48,7 @@ public class PlayerModule extends Module {
     }
 
     protected void onMessage(MessageHandleEvent event) {
-        if (players.containsKey(event.getMessage().getAddress().toString())) {
+        if(players.containsKey(event.getMessage().getAddress().toString())) {
             players.get(event.getMessage().getAddress().toString()).handleMessage(event.getMessage());
             return;
         }
