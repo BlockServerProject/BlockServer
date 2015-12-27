@@ -21,6 +21,7 @@ import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,7 +29,7 @@ import java.util.Set;
  * Written by Exerosis!
  */
 public abstract class NetworkProvider extends Module {
-    @Getter private final Set<RawPacket> packetQueue = new HashSet<>();
+    @Getter private final Set<RawPacket> packetQueue = Collections.synchronizedSet(new HashSet<>());
 
     public NetworkProvider(Server server) {
         super(server);
