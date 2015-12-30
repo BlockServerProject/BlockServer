@@ -23,16 +23,15 @@ import org.blockserver.core.modules.player.Player;
 /**
  * Written by Exerosis!
  */
+//TODO maybe remove this class, its not exactly helpful, but might be good for noobs I guess.
 public class MessagePlayer extends Message {
     @Getter private Player player;
 
     public MessagePlayer(Player player) {
-        super(player.getAddress());
-        this.player = player;
+        super(player);
     }
 
     public void setPlayer(Player player) {
-        this.player = player;
-        setAddress(player.getAddress());
+        setAddress(player);
     }
 }
