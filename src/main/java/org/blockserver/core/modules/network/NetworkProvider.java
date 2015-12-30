@@ -17,33 +17,51 @@
 package org.blockserver.core.modules.network;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.blockserver.core.Server;
+import org.blockserver.core.message.Message;
 import org.blockserver.core.module.Module;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Written by Exerosis!
  */
-public abstract class NetworkProvider extends Module {
-    @Getter private final Set<RawPacket> packetQueue = Collections.synchronizedSet(new HashSet<>());
+public class NetworkProvider extends Module {
+    @Getter private final Set<RawPacket> packetOutQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
+    @Getter private final Set<Message> massageInQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
+    @Getter @Setter private NetworkConverter converter;
 
-    public NetworkProvider(Server server) {
+    public NetworkProvider(Server server, NetworkConverter converter) {
         super(server);
+        this.converter = converter;
     }
 
-    protected void queuePacket(RawPacket packet) {
-        packetQueue.add(packet);
+    public void queueInboundPackets(Collection<RawPacket> packets) {
+        getServer().getExecutorService().execute(() -> massageInQueue.addAll(converter.toMessages(packets)));
     }
 
-    public Collection<RawPacket> receivePackets() {
-        Set<RawPacket> messages = new HashSet<>(packetQueue);
-        packetQueue.clear();
-        return messages;
+    public void queueOutboundMessages(Collection<Message> messages) {
+        packetOutQueue.addAll(converter.toPackets(messages));
     }
 
-    public abstract void sendPacket(RawPacket packet);
+    public void queueOutboundMessages(Message... messages) {
+        queueOutboundMessages(Arrays.asList(messages));
+    }
+
+    public void queueInboundPackets(RawPacket... packets) {
+        queueInboundPackets(Arrays.asList(packets));
+    }
+
+    public Collection<Message> receiveInboundMessages() {
+        Set<Message> packets = new HashSet<>(massageInQueue);
+        massageInQueue.clear();
+        return packets;
+    }
+
+    public Collection<RawPacket> receiveOutboundPackets() {
+        Set<RawPacket> packets = new HashSet<>(packetOutQueue);
+        packetOutQueue.clear();
+        return packets;
+    }
 }
