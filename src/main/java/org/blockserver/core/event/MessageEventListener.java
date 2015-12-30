@@ -27,4 +27,8 @@ public class MessageEventListener<T extends Message> extends EventListener<T, Me
     public MessageEventListener<T> register(Class<T> listenerType, Server server) {
         return (MessageEventListener<T>) register(listenerType, server.getEventManager());
     }
+
+    public void unregister(Server server) {
+        unregister(server.getEventManager());
+    }
 }

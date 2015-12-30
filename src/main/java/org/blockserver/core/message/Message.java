@@ -19,15 +19,15 @@ package org.blockserver.core.message;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 
 /**
  * Written by Exerosis!
  */
 public class Message {
-    @Getter @Setter private SocketAddress address;
+    @Getter @Setter private InetSocketAddress address;
 
-    public Message(SocketAddress address) {
+    public Message(InetSocketAddress address) {
         this.address = address;
     }
 }
