@@ -21,6 +21,7 @@ import org.blockserver.core.event.MessageEventListener;
 import org.blockserver.core.events.MessageHandleEvent;
 import org.blockserver.core.module.Module;
 
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,7 +53,7 @@ public class PlayerModule extends Module {
             players.get(event.getMessage().getAddress().toString()).handleMessage(event.getMessage());
             return;
         }
-        Player player = new Player(getServer(), event.getMessage().getAddress()); //TODO: Fire PlayerCreatedEvent
+        Player player = new Player(getServer(), (InetSocketAddress) event.getMessage().getAddress()); //TODO: Fire PlayerCreatedEvent
         players.put(player.getAddress().toString(), player);
         player.handleMessage(event.getMessage());
     }
