@@ -28,10 +28,10 @@ import java.net.SocketAddress;
  * @author BlockServer Team
  */
 public class RawPacket implements CancellableImplementation {
-    @Getter @Setter private byte[] buffer;
+    @Getter @Setter private BinaryBuffer buffer;
     @Getter @Setter private SocketAddress address;
 
-    public RawPacket(byte[] buffer, SocketAddress address) {
+    public RawPacket(BinaryBuffer buffer, SocketAddress address) {
         this.buffer = buffer;
         this.address = address;
     }
