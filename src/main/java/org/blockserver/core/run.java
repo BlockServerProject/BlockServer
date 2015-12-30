@@ -32,7 +32,7 @@ public class run {
     public static void main(String[] args) {
         Server server = new Server(new CoreModuleLoader(), new JarModuleLoader());
 
-        new EventListener<ModuleEnableEvent, ModuleEnableEvent>(){
+        new EventListener<ModuleEnableEvent, ModuleEnableEvent>() {
             @Override
             public void onEvent(ModuleEnableEvent event) {
             }

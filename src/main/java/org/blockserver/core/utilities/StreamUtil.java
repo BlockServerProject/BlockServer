@@ -36,7 +36,7 @@ public class StreamUtil {
         try {
             fileOutputStream = new FileOutputStream(file);
             fileOutputStream = new BufferedOutputStream(fileOutputStream);
-          //  IOUtils.copy(stream, fileOutputStream);
+            //  IOUtils.copy(stream, fileOutputStream);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -79,10 +79,8 @@ public class StreamUtil {
     /**
      * Gets bytes from InputStream
      *
-     * @param stream
-     * The InputStream
-     * @return
-     * Returns a byte[] representation of given stream
+     * @param stream The InputStream
+     * @return Returns a byte[] representation of given stream
      */
 
     public static byte[] getBytesFromIS(InputStream stream) {
@@ -109,13 +107,11 @@ public class StreamUtil {
     /**
      * Gets bytes from class
      *
-     * @param clazz
-     * The class
-     * @return
-     * Returns a byte[] representation of given class
+     * @param clazz The class
+     * @return Returns a byte[] representation of given class
      */
 
     public static byte[] getBytesFromClass(Class<?> clazz) {
-        return getBytesFromIS(clazz.getClassLoader().getResourceAsStream( clazz.getName().replace('.', '/') + ".class"));
+        return getBytesFromIS(clazz.getClassLoader().getResourceAsStream(clazz.getName().replace('.', '/') + ".class"));
     }
 }
