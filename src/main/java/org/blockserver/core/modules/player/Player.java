@@ -18,6 +18,8 @@ package org.blockserver.core.modules.player;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
+import org.blockserver.core.message.Message;
+import org.blockserver.core.modules.logging.LoggingModule;
 
 import java.net.InetSocketAddress;
 
@@ -32,7 +34,6 @@ public class Player extends InetSocketAddress {
     public Player(Server server, InetSocketAddress address) {
         super(address.getAddress(), address.getPort());
         this.server = server;
-        this.address = address;
     }
 
     public void sendMessage(Message message) {
