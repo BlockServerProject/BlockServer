@@ -37,6 +37,10 @@ public class Player {
         this.address = address;
     }
 
+    public void sendMessage(Message message) {
+
+    }
+
     public void handleMessage(Message message) {
         getServer().getModule(LoggingModule.class).info("Got Message: "+message.getClass().getName());
     }
