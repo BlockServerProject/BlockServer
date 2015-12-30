@@ -17,7 +17,6 @@
 package org.blockserver.core.modules.world;
 
 import lombok.Getter;
-import org.blockserver.core.message.block.MessageOutBlockChange;
 import org.blockserver.core.modules.player.Player;
 import org.blockserver.core.modules.world.positions.Vector;
 
