@@ -1,7 +1,6 @@
 package org.blockserver.core.modules.world;
 
 import lombok.Getter;
-import org.blockserver.core.message.block.MessageOutBlockChange;
 import org.blockserver.core.modules.player.Player;
 import org.blockserver.core.modules.world.positions.Vector;
 
@@ -21,7 +20,6 @@ public class Block {
     public void setMaterial(Material material) {
         this.material = material;
         for (Player player : world.getPlayers()) {
-            player.sendMessage(new MessageOutBlockChange(player.getAddress())); //TODO: Material
         }
     }
 }
