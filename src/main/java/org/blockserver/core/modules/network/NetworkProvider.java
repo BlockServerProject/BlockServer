@@ -29,7 +29,7 @@ import java.util.*;
  */
 public class NetworkProvider extends Module {
     @Getter private final Set<RawPacket> packetOutQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
-    @Getter private final Set<Message> massageInQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
+    @Getter private final Set<Message> messageInQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
     @Getter @Setter private NetworkConverter converter;
 
     public NetworkProvider(Server server, NetworkConverter converter) {
@@ -38,7 +38,7 @@ public class NetworkProvider extends Module {
     }
 
     public void queueInboundPackets(Collection<RawPacket> packets) {
-        getServer().getExecutorService().execute(() -> massageInQueue.addAll(converter.toMessages(packets)));
+        getServer().getExecutorService().execute(() -> messageInQueue.addAll(converter.toMessages(packets)));
     }
 
     public void queueOutboundMessages(Collection<Message> messages) {
@@ -54,8 +54,8 @@ public class NetworkProvider extends Module {
     }
 
     public Collection<Message> receiveInboundMessages() {
-        Set<Message> packets = new HashSet<>(massageInQueue);
-        massageInQueue.clear();
+        Set<Message> packets = new HashSet<>(messageInQueue);
+        messageInQueue.clear();
         return packets;
     }
 
