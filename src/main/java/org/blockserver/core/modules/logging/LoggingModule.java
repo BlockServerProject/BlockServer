@@ -30,6 +30,10 @@ public class LoggingModule extends Module {
         super(server);
     }
 
+    public void debug(String message) {
+        System.out.println("[DEBUG]: " + message);
+    }
+
     public void info(String message) {
         System.out.println("[INFO]: " + message);
     }

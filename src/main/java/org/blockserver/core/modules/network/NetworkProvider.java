@@ -21,15 +21,21 @@ import lombok.Setter;
 import org.blockserver.core.Server;
 import org.blockserver.core.message.Message;
 import org.blockserver.core.module.Module;
+import org.blockserver.core.modules.player.Player;
+import org.blockserver.core.modules.player.PlayerModule;
 
+import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Written by Exerosis!
  */
 public class NetworkProvider extends Module {
-    @Getter private final Set<RawPacket> packetOutQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
-    @Getter private final Set<Message> messageInQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
+    //@Getter private final Set<RawPacket> packetOutQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
+    //@Getter private final Set<Message> messageInQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
+    @Getter private final Queue<RawPacket> packetOutQueue = Collections.asLifoQueue(new LinkedBlockingDeque<>());
+    @Getter private final Queue<Message> messageInQueue = Collections.asLifoQueue(new LinkedBlockingDeque<>());
     @Getter @Setter private NetworkConverter converter;
 
     public NetworkProvider(Server server, NetworkConverter converter) {
@@ -63,5 +69,10 @@ public class NetworkProvider extends Module {
         Set<RawPacket> packets = new HashSet<>(packetOutQueue);
         packetOutQueue.clear();
         return packets;
+    }
+
+    protected final void sessionOpened(InetSocketAddress address) {
+        Player player = new Player(getServer(), address);
+        getServer().getModule(PlayerModule.class).internalOpenSession(player);
     }
 }
