@@ -17,9 +17,6 @@
 package org.blockserver.core.modules.player;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.event.MessageEventListener;
-import org.blockserver.core.events.MessageHandleEvent;
-import org.blockserver.core.message.MessageInPlayerLogin;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.logging.LoggingModule;
 
@@ -27,13 +24,13 @@ import java.net.InetSocketAddress;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Module that handles players.
  */
 public class PlayerModule extends Module {
     private final Set<Player> players = Collections.synchronizedSet(new HashSet<>());
-    private MessageEventListener<MessageInPlayerLogin> listener;
 
     public PlayerModule(Server server) {
         super(server);
@@ -42,39 +39,50 @@ public class PlayerModule extends Module {
     @Override
     public void onEnable() {
         super.onEnable();
-
-        listener = new MessageEventListener<MessageInPlayerLogin>() {
-            @Override
-            public void onEvent(MessageHandleEvent<MessageInPlayerLogin> event) {
-                Player player = new Player(getServer(), event.getMessage().getAddress()); //TODO: Fire PlayerCreatedEvent
-                players.add(player);
-            }
-        }.register(MessageInPlayerLogin.class, getServer());
     }
 
     @Override
     public void onDisable() {
+        players.clear();
         super.onDisable();
-        listener.unregister(getServer());
     }
 
     /**
-     * Attempts to find a current online player with the specified name. If
-     * there is no player found this method will return null.
+     * Attempts to find a current online {@linkplain Player} with the specified name. If
+     * there is no {@linkplain Player} found this method will return null.
      *
-     * @param name The name of the player to find.
-     * @return The Player instance if found, null if not.
+     * @param name ({@linkplain String}): The name of the {@linkplain Player} to locate.
+     * @return player - ({@linkplain Player}): The {@linkplain Player} with the given name or null.
      */
     public Player getPlayer(String name) {
-        return null; //TODO
+        for (Player player : players) {
+            if (player.getName().equals(name))
+                return player;
+        }
+        return null;
     }
 
     /**
-     * Attempts to find a current online player with the specified address.
-     * If no player is found this method will return null.
+     * Attempts to find a current online {@linkplain Player} with the specified {@linkplain UUID}. If
+     * there is no {@linkplain Player} found this method will return null.
      *
-     * @param address The address of the player to find.
-     * @return The Player instance if found, null if not.
+     * @param name ({@linkplain UUID}): The {@linkplain UUID} of the {@linkplain Player} to locate.
+     * @return player - ({@linkplain Player}): The {@linkplain Player} with the given {@linkplain UUID} or null.
+     */
+    public Player getPlayer(UUID name) {
+        for (Player player : players) {
+            if (player.getUUID().equals(name))
+                return player;
+        }
+        return null;
+    }
+
+    /**
+     * Attempts to find a current online {@linkplain Player} with the specified {@linkplain InetSocketAddress}. If
+     * there is no {@linkplain Player} found this method will return null.
+     *
+     * @param address ({@linkplain InetSocketAddress}): The {@linkplain InetSocketAddress} of the {@linkplain Player} to locate.
+     * @return player - ({@linkplain Player}): The {@linkplain Player} with the given {@linkplain InetSocketAddress} or null.
      */
     public Player getPlayer(InetSocketAddress address) {
         for (Player player : players) {
@@ -84,17 +92,19 @@ public class PlayerModule extends Module {
         return null;
     }
 
+
     /**
-     * Opens a new session, and adds the specified Player to the list of online
-     * players.
+     * Opens a new session, and adds the specified {@linkplain Player} to the list of online {@linkplain Player}s.
      * <br>
      * NOTE: THIS METHOD IS FOR INTERNAL USE ONLY!
      *
-     * @param player The player to be added.
+     * @param address ({@linkplain InetSocketAddress}): The new {@linkplain Player}'s {@linkplain InetSocketAddress}.
+     * @param name ({@linkplain String}): The new {@linkplain Player}'s {@linkplain String}.
+     * @param UUID ({@linkplain UUID}): The new {@linkplain Player}'s {@linkplain UUID}.
      */
-    public void internalOpenSession(Player player) {
-        players.add(player);
-        getServer().getModule(LoggingModule.class).debug("New session from " + player.getAddress().getHostString() + ":" + player.getAddress().getPort());
+    public void internalOpenSession(InetSocketAddress address, String name, UUID UUID) {
+        players.add(new Player(address, name, UUID));
+        getServer().getModule(LoggingModule.class).debug("New session from " + address.getHostString() + ":" + address.getPort());
     }
 
     /**
@@ -107,11 +117,6 @@ public class PlayerModule extends Module {
     public void internalCloseSession(Player player) {
         players.remove(player);
         getServer().getModule(LoggingModule.class).debug("Session " + player.getAddress().getHostString() + ":" + player.getAddress().getPort() + " closed.");
-    }
-
-    protected final void sessionOpened(InetSocketAddress address) {
-        Player player = new Player(getServer(), address);
-        getServer().getModule(PlayerModule.class).internalOpenSession(player);
     }
 
     public Set<Player> getPlayers() {

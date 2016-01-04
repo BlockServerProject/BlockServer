@@ -33,8 +33,8 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Written by Exerosis!
  */
 public class NetworkProvider extends Module {
-    @Getter private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
-    @Getter private final BlockingQueue<Message> messageInQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> messageInQueue = new LinkedBlockingQueue<>();
     @Getter @Setter private NetworkConverter converter;
 
     public NetworkProvider(Server server, NetworkConverter converter) {
@@ -65,7 +65,6 @@ public class NetworkProvider extends Module {
         messageInQueue.addAll(messages.length > 1 ? Arrays.asList(messages) : Collections.singletonList(messages[0]));
     }
 
-    //TODO waiting on http://stackoverflow.com/questions/34583069/queue-or-something-else answer.
     public Collection<Message> receiveInboundMessages() {
         Collection<Message> messages = new HashSet<>();
         messageInQueue.drainTo(messages);
@@ -76,5 +75,13 @@ public class NetworkProvider extends Module {
         Collection<RawPacket> packets = new HashSet<>();
         packetOutQueue.drainTo(packets);
         return packets;
+    }
+
+    public Collection<Message> getMessageInQueue() {
+        return new HashSet<>(messageInQueue);
+    }
+
+    public Collection<RawPacket> getPacketOutQueue() {
+        return new HashSet<>(packetOutQueue);
     }
 }
