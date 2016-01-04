@@ -30,10 +30,9 @@ import java.util.Set;
 /**
  * Written by Exerosis!
  */
-//TODO deal with weird ... vs Collection stuff.
 public class NetworkModule extends Module {
     private final SchedulerModule scheduler;
-    @Getter private final Set<NetworkProvider> providers = Collections.synchronizedSet(Collections.unmodifiableSet(new HashSet<>()));
+    private final Set<NetworkProvider> providers = Collections.synchronizedSet(new HashSet<>());
     @Getter private final Runnable task;
 
     public NetworkModule(Server server, SchedulerModule scheduler) {
@@ -44,6 +43,12 @@ public class NetworkModule extends Module {
                 provider.receiveInboundMessages().forEach(m -> getServer().getEventManager().fire(new MessageHandleEvent<>(m)));
             }
         };
+    }
+
+    public void sendPackets(RawPacket... packets) {
+        for (NetworkProvider provider : providers) {
+            provider.queueOutboundPackets(packets);
+        }
     }
 
     public void sendMessages(Message... messages) {
@@ -59,7 +64,6 @@ public class NetworkModule extends Module {
     @Override
     public void onEnable() {
         super.onEnable();
-
         scheduler.registerTask(task, 1.0, Integer.MAX_VALUE);
     }
 
@@ -67,5 +71,9 @@ public class NetworkModule extends Module {
     public void onDisable() {
         super.onDisable();
         scheduler.cancelTask(task);
+    }
+
+    public Set<NetworkProvider> getProviders() {
+        return Collections.unmodifiableSet(providers);
     }
 }

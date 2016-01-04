@@ -16,7 +16,6 @@
  */
 package org.blockserver.core.modules.player;
 
-import lombok.Getter;
 import org.blockserver.core.Server;
 import org.blockserver.core.event.MessageEventListener;
 import org.blockserver.core.events.MessageHandleEvent;
@@ -25,13 +24,15 @@ import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.logging.LoggingModule;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Module that handles players.
  */
 public class PlayerModule extends Module {
-    @Getter private final List<Player> players = Collections.unmodifiableList(new ArrayList<>());
+    private final Set<Player> players = Collections.synchronizedSet(new HashSet<>());
     private MessageEventListener<MessageInPlayerLogin> listener;
 
     public PlayerModule(Server server) {
@@ -60,6 +61,7 @@ public class PlayerModule extends Module {
     /**
      * Attempts to find a current online player with the specified name. If
      * there is no player found this method will return null.
+     *
      * @param name The name of the player to find.
      * @return The Player instance if found, null if not.
      */
@@ -70,16 +72,14 @@ public class PlayerModule extends Module {
     /**
      * Attempts to find a current online player with the specified address.
      * If no player is found this method will return null.
+     *
      * @param address The address of the player to find.
      * @return The Player instance if found, null if not.
      */
     public Player getPlayer(InetSocketAddress address) {
-        synchronized (players) {
-            for(Player player : players) {
-                if(player.getAddress().equals(address.getAddress()) && player.getPort() == address.getPort()) {
-                    return player;
-                }
-            }
+        for (Player player : players) {
+            if (player.getAddress().equals(address))
+                return player;
         }
         return null;
     }
@@ -89,25 +89,32 @@ public class PlayerModule extends Module {
      * players.
      * <br>
      * NOTE: THIS METHOD IS FOR INTERNAL USE ONLY!
+     *
      * @param player The player to be added.
      */
-    public synchronized void internalOpenSession(Player player) {
-        synchronized (players){
-            players.add(player);
-        }
-        getServer().getModule(LoggingModule.class).debug("New session from "+player.getHostString()+":"+player.getPort());
+    public void internalOpenSession(Player player) {
+        players.add(player);
+        getServer().getModule(LoggingModule.class).debug("New session from " + player.getAddress().getHostString() + ":" + player.getAddress().getPort());
     }
 
     /**
      * Removes a Player from the list of online players.
      * <br>
      * NOTE: THIS METHOD IS FOR INTERNAL USE ONLY!
+     *
      * @param player The player to be removed.
      */
-    public synchronized void internalCloseSession(Player player) {
-        synchronized (players) {
-            players.remove(player);
-        }
-        getServer().getModule(LoggingModule.class).debug("Session "+player.getHostString()+":"+player.getPort()+" closed.");
+    public void internalCloseSession(Player player) {
+        players.remove(player);
+        getServer().getModule(LoggingModule.class).debug("Session " + player.getAddress().getHostString() + ":" + player.getAddress().getPort() + " closed.");
+    }
+
+    protected final void sessionOpened(InetSocketAddress address) {
+        Player player = new Player(getServer(), address);
+        getServer().getModule(PlayerModule.class).internalOpenSession(player);
+    }
+
+    public Set<Player> getPlayers() {
+        return Collections.unmodifiableSet(players);
     }
 }

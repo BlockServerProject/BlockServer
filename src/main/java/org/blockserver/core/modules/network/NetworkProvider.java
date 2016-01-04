@@ -21,21 +21,20 @@ import lombok.Setter;
 import org.blockserver.core.Server;
 import org.blockserver.core.message.Message;
 import org.blockserver.core.module.Module;
-import org.blockserver.core.modules.player.Player;
-import org.blockserver.core.modules.player.PlayerModule;
 
-import java.net.InetSocketAddress;
-import java.util.*;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Written by Exerosis!
  */
 public class NetworkProvider extends Module {
-    //@Getter private final Set<RawPacket> packetOutQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
-    //@Getter private final Set<Message> messageInQueue = Collections.unmodifiableSet(Collections.synchronizedSet(new HashSet<>()));
-    @Getter private final Queue<RawPacket> packetOutQueue = Collections.asLifoQueue(new LinkedBlockingDeque<>());
-    @Getter private final Queue<Message> messageInQueue = Collections.asLifoQueue(new LinkedBlockingDeque<>());
+    @Getter private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
+    @Getter private final BlockingQueue<Message> messageInQueue = new LinkedBlockingQueue<>();
     @Getter @Setter private NetworkConverter converter;
 
     public NetworkProvider(Server server, NetworkConverter converter) {
@@ -43,36 +42,39 @@ public class NetworkProvider extends Module {
         this.converter = converter;
     }
 
-    public void queueInboundPackets(Collection<RawPacket> packets) {
-        getServer().getExecutorService().execute(() -> messageInQueue.addAll(converter.toMessages(packets)));
-    }
-
-    public void queueOutboundMessages(Collection<Message> messages) {
-        packetOutQueue.addAll(converter.toPackets(messages));
-    }
-
     public void queueOutboundMessages(Message... messages) {
-        queueOutboundMessages(Arrays.asList(messages));
+        for (Message message : messages) {
+            packetOutQueue.offer(converter.toPacket(message));
+        }
+    }
+
+    public void queueOutboundPackets(RawPacket... packets) {
+        packetOutQueue.addAll(packets.length > 1 ? Arrays.asList(packets) : Collections.singletonList(packets[0]));
     }
 
     public void queueInboundPackets(RawPacket... packets) {
-        queueInboundPackets(Arrays.asList(packets));
+        if (packets.length > 0)
+            getServer().getExecutorService().execute(() -> {
+                for (RawPacket packet : packets) {
+                    messageInQueue.add(converter.toMessage(packet));
+                }
+            });
     }
 
+    public void queueInboundPackets(Message... messages) {
+        messageInQueue.addAll(messages.length > 1 ? Arrays.asList(messages) : Collections.singletonList(messages[0]));
+    }
+
+    //TODO waiting on http://stackoverflow.com/questions/34583069/queue-or-something-else answer.
     public Collection<Message> receiveInboundMessages() {
-        Set<Message> packets = new HashSet<>(messageInQueue);
-        messageInQueue.clear();
-        return packets;
+        Collection<Message> messages = new HashSet<>();
+        messageInQueue.drainTo(messages);
+        return messages;
     }
 
     public Collection<RawPacket> receiveOutboundPackets() {
-        Set<RawPacket> packets = new HashSet<>(packetOutQueue);
-        packetOutQueue.clear();
+        Collection<RawPacket> packets = new HashSet<>();
+        packetOutQueue.drainTo(packets);
         return packets;
-    }
-
-    protected final void sessionOpened(InetSocketAddress address) {
-        Player player = new Player(getServer(), address);
-        getServer().getModule(PlayerModule.class).internalOpenSession(player);
     }
 }

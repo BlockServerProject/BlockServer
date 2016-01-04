@@ -16,13 +16,13 @@
  */
 package org.blockserver.core.message;
 
-import java.net.InetSocketAddress;
+import org.blockserver.core.modules.player.Player;
 
 /**
  * Written by Exerosis!
  */
 public class MessageInPlayerLogin extends Message {
-    public MessageInPlayerLogin(InetSocketAddress address) {
-        super(address);
+    public MessageInPlayerLogin(Player player) {
+        super(player);
     }
 }

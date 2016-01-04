@@ -19,17 +19,11 @@ package org.blockserver.core.modules.network;
 
 import org.blockserver.core.message.Message;
 
-import java.util.Collection;
-
 /**
  * Written by Exerosis!
  */
 public interface NetworkConverter {
-    Collection<RawPacket> toPackets(Collection<Message> messages);
-
     RawPacket toPacket(Message message);
-
-    Collection<Message> toMessages(Collection<RawPacket> packets);
 
     Message toMessage(RawPacket packet);
 }

@@ -18,16 +18,15 @@ package org.blockserver.core.message;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.net.InetSocketAddress;
+import org.blockserver.core.modules.player.Player;
 
 /**
  * Written by Exerosis!
  */
 public class Message {
-    @Getter @Setter private InetSocketAddress address;
+    @Getter @Setter private Player player;
 
-    public Message(InetSocketAddress address) {
-        this.address = address;
+    public Message(Player player) {
+        this.player = player;
     }
 }
