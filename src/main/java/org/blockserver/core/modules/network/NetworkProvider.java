@@ -16,10 +16,7 @@
  */
 package org.blockserver.core.modules.network;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.blockserver.core.Server;
-import org.blockserver.core.message.Message;
 import org.blockserver.core.module.Module;
 
 import java.util.Arrays;
@@ -34,18 +31,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class NetworkProvider extends Module {
     private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
-    private final BlockingQueue<Message> messageInQueue = new LinkedBlockingQueue<>();
-    @Getter @Setter private NetworkConverter converter;
+    private final BlockingQueue<RawPacket> packetInQueue = new LinkedBlockingQueue<>();
 
-    public NetworkProvider(Server server, NetworkConverter converter) {
+    public NetworkProvider(Server server) {
         super(server);
-        this.converter = converter;
-    }
-
-    public void queueOutboundMessages(Message... messages) {
-        for (Message message : messages) {
-            packetOutQueue.offer(converter.toPacket(message));
-        }
     }
 
     public void queueOutboundPackets(RawPacket... packets) {
@@ -54,20 +43,12 @@ public class NetworkProvider extends Module {
 
     public void queueInboundPackets(RawPacket... packets) {
         if (packets.length > 0)
-            getServer().getExecutorService().execute(() -> {
-                for (RawPacket packet : packets) {
-                    messageInQueue.add(converter.toMessage(packet));
-                }
-            });
+            getServer().getExecutorService().execute(() -> Collections.addAll(packetInQueue, packets));
     }
 
-    public void queueInboundPackets(Message... messages) {
-        messageInQueue.addAll(messages.length > 1 ? Arrays.asList(messages) : Collections.singletonList(messages[0]));
-    }
-
-    public Collection<Message> receiveInboundMessages() {
-        Collection<Message> messages = new HashSet<>();
-        messageInQueue.drainTo(messages);
+    public Collection<RawPacket> receiveInboundPackets() {
+        Collection<RawPacket> messages = new HashSet<>();
+        packetInQueue.drainTo(messages);
         return messages;
     }
 
@@ -77,8 +58,8 @@ public class NetworkProvider extends Module {
         return packets;
     }
 
-    public Collection<Message> getMessageInQueue() {
-        return new HashSet<>(messageInQueue);
+    public Collection<RawPacket> getPacketInQueue() {
+        return new HashSet<>(packetInQueue);
     }
 
     public Collection<RawPacket> getPacketOutQueue() {

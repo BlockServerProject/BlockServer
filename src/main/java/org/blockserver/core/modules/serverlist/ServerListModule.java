@@ -14,44 +14,39 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
+package org.blockserver.core.modules.serverlist;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
+import org.blockserver.core.event.EventListener;
 import org.blockserver.core.events.RawPacketHandleEvent;
 import org.blockserver.core.module.Module;
+import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Written by Exerosis!
  */
-public class NetworkModule extends Module {
+public class ServerListModule extends Module {
     private final SchedulerModule schedulerModule;
-    private final Set<NetworkProvider> providers = Collections.synchronizedSet(new HashSet<>());
-    @Getter protected Runnable task;
+    private final NetworkModule networkModule;
+    @Getter private final Runnable task;
 
-    public NetworkModule(Server server, SchedulerModule schedulerModule) {
+    public ServerListModule(Server server, SchedulerModule schedulerModule, NetworkModule networkModule) {
         super(server);
         this.schedulerModule = schedulerModule;
+        this.networkModule = networkModule;
         task = () -> {
-            for (NetworkProvider provider : providers) {
-                provider.receiveInboundPackets().forEach(p -> getServer().getEventManager().fire(new RawPacketHandleEvent(p)));
-            }
+            //  networkModule.sendPackets();
+            //send things
         };
-    }
-
-    public void sendPackets(RawPacket... packets) {
-        for (NetworkProvider provider : providers) {
-            provider.queueOutboundPackets(packets);
-        }
-    }
-
-    public void registerProvider(NetworkProvider provider) {
-        providers.add(provider);
+        new EventListener<RawPacketHandleEvent, RawPacketHandleEvent>() {
+            @Override
+            public void onEvent(RawPacketHandleEvent event) {
+                //receive pings
+                //send pongs
+            }
+        }.register(RawPacketHandleEvent.class, getServer().getEventManager());
     }
 
     @Override
@@ -64,9 +59,5 @@ public class NetworkModule extends Module {
     public void onDisable() {
         schedulerModule.cancelTask(task);
         super.onDisable();
-    }
-
-    public Set<NetworkProvider> getProviders() {
-        return Collections.unmodifiableSet(providers);
     }
 }

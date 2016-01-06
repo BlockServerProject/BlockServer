@@ -34,10 +34,9 @@ public class SchedulerModule extends Module {
         super(server);
     }
 
+    //TODO maybe make this better!
     @Override
     public void onEnable() {
-        super.onEnable();
-
         getServer().getExecutorService().execute(() -> {
             while (isEnabled()) {
                 for (Map.Entry<Runnable, TaskData> entry : tasks.entrySet()) {
@@ -45,8 +44,9 @@ public class SchedulerModule extends Module {
                     if (taskData.getNextTickTime() > System.currentTimeMillis())
                         continue;
                     taskData.repeatTimes--;
-                    entry.getKey().run();
-
+                    //So by doing this every task will be run at the same time... not in series... is that ok?
+                    getServer().getExecutorService().execute(() -> entry.getKey().run());
+                    //
                     if (taskData.getRepeatTimes() <= 0)
                         tasks.remove(entry.getKey());
                     taskData.setLastTickTime(System.currentTimeMillis());
@@ -58,12 +58,13 @@ public class SchedulerModule extends Module {
                 }
             }
         });
+        super.onEnable();
     }
 
     @Override
     public void onDisable() {
-        super.onDisable();
         tasks.clear();
+        super.onDisable();
     }
 
     public void registerTask(Runnable task, double delay) {

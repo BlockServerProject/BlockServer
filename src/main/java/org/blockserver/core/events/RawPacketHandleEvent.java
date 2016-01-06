@@ -19,15 +19,15 @@ package org.blockserver.core.events;
 import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.core.event.CancellableImplementation;
-import org.blockserver.core.message.Message;
+import org.blockserver.core.modules.network.RawPacket;
 
 /**
  * Written by Exerosis!
  */
-public class MessageHandleEvent<T extends Message> implements CancellableImplementation {
-    @Getter @Setter private T message;
+public class RawPacketHandleEvent implements CancellableImplementation {
+    @Getter @Setter private RawPacket packet;
 
-    public MessageHandleEvent(T message) {
-        this.message = message;
+    public RawPacketHandleEvent(RawPacket packet) {
+        this.packet = packet;
     }
 }
