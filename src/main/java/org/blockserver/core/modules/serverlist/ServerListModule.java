@@ -37,7 +37,7 @@ public class ServerListModule extends Module {
         this.schedulerModule = schedulerModule;
         this.networkModule = networkModule;
         task = () -> {
-            //  networkModule.sendPackets();
+            //networkModule.sendPackets();
             //send things
         };
         new EventListener<RawPacketHandleEvent, RawPacketHandleEvent>() {
