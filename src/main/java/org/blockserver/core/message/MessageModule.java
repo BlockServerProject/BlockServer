@@ -22,6 +22,8 @@ import org.blockserver.core.events.RawPacketHandleEvent;
 import org.blockserver.core.modules.network.NetworkConverter;
 import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.network.NetworkProvider;
+import org.blockserver.core.modules.player.Player;
+import org.blockserver.core.modules.player.PlayerModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 /**
@@ -37,8 +39,11 @@ public class MessageModule extends NetworkModule {
             for (NetworkProvider provider : getProviders()) {
                 provider.receiveInboundPackets().forEach(packet -> {
                     getServer().getEventManager().fire(new RawPacketHandleEvent(packet), event -> {
-                        if (!event.isCancelled())
-                            getServer().getEventManager().fire(new MessageHandleEvent<>(networkConverter.toMessage(event.getPacket())));
+                        if (!event.isCancelled()) {
+                            Player player = getServer().getModule(PlayerModule.class).getPlayer(event.getPacket().getAddress());
+                            if(player != null)
+                                getServer().getEventManager().fire(new MessageHandleEvent<>(networkConverter.toMessage(event.getPacket(), player)));
+                        }
                     });
                 });
             }
