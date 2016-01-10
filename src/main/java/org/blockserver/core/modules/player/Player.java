@@ -18,11 +18,15 @@ package org.blockserver.core.modules.player;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
+import org.blockserver.core.event.MessageEventListener;
+import org.blockserver.core.events.MessageHandleEvent;
 import org.blockserver.core.modules.message.Message;
+import org.blockserver.core.modules.message.PlayerLoginMessage;
 import org.blockserver.core.modules.message.block.MessageOutBlockChange;
 import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.network.NetworkProvider;
 import org.blockserver.core.modules.world.positions.Location;
+import org.blockserver.core.utilities.Skin;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
@@ -35,9 +39,11 @@ import java.util.UUID;
 public class Player {
     @Getter private final Server server;
     @Getter private final InetSocketAddress address;
+    @Getter private final NetworkProvider provider;
+
     @Getter private final String name;
     @Getter private final UUID UUID;
-    @Getter private final NetworkProvider provider;
+    @Getter private Skin skin;
 
     public Player(Server server, InetSocketAddress address, String name, UUID UUID, NetworkProvider provider) {
         this.server = server;
@@ -45,6 +51,13 @@ public class Player {
         this.name = name;
         this.UUID = UUID;
         this.provider = provider;
+
+        new MessageEventListener<PlayerLoginMessage>(){
+            @Override
+            public void onEvent(MessageHandleEvent<PlayerLoginMessage> event) {
+                handleLogin(event.getMessage());
+            }
+        }.register(PlayerLoginMessage.class, server);
     }
 
     public Location getLocation() {
@@ -53,5 +66,18 @@ public class Player {
 
     public void sendMessage(Message message) {
         server.getModule(NetworkModule.class).sendPackets(provider, provider.getConverter().toPacket(message));
+    }
+
+    public void handleLogin(PlayerLoginMessage message) {
+        if(server.getModule(PlayerModule.class).getPlayer(message.username) != null) {
+            disconnect("blockserver.player.disconnect.username", true);
+        }
+        if(server.getModule(PlayerModule.class).getPlayer(message.uuid) != null) {
+            disconnect("blockserver.player.disconnect.uuid", true);
+        }
+    }
+
+    public void disconnect(String message, boolean notify) {
+
     }
 }

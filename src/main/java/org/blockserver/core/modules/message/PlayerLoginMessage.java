@@ -17,12 +17,20 @@
 package org.blockserver.core.modules.message;
 
 import org.blockserver.core.modules.player.Player;
+import org.blockserver.core.utilities.Skin;
+
+import java.util.UUID;
 
 /**
  * Written by Exerosis!
  */
-public class MessageInPlayerLogin extends Message {
-    public MessageInPlayerLogin(Player player) {
+public class PlayerLoginMessage extends Message {
+    public long clientID;
+    public String username;
+    public UUID uuid;
+    public Skin skin;
+
+    public PlayerLoginMessage(Player player) {
         super(player);
     }
 }
