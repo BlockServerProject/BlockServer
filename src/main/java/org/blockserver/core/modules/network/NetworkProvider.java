@@ -16,6 +16,7 @@
  */
 package org.blockserver.core.modules.network;
 
+import lombok.Getter;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 
@@ -32,9 +33,11 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class NetworkProvider extends Module {
     private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<RawPacket> packetInQueue = new LinkedBlockingQueue<>();
+    @Getter private final NetworkConverter converter;
 
-    public NetworkProvider(Server server) {
+    public NetworkProvider(Server server, NetworkConverter converter) {
         super(server);
+        this.converter = converter;
     }
 
     public void queueOutboundPackets(RawPacket... packets) {

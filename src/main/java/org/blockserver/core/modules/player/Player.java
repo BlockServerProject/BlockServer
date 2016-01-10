@@ -17,8 +17,6 @@
 package org.blockserver.core.modules.player;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.blockserver.core.modules.world.positions.Location;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
@@ -29,12 +27,10 @@ import java.util.UUID;
  * @author BlockServer Team
  */
 public class Player {
+    @Getter private final Server server;
     @Getter private final InetSocketAddress address;
     @Getter private final String name;
     @Getter private final UUID UUID;
-    @Getter @Setter private int x;
-    @Getter @Setter private int y;
-    @Getter @Setter private int z;
 
     public Player(InetSocketAddress address, String name, UUID UUID) {
         this.address = address;

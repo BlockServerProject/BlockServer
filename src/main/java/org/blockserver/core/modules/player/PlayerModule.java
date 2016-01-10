@@ -17,8 +17,13 @@
 package org.blockserver.core.modules.player;
 
 import org.blockserver.core.Server;
+import org.blockserver.core.event.EventListener;
+import org.blockserver.core.event.MessageEventListener;
+import org.blockserver.core.events.MessageHandleEvent;
+import org.blockserver.core.message.Message;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.network.NetworkProvider;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -101,9 +106,11 @@ public class PlayerModule extends Module {
      * @param address ({@linkplain InetSocketAddress}): The new {@linkplain Player}'s {@linkplain InetSocketAddress}.
      * @param name ({@linkplain String}): The new {@linkplain Player}'s {@linkplain String}.
      * @param UUID ({@linkplain UUID}): The new {@linkplain Player}'s {@linkplain UUID}.
+     * @param provider {{@linkplain NetworkProvider}}: The {@linkplain Player}'s {@linkplain NetworkProvider} that is used
+     *                 to communicate with the client.
      */
-    public void internalOpenSession(InetSocketAddress address, String name, UUID UUID) {
-        players.add(new Player(address, name, UUID));
+    public void internalOpenSession(InetSocketAddress address, String name, UUID UUID, NetworkProvider provider) {
+        players.add(new Player(getServer(), address, name, UUID, provider));
         getServer().getModule(LoggingModule.class).debug("New session from " + address.getHostString() + ":" + address.getPort());
     }
 
