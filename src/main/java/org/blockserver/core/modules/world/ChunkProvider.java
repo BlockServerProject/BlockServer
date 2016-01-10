@@ -20,5 +20,13 @@ package org.blockserver.core.modules.world;
  * Written by Exerosis!
  */
 public interface ChunkProvider {
-    Chunk getChunkAt(int x, int y);
+    Chunk loadChunkAt(int x, int y);
+
+    void unloadChunkAt(int x, int y);
+
+    void unloadChunk(Chunk chunk);
+
+    Chunk getOrLoadChunkAt(int x, int y);
+
+    boolean isChunkLoaded(int x, int y);
 }

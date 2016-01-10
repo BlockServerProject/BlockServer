@@ -14,15 +14,29 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.message;
+package org.blockserver.core.modules.entity;
 
-import org.blockserver.core.modules.player.Player;
+import org.blockserver.core.modules.world.positions.Location;
 
 /**
  * Written by Exerosis!
  */
-public class MessageInPlayerLogin extends Message {
-    public MessageInPlayerLogin(Player player) {
-        super(player);
+public class Entity {
+    private float x;
+    private float y;
+    private float z;
+
+    public Entity(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public Entity(Location location) {
+        this(location.getX(), location.getY(), location.getZ());
+    }
+
+    public Location getLocation() {
+        return new Location(x, y, z);
     }
 }

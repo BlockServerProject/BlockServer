@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.message;
+package org.blockserver.core.modules.message;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.events.MessageHandleEvent;
@@ -30,6 +30,7 @@ import org.blockserver.core.modules.scheduler.SchedulerModule;
 public class MessageModule extends NetworkModule {
     private final NetworkConverter networkConverter;
 
+    //TODO figure out a way to make the converter part async.
     public MessageModule(Server server, SchedulerModule schedulerModule, NetworkConverter networkConverter) {
         super(server, schedulerModule);
         this.networkConverter = networkConverter;
@@ -47,8 +48,10 @@ public class MessageModule extends NetworkModule {
 
 
     public void sendMessage(Message message) {
-        for (NetworkProvider provider : getProviders()) {
-            provider.queueOutboundPackets(networkConverter.toPacket(message));
-        }
+        getServer().getExecutorService().execute(() -> {
+            for (NetworkProvider provider : getProviders()) {
+                provider.queueOutboundPackets(networkConverter.toPacket(message));
+            }
+        });
     }
 }

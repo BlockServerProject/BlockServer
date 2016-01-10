@@ -26,4 +26,9 @@ public class WorldModule extends Module {
     public WorldModule(Server server) {
         super(server);
     }
+
+
+    public void setBlockMaterial(Block block, Material material) {
+
+    }
 }

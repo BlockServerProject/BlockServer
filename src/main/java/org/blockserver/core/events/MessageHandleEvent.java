@@ -19,7 +19,7 @@ package org.blockserver.core.events;
 import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.core.event.CancellableImplementation;
-import org.blockserver.core.message.Message;
+import org.blockserver.core.modules.message.Message;
 
 /**
  * Written by Exerosis!

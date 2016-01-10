@@ -14,19 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.message;
+package org.blockserver.core.modules.message.block;
 
-import lombok.Getter;
-import lombok.Setter;
+import org.blockserver.core.modules.message.Message;
 import org.blockserver.core.modules.player.Player;
+import org.blockserver.core.modules.world.Block;
 
 /**
  * Written by Exerosis!
  */
-public class Message {
-    @Getter @Setter private Player player;
-
-    public Message(Player player) {
-        this.player = player;
+public class MessageOutBlockChange extends Message {
+    public MessageOutBlockChange(Player player, Block... blocks) {
+        super(player);
     }
 }
