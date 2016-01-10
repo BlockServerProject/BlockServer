@@ -17,10 +17,6 @@
 package org.blockserver.core.modules.player;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.event.EventListener;
-import org.blockserver.core.event.MessageEventListener;
-import org.blockserver.core.events.MessageHandleEvent;
-import org.blockserver.core.message.Message;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.logging.LoggingModule;
 import org.blockserver.core.modules.network.NetworkProvider;

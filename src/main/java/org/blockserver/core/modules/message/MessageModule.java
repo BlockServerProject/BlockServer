@@ -30,20 +30,19 @@ import org.blockserver.core.modules.scheduler.SchedulerModule;
  * Written by Exerosis!
  */
 public class MessageModule extends NetworkModule {
-    private final NetworkConverter networkConverter;
 
     //TODO figure out a way to make the converter part async.
-    public MessageModule(Server server, SchedulerModule schedulerModule, NetworkConverter networkConverter) {
+    public MessageModule(Server server, SchedulerModule schedulerModule) {
         super(server, schedulerModule);
-        this.networkConverter = networkConverter;
         task = () -> {
             for (NetworkProvider provider : getProviders()) {
                 provider.receiveInboundPackets().forEach(packet -> {
                     getServer().getEventManager().fire(new RawPacketHandleEvent(packet), event -> {
                         if (!event.isCancelled()) {
                             Player player = getServer().getModule(PlayerModule.class).getPlayer(event.getPacket().getAddress());
-                            if(player != null)
-                                getServer().getEventManager().fire(new MessageHandleEvent<>(networkConverter.toMessage(event.getPacket(), player)));
+                            if(player != null) {
+                                getServer().getEventManager().fire(new MessageHandleEvent<>(provider.getConverter().toMessage(event.getPacket(), player)));
+                            }
                         }
                     });
                 });
@@ -52,6 +51,7 @@ public class MessageModule extends NetworkModule {
     }
 
 
+    /*
     public void sendMessage(Message message) {
         getServer().getExecutorService().execute(() -> {
             for (NetworkProvider provider : getProviders()) {
@@ -59,4 +59,5 @@ public class MessageModule extends NetworkModule {
             }
         });
     }
+    */
 }

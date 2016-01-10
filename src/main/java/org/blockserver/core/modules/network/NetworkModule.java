@@ -44,10 +44,14 @@ public class NetworkModule extends Module {
         };
     }
 
-    public void sendPackets(RawPacket... packets) {
+    public void broadcastPackets(RawPacket... packets) {
         for (NetworkProvider provider : providers) {
             provider.queueOutboundPackets(packets);
         }
+    }
+
+    public void sendPackets(NetworkProvider provider, RawPacket... packets) {
+        provider.queueOutboundPackets(packets);
     }
 
     public void registerProvider(NetworkProvider provider) {

@@ -17,6 +17,12 @@
 package org.blockserver.core.modules.player;
 
 import lombok.Getter;
+import org.blockserver.core.Server;
+import org.blockserver.core.modules.message.Message;
+import org.blockserver.core.modules.message.block.MessageOutBlockChange;
+import org.blockserver.core.modules.network.NetworkModule;
+import org.blockserver.core.modules.network.NetworkProvider;
+import org.blockserver.core.modules.world.positions.Location;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
@@ -31,14 +37,21 @@ public class Player {
     @Getter private final InetSocketAddress address;
     @Getter private final String name;
     @Getter private final UUID UUID;
+    @Getter private final NetworkProvider provider;
 
-    public Player(InetSocketAddress address, String name, UUID UUID) {
+    public Player(Server server, InetSocketAddress address, String name, UUID UUID, NetworkProvider provider) {
+        this.server = server;
         this.address = address;
         this.name = name;
         this.UUID = UUID;
+        this.provider = provider;
     }
 
     public Location getLocation() {
-        return new Location(x, y, z);
+        return new Location(0, 64, 0);
+    }
+
+    public void sendMessage(Message message) {
+        server.getModule(NetworkModule.class).sendPackets(provider, provider.getConverter().toPacket(message));
     }
 }

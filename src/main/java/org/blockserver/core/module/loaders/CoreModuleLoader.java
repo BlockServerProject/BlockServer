@@ -20,6 +20,7 @@ import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
 import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.message.MessageModule;
 import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.player.PlayerModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
@@ -33,7 +34,7 @@ public class CoreModuleLoader implements ModuleLoader {
         LoggingModule loggingModule = new LoggingModule(server);
         SchedulerModule schedulerModule = new SchedulerModule(server);
         PlayerModule playerModule = new PlayerModule(server);
-        NetworkModule networkModule = new NetworkModule(server, schedulerModule);
+        NetworkModule networkModule = new MessageModule(server, schedulerModule);
 
         currentModules.add(loggingModule);
         currentModules.add(schedulerModule);

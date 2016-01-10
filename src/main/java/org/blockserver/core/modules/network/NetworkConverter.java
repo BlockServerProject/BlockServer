@@ -18,6 +18,7 @@ package org.blockserver.core.modules.network;
 
 
 import org.blockserver.core.modules.message.Message;
+import org.blockserver.core.modules.player.Player;
 
 /**
  * Written by Exerosis!
@@ -25,5 +26,5 @@ import org.blockserver.core.modules.message.Message;
 public interface NetworkConverter {
     RawPacket toPacket(Message message);
 
-    Message toMessage(RawPacket packet);
+    Message toMessage(RawPacket packet, Player player);
 }
