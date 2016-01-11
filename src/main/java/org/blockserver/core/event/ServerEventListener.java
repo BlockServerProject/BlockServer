@@ -14,17 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
+package org.blockserver.core.event;
 
-
-import org.blockserver.core.modules.message.Message;
+import org.blockserver.core.Server;
 
 /**
  * Written by Exerosis!
  */
-public interface NetworkConverter {
-    RawPacket toPacket(Message message);
+public class ServerEventListener<B> extends EventListener<B, B> {
+    public void register(Class<B> listenerType, Server server) {
+        register(listenerType, server.getEventManager());
+    }
 
-    //As much as the player part might be helpful, I looked into it more and it will never actually be needed, also it makes for some huge problems. Sorry Jython buddy x)
-    Message toMessage(RawPacket packet);
+    public ServerEventListener<B> post() {
+        super.post();
+        return this;
+    }
+
+    public ServerEventListener<B> priority(Priority priority) {
+        super.priority(priority);
+        return this;
+    }
 }

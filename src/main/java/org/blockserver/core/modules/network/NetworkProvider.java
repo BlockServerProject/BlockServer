@@ -16,13 +16,11 @@
  */
 package org.blockserver.core.modules.network;
 
-import lombok.Getter;
 import org.blockserver.core.Server;
+import org.blockserver.core.events.RawPacketHandleEvent;
 import org.blockserver.core.module.Module;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,20 +31,27 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class NetworkProvider extends Module {
     private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<RawPacket> packetInQueue = new LinkedBlockingQueue<>();
-    @Getter private final NetworkConverter converter;
 
-    public NetworkProvider(Server server, NetworkConverter converter) {
+    public NetworkProvider(Server server) {
         super(server);
-        this.converter = converter;
     }
 
     public void queueOutboundPackets(RawPacket... packets) {
-        packetOutQueue.addAll(packets.length > 1 ? Arrays.asList(packets) : Collections.singletonList(packets[0]));
+        for (RawPacket packet : packets) {
+            getServer().getEventManager().fire(new RawPacketHandleEvent(packet), event -> {
+                if (!event.isCancelled())
+                    packetOutQueue.add(event.getPacket());
+            });
+        }
     }
 
     public void queueInboundPackets(RawPacket... packets) {
-        if (packets.length > 0)
-            getServer().getExecutorService().execute(() -> Collections.addAll(packetInQueue, packets));
+        for (RawPacket packet : packets) {
+            getServer().getEventManager().fire(new RawPacketHandleEvent(packet), event -> {
+                if (!event.isCancelled())
+                    packetInQueue.add(event.getPacket());
+            });
+        }
     }
 
     public Collection<RawPacket> receiveInboundPackets() {
