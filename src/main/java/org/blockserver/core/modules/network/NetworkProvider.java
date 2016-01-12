@@ -20,17 +20,10 @@ import org.blockserver.core.Server;
 import org.blockserver.core.events.RawPacketHandleEvent;
 import org.blockserver.core.module.Module;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 /**
  * Written by Exerosis!
  */
 public class NetworkProvider extends Module {
-    private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
-    private final BlockingQueue<RawPacket> packetInQueue = new LinkedBlockingQueue<>();
 
     public NetworkProvider(Server server) {
         super(server);
@@ -38,39 +31,13 @@ public class NetworkProvider extends Module {
 
     public void queueOutboundPackets(RawPacket... packets) {
         for (RawPacket packet : packets) {
-            getServer().getEventManager().fire(new RawPacketHandleEvent(packet), event -> {
-                if (!event.isCancelled())
-                    packetOutQueue.add(event.getPacket());
-            });
+            getServer().getEventManager().fire(new RawPacketHandleEvent(packet));
         }
     }
 
     public void queueInboundPackets(RawPacket... packets) {
         for (RawPacket packet : packets) {
-            getServer().getEventManager().fire(new RawPacketHandleEvent(packet), event -> {
-                if (!event.isCancelled())
-                    packetInQueue.add(event.getPacket());
-            });
+            getServer().getEventManager().fire(new RawPacketHandleEvent(packet));
         }
-    }
-
-    public Collection<RawPacket> receiveInboundPackets() {
-        Collection<RawPacket> messages = new HashSet<>();
-        packetInQueue.drainTo(messages);
-        return messages;
-    }
-
-    public Collection<RawPacket> receiveOutboundPackets() {
-        Collection<RawPacket> packets = new HashSet<>();
-        packetOutQueue.drainTo(packets);
-        return packets;
-    }
-
-    public Collection<RawPacket> getPacketInQueue() {
-        return new HashSet<>(packetInQueue);
-    }
-
-    public Collection<RawPacket> getPacketOutQueue() {
-        return new HashSet<>(packetOutQueue);
     }
 }

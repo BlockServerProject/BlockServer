@@ -24,39 +24,80 @@ import org.blockserver.core.events.RawPacketHandleEvent;
 import org.blockserver.core.modules.message.Message;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * Written by Exerosis!
  */
 public class MessageProvider extends NetworkProvider {
+    private final BlockingQueue<Message> messageOutQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Message> messageInQueue = new LinkedBlockingQueue<>();
+    private final SchedulerModule schedulerModule;
     private final NetworkConverter converter;
+    private final Runnable task;
 
-    public MessageProvider(Server server, SchedulerModule scheduler, NetworkConverter converter) {
+    public MessageProvider(Server server, SchedulerModule schedulerModule, NetworkConverter converter) {
         super(server);
+        this.schedulerModule = schedulerModule;
         this.converter = converter;
+
+        task = () -> {
+            for (Message message : messageOutQueue) {
+                getServer().getEventManager().fire(new MessageHandleEvent<>(message));
+            }
+            messageOutQueue.clear();
+        };
+
         new ServerEventListener<RawPacketHandleEvent>() {
             @Override
             public void onEvent(RawPacketHandleEvent event) {
-                if (!event.isCancelled())
-                    getServer().getExecutorService().execute(() -> {
-                        getServer().getEventManager().fire(new MessageHandleEvent<>(converter.toMessage(event.getPacket())));
-                    });
+                if (event.isCancelled())
+                    return;
+
+
+                getServer().getExecutorService().execute(() -> {
+                    getServer().getEventManager().fire(new MessageHandleEvent<>(converter.toMessage(event.getPacket())));
+                });
             }
         }.post().priority(Priority.MONITOR).register(RawPacketHandleEvent.class, getServer());
     }
 
+    @Override
+    public void queueInboundPackets(RawPacket... packets) {
+        super.queueInboundPackets(packets);
+    }
+
     public void queueInboundMessages(Message... messages) {
-        getServer().getExecutorService().execute(() -> {
-            for (Message message : messages) {
-                queueInboundPackets(converter.toPacket(message));
-            }
-        });
+        Collections.addAll(messageInQueue, messages);
     }
 
     public void queueOutboundMessages(Message... messages) {
-        getServer().getExecutorService().execute(() -> {
-            for (Message message : messages) {
-                queueOutboundPackets(converter.toPacket(message));
-            }
-        });
+        Collections.addAll(messageOutQueue, messages);
+    }
+
+
+    @Override
+    public void onEnable() {
+        schedulerModule.registerTask(task, 1.0, Integer.MAX_VALUE);
+        super.onEnable();
+    }
+
+    @Override
+    public void onDisable() {
+        schedulerModule.cancelTask(task);
+        super.onDisable();
+    }
+
+
+    public Collection<Message> getMessageInQueue() {
+        return new HashSet<>(messageOutQueue);
+    }
+
+    public Collection<Message> getMessageOutQueue() {
+        return new HashSet<>(messageInQueue);
     }
 }
