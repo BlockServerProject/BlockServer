@@ -21,7 +21,6 @@ import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
 import org.blockserver.core.modules.logging.LoggingModule;
 import org.blockserver.core.modules.message.MessageModule;
-import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.player.PlayerModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 

@@ -17,15 +17,12 @@
 package org.blockserver.core.modules.network;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.event.Priority;
-import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.MessageHandleEvent;
 import org.blockserver.core.events.RawPacketHandleEvent;
 import org.blockserver.core.modules.message.Message;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -33,52 +30,54 @@ import java.util.concurrent.LinkedBlockingQueue;
 /**
  * Written by Exerosis!
  */
-public class MessageProvider extends NetworkProvider {
-    private final BlockingQueue<Message> messageOutQueue = new LinkedBlockingQueue<>();
+public class MessageProvider extends PacketProvider {
     private final BlockingQueue<Message> messageInQueue = new LinkedBlockingQueue<>();
-    private final SchedulerModule schedulerModule;
+    private final BlockingQueue<Message> messageOutQueue = new LinkedBlockingQueue<>();
     private final NetworkConverter converter;
     private final Runnable task;
+    private SchedulerModule schedulerModule;
 
-    public MessageProvider(Server server, SchedulerModule schedulerModule, NetworkConverter converter) {
+    public MessageProvider(Server server, NetworkConverter converter, SchedulerModule schedulerModule) {
         super(server);
-        this.schedulerModule = schedulerModule;
         this.converter = converter;
-
+        this.schedulerModule = schedulerModule;
         task = () -> {
-            for (Message message : messageOutQueue) {
-                getServer().getEventManager().fire(new MessageHandleEvent<>(message));
-            }
-            messageOutQueue.clear();
-        };
-
-        new ServerEventListener<RawPacketHandleEvent>() {
-            @Override
-            public void onEvent(RawPacketHandleEvent event) {
-                if (event.isCancelled())
-                    return;
-
-
-                getServer().getExecutorService().execute(() -> {
-                    getServer().getEventManager().fire(new MessageHandleEvent<>(converter.toMessage(event.getPacket())));
+            for (Message message : messageOutQueue)
+                getServer().getEventManager().fire(new MessageHandleEvent<>(message), event -> {
+                    if (!event.isCancelled())
+                        getServer().getExecutorService().execute(() -> queueOutboundPacket(converter.toPacket(event.getMessage())));
                 });
-            }
-        }.post().priority(Priority.MONITOR).register(RawPacketHandleEvent.class, getServer());
+
+            for (Message message : messageInQueue)
+                getServer().getEventManager().fire(new MessageHandleEvent<>(message));
+            messageInQueue.clear();
+        };
+    }
+
+    public void queueOutboundMessage(Message message) {
+        if (message.isAsync()) {
+            getServer().getEventManager().fire(new MessageHandleEvent<>(message), event -> {
+                if (!event.isCancelled())
+                    getServer().getExecutorService().execute(() -> queueOutboundPacket(converter.toPacket(event.getMessage())));
+            });
+        } else
+            messageOutQueue.add(message);
+    }
+
+    public void queueInboundMessage(Message message) {
+        if (message.isAsync())
+            getServer().getEventManager().fire(new MessageHandleEvent<>(message));
+        else
+            messageInQueue.add(message);
     }
 
     @Override
-    public void queueInboundPackets(RawPacket... packets) {
-        super.queueInboundPackets(packets);
+    public void queueInboundPacket(RawPacket packet) {
+        getServer().getEventManager().fire(new RawPacketHandleEvent(packet), event -> {
+            if (!event.isCancelled())
+                getServer().getExecutorService().execute(() -> queueInboundMessage(converter.toMessage(packet)));
+        });
     }
-
-    public void queueInboundMessages(Message... messages) {
-        Collections.addAll(messageInQueue, messages);
-    }
-
-    public void queueOutboundMessages(Message... messages) {
-        Collections.addAll(messageOutQueue, messages);
-    }
-
 
     @Override
     public void onEnable() {
@@ -92,12 +91,7 @@ public class MessageProvider extends NetworkProvider {
         super.onDisable();
     }
 
-
     public Collection<Message> getMessageInQueue() {
-        return new HashSet<>(messageOutQueue);
-    }
-
-    public Collection<Message> getMessageOutQueue() {
         return new HashSet<>(messageInQueue);
     }
 }
