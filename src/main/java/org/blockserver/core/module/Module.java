@@ -20,9 +20,10 @@ import lombok.Getter;
 import org.blockserver.core.Server;
 
 /**
- * Base class for all modules.
+ * Base class for all modules. New modules should implement this class.
  *
  * @author BlockServer Team
+ * @see org.blockserver.core.modules
  */
 public class Module implements EnableableImplementation {
     @Getter private final Server server;

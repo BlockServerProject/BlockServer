@@ -25,6 +25,8 @@ import java.util.Set;
 
 /**
  * Written by Exerosis!
+ *
+ * @see World
  */
 public class World {
     @Getter private Server server;
@@ -34,6 +36,4 @@ public class World {
     public World(Server server) {
         this.server = server;
     }
-
-
 }

@@ -18,6 +18,8 @@ package org.blockserver.core.modules.world;
 
 /**
  * Written by Exerosis!
+ *
+ * @see World
  */
 public interface ChunkProvider {
     Chunk loadChunkAt(int x, int y);

@@ -20,6 +20,7 @@ import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 
 /**
+ * Logging Module with different log levels. (debug, info, warn, error)
  * TODO: Implement SLF4j and/or log4j2
  *
  * @author BlockServer Team
