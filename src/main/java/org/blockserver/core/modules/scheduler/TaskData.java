@@ -21,6 +21,9 @@ import lombok.Setter;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see SchedulerModule
  */
 public class TaskData {
     @Getter @Setter protected long lastTickTime;

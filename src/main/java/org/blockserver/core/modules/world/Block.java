@@ -24,7 +24,8 @@ import org.blockserver.core.modules.world.positions.Vector;
 /**
  * Written by Exerosis!
  *
- * @see World
+ * @author BlockServer Team
+ * @see WorldModule
  */
 public class Block {
     @Getter private World world;

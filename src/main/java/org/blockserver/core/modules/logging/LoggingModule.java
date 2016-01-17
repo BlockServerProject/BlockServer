@@ -24,6 +24,7 @@ import org.blockserver.core.module.Module;
  * TODO: Implement SLF4j and/or log4j2
  *
  * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class LoggingModule extends Module {
 

@@ -25,6 +25,9 @@ import java.util.Map;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class SchedulerModule extends Module {
     @Getter private final Map<Runnable, TaskData> tasks = new HashMap<>();

@@ -26,7 +26,8 @@ import java.util.Set;
 /**
  * Written by Exerosis!
  *
- * @see World
+ * @author BlockServer Team
+ * @see WorldModule
  */
 public class World {
     @Getter private Server server;

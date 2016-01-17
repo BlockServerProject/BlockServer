@@ -25,6 +25,9 @@ import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class ServerListModule extends Module {
     private final SchedulerModule schedulerModule;

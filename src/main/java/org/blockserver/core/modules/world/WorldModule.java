@@ -21,6 +21,9 @@ import org.blockserver.core.module.Module;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class WorldModule extends Module {
     public WorldModule(Server server) {
@@ -36,4 +39,6 @@ public class WorldModule extends Module {
     public void setBlockMaterial(Block block, Material material) {
         block.setMaterial(material);
     }
+
+
 }

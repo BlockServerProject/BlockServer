@@ -24,6 +24,7 @@ import org.blockserver.core.Server;
  *
  * @author BlockServer Team
  * @see org.blockserver.core.modules
+ * @see org.blockserver.core.module.EnableableImplementation
  */
 public class Module implements EnableableImplementation {
     @Getter private final Server server;

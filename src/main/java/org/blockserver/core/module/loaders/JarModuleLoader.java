@@ -33,6 +33,9 @@ import java.util.jar.JarFile;
 
 /**
  * Module Loader that can load modules from JARs
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.ModuleLoader
  */
 public class JarModuleLoader implements ModuleLoader {
     @Override
