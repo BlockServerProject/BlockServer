@@ -28,6 +28,9 @@ import java.util.UUID;
 
 /**
  * Module that handles players.
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class PlayerModule extends Module {
     private final Set<Player> players = Collections.synchronizedSet(new HashSet<>());

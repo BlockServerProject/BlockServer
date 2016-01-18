@@ -26,6 +26,10 @@ import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.util.Collection;
 
+/**
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.ModuleLoader
+ */
 public class CoreModuleLoader implements ModuleLoader {
 
     @Override

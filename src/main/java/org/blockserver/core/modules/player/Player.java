@@ -32,6 +32,7 @@ import java.util.UUID;
  * Represents a Player on the server.
  *
  * @author BlockServer Team
+ * @see PlayerModule
  */
 public class Player {
     @Getter private final Server server;

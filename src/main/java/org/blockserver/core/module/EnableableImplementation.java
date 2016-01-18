@@ -19,6 +19,10 @@ package org.blockserver.core.module;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+/**
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Enableable
+ */
 public interface EnableableImplementation extends Enableable {
     Map<EnableableImplementation, Boolean> instances = new WeakHashMap<>();
 

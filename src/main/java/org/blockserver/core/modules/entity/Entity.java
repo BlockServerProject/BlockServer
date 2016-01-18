@@ -20,6 +20,8 @@ import org.blockserver.core.modules.world.positions.Location;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
  */
 public class Entity {
     private float x;

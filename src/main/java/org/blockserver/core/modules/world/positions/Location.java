@@ -20,6 +20,10 @@ import lombok.Getter;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.modules.world.positions.Vector
+ * @see org.blockserver.core.modules.world.WorldModule
  */
 public class Location extends Vector {
     @Getter long yaw;

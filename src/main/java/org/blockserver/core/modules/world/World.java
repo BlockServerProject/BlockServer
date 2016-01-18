@@ -25,6 +25,9 @@ import java.util.Set;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see WorldModule
  */
 public class World {
     @Getter private Server server;
@@ -34,6 +37,4 @@ public class World {
     public World(Server server) {
         this.server = server;
     }
-
-
 }
