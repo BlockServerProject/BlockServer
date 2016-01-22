@@ -14,17 +14,15 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.message.block;
+package org.blockserver.core.events.packets;
 
-import org.blockserver.core.message.Message;
-import org.blockserver.core.modules.player.Player;
-import org.blockserver.core.modules.world.Block;
+import org.blockserver.core.modules.network.RawPacket;
 
 /**
  * Written by Exerosis!
  */
-public class MessageOutBlockChange extends Message {
-    public MessageOutBlockChange(Player player, Block... blocks) {
-        super(player);
+public class PacketSendEvent extends PacketEvent {
+    public PacketSendEvent(RawPacket packet) {
+        super(packet);
     }
 }

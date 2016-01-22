@@ -14,21 +14,41 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event;
+package org.blockserver.core.modules.network;
 
-import org.blockserver.core.Server;
-import org.blockserver.core.events.MessageHandleEvent;
-import org.blockserver.core.modules.message.Message;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Written by Exerosis!
  */
-public class MessageEventListener<T extends Message> extends EventListener<T, MessageHandleEvent<T>> {
-    public MessageEventListener<T> register(Class<T> listenerType, Server server) {
-        return (MessageEventListener<T>) register(listenerType, server.getEventManager());
+public class LinkedBlockingIOQueue<T> {
+    private final BlockingQueue<T> input = new LinkedBlockingQueue<>();
+    private final BlockingQueue<T> output = new LinkedBlockingQueue<>();
+
+    public void queueInbound(T object) {
+        input.add(object);
     }
 
-    public void unregister(Server server) {
-        unregister(server.getEventManager());
+    public void queueOutbound(T object) {
+        output.add(object);
+    }
+
+
+    public T pollInbound() {
+        return input.poll();
+    }
+
+    public T pollOutbound() {
+        return output.poll();
+    }
+
+
+    public T peekInbound() {
+        return input.peek();
+    }
+
+    public T peekOutbound() {
+        return output.peek();
     }
 }

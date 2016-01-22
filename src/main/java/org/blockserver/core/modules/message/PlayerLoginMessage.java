@@ -14,21 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.event;
+package org.blockserver.core.modules.message;
 
-import org.blockserver.core.Server;
-import org.blockserver.core.events.MessageHandleEvent;
-import org.blockserver.core.modules.message.Message;
+import org.blockserver.core.modules.player.Player;
+import org.blockserver.core.utilities.Skin;
+
+import java.util.UUID;
 
 /**
  * Written by Exerosis!
  */
-public class MessageEventListener<T extends Message> extends EventListener<T, MessageHandleEvent<T>> {
-    public MessageEventListener<T> register(Class<T> listenerType, Server server) {
-        return (MessageEventListener<T>) register(listenerType, server.getEventManager());
-    }
+public class PlayerLoginMessage extends Message {
+    public long clientID;
+    public String username;
+    public UUID uuid;
+    public Skin skin;
 
-    public void unregister(Server server) {
-        unregister(server.getEventManager());
+    public PlayerLoginMessage(Player player) {
+        super(player);
     }
 }

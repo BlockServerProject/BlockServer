@@ -16,53 +16,16 @@
  */
 package org.blockserver.core.modules.network;
 
-import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Written by Exerosis!
  */
-public class NetworkProvider extends Module {
-    private final BlockingQueue<RawPacket> packetOutQueue = new LinkedBlockingQueue<>();
-    private final BlockingQueue<RawPacket> packetInQueue = new LinkedBlockingQueue<>();
+public class NetworkProvider extends LinkedBlockingIOQueue<RawPacket> {
+    private @Getter @Setter NetworkConverter converter;
 
-    public NetworkProvider(Server server) {
-        super(server);
-    }
-
-    public void queueOutboundPackets(RawPacket... packets) {
-        packetOutQueue.addAll(packets.length > 1 ? Arrays.asList(packets) : Collections.singletonList(packets[0]));
-    }
-
-    public void queueInboundPackets(RawPacket... packets) {
-        if (packets.length > 0)
-            getServer().getExecutorService().execute(() -> Collections.addAll(packetInQueue, packets));
-    }
-
-    public Collection<RawPacket> receiveInboundPackets() {
-        Collection<RawPacket> messages = new HashSet<>();
-        packetInQueue.drainTo(messages);
-        return messages;
-    }
-
-    public Collection<RawPacket> receiveOutboundPackets() {
-        Collection<RawPacket> packets = new HashSet<>();
-        packetOutQueue.drainTo(packets);
-        return packets;
-    }
-
-    public Collection<RawPacket> getPacketInQueue() {
-        return new HashSet<>(packetInQueue);
-    }
-
-    public Collection<RawPacket> getPacketOutQueue() {
-        return new HashSet<>(packetOutQueue);
+    public NetworkProvider(NetworkConverter converter) {
+        this.converter = converter;
     }
 }

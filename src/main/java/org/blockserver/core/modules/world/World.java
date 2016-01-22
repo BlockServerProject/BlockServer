@@ -29,6 +29,7 @@ import java.util.Set;
 public class World {
     @Getter private Server server;
     @Getter private Set<Player> players = new HashSet<>();
+    @Getter private Set<Chunk> loadedChunks = new HashSet<>();
 
     public World(Server server) {
         this.server = server;

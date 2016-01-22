@@ -17,18 +17,22 @@
 package org.blockserver.core.event;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.events.MessageHandleEvent;
-import org.blockserver.core.modules.message.Message;
 
 /**
  * Written by Exerosis!
  */
-public class MessageEventListener<T extends Message> extends EventListener<T, MessageHandleEvent<T>> {
-    public MessageEventListener<T> register(Class<T> listenerType, Server server) {
-        return (MessageEventListener<T>) register(listenerType, server.getEventManager());
+public class ServerEventListener<B> extends EventListener<B, B> {
+    public void register(Class<B> listenerType, Server server) {
+        register(listenerType, server.getEventManager());
     }
 
-    public void unregister(Server server) {
-        unregister(server.getEventManager());
+    public ServerEventListener<B> post() {
+        super.post();
+        return this;
+    }
+
+    public ServerEventListener<B> priority(Priority priority) {
+        super.priority(priority);
+        return this;
     }
 }
