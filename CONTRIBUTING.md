@@ -3,6 +3,7 @@ BlockServer Contributing Guidelines
 ## Contributing code
 Please fork the repo and [create a pull request](https://github.com/BlockServerProject/BlockServer/pulls). Please note the following before you start writing code:
 * The code should follow the format at [Syntax.md](Syntax.md).
+* The docs should follow the format at [Docs.md](Docs.md).
 * If you are adding new features, please make sure we want it in our repo currently. If you find it [here](https://github.com/BlockServerProject/BlockServer/issues/112), you can start working on it (if nobody else is assigned for that task).
 
 ## Creating issues
