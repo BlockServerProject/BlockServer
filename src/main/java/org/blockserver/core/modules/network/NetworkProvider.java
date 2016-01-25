@@ -14,12 +14,10 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.utilities;
+package org.blockserver.core.modules.network;
 
 /**
- * Utility class that represents a Skin.
+ * Created by atzei on 1/25/2016.
  */
-public class Skin {
-    public byte[] bytes;
-    public String skinName;
+public abstract class NetworkProvider {
 }

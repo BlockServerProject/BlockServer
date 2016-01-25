@@ -19,6 +19,7 @@ package org.blockserver.core.modules.player;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.network.NetworkProvider;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;

@@ -22,6 +22,8 @@ import org.blockserver.core.event.MessageEventListener;
 import org.blockserver.core.events.MessageHandleEvent;
 import org.blockserver.core.modules.message.Message;
 import org.blockserver.core.modules.message.PlayerLoginMessage;
+import org.blockserver.core.modules.network.NetworkModule;
+import org.blockserver.core.modules.network.NetworkProvider;
 import org.blockserver.core.modules.world.positions.Location;
 import org.blockserver.core.utilities.Skin;
 
@@ -63,7 +65,7 @@ public class Player {
     }
 
     public void sendMessage(Message message) {
-        server.getModule(NetworkModule.class).sendPackets(provider, provider.getConverter().toPacket(message));
+        server.getModule(NetworkModule.class).sendMessages(provider, message);
     }
 
     public void handleLogin(PlayerLoginMessage message) {

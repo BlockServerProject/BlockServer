@@ -16,15 +16,27 @@
  */
 package org.blockserver.core.modules.network;
 
-
+import org.blockserver.core.Server;
+import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.message.Message;
+import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 /**
- * Written by Exerosis!
+ * Created by atzei on 1/25/2016.
  */
-public interface NetworkConverter {
-    RawPacket toPacket(Message message);
+public class NetworkModule extends Module{
+    private SchedulerModule scheduler;
 
-    //As much as the player part might be helpful, I looked into it more and it will never actually be needed, also it makes for some huge problems. Sorry Jython buddy x)
-    Message toMessage(RawPacket packet);
+    public NetworkModule(Server server, SchedulerModule scheduler) {
+        super(server);
+        this.scheduler = scheduler;
+    }
+
+    public void sendPackets(NetworkProvider provider, RawPacket... packets) {
+
+    }
+
+    public void sendMessages(NetworkProvider provider, Message... messages) {
+
+    }
 }
