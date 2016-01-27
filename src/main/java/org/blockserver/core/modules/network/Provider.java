@@ -16,16 +16,11 @@
  */
 package org.blockserver.core.modules.network;
 
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * Written by Exerosis!
  */
-public class NetworkProvider extends LinkedBlockingIOQueue<RawPacket> {
-    private @Getter @Setter NetworkConverter converter;
+public interface Provider {
+    RawPacket poll();
 
-    public NetworkProvider(NetworkConverter converter) {
-        this.converter = converter;
-    }
+    RawPacket peek();
 }

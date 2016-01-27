@@ -18,6 +18,8 @@ package org.blockserver.core.module;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
  */
 public interface Enableable {
     void onEnable();

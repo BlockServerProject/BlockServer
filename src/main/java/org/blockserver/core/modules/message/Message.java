@@ -24,9 +24,16 @@ import org.blockserver.core.modules.player.Player;
  * Written by Exerosis!
  */
 public class Message {
+    @Getter final private boolean async;
     @Getter @Setter private Player player;
 
     public Message(Player player) {
         this.player = player;
+        async = false;
+    }
+
+    public Message(Player player, boolean async) {
+        this.player = player;
+        this.async = async;
     }
 }

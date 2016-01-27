@@ -28,6 +28,9 @@ import java.util.UUID;
 
 /**
  * Module that handles players.
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class PlayerModule extends Module {
     private final Set<Player> players = Collections.synchronizedSet(new HashSet<>());
@@ -101,9 +104,11 @@ public class PlayerModule extends Module {
      * @param address ({@linkplain InetSocketAddress}): The new {@linkplain Player}'s {@linkplain InetSocketAddress}.
      * @param name ({@linkplain String}): The new {@linkplain Player}'s {@linkplain String}.
      * @param UUID ({@linkplain UUID}): The new {@linkplain Player}'s {@linkplain UUID}.
+     * @param provider {{@linkplain NetworkProvider}}: The {@linkplain Player}'s {@linkplain NetworkProvider} that is used
+     *                 to communicate with the client.
      */
-    public void internalOpenSession(InetSocketAddress address, String name, UUID UUID) {
-        players.add(new Player(address, name, UUID));
+    public void internalOpenSession(InetSocketAddress address, String name, UUID UUID, NetworkProvider provider) {
+        players.add(new Player(getServer(), address, name, UUID, provider));
         getServer().getModule(LoggingModule.class).debug("New session from " + address.getHostString() + ":" + address.getPort());
     }
 

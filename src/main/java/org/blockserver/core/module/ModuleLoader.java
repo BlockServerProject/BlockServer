@@ -20,6 +20,10 @@ import org.blockserver.core.Server;
 
 import java.util.Collection;
 
+/**
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.loaders
+ */
 public interface ModuleLoader {
     Collection<Module> setModules(Collection<Module> currentModules, Server server);
 }

@@ -23,6 +23,9 @@ import org.blockserver.core.modules.world.positions.Vector;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see WorldModule
  */
 public class Block {
     @Getter private World world;
@@ -30,10 +33,21 @@ public class Block {
     @Getter private byte lightLevel;
     @Getter private Vector vector;
 
+    /**
+     * Sets lightlevel between 0 and 15.
+     *
+     * @param lightLevel block lightlevel
+     */
     public void setLightLevel(byte lightLevel) {
         this.lightLevel = lightLevel;
     }
 
+    /**
+     * Sets block material.
+     *
+     * @param material block material
+     * @see Material
+     */
     public void setMaterial(Material material) {
         this.material = material;
         for (Player player : world.getPlayers()) {

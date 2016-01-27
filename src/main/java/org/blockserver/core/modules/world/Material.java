@@ -18,6 +18,9 @@ package org.blockserver.core.modules.world;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see WorldModule
  */
 public enum Material {
 }

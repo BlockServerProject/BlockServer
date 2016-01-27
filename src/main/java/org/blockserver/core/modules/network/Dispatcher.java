@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network.test.testtwo;
+package org.blockserver.core.modules.network;
 
 /**
  * Written by Exerosis!
  */
-public class ProviderP {
-
+public interface Dispatcher {
+    void dispatch(RawPacket packet);
 }

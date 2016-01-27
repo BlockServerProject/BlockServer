@@ -21,11 +21,13 @@ import org.blockserver.core.Server;
 import org.blockserver.core.event.EventListener;
 import org.blockserver.core.events.RawPacketHandleEvent;
 import org.blockserver.core.module.Module;
-import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class ServerListModule extends Module {
     private final SchedulerModule schedulerModule;

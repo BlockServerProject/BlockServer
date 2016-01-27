@@ -21,14 +21,24 @@ import org.blockserver.core.module.Module;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.module.Module
  */
 public class WorldModule extends Module {
     public WorldModule(Server server) {
         super(server);
     }
 
-
+    /**
+     * Setter method for block material.
+     *
+     * @param block    Block which's material will be set.
+     * @param material material of the block
+     */
     public void setBlockMaterial(Block block, Material material) {
-
+        block.setMaterial(material);
     }
+
+
 }

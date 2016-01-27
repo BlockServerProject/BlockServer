@@ -20,6 +20,9 @@ import lombok.Getter;
 
 /**
  * Written by Exerosis!
+ *
+ * @author BlockServer Team
+ * @see org.blockserver.core.modules.world.WorldModule
  */
 public class Vector {
     @Getter float x;
