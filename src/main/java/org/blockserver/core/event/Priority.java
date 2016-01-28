@@ -18,7 +18,7 @@ package org.blockserver.core.event;
 
 public enum Priority {
 
-    LOWEST(0), LOW(1), NORMAL(2), HIGH(3), HIGHEST(4), MONITOR(5);
+    LOWEST(0), LOW(1), NORMAL(2), HIGH(3), HIGHEST(4), INTERNAL(5);
 
     private final int slot;
 

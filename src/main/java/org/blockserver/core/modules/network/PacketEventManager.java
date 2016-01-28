@@ -15,7 +15,7 @@ public class PacketEventManager extends PacketProvider implements Dispatcher {
             @Override
             public void onEvent(PacketSendEvent event) {
                 if (!event.isCancelled())
-                    queuePacket(event.getPacket());
+                    provide(event.getPacket());
             }
         }.priority(Priority.INTERNAL).post();
     }

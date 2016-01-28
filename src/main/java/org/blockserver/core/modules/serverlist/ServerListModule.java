@@ -18,8 +18,8 @@ package org.blockserver.core.modules.serverlist;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
-import org.blockserver.core.event.EventListener;
-import org.blockserver.core.events.RawPacketHandleEvent;
+import org.blockserver.core.event.ServerEventListener;
+import org.blockserver.core.events.packets.PacketEvent;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
@@ -31,35 +31,36 @@ import org.blockserver.core.modules.scheduler.SchedulerModule;
  */
 public class ServerListModule extends Module {
     private final SchedulerModule schedulerModule;
-    private final NetworkModule networkModule;
     @Getter private final Runnable task;
+    private final ServerEventListener<PacketEvent> listener;
 
-    public ServerListModule(Server server, SchedulerModule schedulerModule, NetworkModule networkModule) {
+    public ServerListModule(Server server, SchedulerModule schedulerModule) {
         super(server);
         this.schedulerModule = schedulerModule;
-        this.networkModule = networkModule;
         task = () -> {
             //networkModule.sendPackets();
             //send things
         };
-        new EventListener<RawPacketHandleEvent, RawPacketHandleEvent>() {
+        listener = new ServerEventListener<PacketEvent>() {
             @Override
-            public void onEvent(RawPacketHandleEvent event) {
+            public void onEvent(PacketEvent event) {
                 //receive pings
                 //send pongs
             }
-        }.register(RawPacketHandleEvent.class, getServer().getEventManager());
+        };
     }
 
     @Override
     public void onEnable() {
         schedulerModule.registerTask(task, 1.0, Integer.MAX_VALUE);
+        listener.register(PacketEvent.class, getServer());
         super.onEnable();
     }
 
     @Override
     public void onDisable() {
         schedulerModule.cancelTask(task);
+        listener.unregister(getServer());
         super.onDisable();
     }
 }

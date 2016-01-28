@@ -26,6 +26,10 @@ public class ServerEventListener<B> extends EventListener<B, B> {
         register(listenerType, server.getEventManager());
     }
 
+    public void unregister(Server server) {
+        unregister(server.getEventManager());
+    }
+
     public ServerEventListener<B> post() {
         super.post();
         return this;

@@ -14,20 +14,20 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.events;
+package org.blockserver.core.events.messages;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.core.event.CancellableImplementation;
-import org.blockserver.core.modules.network.RawPacket;
+import org.blockserver.core.modules.message.Message;
 
 /**
  * Written by Exerosis!
  */
-public class RawPacketHandleEvent implements CancellableImplementation {
-    @Getter @Setter private RawPacket packet;
+public class MessageEvent<T extends Message> implements CancellableImplementation {
+    @Getter @Setter private T message;
 
-    public RawPacketHandleEvent(RawPacket packet) {
-        this.packet = packet;
+    public MessageEvent(T message) {
+        this.message = message;
     }
 }

@@ -3,7 +3,7 @@ package org.blockserver.core.modules.network;
 import org.blockserver.core.Server;
 import org.blockserver.core.event.Priority;
 import org.blockserver.core.event.ServerEventListener;
-import org.blockserver.core.events.messages.MessageReciveEvent;
+import org.blockserver.core.events.messages.MessageReceiveEvent;
 import org.blockserver.core.events.messages.MessageSendEvent;
 
 public class MessageManager extends PacketProvider implements Dispatcher {
@@ -17,7 +17,7 @@ public class MessageManager extends PacketProvider implements Dispatcher {
             @Override
             public void onEvent(MessageSendEvent event) {
                 if (!event.isCancelled())
-                    queuePacket(converter.toPacket(event.getMessage()));
+                    provide(converter.toPacket(event.getMessage()));
             }
         }.priority(Priority.INTERNAL).post();
     }
@@ -36,6 +36,6 @@ public class MessageManager extends PacketProvider implements Dispatcher {
 
     @Override
     public void dispatch(RawPacket packet) {
-        getServer().getExecutorService().execute(() -> getServer().getEventManager().fire(new MessageReciveEvent<>(converter.toMessage(packet))));
+        getServer().getExecutorService().execute(() -> getServer().getEventManager().fire(new MessageReceiveEvent<>(converter.toMessage(packet))));
     }
 }
