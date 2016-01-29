@@ -6,12 +6,12 @@ import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.messages.MessageReceiveEvent;
 import org.blockserver.core.events.messages.MessageSendEvent;
 
-public class MessageManager extends PacketProvider implements Dispatcher {
+public class MessageManager extends Provider implements Dispatcher {
     private final ServerEventListener<MessageSendEvent> listener;
     private final NetworkConverter converter;
 
-    public MessageManager(Server server, NetworkConverter converter) {
-        super(server);
+    public MessageManager(Server server, NetworkHandler handler, NetworkConverter converter) {
+        super(handler, server);
         this.converter = converter;
         listener = new ServerEventListener<MessageSendEvent>() {
             @Override

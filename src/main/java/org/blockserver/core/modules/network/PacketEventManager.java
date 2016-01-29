@@ -6,11 +6,11 @@ import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.packets.PacketReceiveEvent;
 import org.blockserver.core.events.packets.PacketSendEvent;
 
-public class PacketEventManager extends PacketProvider implements Dispatcher {
+public class PacketEventManager extends Provider implements Dispatcher {
     private final ServerEventListener<PacketSendEvent> listener;
 
-    public PacketEventManager(Server server) {
-        super(server);
+    public PacketEventManager(NetworkHandler handler, Server server) {
+        super(handler, server);
         listener = new ServerEventListener<PacketSendEvent>() {
             @Override
             public void onEvent(PacketSendEvent event) {
