@@ -6,7 +6,7 @@ import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.packets.PacketReceiveEvent;
 import org.blockserver.core.events.packets.PacketSendEvent;
 
-public class PacketEventManager extends Provider implements Dispatcher {
+public class PacketEventManager extends NetworkProvider implements Dispatcher {
     private final ServerEventListener<PacketSendEvent> listener;
 
     public PacketEventManager(NetworkHandler handler, Server server) {

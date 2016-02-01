@@ -19,6 +19,7 @@ package org.blockserver.core.modules.player;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.Module;
 import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.network.NetworkProvider;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -108,7 +109,7 @@ public class PlayerModule extends Module {
      *                 to communicate with the client.
      */
     public void internalOpenSession(InetSocketAddress address, String name, UUID UUID, NetworkProvider provider) {
-        players.add(new Player(getServer(), address, name, UUID, provider));
+        players.add(new Player(getServer(), address, name, UUID/*, provider*/));
         getServer().getModule(LoggingModule.class).debug("New session from " + address.getHostString() + ":" + address.getPort());
     }
 
