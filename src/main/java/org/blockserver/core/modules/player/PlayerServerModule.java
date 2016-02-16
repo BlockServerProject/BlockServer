@@ -17,8 +17,9 @@
 package org.blockserver.core.modules.player;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.module.ServerModule;
-import org.blockserver.core.modules.logging.LoggingServerModule;
+import org.blockserver.core.module.Module;
+import org.blockserver.core.modules.logging.LoggingModule;
+import org.blockserver.core.modules.network.NetworkProvider;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -27,15 +28,15 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * ServerModule that handles players.
+ * Module that handles players.
  *
  * @author BlockServer Team
- * @see ServerModule
+ * @see org.blockserver.core.module.Module
  */
-public class PlayerServerModule extends ServerModule {
+public class PlayerModule extends Module {
     private final Set<Player> players = Collections.synchronizedSet(new HashSet<>());
 
-    public PlayerServerModule(Server server) {
+    public PlayerModule(Server server) {
         super(server);
     }
 
@@ -108,8 +109,8 @@ public class PlayerServerModule extends ServerModule {
      *                 to communicate with the client.
      */
     public void internalOpenSession(InetSocketAddress address, String name, UUID UUID, NetworkProvider provider) {
-        players.add(new Player(getServer(), address, name, UUID, provider));
-        getServer().getModule(LoggingServerModule.class).debug("New session from " + address.getHostString() + ":" + address.getPort());
+        players.add(new Player(getServer(), address, name, UUID/*, provider*/));
+        getServer().getModule(LoggingModule.class).debug("New session from " + address.getHostString() + ":" + address.getPort());
     }
 
     /**
@@ -121,7 +122,7 @@ public class PlayerServerModule extends ServerModule {
      */
     public void internalCloseSession(Player player) {
         players.remove(player);
-        getServer().getModule(LoggingServerModule.class).debug("Session " + player.getAddress().getHostString() + ":" + player.getAddress().getPort() + " closed.");
+        getServer().getModule(LoggingModule.class).debug("Session " + player.getAddress().getHostString() + ":" + player.getAddress().getPort() + " closed.");
     }
 
     public Set<Player> getPlayers() {

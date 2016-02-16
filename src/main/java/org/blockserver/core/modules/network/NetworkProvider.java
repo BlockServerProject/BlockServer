@@ -14,12 +14,21 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.events.messages;
+package org.blockserver.core.modules.network;
 
-import org.blockserver.core.modules.message.Message;
+import lombok.Getter;
+import org.blockserver.core.Server;
+import org.blockserver.core.module.Module;
 
-public class MessageReceiveEvent<T extends Message> extends MessageEvent<T> {
-    public MessageReceiveEvent(T message) {
-        super(message);
+public class NetworkProvider extends Module {
+    @Getter private final NetworkHandler handler;
+
+    public NetworkProvider(NetworkHandler handler, Server server) {
+        super(server);
+        this.handler = handler;
+    }
+
+    public void provide(RawPacket packet) {
+        handler.provide(packet);
     }
 }
