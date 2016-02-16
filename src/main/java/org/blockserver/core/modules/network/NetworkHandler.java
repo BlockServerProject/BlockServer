@@ -3,13 +3,13 @@ package org.blockserver.core.modules.network;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
+import org.blockserver.core.module.ServerModule;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NetworkHandler extends Module {
+public class NetworkHandler extends ServerModule {
     @Getter private final Set<Dispatcher> dispatchers = Collections.synchronizedSet(new HashSet<>());
 
     public NetworkHandler(Server server) {

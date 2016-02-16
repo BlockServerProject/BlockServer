@@ -18,8 +18,8 @@ package org.blockserver.core.module.loaders;
 
 
 import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
+import org.blockserver.core.module.ServerModule;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,14 +32,14 @@ import java.util.Properties;
 import java.util.jar.JarFile;
 
 /**
- * Module Loader that can load modules from JARs
+ * ServerModule Loader that can load modules from JARs
  *
  * @author BlockServer Team
  * @see org.blockserver.core.module.ModuleLoader
  */
 public class JarModuleLoader implements ModuleLoader {
     @Override
-    public Collection<Module> setModules(Collection<Module> currentModules, Server server) {
+    public Collection<ServerModule> setModules(Collection<ServerModule> currentModules, Server server) {
         File moduleFolder = new File("modules");
         if (!moduleFolder.isDirectory()) {
             moduleFolder.mkdirs();
@@ -60,21 +60,21 @@ public class JarModuleLoader implements ModuleLoader {
                     try {
                         Class clazz = loader.loadClass(className);
                         try {
-                            Module module = (Module) clazz.getConstructor(Server.class).newInstance(server);
+                            ServerModule module = (ServerModule) clazz.getConstructor(Server.class).newInstance(server);
                             currentModules.add(module);
-                            System.out.println("[Module Loader]: Loaded " + file.getName());
+                            System.out.println("[ServerModule Loader]: Loaded " + file.getName());
                         } catch (ClassCastException e) {
-                            System.err.println("[Module Loader]: Failed to load main class for " + file.getName() + ": main class does not extend Module.");
+                            System.err.println("[ServerModule Loader]: Failed to load main class for " + file.getName() + ": main class does not extend ServerModule.");
                         } catch (NoSuchMethodException | InvocationTargetException e) {
-                            System.err.println("[Module Loader]: Failed to load main class for " + file.getName() + ": " + e.getClass().getSimpleName() + " -> " + e.getMessage());
+                            System.err.println("[ServerModule Loader]: Failed to load main class for " + file.getName() + ": " + e.getClass().getSimpleName() + " -> " + e.getMessage());
                         }
                     } catch (ClassNotFoundException e) {
                         if (className.equals("default")) {
-                            System.err.println("[Module Loader]: Failed to load main class for " + file.getName() + ": main class not specified.");
+                            System.err.println("[ServerModule Loader]: Failed to load main class for " + file.getName() + ": main class not specified.");
                         }
-                        System.err.println("[Module Loader]: Failed to load main class for " + file.getName() + ": ClassNotFoundException -> " + e.getMessage());
+                        System.err.println("[ServerModule Loader]: Failed to load main class for " + file.getName() + ": ClassNotFoundException -> " + e.getMessage());
                     } catch (InstantiationException | IllegalAccessException e) {
-                        System.err.println("[Module Loader]: Failed to load main class for " + file.getName() + ": " + e.getClass().getSimpleName() + " -> " + e.getMessage());
+                        System.err.println("[ServerModule Loader]: Failed to load main class for " + file.getName() + ": " + e.getClass().getSimpleName() + " -> " + e.getMessage());
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

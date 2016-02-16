@@ -22,8 +22,8 @@ import org.blockserver.core.event.EventManager;
 import org.blockserver.core.events.modules.ModuleDisableEvent;
 import org.blockserver.core.events.modules.ModuleEnableEvent;
 import org.blockserver.core.module.EnableableImplementation;
-import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
+import org.blockserver.core.module.ServerModule;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,28 +43,28 @@ public class Server implements EnableableImplementation {
     private boolean enabled;
 
     //Modules
-    private Map<Class<? extends Module>, Module> modules = new HashMap<>();
+    private Map<Class<? extends ServerModule>, ServerModule> modules = new HashMap<>();
 
     public Server(ModuleLoader... moduleLoaders) {
-        Collection<Module> modules = new ArrayList<>(this.modules.values());
+        Collection<ServerModule> modules = new ArrayList<>(this.modules.values());
         this.modules.clear();
 
         for (ModuleLoader moduleLoader : moduleLoaders) {
             modules = moduleLoader.setModules(modules, this);
         }
 
-        for (Module module : modules) {
+        for (ServerModule module : modules) {
             this.modules.put(module.getClass(), module);
         }
 
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Module> T getModule(Class<T> moduleClass) {
+    public <T extends ServerModule> T getModule(Class<T> moduleClass) {
         return (T) modules.get(moduleClass);
     }
 
-    public void addModuleToEnable(Module module) {
+    public void addModuleToEnable(ServerModule module) {
         modules.put(module.getClass(), module);
     }
 

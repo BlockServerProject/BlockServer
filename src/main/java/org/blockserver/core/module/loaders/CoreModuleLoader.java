@@ -17,11 +17,11 @@
 package org.blockserver.core.module.loaders;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
-import org.blockserver.core.modules.logging.LoggingModule;
-import org.blockserver.core.modules.player.PlayerModule;
-import org.blockserver.core.modules.scheduler.SchedulerModule;
+import org.blockserver.core.module.ServerModule;
+import org.blockserver.core.modules.logging.LoggingServerModule;
+import org.blockserver.core.modules.player.PlayerServerModule;
+import org.blockserver.core.modules.scheduler.SchedulerServerModule;
 
 import java.util.Collection;
 
@@ -32,16 +32,16 @@ import java.util.Collection;
 public class CoreModuleLoader implements ModuleLoader {
 
     @Override
-    public Collection<Module> setModules(Collection<Module> currentModules, Server server) {
-        LoggingModule loggingModule = new LoggingModule(server);
-        SchedulerModule schedulerModule = new SchedulerModule(server);
-        PlayerModule playerModule = new PlayerModule(server);
+    public Collection<ServerModule> setModules(Collection<ServerModule> currentModules, Server server) {
+        LoggingServerModule loggingModule = new LoggingServerModule(server);
+        SchedulerServerModule schedulerModule = new SchedulerServerModule(server);
+        PlayerServerModule playerModule = new PlayerServerModule(server);
 
         currentModules.add(loggingModule);
         currentModules.add(schedulerModule);
         currentModules.add(playerModule);
 
-        System.out.println("[Module Loader]: Loaded " + currentModules.size() + " core modules.");
+        System.out.println("[ServerModule Loader]: Loaded " + currentModules.size() + " core modules.");
 
         return currentModules;
     }

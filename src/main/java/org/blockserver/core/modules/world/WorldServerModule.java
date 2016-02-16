@@ -16,25 +16,29 @@
  */
 package org.blockserver.core.modules.world;
 
-import lombok.Getter;
 import org.blockserver.core.Server;
-import org.blockserver.core.modules.player.Player;
-
-import java.util.HashSet;
-import java.util.Set;
+import org.blockserver.core.module.ServerModule;
 
 /**
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldModule
+ * @see ServerModule
  */
-public class World {
-    @Getter private Server server;
-    @Getter private Set<Player> players = new HashSet<>();
-    @Getter private Set<Chunk> loadedChunks = new HashSet<>();
-
-    public World(Server server) {
-        this.server = server;
+public class WorldServerModule extends ServerModule {
+    public WorldServerModule(Server server) {
+        super(server);
     }
+
+    /**
+     * Setter method for block material.
+     *
+     * @param block    Block which's material will be set.
+     * @param material material of the block
+     */
+    public void setBlockMaterial(Block block, Material material) {
+        block.setMaterial(material);
+    }
+
+
 }

@@ -22,5 +22,24 @@ package org.blockserver.core.modules.world;
  * @author BlockServer Team
  * @see WorldServerModule
  */
-public enum Material {
+public class WorldAllocation {
+    private short[][][][] memoryAllocation;
+
+    public WorldAllocation(short allocationSize) {
+        int chunkCount = allocationSize / 131072 - allocationSize % 131072;
+        memoryAllocation = new short[chunkCount][16][16][256];
+
+        for (int i = 0; i < memoryAllocation.length; i++) {
+            memoryAllocation[i] = null;
+        }
+    }
+
+
+    public void setChunkAt(int id, short[][][]) {
+
+    }
+
+    public short[][][] getChunkAt(int chunkID) {
+        return memoryAllocation[chunkID];
+    }
 }

@@ -25,5 +25,5 @@ import java.util.Collection;
  * @see org.blockserver.core.module.loaders
  */
 public interface ModuleLoader {
-    Collection<Module> setModules(Collection<Module> currentModules, Server server);
+    Collection<ServerModule> setModules(Collection<ServerModule> currentModules, Server server);
 }

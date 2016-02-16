@@ -18,7 +18,7 @@ package org.blockserver.core.modules.scheduler;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
+import org.blockserver.core.module.ServerModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,13 +27,13 @@ import java.util.Map;
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see org.blockserver.core.module.Module
+ * @see ServerModule
  */
-public class SchedulerModule extends Module {
+public class SchedulerServerModule extends ServerModule {
     @Getter private final Map<Runnable, TaskData> tasks = new HashMap<>();
     @Getter private long currentTick;
 
-    public SchedulerModule(Server server) {
+    public SchedulerServerModule(Server server) {
         super(server);
     }
 

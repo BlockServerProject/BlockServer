@@ -14,20 +14,37 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.events.modules;
+package org.blockserver.core.modules.logging;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.blockserver.core.Server;
-import org.blockserver.core.event.CancellableImplementation;
-import org.blockserver.core.events.ServerEvent;
 import org.blockserver.core.module.ServerModule;
 
-public class ModuleEvent extends ServerEvent implements CancellableImplementation {
-    @Getter @Setter private ServerModule module;
+/**
+ * Logging ServerModule with different log levels. (debug, info, warn, error)
+ * TODO: Implement SLF4j and/or log4j2
+ *
+ * @author BlockServer Team
+ * @see ServerModule
+ */
+public class LoggingServerModule extends ServerModule {
 
-    public ModuleEvent(Server server, ServerModule module) {
+    public LoggingServerModule(Server server) {
         super(server);
-        this.module = module;
+    }
+
+    public void debug(String message) {
+        System.out.println("[DEBUG]: " + message);
+    }
+
+    public void info(String message) {
+        System.out.println("[INFO]: " + message);
+    }
+
+    public void warn(String message) {
+        System.out.println("[WARN]: " + message);
+    }
+
+    public void error(String message) {
+        System.err.println("[ERROR]: " + message);
     }
 }

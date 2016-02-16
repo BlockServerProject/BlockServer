@@ -20,7 +20,7 @@ package org.blockserver.core.modules.world;
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldModule
+ * @see WorldServerModule
  */
 public class Chunk {
     public Block getBlockAt(int x, int y, int z) {

@@ -25,10 +25,10 @@ import org.blockserver.core.modules.world.positions.Vector;
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldModule
+ * @see WorldServerModule
  */
 public class Block {
-    @Getter private World world;
+    @Getter private WorldAllocation world;
     @Getter private Material material;
     @Getter private byte lightLevel;
     @Getter private Vector vector;

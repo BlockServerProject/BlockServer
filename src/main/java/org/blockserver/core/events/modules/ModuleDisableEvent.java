@@ -17,10 +17,10 @@
 package org.blockserver.core.events.modules;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
+import org.blockserver.core.module.ServerModule;
 
 public class ModuleDisableEvent extends ModuleEvent {
-    public ModuleDisableEvent(Server server, Module module) {
+    public ModuleDisableEvent(Server server, ServerModule module) {
         super(server, module);
     }
 }

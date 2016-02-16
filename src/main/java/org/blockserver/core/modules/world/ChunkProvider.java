@@ -20,7 +20,7 @@ package org.blockserver.core.modules.world;
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldModule
+ * @see WorldServerModule
  */
 public interface ChunkProvider {
     Chunk loadChunkAt(int x, int y);

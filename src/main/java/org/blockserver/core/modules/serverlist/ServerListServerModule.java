@@ -20,21 +20,21 @@ import lombok.Getter;
 import org.blockserver.core.Server;
 import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.packets.PacketEvent;
-import org.blockserver.core.module.Module;
-import org.blockserver.core.modules.scheduler.SchedulerModule;
+import org.blockserver.core.module.ServerModule;
+import org.blockserver.core.modules.scheduler.SchedulerServerModule;
 
 /**
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see org.blockserver.core.module.Module
+ * @see ServerModule
  */
-public class ServerListModule extends Module {
-    private final SchedulerModule schedulerModule;
+public class ServerListServerModule extends ServerModule {
+    private final SchedulerServerModule schedulerModule;
     @Getter private final Runnable task;
     private final ServerEventListener<PacketEvent> listener;
 
-    public ServerListModule(Server server, SchedulerModule schedulerModule) {
+    public ServerListServerModule(Server server, SchedulerServerModule schedulerModule) {
         super(server);
         this.schedulerModule = schedulerModule;
         task = () -> {
