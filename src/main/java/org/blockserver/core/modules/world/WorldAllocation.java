@@ -34,12 +34,11 @@ public class WorldAllocation {
         }
     }
 
-
-    public void setChunkAt(int id, short[][][]) {
-
+    public void setChunkAt(int id, short[][][] chunkData) {
+        memoryAllocation[id] = chunkData;
     }
 
-    public short[][][] getChunkAt(int chunkID) {
-        return memoryAllocation[chunkID];
+    public short[][][] getChunkAt(int id) {
+        return memoryAllocation[id];
     }
 }
