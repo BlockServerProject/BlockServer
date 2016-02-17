@@ -17,7 +17,7 @@
 package org.blockserver.core.modules.player;
 
 import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
+import org.blockserver.core.module.ServerModule;
 import org.blockserver.core.modules.logging.LoggingModule;
 import org.blockserver.core.modules.network.NetworkProvider;
 
@@ -33,7 +33,7 @@ import java.util.UUID;
  * @author BlockServer Team
  * @see org.blockserver.core.module.Module
  */
-public class PlayerModule extends Module {
+public class PlayerModule extends ServerModule {
     private final Set<Player> players = Collections.synchronizedSet(new HashSet<>());
 
     public PlayerModule(Server server) {

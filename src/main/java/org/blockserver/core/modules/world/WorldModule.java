@@ -4,7 +4,7 @@ import org.blockserver.core.Server;
 import org.blockserver.core.module.ServerModule;
 
 /**
- * Created by Exerosis on 2/15/2016.
+ * Created by Exerosis.
  */
 public class WorldModule extends ServerModule {
 

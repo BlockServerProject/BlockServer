@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.core.Server;
 import org.blockserver.core.modules.message.Message;
-import org.blockserver.core.modules.message.block.MessageOutBlockChange;
 import org.blockserver.core.modules.world.positions.Location;
 
 import java.net.InetSocketAddress;

@@ -1,7 +1,7 @@
 package org.blockserver.core.module;
 
 /**
- * Created by Exerosis on 2/3/2016.
+ * Created by Exerosis.
  */
 public class Module {
 }

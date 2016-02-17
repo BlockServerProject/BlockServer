@@ -26,9 +26,9 @@ import org.blockserver.core.module.ServerModule;
  * @author BlockServer Team
  * @see ServerModule
  */
-public class LoggingServerModule extends ServerModule {
+public class LoggingModule extends ServerModule {
 
-    public LoggingServerModule(Server server) {
+    public LoggingModule(Server server) {
         super(server);
     }
 

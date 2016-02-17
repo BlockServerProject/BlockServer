@@ -20,7 +20,7 @@ import org.blockserver.core.event.EventListener;
 import org.blockserver.core.events.modules.ModuleEnableEvent;
 import org.blockserver.core.module.loaders.CoreModuleLoader;
 import org.blockserver.core.module.loaders.JarModuleLoader;
-import org.blockserver.core.modules.logging.LoggingServerModule;
+import org.blockserver.core.modules.logging.LoggingModule;
 
 /**
  * Main class for the core.
@@ -40,6 +40,6 @@ public class run {
 
         Runtime.getRuntime().addShutdownHook(new Thread(server::onDisable));
         server.onEnable();
-        server.getModule(LoggingServerModule.class).info("BlockServer is now running.");
+        server.getModule(LoggingModule.class).info("BlockServer is now running.");
     }
 }
