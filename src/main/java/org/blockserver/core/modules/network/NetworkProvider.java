@@ -18,9 +18,9 @@ package org.blockserver.core.modules.network;
 
 import lombok.Getter;
 import org.blockserver.core.Server;
-import org.blockserver.core.module.Module;
+import org.blockserver.core.module.ServerModule;
 
-public class NetworkProvider extends Module {
+public class NetworkProvider extends ServerModule {
     @Getter private final NetworkHandler handler;
 
     public NetworkProvider(NetworkHandler handler, Server server) {

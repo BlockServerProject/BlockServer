@@ -17,13 +17,12 @@
 package org.blockserver.core.modules.world.positions;
 
 import lombok.Getter;
-import org.blockserver.core.modules.world.WorldServerModule;
 
 /**
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldServerModule
+ * @see org.blockserver.core.modules.world.WorldModule
  */
 public class Vector {
     @Getter float x;

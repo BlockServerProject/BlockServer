@@ -17,14 +17,13 @@
 package org.blockserver.core.modules.world.positions;
 
 import lombok.Getter;
-import org.blockserver.core.modules.world.WorldServerModule;
 
 /**
  * Written by Exerosis!
  *
  * @author BlockServer Team
  * @see org.blockserver.core.modules.world.positions.Vector
- * @see WorldServerModule
+ * @see org.blockserver.core.modules.world.WorldModule
  */
 public class Location extends Vector {
     @Getter long yaw;

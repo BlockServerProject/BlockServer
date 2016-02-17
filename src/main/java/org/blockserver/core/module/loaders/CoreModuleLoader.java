@@ -21,7 +21,7 @@ import org.blockserver.core.module.ModuleLoader;
 import org.blockserver.core.module.ServerModule;
 import org.blockserver.core.modules.logging.LoggingModule;
 import org.blockserver.core.modules.player.PlayerModule;
-import org.blockserver.core.modules.scheduler.SchedulerServerModule;
+import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 import java.util.Collection;
 
@@ -34,7 +34,7 @@ public class CoreModuleLoader implements ModuleLoader {
     @Override
     public Collection<ServerModule> setModules(Collection<ServerModule> currentModules, Server server) {
         LoggingModule loggingModule = new LoggingModule(server);
-        SchedulerServerModule schedulerModule = new SchedulerServerModule(server);
+        SchedulerModule schedulerModule = new SchedulerModule(server);
         PlayerModule playerModule = new PlayerModule(server);
 
         currentModules.add(loggingModule);

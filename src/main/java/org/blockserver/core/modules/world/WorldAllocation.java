@@ -20,7 +20,7 @@ package org.blockserver.core.modules.world;
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldServerModule
+ * @see WorldAllocation
  */
 public class WorldAllocation {
     private short[][][][] memoryAllocation;

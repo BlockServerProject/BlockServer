@@ -21,7 +21,7 @@ import org.blockserver.core.Server;
 import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.packets.PacketEvent;
 import org.blockserver.core.module.ServerModule;
-import org.blockserver.core.modules.scheduler.SchedulerServerModule;
+import org.blockserver.core.modules.scheduler.SchedulerModule;
 
 /**
  * Written by Exerosis!
@@ -29,12 +29,12 @@ import org.blockserver.core.modules.scheduler.SchedulerServerModule;
  * @author BlockServer Team
  * @see ServerModule
  */
-public class ServerListServerModule extends ServerModule {
-    private final SchedulerServerModule schedulerModule;
+public class ServerListModule extends ServerModule {
+    private final SchedulerModule schedulerModule;
     @Getter private final Runnable task;
     private final ServerEventListener<PacketEvent> listener;
 
-    public ServerListServerModule(Server server, SchedulerServerModule schedulerModule) {
+    public ServerListModule(Server server, SchedulerModule schedulerModule) {
         super(server);
         this.schedulerModule = schedulerModule;
         task = () -> {

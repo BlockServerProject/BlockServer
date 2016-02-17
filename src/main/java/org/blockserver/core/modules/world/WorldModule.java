@@ -12,6 +12,4 @@ public class WorldModule extends ServerModule {
         super(server);
     }
 
-
-
 }

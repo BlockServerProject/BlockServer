@@ -29,11 +29,11 @@ import java.util.Map;
  * @author BlockServer Team
  * @see ServerModule
  */
-public class SchedulerServerModule extends ServerModule {
+public class SchedulerModule extends ServerModule {
     @Getter private final Map<Runnable, TaskData> tasks = new HashMap<>();
     @Getter private long currentTick;
 
-    public SchedulerServerModule(Server server) {
+    public SchedulerModule(Server server) {
         super(server);
     }
 
