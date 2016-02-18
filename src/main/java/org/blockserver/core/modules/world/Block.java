@@ -50,8 +50,10 @@ public class Block {
      */
     public void setMaterial(Material material) {
         this.material = material;
+        /*
         for (Player player : world.getPlayers()) {
             player.sendMessage(new MessageOutBlockChange(player, this)); //TODO: Material
         }
+        */
     }
 }
