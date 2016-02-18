@@ -19,11 +19,12 @@ package org.blockserver.core.module;
 import org.blockserver.core.Server;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author BlockServer Team
  * @see org.blockserver.core.module.loaders
  */
 public interface ModuleLoader {
-    Collection<ServerModule> setModules(Collection<ServerModule> currentModules, Server server);
+    void setModules(Map<Class<? extends ServerModule>, ServerModule> modules, Server server);
 }

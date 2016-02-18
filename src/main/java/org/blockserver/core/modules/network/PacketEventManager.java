@@ -25,7 +25,7 @@ import org.blockserver.core.events.packets.PacketSendEvent;
 public class PacketEventManager extends NetworkProvider implements Dispatcher {
     private final ServerEventListener<PacketSendEvent> listener;
 
-    public PacketEventManager(NetworkHandler handler, Server server) {
+    public PacketEventManager(NetworkHandlerModule handler, Server server) {
         super(handler, server);
         listener = new ServerEventListener<PacketSendEvent>() {
             @Override

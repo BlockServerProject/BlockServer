@@ -21,9 +21,9 @@ import org.blockserver.core.Server;
 import org.blockserver.core.module.ServerModule;
 
 public class Provider extends ServerModule {
-    @Getter private final NetworkHandler handler;
+    @Getter private final NetworkHandlerModule handler;
 
-    public Provider(NetworkHandler handler, Server server) {
+    public Provider(NetworkHandlerModule handler, Server server) {
         super(server);
         this.handler = handler;
     }

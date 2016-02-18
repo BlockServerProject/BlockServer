@@ -26,7 +26,7 @@ public class MessageManager extends NetworkProvider implements Dispatcher {
     private final ServerEventListener<MessageSendEvent> listener;
     private final NetworkConverter converter;
 
-    public MessageManager(Server server, NetworkHandler handler, NetworkConverter converter) {
+    public MessageManager(Server server, NetworkHandlerModule handler, NetworkConverter converter) {
         super(handler, server);
         this.converter = converter;
         listener = new ServerEventListener<MessageSendEvent>() {

@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 import java.util.jar.JarFile;
 
@@ -39,16 +40,16 @@ import java.util.jar.JarFile;
  */
 public class JarModuleLoader implements ModuleLoader {
     @Override
-    public Collection<ServerModule> setModules(Collection<ServerModule> currentModules, Server server) {
+    public void setModules(Map<Class<? extends ServerModule>, ServerModule> modules, Server server) {
         File moduleFolder = new File("modules");
         if (!moduleFolder.isDirectory()) {
             moduleFolder.mkdirs();
-            return currentModules;
+            return;
         }
         File[] files = moduleFolder.listFiles();
 
         if (files == null || files.length <= 0)
-            return currentModules;
+            return;
 
         for (File file : files) {
             if (file.getName().endsWith(".jar")) {
@@ -61,7 +62,7 @@ public class JarModuleLoader implements ModuleLoader {
                         Class clazz = loader.loadClass(className);
                         try {
                             ServerModule module = (ServerModule) clazz.getConstructor(Server.class).newInstance(server);
-                            currentModules.add(module);
+                            modules.put(module.getClass(), module);
                             System.out.println("[ServerModule Loader]: Loaded " + file.getName());
                         } catch (ClassCastException e) {
                             System.err.println("[ServerModule Loader]: Failed to load main class for " + file.getName() + ": main class does not extend ServerModule.");
@@ -81,7 +82,6 @@ public class JarModuleLoader implements ModuleLoader {
                 }
             }
         }
-        return currentModules;
     }
 
     private Properties getJarProperties(JarFile jar) throws IOException {

@@ -25,10 +25,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class NetworkHandler extends ServerModule {
+public class NetworkHandlerModule extends ServerModule {
     @Getter private final Set<Dispatcher> dispatchers = Collections.synchronizedSet(new HashSet<>());
 
-    public NetworkHandler(Server server) {
+    public NetworkHandlerModule(Server server) {
         super(server);
     }
 
