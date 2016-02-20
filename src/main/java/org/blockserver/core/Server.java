@@ -40,7 +40,7 @@ import java.util.concurrent.Executors;
  *
  * @author BlockServer Team
  */
-public class Server implements EnableableImplementation {
+public class Server extends EnableableImplementation {
     @Getter @Setter private ExecutorService executorService = Executors.newFixedThreadPool(4);
     @Getter @Setter private EventManager eventManager = new EventManager();
     private boolean enabled;
@@ -73,7 +73,7 @@ public class Server implements EnableableImplementation {
                 return;
             eventManager.fire(new ModuleEnableEvent(this, module), event -> {
                 if (!event.isCancelled())
-                    module.onEnable();
+                    module.enable();
             });
         });
     }
@@ -86,7 +86,7 @@ public class Server implements EnableableImplementation {
                 return;
             eventManager.fire(new ModuleDisableEvent(this, module), event -> {
                 if (!event.isCancelled())
-                    module.onDisable();
+                    module.disable();
             });
         });
     }
