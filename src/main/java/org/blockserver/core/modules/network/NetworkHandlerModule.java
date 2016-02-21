@@ -36,7 +36,6 @@ public class NetworkHandlerModule extends ServerModule {
         for (Dispatcher dispatcher : dispatchers) {
             dispatcher.dispatch(packet);
         }
-
     }
 
     public void unregisterDispatcher(Dispatcher dispatcher) {

@@ -20,9 +20,9 @@ package org.blockserver.core.modules.world;
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldServerModule
+ * @see WorldModule
  */
-public class Chunk {
+public class ChunkPosition {
     public Block getBlockAt(int x, int y, int z) {
         return null;
     }

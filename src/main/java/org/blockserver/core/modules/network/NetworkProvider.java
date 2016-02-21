@@ -23,6 +23,10 @@ import org.blockserver.core.module.ServerModule;
 public class NetworkProvider extends ServerModule {
     @Getter private final NetworkHandlerModule handler;
 
+    public NetworkProvider(NetworkHandlerModule handler) {
+        this(handler, handler.getServer());
+    }
+
     public NetworkProvider(NetworkHandlerModule handler, Server server) {
         super(server);
         this.handler = handler;

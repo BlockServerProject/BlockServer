@@ -17,18 +17,16 @@
 package org.blockserver.core.modules.world;
 
 import lombok.Getter;
-import org.blockserver.core.modules.message.block.MessageOutBlockChange;
-import org.blockserver.core.modules.player.Player;
 import org.blockserver.core.modules.world.positions.Vector;
 
 /**
  * Written by Exerosis!
  *
  * @author BlockServer Team
- * @see WorldServerModule
+ * @see WorldModule
  */
 public class Block {
-    @Getter private WorldAllocation world;
+    @Getter private ChunkPosition chunk;
     @Getter private Material material;
     @Getter private byte lightLevel;
     @Getter private Vector vector;

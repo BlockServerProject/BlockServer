@@ -18,9 +18,17 @@ package org.blockserver.core.utilities;
 
 import java.io.*;
 
-public class StreamUtil {
+public class ByteUtil {
 
-    private StreamUtil() {
+    private ByteUtil() {
+    }
+
+    public static short toShort(byte... bytes) {
+        return (short) ((bytes[0] << 8) + bytes[1]);
+    }
+
+    public static byte[] fromShort(short number) {
+        return new byte[]{(byte) (number >> 8), (byte) (number & 255)};
     }
 
     public static void write(CharSequence path, InputStream stream, boolean close) {
@@ -41,9 +49,9 @@ public class StreamUtil {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            StreamUtil.closeQuietly(fileOutputStream);
+            ByteUtil.closeQuietly(fileOutputStream);
             if (close)
-                StreamUtil.closeQuietly(stream);
+                ByteUtil.closeQuietly(stream);
         }
     }
 
@@ -59,9 +67,9 @@ public class StreamUtil {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            StreamUtil.closeQuietly(outputStream);
+            ByteUtil.closeQuietly(outputStream);
             if (close)
-                StreamUtil.closeQuietly(inputStream);
+                ByteUtil.closeQuietly(inputStream);
         }
     }
 

@@ -17,7 +17,7 @@
 package org.blockserver.core.modules.world;
 
 public class World {
-    private Chunk[][] loadedChunks;
+    private ChunkPosition[][] loadedChunks;
 
     public World() {
 

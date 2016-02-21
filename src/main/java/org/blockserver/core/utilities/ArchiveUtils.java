@@ -73,7 +73,7 @@ public class ArchiveUtils {
         if (into.exists())
             into.delete();
         try {
-            StreamUtil.writeBuffer(into, new FileInputStream(from), true);
+            ByteUtil.writeBuffer(into, new FileInputStream(from), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -105,12 +105,12 @@ public class ArchiveUtils {
                     continue;
                 }
 
-                StreamUtil.write(pathBuilder, inputStream, false);
+                ByteUtil.write(pathBuilder, inputStream, false);
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            StreamUtil.closeQuietly(inputStream);
+            ByteUtil.closeQuietly(inputStream);
         }
     }
 
