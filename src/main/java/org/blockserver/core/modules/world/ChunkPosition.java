@@ -26,4 +26,8 @@ public class ChunkPosition {
     public Block getBlockAt(int x, int y, int z) {
         return null;
     }
+
+    public int getChunkID() {
+        throw new UnsupportedOperationException();
+    }
 }

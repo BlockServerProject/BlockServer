@@ -16,10 +16,30 @@
  */
 package org.blockserver.core.modules.world;
 
+import org.blockserver.core.utilities.ByteUtil;
+
 public class World {
     private ChunkPosition[][] loadedChunks;
+    private WorldAllocation worldAllocation;
 
-    public World() {
+    public World(short allocationSize) {
+        worldAllocation = new WorldAllocation(allocationSize);
+    }
 
+    public short[][][] getChunk(int x, int y) {
+        return worldAllocation.getChunkAt(loadedChunks[x][y].getChunkID());
+    }
+
+    public short getBlock(int x, int y, int z) {
+        short[][][] chunk = getChunk(x / 16, y / 16);
+        return chunk[x % 16][y % 16][z];
+    }
+
+    public byte getBlockMaterial(int x, int y, int z) {
+        return ByteUtil.fromShort(getBlock(x, y, z))[0];
+    }
+
+    public byte getBlockLightLevel(int x, int y, int z) {
+        return ByteUtil.fromShort(getBlock(x, y, z))[1];
     }
 }

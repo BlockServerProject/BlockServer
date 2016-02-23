@@ -27,7 +27,6 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 import java.util.jar.JarFile;
@@ -42,16 +41,15 @@ public class JarModuleLoader implements ModuleLoader {
     @Override
     public void setModules(Map<Class<? extends ServerModule>, ServerModule> modules, Server server) {
         File moduleFolder = new File("modules");
-        if (!moduleFolder.isDirectory()) {
-            moduleFolder.mkdirs();
-            return;
-        }
+        if (moduleFolder.mkdirs())
+            System.err.println("Could not find modules folder, created modules folder!");
         File[] files = moduleFolder.listFiles();
-
+        System.err.println(files.length);
         if (files == null || files.length <= 0)
             return;
 
         for (File file : files) {
+            System.err.println(file.getName());
             if (file.getName().endsWith(".jar")) {
                 try {
                     JarFile jar = new JarFile(file);

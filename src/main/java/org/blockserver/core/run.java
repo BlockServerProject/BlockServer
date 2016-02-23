@@ -35,6 +35,7 @@ public class run {
         new EventListener<ModuleEnableEvent, ModuleEnableEvent>() {
             @Override
             public void onEvent(ModuleEnableEvent event) {
+                System.out.println(event.getModule().getClass().getName());
             }
         }.register(ModuleEnableEvent.class, server.getEventManager());
 
