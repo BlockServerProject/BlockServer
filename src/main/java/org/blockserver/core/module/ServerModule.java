@@ -26,7 +26,7 @@ import org.blockserver.core.Server;
  * @see org.blockserver.core.modules
  * @see org.blockserver.core.module.EnableableImplementation
  */
-public class ServerModule extends EnableableImplementation {
+public class ServerModule implements Module {
     @Getter private final Server server;
 
     public ServerModule(Server server) {
@@ -35,6 +35,6 @@ public class ServerModule extends EnableableImplementation {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName();
+        return "[" + server.toString() + "] " + getClass().getSimpleName();
     }
 }

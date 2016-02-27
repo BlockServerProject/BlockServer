@@ -16,7 +16,10 @@
  */
 package org.blockserver.core.modules.entity;
 
+import lombok.Getter;
 import org.blockserver.core.modules.world.positions.Location;
+
+import java.util.ArrayList;
 
 /**
  * Written by Exerosis!
@@ -24,6 +27,7 @@ import org.blockserver.core.modules.world.positions.Location;
  * @author BlockServer Team
  */
 public class Entity {
+    @Getter private final ArrayList<EntityModule> modules = new ArrayList<>();
     private float x;
     private float y;
     private float z;
@@ -32,10 +36,15 @@ public class Entity {
         this.x = x;
         this.y = y;
         this.z = z;
+        modules.forEach(EntityModule::enable);
     }
 
     public Entity(Location location) {
         this(location.getX(), location.getY(), location.getZ());
+    }
+
+    public void destroy() {
+        modules.forEach(EntityModule::disable);
     }
 
     public Location getLocation() {

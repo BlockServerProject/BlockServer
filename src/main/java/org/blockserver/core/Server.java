@@ -25,23 +25,20 @@ import org.blockserver.core.module.EnableableImplementation;
 import org.blockserver.core.module.ModuleLoader;
 import org.blockserver.core.module.ServerModule;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Represents the core server implementation.
  *
  * @author BlockServer Team
  */
-public class Server extends EnableableImplementation {
-    @Getter @Setter private ExecutorService executorService = Executors.newFixedThreadPool(4);
-    @Getter @Setter private EventManager eventManager = new EventManager();
-    private boolean enabled;
-
+public class Server implements EnableableImplementation {
+    //TODO Add YAML utils somewhere!!
     //Modules
-    private Map<Class<? extends ServerModule>, ServerModule> modules = new HashMap<>();
+    private final Map<Class<? extends ServerModule>, ServerModule> modules = new HashMap<>();
+    @Getter @Setter private EventManager eventManager = new EventManager();
 
     public Server(ModuleLoader... moduleLoaders) {
         for (ModuleLoader moduleLoader : moduleLoaders) {
@@ -59,8 +56,7 @@ public class Server extends EnableableImplementation {
     }
 
     @Override
-    public void onEnable() {
-        enabled = true;
+    public void enable() {
         modules.values().forEach((module) -> {
             if (module.isEnabled())
                 return;
@@ -69,11 +65,11 @@ public class Server extends EnableableImplementation {
                     module.enable();
             });
         });
+        EnableableImplementation.super.enable();
     }
 
     @Override
-    public void onDisable() {
-        enabled = false;
+    public void disable() {
         modules.values().forEach((module) -> {
             if (!module.isEnabled())
                 return;
@@ -82,10 +78,10 @@ public class Server extends EnableableImplementation {
                     module.disable();
             });
         });
+        EnableableImplementation.super.disable();
     }
 
-    @Override
-    public boolean isEnabled() {
-        return enabled;
+    public Map<Class<? extends ServerModule>, ServerModule> getModules() {
+        return Collections.unmodifiableMap(modules);
     }
 }

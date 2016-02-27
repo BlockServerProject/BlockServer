@@ -21,14 +21,10 @@ package org.blockserver.core.module;
  *
  * @author BlockServer Team
  */
-public abstract class Enableable {
-    protected void onEnable() {
+public interface Enableable {
+    void enable();
 
-    }
+    boolean isEnabled();
 
-    public abstract boolean isEnabled();
-
-    protected void onDisable() {
-
-    }
+    void disable();
 }

@@ -23,21 +23,21 @@ import java.util.WeakHashMap;
  * @author BlockServer Team
  * @see org.blockserver.core.module.Enableable
  */
-public abstract class EnableableImplementation extends Enableable {
+public interface EnableableImplementation extends Enableable {
     Map<EnableableImplementation, Boolean> instances = new WeakHashMap<>();
 
-    public final void enable() {
-        onEnable();
+    @Override
+    default void enable() {
         instances.put(this, true);
     }
 
     @Override
-    public boolean isEnabled() {
+    default boolean isEnabled() {
         return instances.getOrDefault(this, false);
     }
 
-    public final void disable() {
-        onDisable();
+    @Override
+    default void disable() {
         instances.put(this, false);
     }
 }
