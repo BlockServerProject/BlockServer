@@ -22,11 +22,11 @@ import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.messages.MessageReceiveEvent;
 import org.blockserver.core.events.messages.MessageSendEvent;
 
-public class MessageManager extends NetworkProvider implements Dispatcher {
+public class MessageEventModule extends NetworkProvider implements NetworkDispatcher {
     private final ServerEventListener<MessageSendEvent> listener;
     private final NetworkConverter converter;
 
-    public MessageManager(Server server, NetworkHandlerModule handler, NetworkConverter converter) {
+    public MessageEventModule(Server server, NetworkPipelineHandler handler, NetworkConverter converter) {
         super(handler, server);
         this.converter = converter;
         listener = new ServerEventListener<MessageSendEvent>() {

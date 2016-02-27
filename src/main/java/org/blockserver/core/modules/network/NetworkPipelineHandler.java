@@ -16,9 +16,31 @@
  */
 package org.blockserver.core.modules.network;
 
-/**
- * Written by Exerosis!
- */
-public interface Dispatcher {
-    void dispatch(RawPacket packet);
+
+import lombok.Getter;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+public class NetworkPipelineHandler {
+    @Getter private final Set<NetworkDispatcher> dispatchers = Collections.synchronizedSet(new HashSet<>());
+
+    public NetworkPipelineHandler() {
+
+    }
+
+    public void provide(RawPacket packet) {
+        for (NetworkDispatcher dispatcher : dispatchers) {
+            dispatcher.dispatch(packet);
+        }
+    }
+
+    public void unregisterDispatcher(NetworkDispatcher dispatcher) {
+        dispatchers.remove(dispatcher);
+    }
+
+    public void registerDispatcher(NetworkDispatcher dispatcher) {
+        dispatchers.add(dispatcher);
+    }
 }

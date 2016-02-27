@@ -22,14 +22,9 @@ import org.blockserver.core.event.EventManager;
 import org.blockserver.core.events.modules.ModuleDisableEvent;
 import org.blockserver.core.events.modules.ModuleEnableEvent;
 import org.blockserver.core.module.EnableableImplementation;
-import org.blockserver.core.module.Module;
 import org.blockserver.core.module.ModuleLoader;
 import org.blockserver.core.module.ServerModule;
-import org.blockserver.core.modules.logging.LoggingModule;
-import org.blockserver.core.modules.network.NetworkHandlerModule;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -49,11 +44,9 @@ public class Server extends EnableableImplementation {
     private Map<Class<? extends ServerModule>, ServerModule> modules = new HashMap<>();
 
     public Server(ModuleLoader... moduleLoaders) {
-
         for (ModuleLoader moduleLoader : moduleLoaders) {
             moduleLoader.setModules(modules, this);
         }
-
     }
 
     @SuppressWarnings("unchecked")
@@ -61,7 +54,7 @@ public class Server extends EnableableImplementation {
         return (T) modules.get(moduleClass);
     }
 
-    public void addModuleToEnable(ServerModule module) {
+    public void addModule(ServerModule module) {
         modules.put(module.getClass(), module);
     }
 

@@ -22,10 +22,10 @@ import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.packets.PacketReceiveEvent;
 import org.blockserver.core.events.packets.PacketSendEvent;
 
-public class PacketEventManager extends NetworkProvider implements Dispatcher {
+public class PacketEventModule extends NetworkProvider implements NetworkDispatcher {
     private final ServerEventListener<PacketSendEvent> listener;
 
-    public PacketEventManager(NetworkHandlerModule handler, Server server) {
+    public PacketEventModule(NetworkPipelineHandler handler, Server server) {
         super(handler, server);
         listener = new ServerEventListener<PacketSendEvent>() {
             @Override

@@ -31,7 +31,6 @@ import java.util.Map;
  */
 public class SchedulerModule extends ServerModule {
     @Getter private final Map<Runnable, TaskData> tasks = new HashMap<>();
-    @Getter private long currentTick;
 
     public SchedulerModule(Server server) {
         super(server);

@@ -26,6 +26,10 @@ public class World {
         worldAllocation = new WorldAllocation(allocationSize);
     }
 
+    public void saveChunk(int x, int y) {
+
+    }
+
     public short[][][] getChunk(int x, int y) {
         return worldAllocation.getChunkAt(loadedChunks[x][y].getChunkID());
     }

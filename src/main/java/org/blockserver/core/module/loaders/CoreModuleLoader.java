@@ -20,11 +20,10 @@ import org.blockserver.core.Server;
 import org.blockserver.core.module.ModuleLoader;
 import org.blockserver.core.module.ServerModule;
 import org.blockserver.core.modules.logging.LoggingModule;
-import org.blockserver.core.modules.network.NetworkHandlerModule;
+import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.player.PlayerModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -38,13 +37,13 @@ public class CoreModuleLoader implements ModuleLoader {
         int start = modules.size();
         LoggingModule loggingModule = new LoggingModule(server);
         SchedulerModule schedulerModule = new SchedulerModule(server);
-        NetworkHandlerModule handler = new NetworkHandlerModule(server);
         PlayerModule playerModule = new PlayerModule(server);
+        NetworkModule networkModule = new NetworkModule(server);
 
         modules.put(loggingModule.getClass(), loggingModule);
         modules.put(schedulerModule.getClass(), schedulerModule);
-        modules.put(handler.getClass(), handler);
         modules.put(playerModule.getClass(), playerModule);
+        modules.put(networkModule.getClass(), networkModule);
 
         System.out.println("[ServerModule Loader]: Loaded " + (modules.size() - start) + " core modules.");
     }

@@ -40,7 +40,7 @@ import java.util.jar.JarFile;
 public class JarModuleLoader implements ModuleLoader {
     @Override
     public void setModules(Map<Class<? extends ServerModule>, ServerModule> modules, Server server) {
-        File moduleFolder = new File("modules");
+        File moduleFolder = new File("Modules");
         if (moduleFolder.mkdirs())
             System.err.println("Could not find modules folder, created modules folder!");
         File[] files = moduleFolder.listFiles();
