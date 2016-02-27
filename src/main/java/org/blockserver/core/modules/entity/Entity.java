@@ -16,10 +16,11 @@
  */
 package org.blockserver.core.modules.entity;
 
-import lombok.Getter;
 import org.blockserver.core.modules.world.positions.Location;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Written by Exerosis!
@@ -27,24 +28,47 @@ import java.util.ArrayList;
  * @author BlockServer Team
  */
 public class Entity {
-    @Getter private final ArrayList<EntityModule> modules = new ArrayList<>();
+    private final Map<Class<? extends EntityModule>, EntityModule> modules = new HashMap<>();
     private float x;
     private float y;
     private float z;
 
+    //TODO deal with locations and what not!!
     public Entity(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
-        modules.forEach(EntityModule::enable);
+        modules.values().forEach(EntityModule::enable);
     }
 
     public Entity(Location location) {
         this(location.getX(), location.getY(), location.getZ());
     }
 
+
+    public void addModule(EntityModule module) {
+        modules.put(module.getClass(), module);
+    }
+
+    public void removeModule(Class<? extends EntityModule> moduleClass) {
+        modules.remove(moduleClass);
+    }
+
+    public void removeModule(EntityModule module) {
+        removeModule(module.getClass());
+    }
+
+    public EntityModule getModule(Class<? extends EntityModule> moduleClass) {
+        return modules.get(moduleClass);
+    }
+
     public void destroy() {
-        modules.forEach(EntityModule::disable);
+        modules.values().forEach(EntityModule::disable);
+    }
+
+
+    public Map<Class<? extends EntityModule>, EntityModule> getModules() {
+        return Collections.unmodifiableMap(modules);
     }
 
     public Location getLocation() {

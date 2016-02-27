@@ -12,5 +12,4 @@ public class EntityModule implements Module {
     public EntityModule(Entity entity) {
         this.entity = entity;
     }
-
 }
