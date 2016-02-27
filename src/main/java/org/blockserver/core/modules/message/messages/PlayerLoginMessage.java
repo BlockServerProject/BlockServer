@@ -14,21 +14,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
+package org.blockserver.core.modules.message.messages;
 
-import lombok.Getter;
-import org.blockserver.core.Server;
-import org.blockserver.core.module.ServerModule;
+import org.blockserver.core.modules.message.Message;
+import org.blockserver.core.modules.player.Player;
+import org.blockserver.core.utilities.Skin;
 
-public class NetworkProvider extends ServerModule {
-    @Getter private final NetworkPipelineHandler handler;
+import java.util.UUID;
 
-    public NetworkProvider(NetworkPipelineHandler handler, Server server) {
-        super(server);
-        this.handler = handler;
-    }
+/**
+ * Written by Exerosis!
+ */
+public class PlayerLoginMessage extends Message {
+    public long clientID;
+    public String username;
+    public UUID uuid;
+    public Skin skin;
 
-    public void provide(RawPacket packet) {
-        handler.provide(packet);
+    public PlayerLoginMessage(Player player) {
+        super(player);
     }
 }

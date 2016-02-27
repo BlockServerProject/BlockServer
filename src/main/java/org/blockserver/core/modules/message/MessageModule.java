@@ -14,20 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
+package org.blockserver.core.modules.message;
 
 import org.blockserver.core.Server;
 import org.blockserver.core.event.Priority;
 import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.messages.MessageReceiveEvent;
 import org.blockserver.core.events.messages.MessageSendEvent;
+import org.blockserver.core.modules.network.NetworkConverter;
+import org.blockserver.core.modules.network.pipeline.NetworkPipelineHandler;
+import org.blockserver.core.modules.network.pipeline.PipelineDispatcher;
+import org.blockserver.core.modules.network.pipeline.PipelineProviderImplementation;
+import org.blockserver.core.modules.network.pipeline.packet.RawPacket;
 
-public class MessageEventModule extends NetworkProvider implements NetworkDispatcher {
+public class MessageModule extends PipelineProviderImplementation implements PipelineDispatcher {
     private final ServerEventListener<MessageSendEvent> listener;
     private final NetworkConverter converter;
 
-    public MessageEventModule(Server server, NetworkPipelineHandler handler, NetworkConverter converter) {
-        super(handler, server);
+    public MessageModule(Server server, NetworkPipelineHandler handler, NetworkConverter converter) {
+        super(server, handler);
         this.converter = converter;
         listener = new ServerEventListener<MessageSendEvent>() {
             @Override

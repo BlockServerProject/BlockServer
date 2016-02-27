@@ -14,33 +14,23 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
-
+package org.blockserver.core.modules.network.pipeline;
 
 import lombok.Getter;
+import org.blockserver.core.Server;
+import org.blockserver.core.module.ServerModule;
+import org.blockserver.core.modules.network.pipeline.packet.RawPacket;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+public class PipelineProviderImplementation extends ServerModule implements PipelineProvider {
+    @Getter private final NetworkPipelineHandler handler;
 
-public class NetworkPipelineHandler {
-    @Getter private final Set<NetworkDispatcher> dispatchers = Collections.synchronizedSet(new HashSet<>());
-
-    public NetworkPipelineHandler() {
-
+    public PipelineProviderImplementation(Server server, NetworkPipelineHandler handler) {
+        super(server);
+        this.handler = handler;
     }
 
+    @Override
     public void provide(RawPacket packet) {
-        for (NetworkDispatcher dispatcher : dispatchers) {
-            dispatcher.dispatch(packet);
-        }
-    }
-
-    public void unregisterDispatcher(NetworkDispatcher dispatcher) {
-        dispatchers.remove(dispatcher);
-    }
-
-    public void registerDispatcher(NetworkDispatcher dispatcher) {
-        dispatchers.add(dispatcher);
+        handler.provide(packet);
     }
 }

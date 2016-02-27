@@ -14,11 +14,25 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
+package org.blockserver.core.modules.network.pipeline.packet;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.blockserver.core.event.CancellableImplementation;
+
+import java.net.InetSocketAddress;
 
 /**
- * Written by Exerosis!
+ * Represents a packet recieved or ready to be sent in byte form.
+ *
+ * @author BlockServer Team
  */
-public interface NetworkDispatcher {
-    void dispatch(RawPacket packet);
+public class RawPacket implements CancellableImplementation {
+    @Getter @Setter private BinaryBuffer buffer;
+    @Getter @Setter private InetSocketAddress address;
+
+    public RawPacket(BinaryBuffer buffer, InetSocketAddress address) {
+        this.buffer = buffer;
+        this.address = address;
+    }
 }

@@ -21,12 +21,16 @@ import org.blockserver.core.event.Priority;
 import org.blockserver.core.event.ServerEventListener;
 import org.blockserver.core.events.packets.PacketReceiveEvent;
 import org.blockserver.core.events.packets.PacketSendEvent;
+import org.blockserver.core.modules.network.pipeline.NetworkPipelineHandler;
+import org.blockserver.core.modules.network.pipeline.PipelineDispatcher;
+import org.blockserver.core.modules.network.pipeline.PipelineProviderImplementation;
+import org.blockserver.core.modules.network.pipeline.packet.RawPacket;
 
-public class PacketEventModule extends NetworkProvider implements NetworkDispatcher {
+public class PacketEventModule extends PipelineProviderImplementation implements PipelineDispatcher {
     private final ServerEventListener<PacketSendEvent> listener;
 
     public PacketEventModule(NetworkPipelineHandler handler, Server server) {
-        super(handler, server);
+        super(server, handler);
         listener = new ServerEventListener<PacketSendEvent>() {
             @Override
             public void onEvent(PacketSendEvent event) {

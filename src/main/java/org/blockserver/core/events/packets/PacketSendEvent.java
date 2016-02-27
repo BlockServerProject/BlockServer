@@ -16,7 +16,7 @@
  */
 package org.blockserver.core.events.packets;
 
-import org.blockserver.core.modules.network.RawPacket;
+import org.blockserver.core.modules.network.pipeline.packet.RawPacket;
 
 /**
  * Written by Exerosis!

@@ -14,17 +14,34 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
+package org.blockserver.core.modules.network.pipeline;
 
 
-import org.blockserver.core.modules.message.Message;
+import lombok.Getter;
 import org.blockserver.core.modules.network.pipeline.packet.RawPacket;
 
-/**
- * Written by Exerosis!
- */
-public interface NetworkConverter {
-    RawPacket toPacket(Message message);
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
-    Message toMessage(RawPacket packet);
+public class NetworkPipelineHandler {
+    @Getter private final Set<PipelineDispatcher> dispatchers = Collections.synchronizedSet(new HashSet<>());
+
+    public NetworkPipelineHandler() {
+
+    }
+
+    public void provide(RawPacket packet) {
+        for (PipelineDispatcher dispatcher : dispatchers) {
+            dispatcher.dispatch(packet);
+        }
+    }
+
+    public void unregisterDispatcher(PipelineDispatcher dispatcher) {
+        dispatchers.remove(dispatcher);
+    }
+
+    public void registerDispatcher(PipelineDispatcher dispatcher) {
+        dispatchers.add(dispatcher);
+    }
 }

@@ -19,7 +19,7 @@ package org.blockserver.core.modules.player;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.ServerModule;
 import org.blockserver.core.modules.logging.LoggingModule;
-import org.blockserver.core.modules.network.NetworkProvider;
+import org.blockserver.core.modules.network.pipeline.PipelineProviderImplementation;
 
 import java.net.InetSocketAddress;
 import java.util.Collections;
@@ -105,10 +105,10 @@ public class PlayerModule extends ServerModule {
      * @param address ({@linkplain InetSocketAddress}): The new {@linkplain Player}'s {@linkplain InetSocketAddress}.
      * @param name ({@linkplain String}): The new {@linkplain Player}'s {@linkplain String}.
      * @param UUID ({@linkplain UUID}): The new {@linkplain Player}'s {@linkplain UUID}.
-     * @param provider {{@linkplain NetworkProvider}}: The {@linkplain Player}'s {@linkplain NetworkProvider} that is used
+     * @param provider {{@linkplain PipelineProviderImplementation}}: The {@linkplain Player}'s {@linkplain PipelineProviderImplementation} that is used
      *                 to communicate with the client.
      */
-    public void internalOpenSession(InetSocketAddress address, String name, UUID UUID, NetworkProvider provider) {
+    public void internalOpenSession(InetSocketAddress address, String name, UUID UUID, PipelineProviderImplementation provider) {
         players.add(new Player(getServer(), address, name, UUID/*, provider*/));
         getServer().getModule(LoggingModule.class).debug("New session from " + address.getHostString() + ":" + address.getPort());
     }

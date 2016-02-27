@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with BlockServer.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.blockserver.core.modules.network;
+package org.blockserver.core.modules.network.pipeline.packet;
 
 /*
 import net.redstonelamp.item.Item;
@@ -345,21 +345,21 @@ public class BinaryBuffer{
     }
 
     /**
-     * Set the position of the underlying ByteBuffer
-     *
-     * @param position The position in the buffer to be set to
-     */
-    public void setPosition(int position){
-        bb.position(position);
-    }
-
-    /**
      * Get the position of the underyling ByteBuffer
      *
      * @return The position in the buffer
      */
-    public int getPosition(){
+    public int getPosition() {
         return bb.position();
+    }
+
+    /**
+     * Set the position of the underlying ByteBuffer
+     *
+     * @param position The position in the buffer to be set to
+     */
+    public void setPosition(int position) {
+        bb.position(position);
     }
 
     /**
