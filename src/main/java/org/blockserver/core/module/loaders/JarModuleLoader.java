@@ -38,6 +38,7 @@ import java.util.jar.JarFile;
  * @see org.blockserver.core.module.ModuleLoader
  */
 public class JarModuleLoader implements ModuleLoader {
+    @SuppressWarnings({"unchecked", "deprecation"})
     @Override
     public void setModules(Map<Class<? extends ServerModule>, ServerModule> modules, Server server) {
         File moduleFolder = new File("Modules");

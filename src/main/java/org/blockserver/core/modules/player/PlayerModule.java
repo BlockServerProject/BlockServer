@@ -41,14 +41,14 @@ public class PlayerModule extends ServerModule {
     }
 
     @Override
-    public void onEnable() {
-        super.onEnable();
+    public void enable() {
+        super.enable();
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
         players.clear();
-        super.onDisable();
+        super.disable();
     }
 
     /**

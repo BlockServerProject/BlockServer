@@ -51,16 +51,16 @@ public class ServerListModule extends ServerModule {
     }
 
     @Override
-    public void onEnable() {
+    public void enable() {
         schedulerModule.registerTask(task, 1.0, Integer.MAX_VALUE);
         listener.register(PacketEvent.class, getServer());
-        super.onEnable();
+        super.enable();
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
         schedulerModule.cancelTask(task);
         listener.unregister(getServer());
-        super.onDisable();
+        super.disable();
     }
 }

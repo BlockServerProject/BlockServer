@@ -18,7 +18,6 @@ package org.blockserver.core.module;
 
 import org.blockserver.core.Server;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**

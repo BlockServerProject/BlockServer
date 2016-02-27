@@ -39,8 +39,8 @@ public class run {
             }
         }.register(ModuleEnableEvent.class, server.getEventManager());
 
-        Runtime.getRuntime().addShutdownHook(new Thread(server::onDisable));
-        server.onEnable();
+        Runtime.getRuntime().addShutdownHook(new Thread(server::disable));
+        server.enable();
         server.getModule(LoggingModule.class).info("BlockServer is now running.");
     }
 }

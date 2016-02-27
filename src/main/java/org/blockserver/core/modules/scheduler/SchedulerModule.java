@@ -19,6 +19,7 @@ package org.blockserver.core.modules.scheduler;
 import lombok.Getter;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.ServerModule;
+import org.blockserver.core.modules.thread.ExecutorModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,15 +32,17 @@ import java.util.Map;
  */
 public class SchedulerModule extends ServerModule {
     @Getter private final Map<Runnable, TaskData> tasks = new HashMap<>();
+    private final ExecutorModule executorModule;
 
-    public SchedulerModule(Server server) {
+    public SchedulerModule(Server server, ExecutorModule executorModule) {
         super(server);
+        this.executorModule = executorModule;
     }
 
     //TODO maybe make this better!
     @Override
-    public void onEnable() {
-        getServer().getExecutorService().execute(() -> {
+    public void enable() {
+        executorModule.getExecutorService().execute(() -> {
             while (isEnabled()) {
                 for (Map.Entry<Runnable, TaskData> entry : tasks.entrySet()) {
                     TaskData taskData = entry.getValue();
@@ -47,7 +50,7 @@ public class SchedulerModule extends ServerModule {
                         continue;
                     taskData.repeatTimes--;
                     //So by doing this every task will be run at the same time... not in series... is that ok?
-                    getServer().getExecutorService().execute(() -> entry.getKey().run());
+                    executorModule.getExecutorService().execute(() -> entry.getKey().run());
                     //
                     if (taskData.getRepeatTimes() <= 0)
                         tasks.remove(entry.getKey());
@@ -60,13 +63,13 @@ public class SchedulerModule extends ServerModule {
                 }
             }
         });
-        super.onEnable();
+        super.enable();
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
         tasks.clear();
-        super.onDisable();
+        super.disable();
     }
 
     public void registerTask(Runnable task, double delay) {

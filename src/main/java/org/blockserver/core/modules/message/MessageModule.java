@@ -26,13 +26,16 @@ import org.blockserver.core.modules.network.pipeline.NetworkPipelineHandler;
 import org.blockserver.core.modules.network.pipeline.PipelineDispatcher;
 import org.blockserver.core.modules.network.pipeline.PipelineProviderImplementation;
 import org.blockserver.core.modules.network.pipeline.packet.RawPacket;
+import org.blockserver.core.modules.thread.ExecutorModule;
 
 public class MessageModule extends PipelineProviderImplementation implements PipelineDispatcher {
     private final ServerEventListener<MessageSendEvent> listener;
+    private final ExecutorModule executorModule;
     private final NetworkConverter converter;
 
-    public MessageModule(Server server, NetworkPipelineHandler handler, NetworkConverter converter) {
+    public MessageModule(Server server, ExecutorModule executorModule, NetworkPipelineHandler handler, NetworkConverter converter) {
         super(server, handler);
+        this.executorModule = executorModule;
         this.converter = converter;
         listener = new ServerEventListener<MessageSendEvent>() {
             @Override
@@ -44,19 +47,19 @@ public class MessageModule extends PipelineProviderImplementation implements Pip
     }
 
     @Override
-    public void onEnable() {
+    public void enable() {
         listener.register(MessageSendEvent.class, getServer());
-        super.onEnable();
+        super.enable();
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
         listener.unregister(getServer());
-        super.onDisable();
+        super.disable();
     }
 
     @Override
     public void dispatch(RawPacket packet) {
-        getServer().getExecutorService().execute(() -> getServer().getEventManager().fire(new MessageReceiveEvent<>(converter.toMessage(packet))));
+        executorModule.getExecutorService().execute(() -> getServer().getEventManager().fire(new MessageReceiveEvent<>(converter.toMessage(packet))));
     }
 }

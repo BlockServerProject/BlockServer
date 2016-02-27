@@ -41,15 +41,15 @@ public class PacketEventModule extends PipelineProviderImplementation implements
     }
 
     @Override
-    public void onEnable() {
+    public void enable() {
         listener.register(PacketSendEvent.class, getServer());
-        super.onEnable();
+        super.enable();
     }
 
     @Override
-    public void onDisable() {
+    public void disable() {
         listener.unregister(getServer());
-        super.onDisable();
+        super.disable();
     }
 
     @Override
