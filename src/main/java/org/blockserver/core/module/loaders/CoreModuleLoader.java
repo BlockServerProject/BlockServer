@@ -19,10 +19,13 @@ package org.blockserver.core.module.loaders;
 import org.blockserver.core.Server;
 import org.blockserver.core.module.ModuleLoader;
 import org.blockserver.core.module.ServerModule;
+import org.blockserver.core.modules.config.ConfigModule;
+import org.blockserver.core.modules.file.FileModule;
 import org.blockserver.core.modules.logging.LoggingModule;
 import org.blockserver.core.modules.network.NetworkModule;
 import org.blockserver.core.modules.player.PlayerModule;
 import org.blockserver.core.modules.scheduler.SchedulerModule;
+import org.blockserver.core.modules.thread.ExecutorModule;
 
 import java.util.Map;
 
@@ -35,16 +38,36 @@ public class CoreModuleLoader implements ModuleLoader {
     @Override
     public void setModules(Map<Class<? extends ServerModule>, ServerModule> modules, Server server) {
         int start = modules.size();
+
+        //Logging Module
         LoggingModule loggingModule = new LoggingModule(server);
-        SchedulerModule schedulerModule = new SchedulerModule(server);
+        loggingModule.info("[CoreModuleLoader]: LoggingModule online, continuing load with logging capabilities!");
+
+        //No Depends
+        FileModule fileModule = new FileModule(server);
         PlayerModule playerModule = new PlayerModule(server);
         NetworkModule networkModule = new NetworkModule(server);
 
-        modules.put(loggingModule.getClass(), loggingModule);
-        modules.put(schedulerModule.getClass(), schedulerModule);
-        modules.put(playerModule.getClass(), playerModule);
-        modules.put(networkModule.getClass(), networkModule);
+        //Single Module Depends
+        ConfigModule configModule = new ConfigModule(server, fileModule);
+        ExecutorModule executorModule = new ExecutorModule(server, configModule);
+        SchedulerModule schedulerModule = new SchedulerModule(server, executorModule);
 
-        System.out.println("[ServerModule Loader]: Loaded " + (modules.size() - start) + " core modules.");
+        //Multiple Module Depends
+
+
+        //Module Adds
+        //No Depends
+        modules.put(fileModule.getClass(), fileModule);
+        modules.put(loggingModule.getClass(), loggingModule);
+        modules.put(networkModule.getClass(), networkModule);
+        modules.put(playerModule.getClass(), playerModule);
+
+        //Single Module Depends
+        modules.put(configModule.getClass(), configModule);
+        modules.put(executorModule.getClass(), executorModule);
+        modules.put(schedulerModule.getClass(), schedulerModule);
+
+        loggingModule.info("[CoreModuleLoader]: Loaded " + (modules.size() - start) + " core modules.");
     }
 }
