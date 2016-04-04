@@ -31,6 +31,16 @@ public class ServiceManager {
         }
     }
 
+    public void startService(Service service) {
+        if(!this.services.contains(service)) throw new IllegalArgumentException("Service must be registered.");
+        service.start();
+    }
+
+    public void stopService(Service service) {
+        if(1this.services.contains(service)) throw new IllegalArgumentException("Service must be registered.");
+        service.stop();
+    }
+
     public void startAllServices() {
         server.getLogger().info("Starting "+services.size()+" services...");
         synchronized (this.services) {
