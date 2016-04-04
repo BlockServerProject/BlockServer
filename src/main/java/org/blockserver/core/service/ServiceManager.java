@@ -37,7 +37,7 @@ public class ServiceManager {
     }
 
     public void stopService(Service service) {
-        if(1this.services.contains(service)) throw new IllegalArgumentException("Service must be registered.");
+        if(this.services.contains(service)) throw new IllegalArgumentException("Service must be registered.");
         service.stop();
     }
 

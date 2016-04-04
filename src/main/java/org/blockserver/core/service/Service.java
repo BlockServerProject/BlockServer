@@ -27,7 +27,7 @@ public abstract class Service {
         serviceManager.getServer().getLogger().info("Starting service "+name+" "+version);
         this.running = true;
         _start();
-        serviceManager.getServer().getLogger().info("Service "+name+" started");
+        serviceManager.getServer().getLogger().debug("Service "+name+" started");
     }
 
     protected final void stop() {
@@ -35,7 +35,7 @@ public abstract class Service {
         serviceManager.getServer().getLogger().info("Stopping service "+name+" "+version);
         this.running = false;
         _stop();
-        serviceManager.getServer().getLogger().info("Service "+name+" stopped");
+        serviceManager.getServer().getLogger().debug("Service "+name+" stopped");
     }
 
     protected void _start() {

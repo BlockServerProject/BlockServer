@@ -3,6 +3,7 @@ package org.blockserver.core;
 import lombok.Getter;
 import lombok.Setter;
 import org.blockserver.core.service.ServiceManager;
+import org.blockserver.core.services.network.NetworkService;
 import org.blockserver.core.util.Task;
 import org.slf4j.Logger;
 
@@ -19,6 +20,8 @@ public class Server implements Runnable {
     public static final String SOFTWARE = "BlockServer";
     public static final String SOFTWARE_VERSION = "1.0-SNAPSHOT";
 
+    @Getter private InetSocketAddress bindAddress;
+
     @Getter private ServiceManager serviceManager;
     @Getter private final Logger logger;
 
@@ -31,16 +34,19 @@ public class Server implements Runnable {
     public Server(InetSocketAddress bindAddress, Logger logger) {
         this.logger = logger;
         this.serviceManager = new ServiceManager(this);
+
+        this.bindAddress = bindAddress;
     }
 
     private void registerServices() {
-
+        serviceManager.registerService(new NetworkService(serviceManager, bindAddress));
     }
 
     @Override
     public void run() {
         if(!running) return;
-        logger.info("Starting BlockServer...");
+        logger.info("This server is running "+Server.SOFTWARE+" "+Server.SOFTWARE_VERSION+" on "+System.getProperty("os.name")+" "+System.getProperty("os.version"));
+        logger.info("Starting server...");
 
         registerServices();
         serviceManager.startAllServices();
