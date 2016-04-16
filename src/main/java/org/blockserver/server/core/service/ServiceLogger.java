@@ -1,4 +1,4 @@
-package org.blockserver.core.service;
+package org.blockserver.server.core.service;
 
 import org.slf4j.Logger;
 
@@ -17,18 +17,18 @@ public class ServiceLogger {
     }
 
     public void debug(String message) {
-        this.log.debug(service.getName() + ": ");
+        this.log.debug(service.getName() + ": " + message);
     }
 
     public void info(String message) {
-        this.log.info(service.getName() + ": ");
+        this.log.info(service.getName() + ": " + message);
     }
 
     public void warn(String message) {
-        this.log.warn(service.getName() + ": ");
+        this.log.warn(service.getName() + ": " + message);
     }
 
     public void error(String message) {
-        this.log.error(service.getName() +": ");
+        this.log.error(service.getName() +": " + message);
     }
 }

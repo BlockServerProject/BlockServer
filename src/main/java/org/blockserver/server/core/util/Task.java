@@ -1,4 +1,4 @@
-package org.blockserver.core.util;
+package org.blockserver.server.core.util;
 
 /**
  * Utility class: represents a task that can be ran at a certain time.

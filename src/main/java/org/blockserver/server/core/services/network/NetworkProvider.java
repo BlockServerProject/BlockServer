@@ -1,4 +1,4 @@
-package org.blockserver.core.services.network;
+package org.blockserver.server.core.services.network;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -22,6 +22,10 @@ public abstract class NetworkProvider {
     public NetworkProvider(NetworkService networkService, InetSocketAddress bindAddress) {
         this.networkService = networkService;
         this.bindAddress = bindAddress;
+    }
+
+    protected void addToQueue(Packet packet) {
+        packetQueue.add(packet);
     }
 
     public Packet getNextPacket() {

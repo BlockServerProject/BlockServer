@@ -1,4 +1,4 @@
-package org.blockserver.core.services.network;
+package org.blockserver.server.core.services.network;
 
 import java.net.SocketAddress;
 

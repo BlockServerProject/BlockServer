@@ -1,7 +1,7 @@
-package org.blockserver.core.service;
+package org.blockserver.server.core.service;
 
 import lombok.Getter;
-import org.blockserver.core.Server;
+import org.blockserver.server.core.Server;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,18 @@ public class ServiceManager {
     public void stopService(Service service) {
         if(this.services.contains(service)) throw new IllegalArgumentException("Service must be registered.");
         service.stop();
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends Service> T getService(Class<T> clazz) {
+        synchronized (this.services) {
+            for(Service service : this.services) {
+                if(service.getClass().getName().equals(clazz.getName())) {
+                    return (T) service;
+                }
+            }
+        }
+        return null;
     }
 
     public void startAllServices() {

@@ -10,7 +10,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.16.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.slf4j:slf4j-simple:1.7.5" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-simple:1.7.5" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.5" level="project" />
     <orderEntry type="library" name="Maven: io.github.jython234.jraklibplus:JRakLibPlus:1.2-SNAPSHOT" level="project" />
   </component>

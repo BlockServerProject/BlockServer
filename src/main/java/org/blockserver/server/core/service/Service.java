@@ -1,4 +1,4 @@
-package org.blockserver.core.service;
+package org.blockserver.server.core.service;
 
 import lombok.AccessLevel;
 import lombok.Getter;

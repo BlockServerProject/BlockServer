@@ -1,4 +1,4 @@
-package org.blockserver.core.services.network;
+package org.blockserver.server.core.services.network;
 
 /**
  * Represents a message: a protocol-independent piece of

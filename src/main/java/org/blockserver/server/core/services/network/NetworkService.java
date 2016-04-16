@@ -1,12 +1,12 @@
-package org.blockserver.core.services.network;
+package org.blockserver.server.core.services.network;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.blockserver.core.Server;
-import org.blockserver.core.service.Service;
-import org.blockserver.core.service.ServiceManager;
+import org.blockserver.server.core.Server;
+import org.blockserver.server.core.service.Service;
+import org.blockserver.server.core.service.ServiceManager;
 
 /**
  * A service implementation which handles the server's
@@ -29,6 +29,11 @@ public class NetworkService extends Service {
 
     @Override
     protected void _start() {
+        providers.stream().forEach(NetworkProvider::bind);
+    }
 
+    @Override
+    protected void _stop() {
+        providers.stream().forEach(NetworkProvider::close);
     }
 }
