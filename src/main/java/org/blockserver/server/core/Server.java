@@ -2,9 +2,7 @@ package org.blockserver.server.core;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.blockserver.server.core.service.ServiceManager;
-import org.blockserver.server.core.services.module.ModuleService;
-import org.blockserver.server.core.services.network.NetworkService;
+import org.blockserver.server.core.module.ModuleLoader;
 import org.blockserver.server.core.util.Task;
 import org.slf4j.Logger;
 
@@ -23,28 +21,25 @@ public class Server implements Runnable {
 
     @Getter private InetSocketAddress bindAddress;
 
-    @Getter private ServiceManager serviceManager;
     @Getter private final Logger logger;
+    @Getter private final List<ModuleLoader> loaders;
 
     @Setter
     @Getter private boolean running = false;
     
     private long currentTick = 0;
     private long currentTaskId = 0;
+    private final List<Player> players = new ArrayList<>();
     private final List<Task> tasks = new ArrayList<>();
 
-    public Server(InetSocketAddress bindAddress, Logger logger) {
+    public Server(InetSocketAddress bindAddress, Logger logger, List<ModuleLoader> loaders) {
         this.logger = logger;
-        this.serviceManager = new ServiceManager(this);
-
         this.bindAddress = bindAddress;
-
-        registerServices();
+        this.loaders = loaders;
     }
 
-    private void registerServices() {
-        serviceManager.registerService(new ModuleService(serviceManager));
-        serviceManager.registerService(new NetworkService(serviceManager, bindAddress));
+    private void loadModules() {
+
     }
 
     @Override
@@ -52,7 +47,7 @@ public class Server implements Runnable {
         if(!running) return;
         logger.info("This server is running "+Server.SOFTWARE+" "+Server.SOFTWARE_VERSION+" on "+System.getProperty("os.name")+" "+System.getProperty("os.version"));
 
-        serviceManager.startAllServices();
+        loadModules();
 
         boolean exception = false;
         while(isRunning()) { // Begin ticking
@@ -79,7 +74,6 @@ public class Server implements Runnable {
         }
         
         logger.info("Stopping server...");
-        this.serviceManager.stopAllServices();
         logger.info("Halting...");
         System.exit(exception ? 1 : 0);
     }
