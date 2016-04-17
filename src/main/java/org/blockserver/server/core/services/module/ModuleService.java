@@ -40,7 +40,7 @@ public class ModuleService extends Service {
 
                 modules.stream().forEach(module -> {
                     getLogger().info("Enabling Module: "+module.getClass().getSimpleName());
-                    module.onEnable();
+                    module.enable();
                 });
                 this.modules.addAll(modules);
             });
@@ -49,6 +49,9 @@ public class ModuleService extends Service {
 
     @Override
     protected void _stop() {
-
+        this.modules.stream().filter(Module::isEnabled).forEach(module -> {
+            getLogger().info("Disabling Module: "+module.getClass().getSimpleName());
+            module.disable();
+        });
     }
 }

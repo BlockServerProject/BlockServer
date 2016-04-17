@@ -1,6 +1,7 @@
 package org.blockserver.server.pocket;
 
 import io.github.jython234.jraklibplus.protocol.raknet.EncapsulatedPacket;
+import io.github.jython234.jraklibplus.protocol.raknet.Reliability;
 import io.github.jython234.jraklibplus.server.HookManager;
 import io.github.jython234.jraklibplus.server.RakNetServer;
 import io.github.jython234.jraklibplus.server.Session;
@@ -11,6 +12,8 @@ import org.blockserver.server.core.services.network.Packet;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Network Provider wrapper that wraps around JRakLibPlus.
@@ -19,6 +22,7 @@ import java.net.SocketAddress;
  */
 public class RakNetProvider extends NetworkProvider {
     private RakNetServer server;
+    private Map<String, Session> sessions = new ConcurrentHashMap<>();
 
     public RakNetProvider(NetworkService networkService, InetSocketAddress bindAddress) {
         super(networkService, bindAddress);
@@ -44,15 +48,25 @@ public class RakNetProvider extends NetworkProvider {
 
     @Override
     public void send(byte[] data, SocketAddress address) {
-
+        if(sessions.containsKey(address.toString())) {
+            EncapsulatedPacket pk = new EncapsulatedPacket();
+            pk.reliability = Reliability.RELIABLE;
+            pk.payload = data;
+            sessions.get(address.toString()).addPacketToQueue(pk, false);
+        }
+        throw new IllegalArgumentException("Session "+address.toString()+" not found.");
     }
 
     private void onSessionOpened(Session session) {
-
+        if(!sessions.containsValue(session)) {
+            sessions.put(session.getAddress().toSocketAddress().toString(), session);
+        }
     }
 
     private void onSessionClosed(Session session) {
-
+        if(sessions.containsValue(session)) {
+            sessions.remove(session.getAddress().toSocketAddress().toString());
+        }
     }
 
     private void onPacketRecieved(Session session, EncapsulatedPacket pk) {

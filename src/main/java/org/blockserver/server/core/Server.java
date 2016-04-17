@@ -30,7 +30,8 @@ public class Server implements Runnable {
     @Getter private boolean running = false;
     
     private long currentTick = 0;
-    private List<Task> tasks = new ArrayList<>();
+    private long currentTaskId = 0;
+    private final List<Task> tasks = new ArrayList<>();
 
     public Server(InetSocketAddress bindAddress, Logger logger) {
         this.logger = logger;
@@ -83,15 +84,61 @@ public class Server implements Runnable {
         System.exit(exception ? 1 : 0);
     }
 
+    /**
+     * Add a task to run in a certain amount of ticks
+     * @param ticks Amount of ticks to pass before the task runs.
+     * @param r The <code>Runnable</code> to be ran.
+     * @return The task that was added.
+     */
+    public synchronized Task addTask(long ticks, Runnable r) {
+        return addTask(ticks, r, currentTaskId++, false, 0);
+    }
+
+    private Task addTask(long ticks, Runnable r, long taskId, boolean repeat, long interval) {
+        synchronized (this.tasks) {
+            Task t = new Task();
+            t.taskId = taskId;
+            t.runAt = this.currentTick + ticks;
+            t.r = r;
+            t.repeat = repeat;
+            t.interval = interval;
+            this.tasks.add(t);
+            return t;
+        }
+    }
+
+    /**
+     * Add a task to repeatably run based on an interval of ticks.
+     * @param interval The amount of ticks to pass between runs.
+     * @param r The <code>Runnable</code> to be ran.
+     * @return The task that was added.
+     */
+    public synchronized Task addRepeatingTask(long interval, Runnable r) {
+        return addTask(1, r, currentTaskId++, true, interval);
+    }
+
+    public synchronized void cancelTask(long taskId) {
+        final Task[] t = new Task[1];
+        synchronized (this.tasks) {
+            this.tasks.stream().filter(task -> task.taskId == taskId).forEach(task1 -> t[0] = task1);
+            this.tasks.remove(t[0]);
+        }
+    }
+
     private void tick() throws Exception {
-        if(tasks.isEmpty()) return;
+        if(this.tasks.isEmpty()) return;
         List<Task> toRemove = new ArrayList<>();
-        tasks.stream().forEach(task -> {
-           if(currentTick == task.runAt) {
-               task.r.run();
-               toRemove.add(task);
-           }
-        });
-        tasks.removeAll(toRemove);
+        synchronized (this.tasks) {
+            this.tasks.stream().forEach(task -> {
+                if (this.currentTick == task.runAt) {
+                    task.r.run();
+                    if(task.repeat) {
+                        task.runAt = this.currentTick + task.interval;
+                    } else toRemove.add(task);
+                }
+            });
+            this.tasks.removeAll(toRemove);
+        }
+        currentTick++;
     }
 }

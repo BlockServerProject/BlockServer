@@ -11,6 +11,7 @@ import org.blockserver.server.core.Server;
  */
 public abstract class Module {
     @Getter private Server server;
+    @Getter private boolean enabled = false;
 
     public final void init(Server server) {
         this.server = server;
@@ -19,6 +20,16 @@ public abstract class Module {
 
     protected void onLoad() {
 
+    }
+
+    protected final void enable() {
+        this.enabled = true;
+        onEnable();
+    }
+
+    protected final void disable() {
+        this.enabled = false;
+        onDisable();
     }
 
     protected void onEnable() {
