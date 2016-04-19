@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Server extends Module {
+
     public static void main(String[] args) {
         new Server().enable();
     }
+
     private final Map<String, Module> moduleLoaders = new HashMap<>();
 
     public Server() {
